@@ -52,6 +52,27 @@
   --pa-graph-fit: #f0482a;
   --pa-graph-triangle: #6d5bd8;
 
+  /* Apparatus figure tones (Anatomy kit style), from the lab mockup bench drawing */
+  --pa-figure-floor: #121211;
+  --pa-figure-floor-line: #1f1e1d;
+  --pa-figure-floor-edge: #2a2928;
+  --pa-figure-base-top: #3a3936;
+  --pa-figure-base-edge: #55534f;
+  --pa-figure-base-side: #262524;
+  --pa-figure-base-side-dark: #1c1b1a;
+  --pa-figure-rod: #8f8c86;
+  --pa-figure-rod-light: #c9c6bf;
+  --pa-figure-clamp: #5a5853;
+  --pa-figure-clamp-edge: #77746e;
+  --pa-figure-cork: #b98b5e;
+  --pa-figure-cork-edge: #8a6440;
+  --pa-figure-guide: #4a4845;
+  --pa-figure-thread: #e8e4dc;
+  --pa-figure-bob-light: #ff9a80;
+  --pa-figure-dial: #e8e4dc;
+  --pa-figure-dial-rim: #1e1d1d;
+  --pa-figure-ink: #141414;
+
   /* Lyra: square corners everywhere. Round things use --pa-round. */
   --pa-radius: 0;
   --pa-round: 9999px;

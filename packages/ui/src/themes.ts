@@ -42,6 +42,10 @@ export interface ThemeRoles {
   ok: string;
   warn: string;
   danger: string;
+  /** A tinted panel for the item in hand, such as the current step. Text on it must still read. */
+  accentWash: string;
+  /** A tinted panel for a warning, such as the coach pointing out a mistake. */
+  warnWash: string;
 }
 
 export const themes: Readonly<Record<Theme, ThemeRoles>> = {
@@ -62,6 +66,8 @@ export const themes: Readonly<Record<Theme, ThemeRoles>> = {
     ok: "#8FD18A",
     warn: "#F5C46B",
     danger: "#F27A6E",
+    accentWash: "#2A1914",
+    warnWash: "#2B2112",
   },
   bench: {
     bg: "#F4EFE6",
@@ -79,6 +85,8 @@ export const themes: Readonly<Record<Theme, ThemeRoles>> = {
     ok: "#2F6B2A",
     warn: "#7A5200",
     danger: "#A8300F",
+    accentWash: "#F6DED4",
+    warnWash: "#F3E6CC",
   },
   site: {
     bg: "#FBFBF6",
@@ -96,6 +104,8 @@ export const themes: Readonly<Record<Theme, ThemeRoles>> = {
     ok: "#2F6B2A",
     warn: "#7A5200",
     danger: "#C2361B",
+    accentWash: "#FBE7E1",
+    warnWash: "#FAF0DA",
   },
   projector: {
     bg: "#FFFFFF",
@@ -113,6 +123,8 @@ export const themes: Readonly<Record<Theme, ThemeRoles>> = {
     ok: "#1F4D1B",
     warn: "#5C3D00",
     danger: "#8F2410",
+    accentWash: "#FBE3DC",
+    warnWash: "#FBF0D9",
   },
 };
 
@@ -133,6 +145,8 @@ export const roleVariable: Readonly<Record<keyof ThemeRoles, string>> = {
   ok: "--pa-ok-fg",
   warn: "--pa-warn-fg",
   danger: "--pa-danger-fg",
+  accentWash: "--pa-accent-wash",
+  warnWash: "--pa-warn-wash",
 };
 
 /** WCAG relative luminance of a #RRGGBB colour. */

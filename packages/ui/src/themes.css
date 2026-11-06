@@ -20,6 +20,8 @@
   --pa-ok-fg: #8fd18a;
   --pa-warn-fg: #f5c46b;
   --pa-danger-fg: #f27a6e;
+  --pa-accent-wash: #2a1914;
+  --pa-warn-wash: #2b2112;
   color-scheme: dark;
 }
 
@@ -39,6 +41,8 @@
   --pa-ok-fg: #8fd18a;
   --pa-warn-fg: #f5c46b;
   --pa-danger-fg: #f27a6e;
+  --pa-accent-wash: #2a1914;
+  --pa-warn-wash: #2b2112;
   color-scheme: dark;
 }
 
@@ -58,6 +62,8 @@
   --pa-ok-fg: #2f6b2a;
   --pa-warn-fg: #7a5200;
   --pa-danger-fg: #a8300f;
+  --pa-accent-wash: #f6ded4;
+  --pa-warn-wash: #f3e6cc;
   color-scheme: light;
 }
 
@@ -77,6 +83,8 @@
   --pa-ok-fg: #2f6b2a;
   --pa-warn-fg: #7a5200;
   --pa-danger-fg: #c2361b;
+  --pa-accent-wash: #fbe7e1;
+  --pa-warn-wash: #faf0da;
   color-scheme: light;
 }
 
@@ -96,5 +104,7 @@
   --pa-ok-fg: #1f4d1b;
   --pa-warn-fg: #5c3d00;
   --pa-danger-fg: #8f2410;
+  --pa-accent-wash: #fbe3dc;
+  --pa-warn-wash: #fbf0d9;
   color-scheme: light;
 }

@@ -17,6 +17,10 @@
 
 @custom-variant dark (&:where([data-theme="lab"], [data-theme="lab"] *));
 
+/* Base UI marks orientation as data-orientation="…"; the shadcn components ask for these names. */
+@custom-variant data-horizontal (&[data-orientation="horizontal"]);
+@custom-variant data-vertical (&[data-orientation="vertical"]);
+
 :root,
 [data-theme] {
   --background: var(--pa-bg);
@@ -67,6 +71,9 @@
   --color-ok: var(--pa-ok-fg);
   --color-warn: var(--pa-warn-fg);
   --color-danger: var(--pa-danger-fg);
+  --color-accent-wash: var(--pa-accent-wash);
+  --color-warn-wash: var(--pa-warn-wash);
+  --color-accent-fill: var(--pa-accent-fill);
 
   /* One hue per physics topic: for data, tags and illustrations, never for body text. */
   --color-topic-mechanics: var(--pa-topic-mechanics);

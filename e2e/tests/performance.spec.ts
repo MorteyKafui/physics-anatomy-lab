@@ -13,8 +13,8 @@ const SLOW_4G = {
 };
 
 test("landing page LCP over slow 4G is within budget", async ({ page, browserName }, info) => {
+  // Runs in the "performance" project only (phone size, alone; see playwright.config.ts).
   test.skip(browserName !== "chromium", "Network throttling needs the Chrome DevTools Protocol");
-  test.skip(info.project.name !== "phone", "The budget is measured at phone size");
 
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Network.enable");

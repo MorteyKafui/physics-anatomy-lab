@@ -20,7 +20,7 @@ const TEXT_ROLES: (keyof ThemeRoles)[] = [
   "warn",
   "danger",
 ];
-const BACKGROUNDS: (keyof ThemeRoles)[] = ["bg", "surface", "raised"];
+const BACKGROUNDS: (keyof ThemeRoles)[] = ["bg", "surface", "raised", "accentWash", "warnWash"];
 
 describe.each(THEMES)("%s theme", (name) => {
   const t = themes[name];

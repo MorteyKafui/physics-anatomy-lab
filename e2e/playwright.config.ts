@@ -14,8 +14,16 @@ export default defineConfig({
   reporter: ci ? [["github"], ["html", { open: "never" }]] : "list",
   use: { trace: "retain-on-failure" },
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "phone", use: { ...devices["Pixel 7"] } },
+    { name: "desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /performance.spec/ },
+    { name: "phone", use: { ...devices["Pixel 7"] }, testIgnore: /performance.spec/ },
+    // Load-time budgets are measured alone, after everything else, so other tests running in
+    // parallel cannot slow the page being timed.
+    {
+      name: "performance",
+      use: { ...devices["Pixel 7"] },
+      testMatch: /performance.spec/,
+      dependencies: ["desktop", "phone"],
+    },
   ],
   webServer: [
     {

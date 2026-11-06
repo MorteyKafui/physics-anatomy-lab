@@ -8,6 +8,16 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "peerDependencies": {
+    "react": "^19"
   }
 }

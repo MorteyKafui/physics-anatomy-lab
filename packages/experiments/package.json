@@ -8,6 +8,15 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@pa/analysis": "workspace:*",
+    "@pa/instruments": "workspace:*",
+    "@pa/physics": "workspace:*"
+  },
+  "devDependencies": {
+    "fast-check": "^4"
   }
 }
