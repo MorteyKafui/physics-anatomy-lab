@@ -1,3 +1,5 @@
 // @pa/apparatus: the Anatomy kit and the figure for every part of every apparatus.
-export { PendulumBench } from "./pendulum-bench";
+export { BENCH_VIEWBOX, PendulumBench, slotPoint, snapSlot, SNAP_RADIUS } from "./pendulum-bench";
 export type { PendulumBenchProps } from "./pendulum-bench";
+export { lensViewBox, Magnifier } from "./magnifier";
+export type { MagnifierProps } from "./magnifier";

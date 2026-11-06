@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@pa/analysis": "workspace:*",
+    "@pa/engine": "workspace:*",
     "@pa/instruments": "workspace:*",
     "@pa/physics": "workspace:*"
   },

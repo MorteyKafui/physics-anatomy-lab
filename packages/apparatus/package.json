@@ -19,5 +19,8 @@
   },
   "peerDependencies": {
     "react": "^19"
+  },
+  "dependencies": {
+    "@pa/experiments": "workspace:*"
   }
 }

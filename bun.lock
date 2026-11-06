@@ -90,6 +90,9 @@
     "packages/apparatus": {
       "name": "@pa/apparatus",
       "version": "0.0.0",
+      "dependencies": {
+        "@pa/experiments": "workspace:*",
+      },
       "devDependencies": {
         "@types/react": "^19",
         "@types/react-dom": "^19",
@@ -117,6 +120,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@pa/analysis": "workspace:*",
+        "@pa/engine": "workspace:*",
         "@pa/instruments": "workspace:*",
         "@pa/physics": "workspace:*",
       },

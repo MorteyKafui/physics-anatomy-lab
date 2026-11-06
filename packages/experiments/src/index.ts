@@ -13,3 +13,29 @@ export {
   TIMING_RULES,
 } from "./simple-pendulum";
 export type { Timing, TimingContext } from "./simple-pendulum";
+export {
+  ASSEMBLY_RULES,
+  assembled,
+  assemblyProjection,
+  carriedBy,
+  CORRECT_ASSEMBLY,
+  decideAssembly,
+  EMPTY_ASSEMBLY,
+  nextPart,
+  PART_SPECS,
+  PENDULUM_PARTS,
+  PENDULUM_SLOTS,
+  readySlots,
+  slotReady,
+  threadOnClamp,
+  waitsFor,
+} from "./pendulum-assembly";
+export type {
+  Assembly,
+  AssemblyCommand,
+  AssemblyContext,
+  AssemblyDecision,
+  AssemblyRefusal,
+  PendulumPart,
+  PendulumSlot,
+} from "./pendulum-assembly";
