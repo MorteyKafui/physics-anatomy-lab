@@ -97,6 +97,29 @@ jobs:
       - run: uv sync --locked
       - run: uv run pytest
 
+  model-check:
+    name: Step machine model check (TLA+)
+    runs-on: ubuntu-latest
+    env:
+      TLA_VERSION: v1.7.4
+      TLA_SHA256: 936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Download TLC and check it is the expected file
+        run: |
+          curl -sSL -o "$RUNNER_TEMP/tla2tools.jar" \
+            "https://github.com/tlaplus/tlaplus/releases/download/${TLA_VERSION}/tla2tools.jar"
+          echo "${TLA_SHA256}  $RUNNER_TEMP/tla2tools.jar" | sha256sum --check
+      - name: Check spec/GuidedSteps.tla
+        working-directory: packages/engine/spec
+        run: |
+          java -XX:+UseParallelGC -cp "$RUNNER_TEMP/tla2tools.jar" tlc2.TLC \
+            -config GuidedSteps.cfg -workers auto -metadir "$RUNNER_TEMP/tlc" -cleanup GuidedSteps.tla
+
   secrets:
     name: Secret scan
     runs-on: ubuntu-latest

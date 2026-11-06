@@ -43,3 +43,7 @@ Thumbs.db
 desktop.ini
 .idea/
 *.swp
+
+# TLC (TLA+ model checker) working files
+states/
+*.tlacov

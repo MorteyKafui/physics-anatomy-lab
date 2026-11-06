@@ -1,7 +1,7 @@
 # @pa/engine
 
 The event log, the guided ten-step state machine, the rule engine, the coach, audio cues and
-scoring. So far it holds the event log.
+scoring. So far it holds the event log and the ten-step machine.
 
 ## Attempts and events
 
@@ -28,3 +28,32 @@ learner only through the account or class that holds it, on the server (AGENTS.m
 One contract suite runs against both stores (the IndexedDB one on `fake-indexeddb`). Property
 tests check that closing and reopening mid-attempt gives the same state, that two devices working
 offline converge whatever order they swap events in, and that attempt files round-trip.
+
+## The ten steps
+
+`steps/machine.ts` holds the steps of an attempt (Question to Report, `GLOSSARY.md`) and the help
+levels (Auto, Check my work, On my own). `decide` turns what the student asks for into events or
+refuses with a reason (a message key under `steps.refused`); `guidedProjection` rebuilds the
+state from events and skips any event that breaks a rule. The rules:
+
+1. A student can always reach a report: back to any step at any time, forward as far as the first
+   unfinished step, and every step's exit check can be met (Measure needs a reading).
+2. No reading is ever lost: deleting keeps it, restorable; stepping back keeps everything.
+3. Exam mode never shows a hint, and the help level cannot change.
+4. The accepted value stays hidden until Analyse is done and the feedback has been read.
+
+They are checked twice:
+
+- `spec/GuidedSteps.tla`, by TLC, the TLA+ model checker (13,785 states, every mode and help
+  level). CI runs it on every pull request.
+- `test/steps.test.ts`, which walks every state the TypeScript itself can reach (6,870 in guided
+  and own-data modes, 1,145 in exam) and checks each rule, including that a report is reachable
+  from every state, plus 2,000 random and tampered event lists.
+
+Run TLC locally (Java 11 or later; download `tla2tools.jar` v1.7.4 from the TLA+ releases on
+GitHub, SHA-256 in `.github/workflows/ci.yml`):
+
+```powershell
+cd packages/engine/spec
+java -cp path\to\tla2tools.jar tlc2.TLC -config GuidedSteps.cfg -workers auto GuidedSteps.tla
+```
