@@ -8,6 +8,14 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "dexie": "^4"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6",
+    "fast-check": "^4"
   }
 }

@@ -29,6 +29,10 @@ request that introduces it.
 - **Bench.** The area where the apparatus is built and readings are taken.
 - **Event.** One thing that happened in an attempt (a part placed, a reading taken). An attempt is
   an append-only list of events; everything else is rebuilt from it.
+- **Attempt file.** An attempt saved to a file with every one of its events, to move it to another
+  device without an account or to hand it in. Importing it twice changes nothing.
+- **Projection.** In code, one view of an attempt (the bench, the table, the current step) rebuilt
+  by replaying its events in order. The same events always give the same state.
 - **Coach.** The guidance panel that explains each step and responds to mistakes, in text and,
   if voice is on, aloud.
 - **Help level (assist level).** How much the coach steps in: Auto, Check my work, On my own.
