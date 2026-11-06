@@ -1,5 +1,18 @@
 # Set up Physics Anatomy on Windows
 
+## The quick way
+
+From the repository root, in PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup-windows.ps1
+```
+
+It installs everything, runs every check, creates the lockfiles, offers to create the databases
+and commits the lockfiles. The steps below are what it does, if you prefer to run them by hand.
+
+## By hand
+
 No Docker is needed (decision D23). You need:
 
 - **Bun 1.4** for the TypeScript workspaces.
@@ -21,7 +34,7 @@ git add bun.lock; git commit -m "chore: add bun lockfile"
 ```powershell
 cd apps\api
 .\scripts\create-dev-databases.ps1
-copy .env.example .env      # set the same password in .env
+# it writes apps\api\.env for you
 ```
 
 This creates the `pa_app` role, `physics_anatomy_dev` and `physics_anatomy_test`, with the

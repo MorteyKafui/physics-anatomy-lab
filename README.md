@@ -35,8 +35,7 @@ You need Bun, Git, uv and your local PostgreSQL 18 (no Docker). The full guide i
 [`docs/how-to/local-setup-windows.md`](docs/how-to/local-setup-windows.md).
 
 ```powershell
-bun install
-bun run check
+powershell -ExecutionPolicy Bypass -File scripts\setup-windows.ps1
 bun run dev
 ```
 
