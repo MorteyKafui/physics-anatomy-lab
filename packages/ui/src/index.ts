@@ -1,4 +1,4 @@
-export { colour, graphPalette, radius, topicHue } from "./tokens";
+export { colour, figureTone, graphPalette, radius, topicHue } from "./tokens";
 export type { Topic } from "./tokens";
 export { contrast, luminance, roleVariable, THEMES, themes } from "./themes";
 export type { Theme, ThemeRoles } from "./themes";

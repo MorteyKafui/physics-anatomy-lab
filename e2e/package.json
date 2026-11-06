@@ -9,6 +9,7 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@pa/experiments": "workspace:*",
     "@pa/physics": "workspace:*",
     "@pa/ui": "workspace:*"
   },

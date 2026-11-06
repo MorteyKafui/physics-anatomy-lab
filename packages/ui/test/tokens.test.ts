@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { colour, graphPalette, topicHue } from "../src/tokens";
+import { colour, figureTone, graphPalette, topicHue } from "../src/tokens";
 
 const css = readFileSync(join(import.meta.dir, "../src/tokens.css"), "utf8");
 const declared = Object.fromEntries(
@@ -30,5 +30,12 @@ describe("tokens.css matches tokens.ts", () => {
 
   test.each(Object.entries(graphPalette.colour))("graph %s", (part, hex) => {
     expect(declared[kebab(`graph${part[0]!.toUpperCase()}${part.slice(1)}`)]).toBe(hex);
+  });
+});
+
+describe("figure tones in tokens.css match tokens.ts", () => {
+  test.each(Object.entries(figureTone))("%s", (name, hex) => {
+    const variable = `--pa-figure-${name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()}`;
+    expect(declared[variable]).toBe(hex);
   });
 });

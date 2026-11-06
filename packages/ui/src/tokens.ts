@@ -56,3 +56,29 @@ export const graphPalette = {
 
 /** Lyra: zero radius. Only physically round things use `round`. */
 export const radius = { none: 0, round: 9999 } as const;
+
+/**
+ * Apparatus figure tones, from the approved lab mockup's bench drawing (Anatomy kit style:
+ * muted solids, hairline edges, one lit part). Figures use these, never their own colours.
+ */
+export const figureTone = {
+  floor: "#121211",
+  floorLine: "#1F1E1D",
+  floorEdge: "#2A2928",
+  baseTop: "#3A3936",
+  baseEdge: "#55534F",
+  baseSide: "#262524",
+  baseSideDark: "#1C1B1A",
+  rod: "#8F8C86",
+  rodLight: "#C9C6BF",
+  clamp: "#5A5853",
+  clampEdge: "#77746E",
+  cork: "#B98B5E",
+  corkEdge: "#8A6440",
+  guide: "#4A4845",
+  thread: "#E8E4DC",
+  bobLight: "#FF9A80",
+  dial: "#E8E4DC",
+  dialRim: "#1E1D1D",
+  ink: "#141414",
+} as const;

@@ -39,6 +39,12 @@
       "name": "@pa/web",
       "version": "0.0.0",
       "dependencies": {
+        "@pa/analysis": "workspace:*",
+        "@pa/apparatus": "workspace:*",
+        "@pa/engine": "workspace:*",
+        "@pa/experiments": "workspace:*",
+        "@pa/i18n": "workspace:*",
+        "@pa/instruments": "workspace:*",
         "@pa/physics": "workspace:*",
         "@pa/ui": "workspace:*",
         "next": "16.4.2",
@@ -60,6 +66,7 @@
       "name": "@pa/e2e",
       "version": "0.0.0",
       "dependencies": {
+        "@pa/experiments": "workspace:*",
         "@pa/physics": "workspace:*",
         "@pa/ui": "workspace:*",
       },
@@ -83,6 +90,15 @@
     "packages/apparatus": {
       "name": "@pa/apparatus",
       "version": "0.0.0",
+      "devDependencies": {
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "react": "19.3.0",
+        "react-dom": "19.3.0",
+      },
+      "peerDependencies": {
+        "react": "^19",
+      },
     },
     "packages/engine": {
       "name": "@pa/engine",
@@ -99,6 +115,14 @@
     "packages/experiments": {
       "name": "@pa/experiments",
       "version": "0.0.0",
+      "dependencies": {
+        "@pa/analysis": "workspace:*",
+        "@pa/instruments": "workspace:*",
+        "@pa/physics": "workspace:*",
+      },
+      "devDependencies": {
+        "fast-check": "^4",
+      },
     },
     "packages/i18n": {
       "name": "@pa/i18n",
