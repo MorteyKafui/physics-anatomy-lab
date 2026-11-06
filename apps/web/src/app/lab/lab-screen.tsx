@@ -1,6 +1,13 @@
 "use client";
 
-import { runRules, type Finding } from "@pa/analysis";
+import {
+  fillDerived,
+  parseTable,
+  runRules,
+  TABLE_RULES,
+  toTableView,
+  type Finding,
+} from "@pa/analysis";
 import { snapSlot } from "@pa/apparatus";
 import {
   coach,
@@ -15,6 +22,7 @@ import {
 } from "@pa/engine";
 import {
   ASSEMBLY_RULES,
+  asReading,
   assembled,
   assemblyProjection,
   benchPeriod,
@@ -23,17 +31,24 @@ import {
   countedFromOne,
   decideAssembly,
   EMPTY_ASSEMBLY,
+  LENGTHS,
+  lengthProjection,
   nextPart,
   PENDULUM_PARTS,
   passTimes,
+  PENDULUM_PLOT,
+  readingsIntoTable,
   readySlots,
   recordedTime,
+  setLength,
   simplePendulum,
+  stepLength,
   TIMING_RULES,
   waitsFor,
   type Assembly,
   type AssemblyCommand,
   type PendulumPart,
+  type PendulumReading,
   type PendulumSlot,
   type Timing,
 } from "@pa/experiments";
@@ -46,8 +61,10 @@ import { TooltipProvider } from "@pa/ui/components/tooltip";
 import {
   ChevronLeftIcon,
   LayersIcon,
+  MinusIcon,
   PauseIcon,
   PlayIcon,
+  PlusIcon,
   RotateCcwIcon,
   SearchIcon,
   SkipBackIcon,
@@ -69,6 +86,7 @@ import {
   useDragPart,
 } from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
+import { flagsFor, TableBuilder, useTable } from "./table-builder";
 import { useAttempt } from "./use-attempt";
 import { useBenchClock } from "./use-bench-clock";
 
@@ -85,12 +103,23 @@ const WHAT_PARAMS = {
   reaction: ANTICIPATED_EVENT.meanDelay,
   swings: E.swings,
 };
+/** Table rules the coach may raise while the student is still writing the table in. */
+const LIVE_TABLE_RULES = [
+  "table-heading-unit",
+  "table-unreadable",
+  "table-inconsistent-decimals",
+  "table-precision-vs-instrument",
+  "table-mean-decimals",
+  "table-unit-slip",
+  "table-derived-arithmetic",
+];
+const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
 
 export function LabScreen() {
   const handle = useAttempt(E.id);
   const clock = useBenchClock();
   const g = DEFAULT_ENVIRONMENT.g;
-  const period = useMemo(() => benchPeriod(g), [g]);
+  const results = useTable(handle);
 
   const [timing, setTiming] = useState<Timing | undefined>();
   const [advice, setAdvice] = useState<Advice[]>([]);
@@ -121,6 +150,13 @@ export function LabScreen() {
     [handle],
   );
   const building = state?.step === "build" && !state.completed.includes("build");
+  // The length the bench is set to, and the period that follows from it (packages/physics).
+  const length = useMemo(
+    () => (handle ? replay(lengthProjection, handle.attempt, handle.events) : E.length),
+    [handle],
+  );
+  const period = useMemo(() => benchPeriod(g, length), [g, length]);
+  const [checkedTable, setCheckedTable] = useState<string>();
   const running = timing !== undefined && timing.stoppedAt === undefined;
 
   const consult = useCallback(
@@ -165,10 +201,11 @@ export function LabScreen() {
         t: recordedTime(done)!,
         count: done.counts.length,
         countedFromOne: countedFromOne(done, period),
+        l: length,
       },
     });
     await consult(findingsFor(done), "step-exit");
-  }, [handle, timing, clock, period, consult, findingsFor]);
+  }, [handle, timing, clock, period, length, consult, findingsFor]);
 
   const tryAgain = useCallback(async () => {
     const last = state?.readings.at(-1);
@@ -382,6 +419,72 @@ export function LabScreen() {
     );
   }
 
+  const readings = state.readings
+    .map(asReading)
+    .filter((r): r is PendulumReading => r !== undefined);
+  const byLength = (list: readonly PendulumReading[]) =>
+    [...new Set(list.map((r) => r.l))]
+      .map((l) =>
+        t("lab.readout.atLength", {
+          length: l.toFixed(3),
+          list: list
+            .filter((r) => r.l === l)
+            .map((r) => `${r.t.toFixed(2)} s`)
+            .join(", "),
+        }),
+      )
+      .join(" · ");
+  const changeLength = (direction: 1 | -1) => {
+    const e = setLength(length, stepLength(length, direction));
+    if (e) void handle.record([e]);
+  };
+
+  // The results table. At Auto the means and worked-out columns are filled in for the student;
+  // at Auto and Check my work each cell is ticked or flagged as they go; On my own shows only
+  // what the coach says when asked (master plan, "Assist levels").
+  const table = results.table;
+  const tableAssist = coachIsOn(state) && state.helpLevel === "auto";
+  const tableMarks = coachIsOn(state) && state.helpLevel !== "on-my-own";
+  const shownTable = tableAssist ? fillDerived(table) : table;
+  const checkTable = (design = shownTable) =>
+    design.layout
+      ? runRules(TABLE_RULES, { table: parseTable(toTableView(design)), plot: PENDULUM_PLOT })
+      : [];
+  const tableFindings = checkTable();
+  const tableFlags = flagsFor(
+    tableMarks
+      ? tableFindings.filter((f) => f.severity !== "good")
+      : advice.map((a) => a.finding).filter((f) => f.skill === "tabulation"),
+  );
+  const rowOf = (f: Finding) => {
+    const i = table.rows.findIndex((r) => r.id === f.rows?.[0]);
+    return i >= 0 ? i + 1 : "";
+  };
+
+  const tableCommitted = () => {
+    if (!tableAssist) return;
+    const now = results.now();
+    const fresh = checkTable({
+      ...fillDerived(now),
+      layout: now.layout,
+      template: now.template,
+    }).filter((f) => LIVE_TABLE_RULES.includes(f.rule) && !acted.current.has(f.rule));
+    fresh.forEach((f) => acted.current.add(f.rule));
+    if (fresh.length) void consult(fresh, "live");
+  };
+
+  const fillReadings = () => {
+    const now = results.now();
+    const cells = readingsIntoTable(now, readings, newRowId);
+    const newRows = [...new Set(cells.map((c) => c.row))].filter(
+      (id) => !now.rows.some((r) => r.id === id),
+    );
+    void results.run([
+      ...newRows.map((id) => ({ type: "add-row" as const, id })),
+      ...cells.map((c) => ({ type: "set-cell" as const, ...c })),
+    ]);
+  };
+
   const stepIndex = STEPS.indexOf(state.step);
   const percent = Math.round((state.completed.length / STEPS.length) * 100);
   const open = (s: Step) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state));
@@ -427,6 +530,19 @@ export function LabScreen() {
     await finishStep();
   };
 
+  const finishTabulating = async () => {
+    const signature = JSON.stringify(shownTable.rows) + JSON.stringify(table.columns);
+    const findings = tableFindings.filter((f) => f.severity !== "good");
+    if (findings.length && checkedTable !== signature) {
+      setCheckedTable(signature);
+      const out = coach(handle.state, findings, "step-exit");
+      await handle.record(out.events);
+      setAdvice(out.advice);
+      if (out.advice.length) return;
+    }
+    await finishStep();
+  };
+
   // The bob hangs still until there is something to time; before the bench is built, the
   // figure describes what is on it.
   const swinging = STEPS.indexOf(state.step) >= STEPS.indexOf("measure");
@@ -436,35 +552,65 @@ export function LabScreen() {
   const nextToTouch =
     coachIsOn(state) && state.helpLevel === "auto" ? nextPart(assembly) : undefined;
 
-  /** What each advice card offers besides "Show me". */
-  const fixFor = (a: Advice) =>
-    a.finding.rule === "pendulum-thread-on-clamp"
+  const aboutTable = (a: Advice) => a.finding.rule.startsWith("table-");
+  /** Findings about the readings as a whole are fixed by measuring more, not in a cell. */
+  const needsMeasuring = (a: Advice) =>
+    a.finding.rule === "table-too-few-rows" || a.finding.rule === "table-narrow-range";
+  const fixLabel = (a: Advice) =>
+    needsMeasuring(a)
+      ? t("lab.table.backToMeasure")
+      : aboutTable(a)
+        ? t("lab.table.goToCell")
+        : a.finding.rule === "pendulum-thread-on-clamp"
+          ? msg(`${a.finding.key}.fix`)
+          : t("lab.coach.resetTryAgain");
+
+  /** What each advice card does, run only when its buttons are pressed. */
+  const fixFor = (a: Advice): { run: () => void; show?: () => void } =>
+    needsMeasuring(a)
       ? {
-          label: msg(`${a.finding.key}.fix`),
-          run: () => void takeOff("thread"),
-          show: () => {
-            setDemoSlot("cork");
-            void handle.record([
-              {
-                kind: "coach.hint",
-                data: {
-                  hint: a.finding.key,
-                  rule: a.finding.rule,
-                  skill: a.finding.skill,
-                  level: "demonstrate",
-                },
-              },
-            ]);
+          run: () => {
+            setAdvice([]);
+            void handle.dispatch({ type: "go-to-step", step: "measure" });
           },
         }
-      : {
-          label: t("lab.coach.resetTryAgain"),
-          run: () => void tryAgain(),
-          show: () => void showMe(a),
-        };
+      : aboutTable(a)
+        ? {
+            run: () => {
+              const f = a.finding;
+              const target =
+                f.rows?.[0] && f.column
+                  ? `[data-cell="${f.rows[0]}:${f.column}"]`
+                  : f.column
+                    ? `th button[aria-label*="${f.params?.symbol ?? ""}"]`
+                    : `[data-cell^="${f.rows?.[0] ?? "-"}:"]`;
+              document.querySelector<HTMLElement>(target)?.focus();
+            },
+          }
+        : a.finding.rule === "pendulum-thread-on-clamp"
+          ? {
+              run: () => void takeOff("thread"),
+              show: () => {
+                setDemoSlot("cork");
+                void handle.record([
+                  {
+                    kind: "coach.hint",
+                    data: {
+                      hint: a.finding.key,
+                      rule: a.finding.rule,
+                      skill: a.finding.skill,
+                      level: "demonstrate",
+                    },
+                  },
+                ]);
+              },
+            }
+          : {
+              run: () => void tryAgain(),
+              show: () => void showMe(a),
+            };
 
   const adviceCards = advice.map((a) => {
-    const fix = fixFor(a);
     return (
       <div
         key={a.finding.rule}
@@ -473,19 +619,26 @@ export function LabScreen() {
       >
         <span className="flex items-center gap-2 font-semibold text-warn">
           <TriangleAlertIcon className="size-4" aria-hidden />
-          {msg(`${a.finding.key}.title`, a.finding.params)}
+          {msg(`${a.finding.key}.title`, { ...a.finding.params, row: rowOf(a.finding) })}
         </span>
-        <span className="text-foreground">{msg(`${a.finding.key}.detail`, a.finding.params)}</span>
+        <span className="text-foreground">
+          {msg(`${a.finding.key}.detail`, { ...a.finding.params, row: rowOf(a.finding) })}
+        </span>
         {(a.level === "demonstrate" || demoSlot) && hasMessage(`${a.finding.key}.demonstrate`) && (
           <span className="text-soft">{msg(`${a.finding.key}.demonstrate`)}</span>
         )}
         <div className="flex flex-wrap gap-2">
-          <Button className="bg-foreground text-background hover:bg-soft" onClick={fix.run}>
-            {fix.label}
+          <Button
+            className="bg-foreground text-background hover:bg-soft"
+            onClick={() => fixFor(a).run()}
+          >
+            {fixLabel(a)}
           </Button>
-          <Button variant="outline" onClick={fix.show}>
-            {t("lab.coach.showMe")}
-          </Button>
+          {!aboutTable(a) && (
+            <Button variant="outline" onClick={() => fixFor(a).show?.()}>
+              {t("lab.coach.showMe")}
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -616,115 +769,169 @@ export function LabScreen() {
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-            {/* Bench */}
-            <section
-              aria-label={t("experiments.simple-pendulum.figureTitle")}
-              className="relative flex min-w-0 flex-1 flex-col items-center justify-center gap-4 bg-background p-4 md:p-6"
-            >
-              <div className="absolute top-5 left-6 hidden flex-col gap-0.5 md:flex">
-                <span className="text-sm text-muted-foreground">
-                  {t("experiments.simple-pendulum.figure")}
-                </span>
-                <span className="font-semibold">
-                  {t("experiments.simple-pendulum.figureTitle")}
-                </span>
-              </div>
-              {labels && assembly.cork !== undefined && (
-                <div className="absolute top-5 right-6 hidden items-center gap-2 border border-border bg-surface px-3 py-2 text-sm md:flex">
-                  <span aria-hidden className="size-2 bg-[var(--pa-figure-cork)]" />
-                  {t("experiments.simple-pendulum.callout.cork")}
-                </div>
-              )}
-              <BenchStage
-                box={benchBox}
-                bench={{
-                  angle: swinging ? bobAngle(clock.time, period) : 0,
-                  stopwatchSeconds: shownTime,
-                  assembly,
-                  lit,
-                  markLabel,
-                  label: builtYet
-                    ? t("experiments.simple-pendulum.figureAlt")
-                    : benchDescription(assembly),
-                }}
-                slots={held ? slotsFor(assembly, held) : []}
-                held={held}
-                onPlace={(slot) => held && void place(held, slot)}
-                magnifier={lens}
-                onMagnifier={setLens}
-                className={building ? "max-w-[min(600px,calc((100dvh-470px)*0.913))]" : undefined}
-              />
-              {lens && (
-                <p className="sr-only" role="status">
-                  {t("lab.magnifier.on")}
-                </p>
-              )}
-              {building ? (
-                <PartsTray
-                  assembly={assembly}
-                  held={held}
-                  lit={nextToTouch}
-                  locked={false}
-                  status={buildStatus}
-                  whatParams={WHAT_PARAMS}
-                  onPick={(part) => {
-                    if (!dragging.takeSuppressedClick()) pick(part);
-                  }}
-                  onPointerDown={dragging.start}
-                  onRemove={(part) => void takeOff(part)}
+            {state.step === "tabulate" ? (
+              <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+                <TableBuilder
+                  table={table}
+                  shown={shownTable}
+                  assist={tableAssist}
+                  marks={tableMarks}
+                  flags={tableFlags}
+                  readings={readings}
+                  onRun={results.run}
+                  onFillReadings={tableAssist ? fillReadings : undefined}
+                  onCommit={tableCommitted}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+                    ) : null
+                  }
                 />
-              ) : (
-                <div className="flex flex-col gap-3 self-stretch border border-border bg-surface px-4 py-3 md:absolute md:bottom-5 md:left-6 md:self-auto">
-                  <div className="flex items-end gap-6">
-                    <div className="flex flex-col">
-                      <span className="hidden text-xs text-muted-foreground md:block">
-                        {t("lab.readout.stopwatch", { leastCount: E.stopwatch.resolution })}
-                      </span>
-                      <span
-                        className="font-mono text-[34px] leading-tight font-medium"
-                        aria-live="off"
-                      >
-                        {shownTime.toFixed(2)}{" "}
-                        <span className="text-base text-muted-foreground">s</span>
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="hidden text-xs text-muted-foreground md:block">
-                        {t("lab.readout.count")}
-                      </span>
-                      <span className="font-mono text-[34px] leading-tight font-medium">
-                        {timing?.counts.length ?? 0}{" "}
-                        <span className="text-base text-muted-foreground">
-                          {t("lab.readout.of", { target: E.swings })}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                  {state.step === "measure" && (
-                    <div className="flex flex-wrap gap-2">
-                      <Button onClick={() => void (running ? stop() : start())}>
-                        {running ? t("lab.readout.stop") : t("lab.readout.start")}
-                      </Button>
-                      <Button variant="outline" disabled={!running} onClick={countPass}>
-                        {t("lab.readout.countPass")}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-              <DragGhost drag={dragging.drag} />
-              <div
-                className={cn(
-                  "absolute right-6 bottom-5 hidden text-right font-mono text-sm text-soft md:block",
-                  building && "md:hidden",
-                )}
+              </section>
+            ) : (
+              /* Bench */
+              <section
+                aria-label={t("experiments.simple-pendulum.figureTitle")}
+                className="relative flex min-w-0 flex-1 flex-col items-center justify-center gap-4 bg-background p-4 md:p-6"
               >
-                {t("experiments.simple-pendulum.conditions", {
-                  length: E.length.toFixed(3),
-                  angle: E.amplitudeDeg,
-                })}
-              </div>
-            </section>
+                <div className="absolute top-5 left-6 hidden flex-col gap-0.5 md:flex">
+                  <span className="text-sm text-muted-foreground">
+                    {t("experiments.simple-pendulum.figure")}
+                  </span>
+                  <span className="font-semibold">
+                    {t("experiments.simple-pendulum.figureTitle")}
+                  </span>
+                </div>
+                {labels && assembly.cork !== undefined && (
+                  <div className="absolute top-5 right-6 hidden items-center gap-2 border border-border bg-surface px-3 py-2 text-sm md:flex">
+                    <span aria-hidden className="size-2 bg-[var(--pa-figure-cork)]" />
+                    {t("experiments.simple-pendulum.callout.cork")}
+                  </div>
+                )}
+                <BenchStage
+                  box={benchBox}
+                  bench={{
+                    angle: swinging ? bobAngle(clock.time, period) : 0,
+                    stopwatchSeconds: shownTime,
+                    length,
+                    assembly,
+                    lit,
+                    markLabel,
+                    label: builtYet
+                      ? t("experiments.simple-pendulum.figureAlt")
+                      : benchDescription(assembly),
+                  }}
+                  slots={held ? slotsFor(assembly, held) : []}
+                  held={held}
+                  onPlace={(slot) => held && void place(held, slot)}
+                  magnifier={lens}
+                  onMagnifier={setLens}
+                  className={building ? "max-w-[min(600px,calc((100dvh-470px)*0.913))]" : undefined}
+                />
+                {lens && (
+                  <p className="sr-only" role="status">
+                    {t("lab.magnifier.on")}
+                  </p>
+                )}
+                {building ? (
+                  <PartsTray
+                    assembly={assembly}
+                    held={held}
+                    lit={nextToTouch}
+                    locked={false}
+                    status={buildStatus}
+                    whatParams={WHAT_PARAMS}
+                    onPick={(part) => {
+                      if (!dragging.takeSuppressedClick()) pick(part);
+                    }}
+                    onPointerDown={dragging.start}
+                    onRemove={(part) => void takeOff(part)}
+                  />
+                ) : (
+                  <div className="flex flex-col gap-3 self-stretch border border-border bg-surface px-4 py-3 md:absolute md:bottom-5 md:left-6 md:self-auto">
+                    <div className="flex items-end gap-6">
+                      <div className="flex flex-col">
+                        <span className="hidden text-xs text-muted-foreground md:block">
+                          {t("lab.readout.stopwatch", { leastCount: E.stopwatch.resolution })}
+                        </span>
+                        <span
+                          className="font-mono text-[34px] leading-tight font-medium"
+                          aria-live="off"
+                        >
+                          {shownTime.toFixed(2)}{" "}
+                          <span className="text-base text-muted-foreground">s</span>
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="hidden text-xs text-muted-foreground md:block">
+                          {t("lab.readout.count")}
+                        </span>
+                        <span className="font-mono text-[34px] leading-tight font-medium">
+                          {timing?.counts.length ?? 0}{" "}
+                          <span className="text-base text-muted-foreground">
+                            {t("lab.readout.of", { target: E.swings })}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                    {state.step === "measure" && (
+                      <div
+                        role="group"
+                        aria-label={t("lab.readout.length")}
+                        className="flex items-center gap-2"
+                      >
+                        <span className="text-xs text-muted-foreground">
+                          {t("lab.readout.length")}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          aria-label={t("lab.readout.shorter")}
+                          disabled={running || length <= LENGTHS.min}
+                          onClick={() => changeLength(-1)}
+                        >
+                          <MinusIcon />
+                        </Button>
+                        <span className="min-w-20 text-center font-mono" aria-live="polite">
+                          {t("lab.readout.lengthNow", { length: length.toFixed(3) })}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          aria-label={t("lab.readout.longer")}
+                          disabled={running || length >= LENGTHS.max}
+                          onClick={() => changeLength(1)}
+                        >
+                          <PlusIcon />
+                        </Button>
+                      </div>
+                    )}
+                    {state.step === "measure" && (
+                      <div className="flex flex-wrap gap-2">
+                        <Button onClick={() => void (running ? stop() : start())}>
+                          {running ? t("lab.readout.stop") : t("lab.readout.start")}
+                        </Button>
+                        <Button variant="outline" disabled={!running} onClick={countPass}>
+                          {t("lab.readout.countPass")}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <DragGhost drag={dragging.drag} />
+                <div
+                  className={cn(
+                    "absolute right-6 bottom-5 hidden text-right font-mono text-sm text-soft md:block",
+                    building && "md:hidden",
+                  )}
+                >
+                  {t("experiments.simple-pendulum.conditions", {
+                    length: length.toFixed(3),
+                    angle: E.amplitudeDeg,
+                  })}
+                </div>
+              </section>
+            )}
 
             {/* Coach */}
             <aside
@@ -813,6 +1020,87 @@ export function LabScreen() {
                         </Button>
                       )}
                     </>
+                  ) : state.step === "tabulate" ? (
+                    <>
+                      <h2 className="font-display text-2xl leading-tight font-bold">
+                        {t("experiments.simple-pendulum.tabulate.title")}
+                      </h2>
+                      <p className="text-soft">{t("experiments.simple-pendulum.tabulate.why")}</p>
+                      <div className="flex flex-col gap-2">
+                        {(
+                          [
+                            ["layout", table.layout !== undefined],
+                            [
+                              "readings",
+                              parseTable(toTableView(shownTable)).completeRows.length >= 5,
+                            ],
+                            [
+                              "derived",
+                              table.layout !== undefined &&
+                                !tableFindings.some((f) => f.rule === "table-derived-arithmetic") &&
+                                shownTable.rows.some((r) =>
+                                  table.columns.some(
+                                    (c) => c.role === "derived" && (r.cells[c.id] ?? "") !== "",
+                                  ),
+                                ),
+                            ],
+                            [
+                              "check",
+                              table.layout !== undefined &&
+                                !tableFindings.some((f) => f.rule === "table-heading-unit"),
+                            ],
+                          ] as const
+                        ).map(([key, done], i, all) => (
+                          <CheckItem
+                            key={key}
+                            n={i + 1}
+                            state={
+                              done
+                                ? "done"
+                                : all.findIndex(([, d]) => !d) === i
+                                  ? "current"
+                                  : "todo"
+                            }
+                          >
+                            {t(`experiments.simple-pendulum.tabulate.${key}` as MessageKey)}
+                          </CheckItem>
+                        ))}
+                      </div>
+                      {state.helpLevel !== "auto" && coachIsOn(state) && table.layout && (
+                        <Button
+                          variant="link"
+                          className="self-start px-0"
+                          onClick={() => {
+                            const found = tableFindings.filter((f) => f.severity !== "good");
+                            void consult(found, "asked");
+                          }}
+                        >
+                          {t("lab.table.check")}
+                        </Button>
+                      )}
+                      {!state.completed.includes("tabulate") && table.layout && (
+                        <Button
+                          data-finish-tabulating
+                          className="self-start"
+                          onClick={() => void finishTabulating()}
+                        >
+                          {checkedTable &&
+                          checkedTable ===
+                            JSON.stringify(shownTable.rows) + JSON.stringify(table.columns) &&
+                          advice.length
+                            ? t("lab.steps.carryOn")
+                            : t("lab.steps.finishTabulating")}
+                        </Button>
+                      )}
+                      {state.completed.includes("tabulate") && next && (
+                        <Button
+                          className="self-start"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
+                        >
+                          {t("lab.steps.continue", { step: stepName(next) })}
+                        </Button>
+                      )}
+                    </>
                   ) : state.step === "measure" ? (
                     <>
                       <h2 className="font-display text-2xl leading-tight font-bold">
@@ -833,6 +1121,9 @@ export function LabScreen() {
                           {t("experiments.simple-pendulum.measure.record")}
                         </CheckItem>
                       </div>
+                      <p className="text-sm text-soft">
+                        {t("experiments.simple-pendulum.measure.lengths")}
+                      </p>
                       {adviceCards}
                       {state.helpLevel === "on-my-own" && timing?.stoppedAt !== undefined && (
                         <Button
@@ -845,11 +1136,7 @@ export function LabScreen() {
                       )}
                       {state.readings.length > 0 && (
                         <p className="font-mono text-sm text-muted-foreground">
-                          {t("lab.readout.readings", {
-                            list: state.readings
-                              .map((r) => `${(r.data as { t: number }).t.toFixed(2)} s`)
-                              .join(", "),
-                          })}
+                          {t("lab.readout.readings", { list: byLength(readings) })}
                         </p>
                       )}
                       <p className="text-xs text-muted-foreground">{t("lab.readout.keys")}</p>

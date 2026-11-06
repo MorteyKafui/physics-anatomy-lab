@@ -40,6 +40,14 @@ request that introduces it.
   device without an account or to hand it in. Importing it twice changes nothing.
 - **Projection.** In code, one view of an attempt (the bench, the table, the current step) rebuilt
   by replaying its events in order. The same events always give the same state.
+- **Results table.** The table of readings in the Tabulate step. The student starts from the
+  standard table, a template, or draws their own; every column has a quantity, a unit and a role
+  (setting, reading, repeat, mean, worked out by a formula, or notes), so the checks can mark any
+  layout.
+- **Repeat.** One of several readings of the same thing at one setting (t₁, t₂ …). Repeats are
+  joined by their mean, which carries one more decimal place than they do.
+- **Formula column (derived column).** A column worked out from the others by a formula the
+  student writes in their columns' symbols, such as T = t / 20.
 - **Coach.** The guidance panel that explains each step and responds to mistakes, in text and,
   if voice is on, aloud.
 - **Finding.** What a check says about the student's work: the rule, how serious it is (error,

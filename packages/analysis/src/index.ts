@@ -16,6 +16,7 @@ export { leastCountInColumnUnit, parseCell, parseTable } from "./table";
 export type { ParsedCell, ParsedRow, ParsedTable, TableColumn, TableView } from "./table";
 export {
   derivedArithmetic,
+  headingUnits,
   inconsistentDecimals,
   meanDecimals,
   MIN_ROWS,
@@ -28,3 +29,18 @@ export {
   unreadableCells,
 } from "./table-rules";
 export type { TableContext, TableRule } from "./table-rules";
+export { evaluate, FUNCTIONS, parseFormula } from "./expression";
+export type { Expr, FormulaProblem, FunctionName, ParseResult } from "./expression";
+export {
+  addRepeat,
+  checkFormula,
+  deriveFor,
+  expectedDecimals,
+  fillDerived,
+  heading,
+  newColumnId,
+  repeatsOf,
+  subscript,
+  toTableView,
+} from "./table-design";
+export type { ColumnRole, DesignColumn, FormulaCheck, TableDesign, TableRow } from "./table-design";

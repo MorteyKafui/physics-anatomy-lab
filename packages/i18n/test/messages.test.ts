@@ -50,3 +50,21 @@ describe("the en-GB messages", () => {
       expect({ key, american: american.test(text) }).toEqual({ key, american: false });
   });
 });
+
+describe("every finding the rules can raise", () => {
+  test("has a title and a detail to show", async () => {
+    const { Glob } = await import("bun");
+    const keys = new Set<string>();
+    for (const dir of ["../analysis/src", "../experiments/src"]) {
+      for await (const file of new Glob("**/*.ts").scan({ cwd: dir, absolute: true })) {
+        const text = await Bun.file(file).text();
+        for (const m of text.matchAll(/key: "((?:table|findings)\.[\w.]+)"/g)) keys.add(m[1]!);
+      }
+    }
+    expect(keys.size).toBeGreaterThan(10);
+    const missing = [...keys].flatMap((k) =>
+      [`${k}.title`, `${k}.detail`].filter((m) => !hasMessage(m)),
+    );
+    expect(missing).toEqual([]);
+  });
+});

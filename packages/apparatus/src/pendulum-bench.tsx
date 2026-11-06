@@ -16,6 +16,8 @@ export interface PendulumBenchProps {
   angle: number;
   /** The stopwatch's reading, s, which turns its hand (one turn a minute). */
   stopwatchSeconds: number;
+  /** Pivot to the centre of the bob, m. The drawing is to scale: 0.800 m is the mockup's thread. */
+  length?: number;
   /** Which parts are on the bench, and where. Defaults to the finished set-up. */
   assembly?: Assembly;
   /** Slots to light: where the part being placed can go. */
@@ -33,6 +35,8 @@ export interface PendulumBenchProps {
 export const BENCH_VIEWBOX = { width: 420, height: 460 };
 const CORK_PIVOT = { x: 300, y: 148 };
 const ARM_TIE = { x: 258, y: 121 };
+/** The mockup draws the 0.800 m thread 174 units long. */
+const UNITS_PER_METRE = 174 / 0.8;
 const THREAD = 174;
 const BOB_R = 13;
 const FLOOR_Y = 404;
@@ -94,6 +98,7 @@ export function snapSlot(
 export function PendulumBench({
   angle,
   stopwatchSeconds,
+  length = 0.8,
   assembly = CORRECT_ASSEMBLY,
   lit = [],
   markLabel,
@@ -105,8 +110,9 @@ export function PendulumBench({
   const has = (p: keyof Assembly) => a[p] !== undefined;
   const pivot = pivotOf(a);
   const swing = has("bob") ? angle : 0;
-  const bob = { x: pivot.x + THREAD * Math.sin(swing), y: pivot.y + THREAD * Math.cos(swing) };
-  const rest = { x: pivot.x, y: pivot.y + THREAD };
+  const thread = length * UNITS_PER_METRE;
+  const bob = { x: pivot.x + thread * Math.sin(swing), y: pivot.y + thread * Math.cos(swing) };
+  const rest = { x: pivot.x, y: pivot.y + thread };
   const arcEnd = { x: pivot.x + ARC_R * Math.sin(swing), y: pivot.y + ARC_R * Math.cos(swing) };
   const hand = (stopwatchSeconds / 60) * 2 * Math.PI;
 
@@ -187,7 +193,7 @@ export function PendulumBench({
             x1={pivot.x}
             y1={pivot.y + 2}
             x2={pivot.x}
-            y2={pivot.y + THREAD + 14}
+            y2={pivot.y + thread + 14}
             stroke={tone("guide")}
             strokeDasharray="3 4"
           />

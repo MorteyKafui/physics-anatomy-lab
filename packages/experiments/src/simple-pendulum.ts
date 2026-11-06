@@ -19,10 +19,10 @@ export const simplePendulum = {
   stopwatch: STOPWATCH,
 } as const;
 
-/** The true period of the bench pendulum in a room with field strength g, s. */
-export function benchPeriod(g: number): number {
+/** The true period of the bench pendulum, s, at a length (m) in a room with field strength g. */
+export function benchPeriod(g: number, length: number = simplePendulum.length): number {
   return periodExact({
-    length: simplePendulum.length,
+    length,
     g,
     amplitude: (simplePendulum.amplitudeDeg * Math.PI) / 180,
   });
