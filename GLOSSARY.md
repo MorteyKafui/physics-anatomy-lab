@@ -27,6 +27,13 @@ request that introduces it.
 - **Step (stage).** One of the ten steps of an attempt: Question, Predict, Build, Check, Measure,
   Tabulate, Plot, Analyse, Conclude, Report.
 - **Bench.** The area where the apparatus is built and readings are taken.
+- **Parts tray.** The parts of an experiment's apparatus, waiting to go on the bench in the Build
+  step. A part goes on by dragging it, or by selecting it and then choosing where it goes.
+- **Slot.** A place a part can go. A slot exists only once the part that carries it is on the
+  bench (the clamp jaw comes with the boss and clamp). Taking a part off takes everything resting
+  on it back to the tray.
+- **Magnifier.** A lens laid over the bench that shows the part under it larger, for small parts
+  and fine scales. M turns it on and off.
 - **Event.** One thing that happened in an attempt (a part placed, a reading taken). An attempt is
   an append-only list of events; everything else is rebuilt from it.
 - **Attempt file.** An attempt saved to a file with every one of its events, to move it to another

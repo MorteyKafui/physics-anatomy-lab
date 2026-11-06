@@ -1,28 +1,45 @@
 "use client";
 
 import { runRules, type Finding } from "@pa/analysis";
-import { PendulumBench } from "@pa/apparatus";
+import { snapSlot } from "@pa/apparatus";
 import {
   coach,
+  coachIsOn,
   frontier,
   HELP_LEVELS,
+  replay,
   STEPS,
   type Advice,
   type HelpLevel,
   type Step,
 } from "@pa/engine";
 import {
+  ASSEMBLY_RULES,
+  assembled,
+  assemblyProjection,
   benchPeriod,
   bobAngle,
+  carriedBy,
   countedFromOne,
+  decideAssembly,
+  EMPTY_ASSEMBLY,
+  nextPart,
+  PENDULUM_PARTS,
   passTimes,
+  readySlots,
   recordedTime,
   simplePendulum,
   TIMING_RULES,
+  waitsFor,
+  type Assembly,
+  type AssemblyCommand,
+  type PendulumPart,
+  type PendulumSlot,
   type Timing,
 } from "@pa/experiments";
 import { hasMessage, t, type MessageKey } from "@pa/i18n";
-import { DEFAULT_ENVIRONMENT } from "@pa/instruments";
+import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT } from "@pa/instruments";
+import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { TooltipProvider } from "@pa/ui/components/tooltip";
@@ -32,12 +49,25 @@ import {
   PauseIcon,
   PlayIcon,
   RotateCcwIcon,
+  SearchIcon,
   SkipBackIcon,
   TriangleAlertIcon,
 } from "@pa/ui/icons";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import {
+  benchDescription,
+  BenchStage,
+  DragGhost,
+  listParts,
+  PartsTray,
+  partThe,
+  slotPhrase,
+  slotsFor,
+  toFigure,
+  useDragPart,
+} from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
 import { useAttempt } from "./use-attempt";
 import { useBenchClock } from "./use-bench-clock";
@@ -46,6 +76,15 @@ const E = simplePendulum;
 const msg = (key: string, params?: Record<string, string | number>) =>
   hasMessage(key) ? t(key, params) : key;
 const stepName = (s: Step) => t(`lab.steps.${s}` as MessageKey);
+const capitalise = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+/** Where the magnifier starts: over the split cork, the part the mockup's callout points at. */
+const LENS_START = { x: 300, y: 141 };
+/** Numbers the parts' descriptions quote, all from the packages (AGENTS.md rule 1). */
+const WHAT_PARAMS = {
+  leastCount: E.stopwatch.resolution,
+  reaction: ANTICIPATED_EVENT.meanDelay,
+  swings: E.swings,
+};
 
 export function LabScreen() {
   const handle = useAttempt(E.id);
@@ -62,7 +101,26 @@ export function LabScreen() {
   // many times the rules are re-checked while the student carries on counting.
   const acted = useRef(new Set<string>());
 
+  // Building: the part in hand, what the bench last said, the magnifier, the slot the coach is
+  // showing, and the set-up the coach last saw at "Finish building" (pressing again with it
+  // unchanged carries on: findings never block a step).
+  const [held, setHeld] = useState<PendulumPart>();
+  const [buildStatus, setBuildStatus] = useState<string>();
+  const [lens, setLens] = useState<{ x: number; y: number }>();
+  const [demoSlot, setDemoSlot] = useState<PendulumSlot>();
+  const [checkedBuild, setCheckedBuild] = useState<string>();
+  const benchBox = useRef<HTMLDivElement>(null);
+  const heldNow = useRef<PendulumPart | undefined>(undefined);
+  useEffect(() => {
+    heldNow.current = held;
+  }, [held]);
+
   const state = handle?.state;
+  const assembly = useMemo(
+    () => (handle ? replay(assemblyProjection, handle.attempt, handle.events) : EMPTY_ASSEMBLY),
+    [handle],
+  );
+  const building = state?.step === "build" && !state.completed.includes("build");
   const running = timing !== undefined && timing.stoppedAt === undefined;
 
   const consult = useCallback(
@@ -140,6 +198,161 @@ export function LabScreen() {
     [handle, clock],
   );
 
+  /*
+   * The bench including changes still being saved. A quick student can pick the next part
+   * before the last one is stored; deciding against this keeps every tap honest. It follows the
+   * stored events again whenever nothing is waiting to be saved.
+   */
+  const bench = useRef<Assembly>(EMPTY_ASSEMBLY);
+  const saving = useRef(0);
+  useEffect(() => {
+    if (saving.current === 0) bench.current = assembly;
+  }, [assembly]);
+  const benchNow = useCallback(() => bench.current, []);
+
+  const changeBench = useCallback(
+    async (command: AssemblyCommand) => {
+      if (!handle) return false;
+      const decision = decideAssembly(bench.current, command);
+      if (!decision.ok) return false;
+      bench.current = decision.events.reduce(
+        (a, e) =>
+          assemblyProjection.apply(a, { ...e, id: "", attemptId: "", seq: 0, device: "", at: 0 }),
+        bench.current,
+      );
+      saving.current += 1;
+      try {
+        await handle.record(decision.events);
+      } finally {
+        saving.current -= 1;
+      }
+      return true;
+    },
+    [handle],
+  );
+
+  const place = useCallback(
+    async (part: PendulumPart, slot: PendulumSlot) => {
+      // Let go at once: the student may pick the next part before the bench has saved.
+      setHeld((h) => (h === part ? undefined : h));
+      if (!(await changeBench({ type: "place-part", part, slot }))) return;
+
+      setDemoSlot(undefined);
+      setCheckedBuild(undefined);
+      if (heldNow.current === undefined)
+        setBuildStatus(t("lab.build.placed", { part: partThe(part), slot: slotPhrase(slot) }));
+      const after = benchNow();
+      // The slot button has gone: carry focus on to the next part in the tray, or the finish.
+      const following = nextPart(after);
+      requestAnimationFrame(() =>
+        document
+          .querySelector<HTMLElement>(
+            following ? `[data-part="${following}"] button` : "[data-finish-building]",
+          )
+          ?.focus(),
+      );
+      const fresh = runRules(ASSEMBLY_RULES, { assembly: after }).filter(
+        (f) => !acted.current.has(f.rule),
+      );
+      fresh.forEach((f) => acted.current.add(f.rule));
+      if (fresh.length) await consult(fresh, "live");
+    },
+    [changeBench, benchNow, consult],
+  );
+
+  const takeOff = useCallback(
+    async (part: PendulumPart) => {
+      const before = benchNow();
+      const going = [part, ...carriedBy(before, part)];
+      if (!(await changeBench({ type: "remove-part", part }))) return;
+      setBuildStatus(t("lab.build.returned", { list: listParts(going) }));
+      // Mistakes in what came off no longer stand; the coach may raise them again if repeated.
+      const after = runRules(ASSEMBLY_RULES, {
+        assembly: benchNow(),
+      }).map((f) => f.rule);
+      setAdvice((list) =>
+        list.filter((a) => a.finding.skill !== "apparatus" || after.includes(a.finding.rule)),
+      );
+      for (const rule of [...acted.current]) if (!after.includes(rule)) acted.current.delete(rule);
+      setDemoSlot(undefined);
+      setCheckedBuild(undefined);
+    },
+    [changeBench, benchNow],
+  );
+
+  const pick = useCallback(
+    (part: PendulumPart) => {
+      if (held === part) {
+        setHeld(undefined);
+        setBuildStatus(t("lab.build.returned", { list: partThe(part) }));
+        return;
+      }
+      const now = benchNow();
+      if (readySlots(now, part).length === 0) {
+        const needs = waitsFor(now, part);
+        setHeld(undefined);
+        if (needs)
+          setBuildStatus(
+            capitalise(t("lab.build.notYet", { part: partThe(part), needs: partThe(needs) })),
+          );
+        return;
+      }
+      setHeld(part);
+      setBuildStatus(
+        `${t("lab.build.holding", { part: partThe(part) })} ${t(
+          `experiments.simple-pendulum.parts.${part}.what` as MessageKey,
+          WHAT_PARAMS,
+        )}`,
+      );
+    },
+    [held, benchNow],
+  );
+
+  const drop = useCallback(
+    (part: PendulumPart, x: number, y: number) => {
+      const box = benchBox.current;
+      const now = benchNow();
+      const slots = readySlots(now, part);
+      const slot = box ? snapSlot(toFigure(box, x, y), slots, now) : undefined;
+      if (slot) void place(part, slot);
+      else if (slots.length === 0) pick(part);
+      else {
+        setHeld(undefined);
+        setBuildStatus(t("lab.build.missed", { part: partThe(part) }));
+      }
+    },
+    [benchNow, place, pick],
+  );
+  const dragging = useDragPart(drop);
+
+  const resetBench = useCallback(async () => {
+    for (const p of ["base", "watch"] as const) if (benchNow()[p]) await takeOff(p);
+    setHeld(undefined);
+    setAdvice([]);
+    setBuildStatus(undefined);
+  }, [benchNow, takeOff]);
+
+  // Keyboard, anywhere outside a form field: M turns the magnifier on and off; Escape puts back
+  // the part in hand.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("input, select, textarea, [contenteditable]")) return;
+      if ((e.key === "m" || e.key === "M") && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        setLens((l) => (l ? undefined : LENS_START));
+      } else if (e.key === "Escape" && held) {
+        e.preventDefault();
+        const part = held;
+        setHeld(undefined);
+        setBuildStatus(t("lab.build.returned", { list: partThe(part) }));
+        document.querySelector<HTMLElement>(`[data-part="${part}"] button`)?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [held]);
+
   // Keyboard: S starts and stops the stopwatch, Space counts a pass (only while measuring).
   useEffect(() => {
     if (state?.step !== "measure") return;
@@ -196,13 +409,93 @@ export function LabScreen() {
     await handle.dispatch({ type: "complete-step" });
     if (next) await handle.dispatch({ type: "go-to-step", step: next });
     setAdvice([]);
+    setHeld(undefined);
+    setBuildStatus(undefined);
+    setDemoSlot(undefined);
   };
+
+  const finishBuilding = async () => {
+    const signature = JSON.stringify(assembly);
+    const findings = runRules(ASSEMBLY_RULES, { assembly });
+    if (findings.length && checkedBuild !== signature) {
+      setCheckedBuild(signature);
+      const out = coach(handle.state, findings, "step-exit");
+      await handle.record(out.events);
+      setAdvice(out.advice);
+      if (out.advice.length) return;
+    }
+    await finishStep();
+  };
+
+  // The bob hangs still until there is something to time; before the bench is built, the
+  // figure describes what is on it.
+  const swinging = STEPS.indexOf(state.step) >= STEPS.indexOf("measure");
+  const builtYet = state.completed.includes("build");
+  const inHand = held ?? (dragging.drag?.moved ? dragging.drag.part : undefined);
+  const lit: PendulumSlot[] = inHand ? slotsFor(assembly, inHand) : demoSlot ? [demoSlot] : [];
+  const nextToTouch =
+    coachIsOn(state) && state.helpLevel === "auto" ? nextPart(assembly) : undefined;
+
+  /** What each advice card offers besides "Show me". */
+  const fixFor = (a: Advice) =>
+    a.finding.rule === "pendulum-thread-on-clamp"
+      ? {
+          label: msg(`${a.finding.key}.fix`),
+          run: () => void takeOff("thread"),
+          show: () => {
+            setDemoSlot("cork");
+            void handle.record([
+              {
+                kind: "coach.hint",
+                data: {
+                  hint: a.finding.key,
+                  rule: a.finding.rule,
+                  skill: a.finding.skill,
+                  level: "demonstrate",
+                },
+              },
+            ]);
+          },
+        }
+      : {
+          label: t("lab.coach.resetTryAgain"),
+          run: () => void tryAgain(),
+          show: () => void showMe(a),
+        };
+
+  const adviceCards = advice.map((a) => {
+    const fix = fixFor(a);
+    return (
+      <div
+        key={a.finding.rule}
+        role="status"
+        className="flex flex-col gap-2.5 border border-warn bg-warn-wash p-3.5"
+      >
+        <span className="flex items-center gap-2 font-semibold text-warn">
+          <TriangleAlertIcon className="size-4" aria-hidden />
+          {msg(`${a.finding.key}.title`, a.finding.params)}
+        </span>
+        <span className="text-foreground">{msg(`${a.finding.key}.detail`, a.finding.params)}</span>
+        {(a.level === "demonstrate" || demoSlot) && hasMessage(`${a.finding.key}.demonstrate`) && (
+          <span className="text-soft">{msg(`${a.finding.key}.demonstrate`)}</span>
+        )}
+        <div className="flex flex-wrap gap-2">
+          <Button className="bg-foreground text-background hover:bg-soft" onClick={fix.run}>
+            {fix.label}
+          </Button>
+          <Button variant="outline" onClick={fix.show}>
+            {t("lab.coach.showMe")}
+          </Button>
+        </div>
+      </div>
+    );
+  });
 
   return (
     <TooltipProvider>
-      <div className="flex min-h-dvh bg-background text-foreground">
+      <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
         <Rail />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {/* Header */}
           <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
             <Link
@@ -241,7 +534,7 @@ export function LabScreen() {
                 variant="ghost"
                 size="icon"
                 aria-label={t("lab.playback.reset")}
-                onClick={() => void tryAgain()}
+                onClick={() => void (building ? resetBench() : tryAgain())}
               >
                 <RotateCcwIcon />
               </Button>
@@ -253,6 +546,16 @@ export function LabScreen() {
                 onClick={() => setLabels((v) => !v)}
               >
                 <LayersIcon />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("lab.magnifier.label")}
+                aria-pressed={lens !== undefined}
+                aria-keyshortcuts="M"
+                onClick={() => setLens((l) => (l ? undefined : LENS_START))}
+              >
+                <SearchIcon />
               </Button>
               <Button
                 variant="ghost"
@@ -326,57 +629,96 @@ export function LabScreen() {
                   {t("experiments.simple-pendulum.figureTitle")}
                 </span>
               </div>
-              {labels && (
+              {labels && assembly.cork !== undefined && (
                 <div className="absolute top-5 right-6 hidden items-center gap-2 border border-border bg-surface px-3 py-2 text-sm md:flex">
                   <span aria-hidden className="size-2 bg-[var(--pa-figure-cork)]" />
                   {t("experiments.simple-pendulum.callout.cork")}
                 </div>
               )}
-              <PendulumBench
-                angle={bobAngle(clock.time, period)}
-                stopwatchSeconds={shownTime}
-                markLabel={markLabel}
-                label={t("experiments.simple-pendulum.figureAlt")}
-                className="block h-auto w-full max-w-[600px]"
+              <BenchStage
+                box={benchBox}
+                bench={{
+                  angle: swinging ? bobAngle(clock.time, period) : 0,
+                  stopwatchSeconds: shownTime,
+                  assembly,
+                  lit,
+                  markLabel,
+                  label: builtYet
+                    ? t("experiments.simple-pendulum.figureAlt")
+                    : benchDescription(assembly),
+                }}
+                slots={held ? slotsFor(assembly, held) : []}
+                held={held}
+                onPlace={(slot) => held && void place(held, slot)}
+                magnifier={lens}
+                onMagnifier={setLens}
+                className={building ? "max-w-[min(600px,calc((100dvh-470px)*0.913))]" : undefined}
               />
-              <div className="flex flex-col gap-3 self-stretch border border-border bg-surface px-4 py-3 md:absolute md:bottom-5 md:left-6 md:self-auto">
-                <div className="flex items-end gap-6">
-                  <div className="flex flex-col">
-                    <span className="hidden text-xs text-muted-foreground md:block">
-                      {t("lab.readout.stopwatch", { leastCount: E.stopwatch.resolution })}
-                    </span>
-                    <span
-                      className="font-mono text-[34px] leading-tight font-medium"
-                      aria-live="off"
-                    >
-                      {shownTime.toFixed(2)}{" "}
-                      <span className="text-base text-muted-foreground">s</span>
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="hidden text-xs text-muted-foreground md:block">
-                      {t("lab.readout.count")}
-                    </span>
-                    <span className="font-mono text-[34px] leading-tight font-medium">
-                      {timing?.counts.length ?? 0}{" "}
-                      <span className="text-base text-muted-foreground">
-                        {t("lab.readout.of", { target: E.swings })}
+              {lens && (
+                <p className="sr-only" role="status">
+                  {t("lab.magnifier.on")}
+                </p>
+              )}
+              {building ? (
+                <PartsTray
+                  assembly={assembly}
+                  held={held}
+                  lit={nextToTouch}
+                  locked={false}
+                  status={buildStatus}
+                  whatParams={WHAT_PARAMS}
+                  onPick={(part) => {
+                    if (!dragging.takeSuppressedClick()) pick(part);
+                  }}
+                  onPointerDown={dragging.start}
+                  onRemove={(part) => void takeOff(part)}
+                />
+              ) : (
+                <div className="flex flex-col gap-3 self-stretch border border-border bg-surface px-4 py-3 md:absolute md:bottom-5 md:left-6 md:self-auto">
+                  <div className="flex items-end gap-6">
+                    <div className="flex flex-col">
+                      <span className="hidden text-xs text-muted-foreground md:block">
+                        {t("lab.readout.stopwatch", { leastCount: E.stopwatch.resolution })}
                       </span>
-                    </span>
+                      <span
+                        className="font-mono text-[34px] leading-tight font-medium"
+                        aria-live="off"
+                      >
+                        {shownTime.toFixed(2)}{" "}
+                        <span className="text-base text-muted-foreground">s</span>
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="hidden text-xs text-muted-foreground md:block">
+                        {t("lab.readout.count")}
+                      </span>
+                      <span className="font-mono text-[34px] leading-tight font-medium">
+                        {timing?.counts.length ?? 0}{" "}
+                        <span className="text-base text-muted-foreground">
+                          {t("lab.readout.of", { target: E.swings })}
+                        </span>
+                      </span>
+                    </div>
                   </div>
+                  {state.step === "measure" && (
+                    <div className="flex flex-wrap gap-2">
+                      <Button onClick={() => void (running ? stop() : start())}>
+                        {running ? t("lab.readout.stop") : t("lab.readout.start")}
+                      </Button>
+                      <Button variant="outline" disabled={!running} onClick={countPass}>
+                        {t("lab.readout.countPass")}
+                      </Button>
+                    </div>
+                  )}
                 </div>
-                {state.step === "measure" && (
-                  <div className="flex flex-wrap gap-2">
-                    <Button onClick={() => void (running ? stop() : start())}>
-                      {running ? t("lab.readout.stop") : t("lab.readout.start")}
-                    </Button>
-                    <Button variant="outline" disabled={!running} onClick={countPass}>
-                      {t("lab.readout.countPass")}
-                    </Button>
-                  </div>
+              )}
+              <DragGhost drag={dragging.drag} />
+              <div
+                className={cn(
+                  "absolute right-6 bottom-5 hidden text-right font-mono text-sm text-soft md:block",
+                  building && "md:hidden",
                 )}
-              </div>
-              <div className="absolute right-6 bottom-5 hidden text-right font-mono text-sm text-soft md:block">
+              >
                 {t("experiments.simple-pendulum.conditions", {
                   length: E.length.toFixed(3),
                   angle: E.amplitudeDeg,
@@ -387,7 +729,7 @@ export function LabScreen() {
             {/* Coach */}
             <aside
               aria-label={t("lab.coach.label")}
-              className="flex min-w-0 flex-col border-border bg-surface md:w-[380px] md:border-l"
+              className="flex min-w-0 flex-col border-border bg-surface md:w-[380px] md:overflow-y-auto md:border-l"
             >
               <Tabs value={tab} onValueChange={(v) => setTab(String(v))}>
                 <TabsList
@@ -414,7 +756,64 @@ export function LabScreen() {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="instructions" className="flex flex-col gap-3.5 p-5">
-                  {state.step === "measure" ? (
+                  {state.step === "build" ? (
+                    <>
+                      <h2 className="font-display text-2xl leading-tight font-bold">
+                        {t("experiments.simple-pendulum.build.title")}
+                      </h2>
+                      <p className="text-soft">{t("experiments.simple-pendulum.build.why")}</p>
+                      <div className="flex flex-col gap-2">
+                        {PENDULUM_PARTS.map((part, i) => (
+                          <CheckItem
+                            key={part}
+                            n={i + 1}
+                            state={
+                              assembly[part] !== undefined
+                                ? "done"
+                                : part === nextPart(assembly)
+                                  ? "current"
+                                  : "todo"
+                            }
+                          >
+                            {t(`experiments.simple-pendulum.build.${part}` as MessageKey)}
+                          </CheckItem>
+                        ))}
+                      </div>
+                      {adviceCards}
+                      {state.helpLevel === "on-my-own" && assembled(assembly) && (
+                        <Button
+                          variant="link"
+                          className="self-start px-0"
+                          onClick={() =>
+                            void consult(runRules(ASSEMBLY_RULES, { assembly }), "asked")
+                          }
+                        >
+                          {t("lab.coach.ask")}
+                        </Button>
+                      )}
+                      <p className="text-xs text-muted-foreground">{t("lab.build.keys")}</p>
+                      {building && (
+                        <Button
+                          data-finish-building
+                          className="self-start"
+                          disabled={!assembled(assembly)}
+                          onClick={() => void finishBuilding()}
+                        >
+                          {checkedBuild === JSON.stringify(assembly) && advice.length
+                            ? t("lab.steps.carryOn")
+                            : t("lab.steps.finishBuilding")}
+                        </Button>
+                      )}
+                      {!building && next && (
+                        <Button
+                          className="self-start"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
+                        >
+                          {t("lab.steps.continue", { step: stepName(next) })}
+                        </Button>
+                      )}
+                    </>
+                  ) : state.step === "measure" ? (
                     <>
                       <h2 className="font-display text-2xl leading-tight font-bold">
                         {t("experiments.simple-pendulum.measure.title", { swings: E.swings })}
@@ -434,38 +833,7 @@ export function LabScreen() {
                           {t("experiments.simple-pendulum.measure.record")}
                         </CheckItem>
                       </div>
-                      {advice.map((a) => (
-                        <div
-                          key={a.finding.rule}
-                          role="status"
-                          className="flex flex-col gap-2.5 border border-warn bg-warn-wash p-3.5"
-                        >
-                          <span className="flex items-center gap-2 font-semibold text-warn">
-                            <TriangleAlertIcon className="size-4" aria-hidden />
-                            {msg(`${a.finding.key}.title`, a.finding.params)}
-                          </span>
-                          <span className="text-foreground">
-                            {msg(`${a.finding.key}.detail`, a.finding.params)}
-                          </span>
-                          {a.level === "demonstrate" &&
-                            hasMessage(`${a.finding.key}.demonstrate`) && (
-                              <span className="text-soft">
-                                {msg(`${a.finding.key}.demonstrate`)}
-                              </span>
-                            )}
-                          <div className="flex flex-wrap gap-2">
-                            <Button
-                              className="bg-foreground text-background hover:bg-soft"
-                              onClick={() => void tryAgain()}
-                            >
-                              {t("lab.coach.resetTryAgain")}
-                            </Button>
-                            <Button variant="outline" onClick={() => void showMe(a)}>
-                              {t("lab.coach.showMe")}
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
+                      {adviceCards}
                       {state.helpLevel === "on-my-own" && timing?.stoppedAt !== undefined && (
                         <Button
                           variant="link"

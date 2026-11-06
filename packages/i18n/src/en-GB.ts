@@ -57,6 +57,29 @@ export const enGB = {
   "lab.steps.notBuilt": "This step's activity is built next in Phase 1.",
   "lab.steps.continue": "Continue to {step}",
   "lab.steps.finishMeasuring": "Finish measuring",
+  "lab.steps.finishBuilding": "Finish building",
+  "lab.steps.carryOn": "Carry on as it is",
+
+  "lab.build.tray": "Parts tray",
+  "lab.build.trayHint": "Drag a part onto the bench, or select it and then choose where it goes.",
+  "lab.build.onBench": "On the bench",
+  "lab.build.takeOff": "Take off",
+  "lab.build.takeOffPart": "Take off {part}",
+  "lab.build.waitsFor": "Needs {part} first",
+  "lab.build.place": "Put {part} {slot}",
+  "lab.build.holding": "Holding {part}. Choose where it goes, or press Escape to put it back.",
+  "lab.build.placed": "You put {part} {slot}.",
+  "lab.build.returned": "Back in the tray: {list}.",
+  "lab.build.missed": "That is not a place for {part}, so it went back in the tray.",
+  "lab.build.notYet": "{part} needs {needs} on the bench first.",
+  "lab.build.benchState": "On the bench: {list}.",
+  "lab.build.benchEmpty": "The bench is empty.",
+  "lab.build.keys":
+    "Keys: Enter picks a part up or puts it down, Escape puts it back, M turns the magnifier on",
+  "lab.build.and": "and",
+
+  "lab.magnifier.label": "Magnifier",
+  "lab.magnifier.on": "Magnifier on. Move it with the pointer or the arrow keys; M turns it off.",
 
   "lab.readout.stopwatch": "Stopwatch, reads to {leastCount} s",
   "lab.readout.count": "Count",
@@ -75,6 +98,55 @@ export const enGB = {
   "experiments.simple-pendulum.callout.cork":
     "Split cork grips the thread, so the pivot cannot move",
   "experiments.simple-pendulum.conditions": "l = {length} m · θ ≈ {angle}°",
+  "experiments.simple-pendulum.build.title": "Set up the pendulum",
+  "experiments.simple-pendulum.build.why":
+    "Each part holds the next one. Build it as you would on a real bench, from the base up.",
+  "experiments.simple-pendulum.build.base": "Stand the base plate on the bench",
+  "experiments.simple-pendulum.build.rod": "Fit the retort stand rod into the base",
+  "experiments.simple-pendulum.build.clamp": "Fix the boss and clamp onto the rod",
+  "experiments.simple-pendulum.build.cork": "Put the split cork in the clamp jaw",
+  "experiments.simple-pendulum.build.thread": "Grip the thread between the halves of the cork",
+  "experiments.simple-pendulum.build.bob": "Hang the bob on the end of the thread",
+  "experiments.simple-pendulum.build.watch": "Put the stopwatch on the bench",
+
+  "experiments.simple-pendulum.parts.base.name": "Base plate",
+  "experiments.simple-pendulum.parts.base.the": "the base plate",
+  "experiments.simple-pendulum.parts.base.what":
+    "Heavy, so the stand cannot rock and add a swing of its own.",
+  "experiments.simple-pendulum.parts.rod.name": "Retort stand rod",
+  "experiments.simple-pendulum.parts.rod.the": "the retort stand rod",
+  "experiments.simple-pendulum.parts.rod.what":
+    "Holds the pivot at a fixed height above the bench.",
+  "experiments.simple-pendulum.parts.clamp.name": "Boss and clamp",
+  "experiments.simple-pendulum.parts.clamp.the": "the boss and clamp",
+  "experiments.simple-pendulum.parts.clamp.what":
+    "Sets the height of the pivot. Tighten it before you measure anything.",
+  "experiments.simple-pendulum.parts.cork.name": "Split cork",
+  "experiments.simple-pendulum.parts.cork.the": "the split cork",
+  "experiments.simple-pendulum.parts.cork.what":
+    "Grips the thread so the pivot cannot move. Tie the thread round the rod instead and your length is wrong.",
+  "experiments.simple-pendulum.parts.thread.name": "Thread",
+  "experiments.simple-pendulum.parts.thread.the": "the thread",
+  "experiments.simple-pendulum.parts.thread.what":
+    "Light and does not stretch. The length l runs from the cork to the centre of the bob.",
+  "experiments.simple-pendulum.parts.bob.name": "Bob",
+  "experiments.simple-pendulum.parts.bob.the": "the bob",
+  "experiments.simple-pendulum.parts.bob.what":
+    "A small, dense sphere. Its centre, not its top, is where the length ends.",
+  "experiments.simple-pendulum.parts.watch.name": "Stopwatch",
+  "experiments.simple-pendulum.parts.watch.the": "the stopwatch",
+  "experiments.simple-pendulum.parts.watch.what":
+    "Reads to {leastCount} s, but your reaction time is about {reaction} s. That is why you time {swings} swings.",
+
+  "experiments.simple-pendulum.slots.bench": "on the bench",
+  "experiments.simple-pendulum.slots.base-socket": "into the base plate",
+  "experiments.simple-pendulum.slots.rod": "on the rod",
+  "experiments.simple-pendulum.slots.clamp-jaw": "in the clamp jaw",
+  "experiments.simple-pendulum.slots.cork": "in the split cork",
+  "experiments.simple-pendulum.slots.clamp-arm": "round the clamp arm",
+  "experiments.simple-pendulum.slots.thread-end": "on the end of the thread",
+  "experiments.simple-pendulum.slots.bench-corner": "on the bench beside the stand",
+
   "experiments.simple-pendulum.measure.title": "Time {swings} oscillations",
   "experiments.simple-pendulum.measure.why":
     "Timing many swings and dividing makes your reaction time a tiny part of the result.",
@@ -111,6 +183,12 @@ export const enGB = {
     "That pass starts the timing, so it is zero. Counting from one times {timed} swings, and your g would come out about {percent}% too high.",
   "findings.pendulum.countFromOne.demonstrate":
     "Watch the count: the bob passes the mark and the count says 0, then 1 on the next pass the same way.",
+  "findings.pendulum.threadOnClamp.title": "The thread is tied round the clamp",
+  "findings.pendulum.threadOnClamp.detail":
+    "Tied there, the thread can slip and roll, so the point it swings from is not fixed and you cannot measure l. Grip it in the split cork instead.",
+  "findings.pendulum.threadOnClamp.demonstrate":
+    "The lit ring is the split cork: the thread goes between its two halves, and the clamp jaw holds them shut.",
+  "findings.pendulum.threadOnClamp.fix": "Take the thread off",
   "findings.pendulum.stoppedEarly.title": "You stopped at {count} of {target}",
   "findings.pendulum.stoppedEarly.detail":
     "Time all {target} oscillations, so your reaction time is a small part of t.",
