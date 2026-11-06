@@ -18,6 +18,12 @@ request that introduces it.
 - **Parallax.** A reading error from looking at a scale at an angle instead of straight on.
 - **Slope triangle.** The large right-angled triangle drawn on the best-fit line to find its
   slope, with corners away from plotted points (A, B, C on the graph sheet).
+- **Graph sheet.** WAEC 2 mm graph paper at its real size, 20 cm across and 24 cm up, on which the
+  student plots in the Plot step. It downloads in colour or in black and white.
+- **Scale.** What 2 cm on an axis stands for. The guide accepts only 1, 2 or 5 times a power of
+  ten, and a scale should use at least half of each axis.
+- **Best-fit line.** The one straight line a student draws through their points: through the mean
+  point, with the points balanced on each side. It is checked against the least-squares line.
 - **Accepted value.** The reference value an experiment should recover, such as g at Winneba.
 
 ## The lab

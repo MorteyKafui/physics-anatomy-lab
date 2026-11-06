@@ -58,7 +58,8 @@ describe("every finding the rules can raise", () => {
     for (const dir of ["../analysis/src", "../experiments/src"]) {
       for await (const file of new Glob("**/*.ts").scan({ cwd: dir, absolute: true })) {
         const text = await Bun.file(file).text();
-        for (const m of text.matchAll(/key: "((?:table|findings)\.[\w.]+)"/g)) keys.add(m[1]!);
+        for (const m of text.matchAll(/key: "((?:table|graph|findings)\.[\w.]+)"/g))
+          keys.add(m[1]!);
       }
     }
     expect(keys.size).toBeGreaterThan(10);

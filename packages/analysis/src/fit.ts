@@ -64,7 +64,9 @@ export function fitLine(points: readonly Point[]): LineFit {
   const residualSd = n > 2 ? Math.sqrt(sse / (n - 2)) : 0;
   const slopeError = n > 2 ? residualSd / Math.sqrt(sxx) : 0;
   const interceptError = n > 2 ? residualSd * Math.sqrt(1 / n + mx ** 2 / sxx) : 0;
-  const r2 = syy === 0 ? 1 : (sxy * sxy) / (sxx * syy);
+  // r² cannot leave [0, 1], but with values near the limits of floating point (1e-162 squared
+  // underflows) the ratio can round past 1; keep it where the mathematics puts it.
+  const r2 = syy === 0 ? 1 : Math.min(1, Math.max(0, (sxy * sxy) / (sxx * syy)));
 
   return {
     slope,

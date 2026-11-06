@@ -31,6 +31,10 @@ describe("tokens.css matches tokens.ts", () => {
   test.each(Object.entries(graphPalette.colour))("graph %s", (part, hex) => {
     expect(declared[kebab(`graph${part[0]!.toUpperCase()}${part.slice(1)}`)]).toBe(hex);
   });
+
+  test.each(Object.entries(graphPalette.mono))("graph, black and white, %s", (part, hex) => {
+    expect(declared[kebab(`graphMono${part[0]!.toUpperCase()}${part.slice(1)}`)]).toBe(hex);
+  });
 });
 
 describe("figure tones in tokens.css match tokens.ts", () => {

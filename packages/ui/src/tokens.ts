@@ -43,6 +43,10 @@ export const graphPalette = {
     point: "#B86E00",
     fit: "#F0482A",
     triangle: "#6D5BD8",
+    /** The sheet itself, and its numbers and labels, from the Table mockup. */
+    paper: "#FFFFFF",
+    label: "#3D3B37",
+    mark: "#6B6963",
   },
   mono: {
     gridMinor: "#E3E3E3",
@@ -51,6 +55,9 @@ export const graphPalette = {
     point: "#141414",
     fit: "#141414",
     triangle: "#141414",
+    paper: "#FFFFFF",
+    label: "#3D3B37",
+    mark: "#6B6963",
   },
 } as const;
 

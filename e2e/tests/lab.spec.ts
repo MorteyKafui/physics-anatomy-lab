@@ -5,6 +5,9 @@ import { WEB } from "../playwright.config";
 
 const LAB = `${WEB}/lab/simple-pendulum`;
 
+// These walk the lab from Question to Plot, so they get longer than the default 30 s.
+test.describe.configure({ timeout: 60_000 });
+
 const BUILD_ORDER = [
   ["Base plate", "Put the base plate on the bench"],
   ["Retort stand rod", "Put the retort stand rod into the base plate"],
@@ -55,7 +58,7 @@ async function toMeasure(page: Page) {
 /** Start the stopwatch and count the starting pass as "one" (the plan's off-track mistake). */
 async function timeCountingFromOne(page: Page) {
   // Stop time between Start and the first Count, so they fall on exactly the same pass.
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 3000));
   await page.getByRole("button", { name: "Start", exact: true }).click();
   await page.getByRole("button", { name: "Count a pass" }).click();
   await page.clock.runFor(2000);
@@ -280,7 +283,7 @@ async function timeFor(page: Page, seconds: number) {
 /** Measure twice at 0.800 m and twice at 0.850 m, then go on to Tabulate. */
 async function toTabulate(page: Page) {
   await toMeasure(page);
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 3000));
   await timeFor(page, 2);
   await timeFor(page, 2);
   await page.getByRole("button", { name: "Make the pendulum longer" }).click();
@@ -309,7 +312,7 @@ test("the pendulum is timed at several lengths, each reading keeping its length"
   await page.getByRole("button", { name: "Make the pendulum longer" }).click();
   await expect(length).toContainText("0.850 m");
   await page.getByRole("button", { name: "Make the pendulum shorter" }).click();
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 3000));
   await timeFor(page, 2);
   await page.getByRole("button", { name: "Make the pendulum longer" }).click();
   await timeFor(page, 2.2);
@@ -472,6 +475,175 @@ test("no sideways scrolling at phone width while tabulating, even with a cell fl
   await cell(page, 1, "t₁/s").fill("35,9O");
   await cell(page, 1, "t₁/s").press("Tab");
   await expect(cell(page, 1, "t₁/s")).toHaveAttribute("aria-invalid", "true");
+  const sideways = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(sideways).toBe(0);
+});
+
+/** Tabulate at Auto from the Measure readings, carry on, and arrive at Plot. */
+async function toPlot(page: Page) {
+  await toTabulate(page);
+  await results(page).getByRole("button", { name: "Standard" }).click();
+  await results(page).getByRole("button", { name: "Fill in my readings" }).click();
+  await expect(cell(page, 2, "l/m")).toHaveValue("0.850");
+  await page.getByRole("button", { name: "Finish tabulating" }).click();
+  await page.getByRole("button", { name: "Carry on as it is" }).click();
+  await expect(page.getByText("Step 7 of 10 · Plot")).toBeVisible();
+}
+
+const graph = (page: Page) => page.getByRole("region", { name: "Graph sheet" });
+const sheetSvg = (page: Page) => graph(page).locator('svg[role="application"]');
+
+/** Click the sheet where a value goes, using the axes the page shows. */
+async function clickAt(page: Page, x: number, y: number) {
+  const axis = async (name: "Across (x)" | "Up (y)") => {
+    const group = graph(page).getByRole("group", { name });
+    return {
+      per: Number(await group.getByLabel("2 cm stands for").inputValue()),
+      start: Number(await group.getByLabel("Starts at").inputValue()),
+    };
+  };
+  const ax = await axis("Across (x)");
+  const ay = await axis("Up (y)");
+  const box = (await sheetSvg(page).boundingBox())!;
+  // The sheet's viewBox: -26 -10 234 276, paper 200 × 240 mm with y measured up.
+  const mmX = ((x - ax.start) / ax.per) * 20;
+  const mmY = ((y - ay.start) / ay.per) * 20;
+  await page.mouse.click(
+    box.x + ((mmX + 26) / 234) * box.width,
+    box.y + ((240 - mmY + 10) / 276) * box.height,
+  );
+}
+
+/**
+ * At Check my work nothing is worked out for the student, so plot l against the first timing,
+ * which the table holds as typed, on scales that use the sheet well.
+ */
+async function againstFirstTiming(page: Page) {
+  const across = graph(page).getByRole("group", { name: "Across (x)" });
+  const up = graph(page).getByRole("group", { name: "Up (y)" });
+  await up.getByLabel("Plot").selectOption({ label: "t₁/s" });
+  await across.getByLabel("2 cm stands for").selectOption("0.01");
+  await up.getByLabel("2 cm stands for").selectOption("0.02");
+  // Each axis starts at the highest value at or below its smallest reading.
+  for (const axis of [across, up]) {
+    const starts = axis.getByLabel("Starts at").locator("option");
+    await axis.getByLabel("Starts at").selectOption({ index: (await starts.count()) - 1 });
+  }
+}
+
+const checksRow = (page: Page, part: string) =>
+  graph(page)
+    .getByText(new RegExp(`^${part}: `))
+    .locator("..");
+
+test("at Auto the graph is drawn for you: scales, points, line and a large triangle", async ({
+  page,
+}) => {
+  await toPlot(page);
+  await expect(graph(page).getByText("Drawn for you")).toBeVisible();
+  await expect(graph(page).getByText("Fig. 2  A graph of T² against l")).toBeVisible();
+  await expect(sheetSvg(page).locator('[data-graph="line"]')).toBeVisible();
+  await expect(sheetSvg(page).locator('[data-graph="triangle"]')).toBeVisible();
+  await expect(graph(page).getByText(/^A \(/)).toBeVisible();
+  await expect(graph(page).getByText(/^C \(/)).toBeVisible();
+});
+
+test("at Check my work the student plots, draws the line and the triangle, and each is checked", async ({
+  page,
+}) => {
+  await toPlot(page);
+  await chooseHelp(page, "Check my work");
+  await againstFirstTiming(page);
+  await expect(checksRow(page, "Scales")).toContainText("fine");
+
+  // Where each row belongs, as the points list reads it off the table.
+  const coords = async (row: number) => {
+    const text = await graph(page)
+      .getByRole("button", { name: new RegExp(`^Row ${row}: `) })
+      .textContent();
+    const [, x, y] = /: ([\d.]+), ([\d.]+)/.exec(text ?? "")!;
+    return { x: Number(x), y: Number(y) };
+  };
+  const p1 = await coords(1);
+  const p2 = await coords(2);
+  const slope = (p2.y - p1.y) / (p2.x - p1.x);
+  await clickAt(page, p1.x, p1.y);
+  await expect(checksRow(page, "Points")).toContainText("1 of 2 points plotted");
+  await clickAt(page, p2.x, p2.y);
+  await expect(checksRow(page, "Points")).toContainText("fine");
+
+  await graph(page).getByRole("button", { name: "Draw the line" }).click();
+  await clickAt(page, p1.x, p1.y);
+  await clickAt(page, p2.x + 0.01, p2.y + slope * 0.01);
+  await expect(sheetSvg(page).locator('[data-graph="line"]')).toBeVisible();
+
+  // A triangle squeezed between the points is too small, and its corners sit on them.
+  await graph(page).getByRole("button", { name: "Slope triangle" }).click();
+  await clickAt(page, p1.x, p1.y);
+  await clickAt(page, p1.x + 0.01, p1.y + slope * 0.01);
+  await expect(checksRow(page, "Slope triangle")).toContainText(
+    /spans only|sits on a plotted point/,
+  );
+  await expect(graph(page).getByText(/^C \(/)).toBeVisible();
+
+  await page.getByRole("button", { name: "Check my graph" }).click();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: /triangle/ })
+      .first(),
+  ).toBeVisible();
+});
+
+test("points can be plotted from the keyboard", async ({ page }) => {
+  test.skip(test.info().project.name === "phone", "Keyboard plotting is for desktop");
+  await toPlot(page);
+  await chooseHelp(page, "Check my work");
+  await graph(page)
+    .getByRole("group", { name: "Up (y)" })
+    .getByLabel("Plot")
+    .selectOption({ label: "t₁/s" });
+  await sheetSvg(page).focus();
+  await page.keyboard.press("Shift+ArrowRight");
+  await page.keyboard.press("Shift+ArrowUp");
+  await page.keyboard.press("Enter");
+  await expect(graph(page).getByRole("button", { name: /^Row 1: .*plotted/ })).toBeVisible();
+  await expect(sheetSvg(page)).toHaveAccessibleName("Graph sheet: 1 of 2 points plotted");
+});
+
+test("the graph is drawn in colour or black and white, and the choice is remembered", async ({
+  page,
+}) => {
+  await toPlot(page);
+  const mono = graph(page).getByRole("button", { name: "Black and white" });
+  await mono.click();
+  await expect(mono).toHaveAttribute("aria-pressed", "true");
+  await expect(sheetSvg(page).locator('[data-graph="line"]')).toHaveAttribute(
+    "stroke",
+    "var(--pa-graph-mono-fit)",
+  );
+  await page.reload();
+  await expect(graph(page).getByRole("button", { name: "Black and white" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+});
+
+test("plotting, with the checks showing, has no serious accessibility issues", async ({ page }) => {
+  await toPlot(page);
+  await chooseHelp(page, "Check my work");
+  await againstFirstTiming(page);
+  await clickAt(page, 0.8, 2.0);
+  await page.getByRole("button", { name: "Check my graph" }).click();
+  await page.clock.resume();
+  expect(await seriousViolations(page)).toEqual([]);
+});
+
+test("no sideways scrolling at phone width on the graph sheet", async ({ page }, info) => {
+  test.skip(info.project.name !== "phone", "Phone layout");
+  await toPlot(page);
   const sideways = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

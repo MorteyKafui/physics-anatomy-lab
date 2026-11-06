@@ -31,3 +31,5 @@ export type {
   TableRefusal,
   TableState,
 } from "./table/table";
+export { decideGraph, EMPTY_GRAPH, graphProjection } from "./graph/graph";
+export type { GraphCommand, GraphDecision, GraphRefusal, GraphState } from "./graph/graph";

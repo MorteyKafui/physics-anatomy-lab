@@ -228,3 +228,13 @@ describe("units", () => {
     expect(suspectedUnitSlip(1.0, 0.6)).toBeUndefined();
   });
 });
+
+test("r² stays within 0 and 1 even when the values underflow (found by fast-check)", () => {
+  const { r2 } = fitLine([
+    { x: 0, y: 2.7435964668646077e-162 },
+    { x: -50.5, y: 0 },
+    { x: -43.9, y: 0 },
+  ]);
+  expect(r2).toBeGreaterThanOrEqual(0);
+  expect(r2).toBeLessThanOrEqual(1);
+});
