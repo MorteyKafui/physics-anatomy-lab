@@ -1,5 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {},
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["bun"],
+    "exactOptionalPropertyTypes": false,
+    "paths": {
+      "@pa/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "test/**/*.ts"]
 }

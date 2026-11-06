@@ -6,6 +6,7 @@ import { ADMIN, WEB } from "../playwright.config";
 const pages = [
   { name: "landing", url: WEB },
   { name: "admin home", url: ADMIN },
+  { name: "design system catalogue", url: `${ADMIN}/design-system` },
 ];
 
 for (const { name, url } of pages) {
