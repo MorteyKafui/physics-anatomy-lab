@@ -241,3 +241,19 @@ export function addRepeat(design: TableDesign, columnId: string): TableDesign {
   columns.splice(columns.indexOf(last) + 1, 0, next);
   return { ...design, columns };
 }
+
+/**
+ * The points a table gives for a graph of one column against another: one per row with both
+ * cells readable, in the columns' own units, as the student reads them onto the sheet.
+ */
+export function pointsFor(
+  design: Pick<TableDesign, "rows">,
+  x: string,
+  y: string,
+): { row: string; x: number; y: number }[] {
+  return design.rows.flatMap((r) => {
+    const fx = parseFigure(r.cells[x] ?? "");
+    const fy = parseFigure(r.cells[y] ?? "");
+    return fx && fy ? [{ row: r.id, x: fx.value, y: fy.value }] : [];
+  });
+}

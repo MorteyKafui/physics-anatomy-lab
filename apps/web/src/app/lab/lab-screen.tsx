@@ -5,6 +5,9 @@ import {
   parseTable,
   runRules,
   TABLE_RULES,
+  GRAPH_RULES,
+  heading,
+  pointsFor,
   toTableView,
   type Finding,
 } from "@pa/analysis";
@@ -86,6 +89,7 @@ import {
   useDragPart,
 } from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
+import { GraphPanel, graphView, useGraph } from "./graph-sheet";
 import { flagsFor, TableBuilder, useTable } from "./table-builder";
 import { useAttempt } from "./use-attempt";
 import { useBenchClock } from "./use-bench-clock";
@@ -120,6 +124,8 @@ export function LabScreen() {
   const clock = useBenchClock();
   const g = DEFAULT_ENVIRONMENT.g;
   const results = useTable(handle);
+  const plot = useGraph(handle);
+  const [checkedGraph, setCheckedGraph] = useState<string>();
 
   const [timing, setTiming] = useState<Timing | undefined>();
   const [advice, setAdvice] = useState<Advice[]>([]);
@@ -530,6 +536,65 @@ export function LabScreen() {
     await finishStep();
   };
 
+  // The graph (step 7): T² against l by default, or any two columns the student picks.
+  const numericColumns = table.columns.filter((c) => c.role !== "notes");
+  const has = (id: string) => numericColumns.some((c) => c.id === id);
+  const graphColumns = plot.graph.sheet
+    ? { x: plot.graph.sheet.x.column, y: plot.graph.sheet.y.column }
+    : has(PENDULUM_PLOT.x) && has(PENDULUM_PLOT.y)
+      ? { x: PENDULUM_PLOT.x, y: PENDULUM_PLOT.y }
+      : {
+          x: numericColumns[0]?.id ?? PENDULUM_PLOT.x,
+          y: numericColumns.at(-1)?.id ?? PENDULUM_PLOT.y,
+        };
+  const columnFor = (id: string) => table.columns.find((c) => c.id === id);
+  const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
+  const graphShown = graphView(plot.graph, graphData, graphColumns, tableAssist);
+  const graphFindings =
+    graphData.length >= 2
+      ? runRules(GRAPH_RULES, {
+          sheet: graphShown.sheet,
+          symbols: {
+            x: columnFor(graphColumns.x)?.symbol ?? graphColumns.x,
+            y: columnFor(graphColumns.y)?.symbol ?? graphColumns.y,
+          },
+          data: graphData,
+          plotted: graphShown.plotted,
+          line: graphShown.line,
+          triangle: graphShown.triangle,
+        })
+      : [];
+  const graphPart = (rule: string) =>
+    rule === "graph-scale-small" || rule === "graph-off-sheet"
+      ? "scale"
+      : rule.startsWith("graph-line")
+        ? "line"
+        : rule.startsWith("graph-triangle")
+          ? "triangle"
+          : "points";
+  const partFindings = { scale: [], points: [], line: [], triangle: [] } as Record<
+    "scale" | "points" | "line" | "triangle",
+    Finding[]
+  >;
+  for (const f of graphFindings) partFindings[graphPart(f.rule)].push(f);
+  const graphFlagged = new Set(
+    (tableMarks ? graphFindings : advice.map((a) => a.finding).filter((f) => f.skill === "graph"))
+      .filter((f) => f.rule === "graph-misplotted" || f.rule === "graph-off-sheet")
+      .flatMap((f) => f.rows ?? []),
+  );
+  const graphSignature = JSON.stringify(plot.graph);
+
+  const finishPlotting = async () => {
+    if (graphFindings.length && checkedGraph !== graphSignature) {
+      setCheckedGraph(graphSignature);
+      const out = coach(handle.state, graphFindings, "step-exit");
+      await handle.record(out.events);
+      setAdvice(out.advice);
+      if (out.advice.length) return;
+    }
+    await finishStep();
+  };
+
   const finishTabulating = async () => {
     const signature = JSON.stringify(shownTable.rows) + JSON.stringify(table.columns);
     const findings = tableFindings.filter((f) => f.severity !== "good");
@@ -552,7 +617,8 @@ export function LabScreen() {
   const nextToTouch =
     coachIsOn(state) && state.helpLevel === "auto" ? nextPart(assembly) : undefined;
 
-  const aboutTable = (a: Advice) => a.finding.rule.startsWith("table-");
+  const aboutTable = (a: Advice) =>
+    a.finding.rule.startsWith("table-") || a.finding.rule.startsWith("graph-");
   /** Findings about the readings as a whole are fixed by measuring more, not in a cell. */
   const needsMeasuring = (a: Advice) =>
     a.finding.rule === "table-too-few-rows" || a.finding.rule === "table-narrow-range";
@@ -578,11 +644,12 @@ export function LabScreen() {
         ? {
             run: () => {
               const f = a.finding;
-              const target =
-                f.rows?.[0] && f.column
+              const target = f.rule.startsWith("graph-")
+                ? 'svg[role="application"]'
+                : f.rows?.[0] && f.column
                   ? `[data-cell="${f.rows[0]}:${f.column}"]`
                   : f.column
-                    ? `th button[aria-label*="${f.params?.symbol ?? ""}"]`
+                    ? `th[data-column="${f.column}"] button`
                     : `[data-cell^="${f.rows?.[0] ?? "-"}:"]`;
               document.querySelector<HTMLElement>(target)?.focus();
             },
@@ -769,7 +836,36 @@ export function LabScreen() {
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-            {state.step === "tabulate" ? (
+            {state.step === "plot" ? (
+              <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+                <GraphPanel
+                  state={plot.graph}
+                  view={graphShown}
+                  data={graphData}
+                  headings={{
+                    x: (() => {
+                      const c = columnFor(graphColumns.x);
+                      return c ? heading(c) : graphColumns.x;
+                    })(),
+                    y: (() => {
+                      const c = columnFor(graphColumns.y);
+                      return c ? heading(c) : graphColumns.y;
+                    })(),
+                  }}
+                  numericColumns={numericColumns}
+                  flaggedRows={graphFlagged}
+                  partFindings={partFindings}
+                  showChecks={tableMarks && !tableAssist}
+                  onRun={plot.run}
+                  latest={plot.now}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3">{adviceCards}</div>
+                    ) : null
+                  }
+                />
+              </section>
+            ) : state.step === "tabulate" ? (
               <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
                 <TableBuilder
                   table={table}
@@ -1012,6 +1108,77 @@ export function LabScreen() {
                         </Button>
                       )}
                       {!building && next && (
+                        <Button
+                          className="self-start"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
+                        >
+                          {t("lab.steps.continue", { step: stepName(next) })}
+                        </Button>
+                      )}
+                    </>
+                  ) : state.step === "plot" ? (
+                    <>
+                      <h2 className="font-display text-2xl leading-tight font-bold">
+                        {t("experiments.simple-pendulum.plot.title")}
+                      </h2>
+                      <p className="text-soft">{t("experiments.simple-pendulum.plot.why")}</p>
+                      <div className="flex flex-col gap-2">
+                        {(
+                          [
+                            ["scale", partFindings.scale.length === 0 && graphData.length >= 2],
+                            [
+                              "points",
+                              graphShown.plotted.length >= graphData.length &&
+                                graphData.length > 0 &&
+                                partFindings.points.length === 0,
+                            ],
+                            [
+                              "line",
+                              graphShown.line !== undefined && partFindings.line.length === 0,
+                            ],
+                            [
+                              "triangle",
+                              graphShown.triangle !== undefined &&
+                                partFindings.triangle.length === 0,
+                            ],
+                          ] as const
+                        ).map(([key, done], i, all) => (
+                          <CheckItem
+                            key={key}
+                            n={i + 1}
+                            state={
+                              done
+                                ? "done"
+                                : all.findIndex(([, d]) => !d) === i
+                                  ? "current"
+                                  : "todo"
+                            }
+                          >
+                            {t(`experiments.simple-pendulum.plot.${key}` as MessageKey)}
+                          </CheckItem>
+                        ))}
+                      </div>
+                      {state.helpLevel !== "auto" && coachIsOn(state) && (
+                        <Button
+                          variant="link"
+                          className="self-start px-0"
+                          onClick={() => void consult(graphFindings, "asked")}
+                        >
+                          {t("lab.graph.check")}
+                        </Button>
+                      )}
+                      {!state.completed.includes("plot") && (
+                        <Button
+                          data-finish-plotting
+                          className="self-start"
+                          onClick={() => void finishPlotting()}
+                        >
+                          {checkedGraph === graphSignature && advice.length
+                            ? t("lab.steps.carryOn")
+                            : t("lab.steps.finishPlotting")}
+                        </Button>
+                      )}
+                      {state.completed.includes("plot") && next && (
                         <Button
                           className="self-start"
                           onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}

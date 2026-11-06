@@ -51,6 +51,20 @@
   --pa-graph-point: #b86e00;
   --pa-graph-fit: #f0482a;
   --pa-graph-triangle: #6d5bd8;
+  --pa-graph-paper: #ffffff;
+  --pa-graph-label: #3d3b37;
+  --pa-graph-mark: #6b6963;
+
+  /* Graph sheet (D31): black-and-white export, the WAEC print style */
+  --pa-graph-mono-grid-minor: #e3e3e3;
+  --pa-graph-mono-grid-major: #bdbdbd;
+  --pa-graph-mono-frame: #555555;
+  --pa-graph-mono-point: #141414;
+  --pa-graph-mono-fit: #141414;
+  --pa-graph-mono-triangle: #141414;
+  --pa-graph-mono-paper: #ffffff;
+  --pa-graph-mono-label: #3d3b37;
+  --pa-graph-mono-mark: #6b6963;
 
   /* Apparatus figure tones (Anatomy kit style), from the lab mockup bench drawing */
   --pa-figure-floor: #121211;

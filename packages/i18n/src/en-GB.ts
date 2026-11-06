@@ -154,6 +154,50 @@ export const enGB = {
   "lab.column.symbolTaken": "Another column already uses {symbol}.",
   "lab.column.symbolMissing": "Give the column a symbol.",
 
+  "lab.graph.label": "Graph sheet",
+  "lab.graph.title": "Fig. 2  A graph of {y} against {x}",
+  "lab.graph.scale": "Scale: 2 cm : {x} on {xs} · 2 cm : {y} on {ys}",
+  "lab.graph.mark": "Physics Anatomy · Fig. 2",
+  "lab.graph.tools": "Graph tools",
+  "lab.graph.tool.plot": "Plot points",
+  "lab.graph.tool.line": "Draw the line",
+  "lab.graph.tool.triangle": "Slope triangle",
+  "lab.graph.rubOut": "Rub out",
+  "lab.graph.colours": "Graph colours",
+  "lab.graph.colour": "Colour",
+  "lab.graph.mono": "Black and white",
+  "lab.graph.axes": "Axes and scales",
+  "lab.graph.axisX": "Across (x)",
+  "lab.graph.axisY": "Up (y)",
+  "lab.graph.column": "Plot",
+  "lab.graph.per2cm": "2 cm stands for",
+  "lab.graph.start": "Starts at",
+  "lab.graph.points": "Points to plot",
+  "lab.graph.point": "Row {row}: {x}, {y}",
+  "lab.graph.plotted": "plotted",
+  "lab.graph.noPoints": "No complete rows to plot yet. Fill in the table first.",
+  "lab.graph.next": "Next point, row {row}: {x}, {y}. Click where it goes.",
+  "lab.graph.allPlotted": "Every row is plotted. Draw your best-fit line next.",
+  "lab.graph.lineHow": "Click where your line starts, then where it ends.",
+  "lab.graph.lineStarted": "Now click where your line ends.",
+  "lab.graph.triangleHow": "Click two points on your line, A then B. C goes at the corner.",
+  "lab.graph.triangleStarted": "Now click B, further along your line.",
+  "lab.graph.corner": "{name} ({x}, {y})",
+  "lab.graph.drawnForYou": "Drawn for you",
+  "lab.graph.check": "Check my graph",
+  "lab.graph.keys":
+    "Keys: arrows move the cross by half a small square (with Shift, by 1 cm), Enter puts a mark there",
+  "lab.graph.cross": "Cross at {x}, {y}",
+  "lab.graph.sheetLabel": "Graph sheet: {plotted} of {total} points plotted",
+  "lab.graph.checks": "Your graph, checked",
+  "lab.graph.part.scale": "Scales",
+  "lab.graph.part.points": "Points",
+  "lab.graph.part.line": "Best-fit line",
+  "lab.graph.part.triangle": "Slope triangle",
+  "lab.graph.part.notYet": "not drawn yet",
+  "lab.graph.part.fine": "fine",
+  "lab.steps.finishPlotting": "Finish plotting",
+
   "quantity.length": "Length",
   "quantity.inverse-length": "Inverse length",
   "quantity.area": "Area",
@@ -236,6 +280,14 @@ export const enGB = {
   "experiments.simple-pendulum.slots.thread-end": "on the end of the thread",
   "experiments.simple-pendulum.slots.bench-corner": "on the bench beside the stand",
 
+  "experiments.simple-pendulum.plot.title": "Plot T² against l",
+  "experiments.simple-pendulum.plot.why":
+    "T² = (4π² ⁄ g) l, so the points lie on a straight line through the origin. Its slope gives g.",
+  "experiments.simple-pendulum.plot.scale": "Choose scales that use at least half of each axis",
+  "experiments.simple-pendulum.plot.points": "Plot every row as a small cross",
+  "experiments.simple-pendulum.plot.line": "Draw one straight best-fit line through the points",
+  "experiments.simple-pendulum.plot.triangle":
+    "Draw a large slope triangle, off the plotted points",
   "experiments.simple-pendulum.measure.title": "Time {swings} oscillations",
   "experiments.simple-pendulum.measure.why":
     "Timing many swings and dividing makes your reaction time a tiny part of the result.",
@@ -314,6 +366,34 @@ export const enGB = {
   "table.outlier.title": "Row {row} looks out of line with the others",
   "table.outlier.detail":
     "It sits far from the line the other points follow. Time that length again before you plot it.",
+  "graph.scaleSmall.title": "The {symbol} axis uses only {percent}% of the sheet",
+  "graph.scaleSmall.detail":
+    "Choose a scale that uses at least half of each axis. A bigger graph is read more precisely, and it earns the scale mark.",
+  "graph.offSheet.title": "{count} point(s) fall off the {symbol} axis",
+  "graph.offSheet.detail":
+    "Every value must fit on the sheet. Choose a larger scale or start the axis lower.",
+  "graph.pointsMissing.title": "{plotted} of {total} points plotted",
+  "graph.pointsMissing.detail": "Plot every row of your table before you draw the line.",
+  "graph.misplotted.title": "{count} point(s) not where the table puts them",
+  "graph.misplotted.detail":
+    "Read each value against the scale again, counting the small squares. A point may be off by at most half a square.",
+  "graph.lineMean.title": "Your line misses the mean point by about {mm} mm",
+  "graph.lineMean.detail":
+    "A best-fit line passes through the point whose coordinates are the means of your x and y values.",
+  "graph.lineUnbalanced.title": "{above} points above your line and {below} below",
+  "graph.lineUnbalanced.detail":
+    "A best-fit line has about as many points on each side. Move it so the points balance.",
+  "graph.lineSlope.title": "Your line's slope is {percent}% away from the best fit",
+  "graph.lineSlope.detail":
+    "Turn the line about the mean point until the points scatter evenly along its whole length.",
+  "graph.triangleOffLine.title": "A corner of your triangle is off the line",
+  "graph.triangleOffLine.detail": "A and B must both lie on your best-fit line.",
+  "graph.triangleSmall.title": "Your triangle spans only {percent}% of the points",
+  "graph.triangleSmall.detail":
+    "Use a large triangle, across at least half of the line. A small one makes the slope less precise.",
+  "graph.triangleOnPoint.title": "A corner of your triangle sits on a plotted point",
+  "graph.triangleOnPoint.detail":
+    "Take A and B from the line itself, away from the plotted points, as the marking guide asks.",
   "findings.pendulum.countFromOne.title": 'You said "one" on the first pass',
   "findings.pendulum.countFromOne.detail":
     "That pass starts the timing, so it is zero. Counting from one times {timed} swings, and your g would come out about {percent}% too high.",

@@ -548,6 +548,7 @@ export function TableBuilder({
                     <th
                       key={c.id}
                       scope="col"
+                      data-column={c.id}
                       className={cn(
                         "border-b border-border p-0 text-left align-top font-normal",
                         flag && "bg-warn-wash outline -outline-offset-1 outline-warn",

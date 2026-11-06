@@ -39,8 +39,44 @@ export {
   fillDerived,
   heading,
   newColumnId,
+  pointsFor,
   repeatsOf,
   subscript,
   toTableView,
 } from "./table-design";
 export type { ColumnRole, DesignColumn, FormulaCheck, TableDesign, TableRow } from "./table-design";
+export {
+  acceptedScale,
+  axisEnd,
+  DIVISIONS,
+  fromMm,
+  lineSlope,
+  mmBetween,
+  mmFromLine,
+  ON_POINT_MM,
+  onLineAt,
+  onPaper,
+  referenceLine,
+  scalesAround,
+  SHEET,
+  snapMm,
+  suggestAxis,
+  suggestTriangle,
+  toMm,
+} from "./graph";
+export type { Axis, DrawnLine, PlottedPoint, Sheet, SlopeTriangle } from "./graph";
+export {
+  GRAPH_RULES,
+  lineMissesMean,
+  lineSlopeOff,
+  lineUnbalanced,
+  misplotted,
+  offTheSheet,
+  PLOT_TOLERANCE_MM,
+  pointsMissing,
+  scaleTooSmall,
+  triangleOffLine,
+  triangleOnPoint,
+  triangleSmall,
+} from "./graph-rules";
+export type { GraphContext, GraphRule } from "./graph-rules";
