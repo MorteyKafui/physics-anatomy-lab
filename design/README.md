@@ -42,8 +42,7 @@ These were agreed in the mockup round and override any mockup that missed them:
 - **No dummy content (D29).** Every number is computed from the physics or is a stated fact.
   Dashboards show example data only behind a visible "Example data" or "Example class" label.
 - **Sentence case.** No all-caps labels or monospace eyebrow text. Monospace is for numbers,
-  units and codes. (The lab board still shows "FIG 1", "STOPWATCH" and "COUNT" in capitals;
-  build them in sentence case.)
+  units and codes.
 - **One dashboard pattern** for teacher and admin: headline tiles with a "View…" link, hatched
   bar charts, a needs-attention list with chips, a detail drawer with one main action, an undo
   toast, search on / and ⌘K, collapsible navigation groups.
