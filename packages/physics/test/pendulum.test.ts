@@ -1,6 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import fixtures from "../../../validation/fixtures/pendulum.json";
-import { fitLine, gFromPeriod, gFromSlope, periodExact, periodSmallAngle, recordedPeriod } from "../src";
+import {
+  fitLine,
+  gFromPeriod,
+  gFromSlope,
+  periodExact,
+  periodSmallAngle,
+  recordedPeriod,
+} from "../src";
 
 const deg = (d: number) => (d * Math.PI) / 180;
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
@@ -56,7 +63,7 @@ describe("the worked example in the approved mockups", () => {
   test("the slope triangle ABC gives 4.03 s² m⁻¹ and g = 9.80 m s⁻²", () => {
     const slope = (3.944 - 2.494) / (0.98 - 0.62);
     expect(slope).toBeCloseTo(4.03, 2);
-    expect(gFromSlope(4.03)).toBeCloseTo(9.80, 2);
+    expect(gFromSlope(4.03)).toBeCloseTo(9.8, 2);
   });
 
   test("a least-squares fit of T² against l passes close to the origin", () => {

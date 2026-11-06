@@ -16,8 +16,10 @@ export interface Pendulum {
 }
 
 function assertPendulum({ length, g, amplitude = 0 }: Pendulum): void {
-  if (!(length > 0) || !Number.isFinite(length)) throw new RangeError(`length must be a positive number of metres, got ${length}`);
-  if (!(g > 0) || !Number.isFinite(g)) throw new RangeError(`g must be a positive number, got ${g}`);
+  if (!(length > 0) || !Number.isFinite(length))
+    throw new RangeError(`length must be a positive number of metres, got ${length}`);
+  if (!(g > 0) || !Number.isFinite(g))
+    throw new RangeError(`g must be a positive number, got ${g}`);
   if (!Number.isFinite(amplitude) || Math.abs(amplitude) >= Math.PI) {
     throw new RangeError(`amplitude must be between -π and π radians, got ${amplitude}`);
   }
@@ -66,7 +68,8 @@ export function gFromPeriod(length: number, period: number): number {
 
 /** g from the slope of a graph of T² against l: g = 4π² / slope. */
 export function gFromSlope(slope: number): number {
-  if (!(slope > 0) || !Number.isFinite(slope)) throw new RangeError(`slope must be positive, got ${slope}`);
+  if (!(slope > 0) || !Number.isFinite(slope))
+    throw new RangeError(`slope must be positive, got ${slope}`);
   return (4 * Math.PI * Math.PI) / slope;
 }
 
@@ -78,7 +81,8 @@ export function gFromSlope(slope: number): number {
  */
 export function recordedPeriod(truePeriod: number, swings: number, countFrom: 0 | 1): number {
   if (!(truePeriod > 0)) throw new RangeError("truePeriod must be positive");
-  if (!Number.isInteger(swings) || swings < 2) throw new RangeError("swings must be a whole number of at least 2");
+  if (!Number.isInteger(swings) || swings < 2)
+    throw new RangeError("swings must be a whole number of at least 2");
   const timed = countFrom === 0 ? swings : swings - 1;
   return (truePeriod * timed) / swings;
 }

@@ -2,7 +2,7 @@
 
 Organised by what you need (the technical-writing standard from the master plan):
 
-- **Tutorials:** learn by doing. *(Phase 1: "Build your first experiment".)*
+- **Tutorials:** learn by doing. _(Phase 1: "Build your first experiment".)_
 - **How-to guides:** [local setup on Windows](how-to/local-setup-windows.md),
   [contribute a change](how-to/contribute.md).
 - **Reference:** [decision records](adr/), [glossary](../GLOSSARY.md),
@@ -12,6 +12,7 @@ Organised by what you need (the technical-writing standard from the master plan)
 - **Planning:** the [decision log](planning/00-decisions.md). Discovery notes, skills selection and the cost summary are in the Claude project "Physics Anatomy Simulations Laboratory".
 
 The master plan and legal pack are Claude Docs:
+
 - Master plan: claude.ai/artifact/DNiNxasKLhQYdB6jMJ5fuN
 - Legal and Policy Pack: claude.ai/artifact/GUuasFC7PQhYAj67nFiNmA
 - Design canvas (mockups): claude.ai/artifact/NUVrA7XN8LsNdYNFzJ19iJ

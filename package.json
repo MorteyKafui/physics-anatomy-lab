@@ -6,7 +6,8 @@
   "packageManager": "bun@1.4.2",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "e2e"
   ],
   "scripts": {
     "dev": "turbo run dev",
@@ -16,7 +17,8 @@
     "test": "turbo run test",
     "check": "turbo run typecheck lint test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "e2e": "bun run --cwd e2e e2e"
   },
   "devDependencies": {
     "@types/bun": "^1.4.3",

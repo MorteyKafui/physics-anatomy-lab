@@ -8,12 +8,13 @@ const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-br
 
 export const metadata: Metadata = {
   title: "Physics Anatomy",
-  description: "Physics from first principles. Build real experiments, take your own readings, and get coached.",
+  description:
+    "Physics from first principles. Build real experiments, take your own readings, and get coached.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable} ${bricolage.variable}`}>
+    <html lang="en-GB" className={`${geist.variable} ${geistMono.variable} ${bricolage.variable}`}>
       <body className="font-sans antialiased">{children}</body>
     </html>
   );

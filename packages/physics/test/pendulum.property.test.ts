@@ -10,7 +10,10 @@ test("a larger swing never has a shorter period", () => {
   fc.assert(
     fc.property(length, g, amplitude, amplitude, (l, gg, a, b) => {
       const [lo, hi] = a < b ? [a, b] : [b, a];
-      return periodExact({ length: l, g: gg, amplitude: hi }) >= periodExact({ length: l, g: gg, amplitude: lo }) * (1 - 1e-12);
+      return (
+        periodExact({ length: l, g: gg, amplitude: hi }) >=
+        periodExact({ length: l, g: gg, amplitude: lo }) * (1 - 1e-12)
+      );
     }),
   );
 });
@@ -18,7 +21,9 @@ test("a larger swing never has a shorter period", () => {
 test("the period scales with the square root of the length", () => {
   fc.assert(
     fc.property(length, g, amplitude, (l, gg, a) => {
-      const ratio = periodExact({ length: 4 * l, g: gg, amplitude: a }) / periodExact({ length: l, g: gg, amplitude: a });
+      const ratio =
+        periodExact({ length: 4 * l, g: gg, amplitude: a }) /
+        periodExact({ length: l, g: gg, amplitude: a });
       return Math.abs(ratio - 2) < 1e-9;
     }),
   );
@@ -27,7 +32,9 @@ test("the period scales with the square root of the length", () => {
 test("the period does not depend on the direction of the swing", () => {
   fc.assert(
     fc.property(length, g, amplitude, (l, gg, a) => {
-      expect(periodExact({ length: l, g: gg, amplitude: -a })).toBe(periodExact({ length: l, g: gg, amplitude: a }));
+      expect(periodExact({ length: l, g: gg, amplitude: -a })).toBe(
+        periodExact({ length: l, g: gg, amplitude: a }),
+      );
     }),
   );
 });

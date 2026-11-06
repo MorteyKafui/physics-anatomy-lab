@@ -1,6 +1,11 @@
 # Gates on every pull request (master plan, "Gates on every pull request").
 # Actions are referenced by version tag here; Renovate's pinGitHubActionDigests
 # rewrites them to full commit SHAs in its first pull request, as the plan requires.
+#
+# Gates not wired yet, because there is nothing for them to check until Phase 1 builds it:
+#   Figures (Anatomy audit and line check) — arrives with packages/apparatus.
+#   AI (evaluation suite) — arrives with the first prompt in apps/api.
+#   Translation (missing strings) — arrives with the first message file in packages/i18n.
 name: CI
 
 on:
@@ -25,9 +30,31 @@ jobs:
         with:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
+      - run: bun run format:check
       - run: bun run typecheck
       - run: bun run lint
       - run: bun run test
+
+  e2e:
+    name: End to end, accessibility and performance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bunx playwright install --with-deps chromium
+        working-directory: e2e
+      - run: bun run e2e
+        working-directory: e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 14
 
   api:
     name: API (Python)

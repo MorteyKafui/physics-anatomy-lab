@@ -21,7 +21,8 @@ export const colour = {
   accentSoft: "#FF8A6E",
 } as const;
 
-export type Topic = "mechanics" | "heat" | "light" | "waves" | "electricity" | "measurement" | "modern";
+export type Topic =
+  "mechanics" | "heat" | "light" | "waves" | "electricity" | "measurement" | "modern";
 
 export const topicHue: Readonly<Record<Topic, string>> = {
   mechanics: "#F5A524",
@@ -35,8 +36,22 @@ export const topicHue: Readonly<Record<Topic, string>> = {
 
 /** Graph colours for the two export modes (decision D31). */
 export const graphPalette = {
-  colour: { gridMinor: "#CFE7C8", gridMajor: "#8FC98A", frame: "#4F8F4A", point: "#B86E00", fit: "#F0482A", triangle: "#6D5BD8" },
-  mono: { gridMinor: "#E3E3E3", gridMajor: "#BDBDBD", frame: "#555555", point: "#141414", fit: "#141414", triangle: "#141414" },
+  colour: {
+    gridMinor: "#CFE7C8",
+    gridMajor: "#8FC98A",
+    frame: "#4F8F4A",
+    point: "#B86E00",
+    fit: "#F0482A",
+    triangle: "#6D5BD8",
+  },
+  mono: {
+    gridMinor: "#E3E3E3",
+    gridMajor: "#BDBDBD",
+    frame: "#555555",
+    point: "#141414",
+    fit: "#141414",
+    triangle: "#141414",
+  },
 } as const;
 
 /** Lyra: zero radius. Only physically round things use `round`. */

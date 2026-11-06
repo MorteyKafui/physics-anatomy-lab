@@ -11,23 +11,23 @@ with a potentiometer, the converging lens, and the method of mixtures.
 
 ## Layout
 
-| Path | Holds |
-|---|---|
-| `apps/web` | Next.js 16: the public site, the lab, teacher and lecturer dashboards |
-| `apps/admin` | Next.js admin portal, behind Cloudflare Access |
-| `apps/api` | FastAPI on PostgreSQL: accounts, sync, live classes, AI, exports |
-| `packages/physics` | Physics models: pure, deterministic, tested |
-| `packages/instruments` | Least count, zero error, human factors, seeded noise |
-| `packages/engine` | Event log, guided steps, rule engine, coach, scoring |
-| `packages/experiments` | One folder per experiment |
-| `packages/apparatus` | The Anatomy kit and every apparatus figure |
-| `packages/analysis` | Units, significant figures, fits, table and graph checks |
-| `packages/ui` | The design system: tokens and components |
-| `packages/api-client` | TypeScript client generated from the API schema |
-| `packages/i18n` | Message files for text and spoken lines |
-| `validation` | Independent Python models that cross-check the TypeScript ones |
-| `design` | The approved mockups: the specification for every screen |
-| `docs` | Guides, reference, decision records, runbooks |
+| Path                   | Holds                                                                 |
+| ---------------------- | --------------------------------------------------------------------- |
+| `apps/web`             | Next.js 16: the public site, the lab, teacher and lecturer dashboards |
+| `apps/admin`           | Next.js admin portal, behind Cloudflare Access                        |
+| `apps/api`             | FastAPI on PostgreSQL: accounts, sync, live classes, AI, exports      |
+| `packages/physics`     | Physics models: pure, deterministic, tested                           |
+| `packages/instruments` | Least count, zero error, human factors, seeded noise                  |
+| `packages/engine`      | Event log, guided steps, rule engine, coach, scoring                  |
+| `packages/experiments` | One folder per experiment                                             |
+| `packages/apparatus`   | The Anatomy kit and every apparatus figure                            |
+| `packages/analysis`    | Units, significant figures, fits, table and graph checks              |
+| `packages/ui`          | The design system: tokens and components                              |
+| `packages/api-client`  | TypeScript client generated from the API schema                       |
+| `packages/i18n`        | Message files for text and spoken lines                               |
+| `validation`           | Independent Python models that cross-check the TypeScript ones        |
+| `design`               | The approved mockups: the specification for every screen              |
+| `docs`                 | Guides, reference, decision records, runbooks                         |
 
 ## Getting started on Windows
 

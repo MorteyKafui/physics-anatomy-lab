@@ -35,6 +35,7 @@ Read these before changing anything:
 bun install                      # TypeScript workspaces
 bun run dev                      # web on :3000, admin on :3001
 bun run check                    # typecheck, lint and test everything
+bun run build; bun run e2e       # end to end, accessibility and performance (Playwright)
 cd apps/api; uv sync; uv run fastapi dev app/main.py   # API on :8000
 cd validation; uv sync; uv run pytest                   # independent physics models
 ```

@@ -1,0 +1,19 @@
+{
+  "name": "@pa/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p .",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@pa/physics": "workspace:*"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^20"
+  }
+}

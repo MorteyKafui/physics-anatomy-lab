@@ -4,3 +4,5 @@ uv.lock
 .next/
 .open-next/
 coverage/
+# The approved mockups are exported from the design canvas: keep them byte for byte.
+design/mockups/
