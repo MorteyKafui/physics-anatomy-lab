@@ -523,14 +523,28 @@ async function clickAt(page: Page, x: number, y: number) {
 async function againstFirstTiming(page: Page) {
   const across = graph(page).getByRole("group", { name: "Across (x)" });
   const up = graph(page).getByRole("group", { name: "Up (y)" });
+  // Each change is waited for, so the next one (and any click) builds on the sheet as shown.
+  const choose = async (select: ReturnType<Page["getByLabel"]>, value: string) => {
+    await select.selectOption(value);
+    await expect(select).toHaveValue(value);
+  };
   await up.getByLabel("Plot").selectOption({ label: "t₁/s" });
-  await across.getByLabel("2 cm stands for").selectOption("0.01");
-  await up.getByLabel("2 cm stands for").selectOption("0.02");
-  // Each axis starts at the highest value at or below its smallest reading.
-  for (const axis of [across, up]) {
-    const starts = axis.getByLabel("Starts at").locator("option");
-    await axis.getByLabel("Starts at").selectOption({ index: (await starts.count()) - 1 });
-  }
+  await expect(graph(page).getByText(/A graph of t₁ against l/)).toBeVisible();
+  await choose(across.getByLabel("2 cm stands for"), "0.01");
+  await choose(across.getByLabel("Starts at"), "0.8");
+  await choose(up.getByLabel("2 cm stands for"), "0.02");
+  // The y axis starts at the highest whole division at or below the smallest timing.
+  const firstTiming = async (row: number) => {
+    const text = await graph(page)
+      .getByRole("button", { name: new RegExp(`^Row ${row}: `) })
+      .textContent();
+    return Number(/, ([\d.]+)/.exec(text ?? "")![1]);
+  };
+  const lowest = Math.min(await firstTiming(1), await firstTiming(2));
+  await choose(
+    up.getByLabel("Starts at"),
+    String(Number((Math.floor(lowest / 0.02 + 1e-9) * 0.02).toPrecision(10))),
+  );
 }
 
 const checksRow = (page: Page, part: string) =>
@@ -576,7 +590,7 @@ test("at Check my work the student plots, draws the line and the triangle, and e
 
   await graph(page).getByRole("button", { name: "Draw the line" }).click();
   await clickAt(page, p1.x, p1.y);
-  await clickAt(page, p2.x + 0.01, p2.y + slope * 0.01);
+  await clickAt(page, p2.x, p2.y);
   await expect(sheetSvg(page).locator('[data-graph="line"]')).toBeVisible();
 
   // A triangle squeezed between the points is too small, and its corners sit on them.

@@ -40,12 +40,20 @@ function AnswerLine({
   flagged: readonly Finding[];
   onWrite: (answer: WrittenAnswer) => void;
 }) {
-  const [draft, setDraft] = useState<WrittenAnswer>();
-  const shown = draft ?? written ?? { value: "", unit: "" };
+  // The student's own copy, kept after each save: a unit typed straight after a value builds
+  // on that value, not on the answer as last saved, which may not have caught up yet.
+  const [mine, setMine] = useState<WrittenAnswer>();
+  const [dirty, setDirty] = useState(false);
+  const shown = mine ?? written ?? { value: "", unit: "" };
   const name = msg(`lab.analyse.name.${id}`);
-  const commit = (next: WrittenAnswer) => {
-    setDraft(undefined);
-    onWrite({ value: next.value.trim(), unit: next.unit.trim() });
+  const edit = (next: WrittenAnswer) => {
+    setMine(next);
+    setDirty(true);
+  };
+  const commit = () => {
+    if (!dirty) return;
+    setDirty(false);
+    onWrite({ value: shown.value.trim(), unit: shown.unit.trim() });
   };
   const check = expected && (shown.value || shown.unit) ? checkAnswer(shown, expected) : undefined;
   const field =
@@ -69,9 +77,9 @@ function AnswerLine({
             className={cn(field, "w-24")}
             aria-invalid={flagged.some((f) => f.rule !== "analysis-unit") || undefined}
             value={shown.value}
-            onChange={(e) => setDraft({ ...shown, value: e.target.value })}
-            onBlur={() => draft && commit(draft)}
-            onKeyDown={(e) => e.key === "Enter" && draft && commit(draft)}
+            onChange={(e) => edit({ ...shown, value: e.target.value })}
+            onBlur={commit}
+            onKeyDown={(e) => e.key === "Enter" && commit()}
           />
           <input
             aria-label={t("lab.analyse.unit", { name })}
@@ -81,9 +89,9 @@ function AnswerLine({
             className={cn(field, "w-28")}
             aria-invalid={flagged.some((f) => f.rule === "analysis-unit") || undefined}
             value={shown.unit}
-            onChange={(e) => setDraft({ ...shown, unit: e.target.value })}
-            onBlur={() => draft && commit(draft)}
-            onKeyDown={(e) => e.key === "Enter" && draft && commit(draft)}
+            onChange={(e) => edit({ ...shown, unit: e.target.value })}
+            onBlur={commit}
+            onKeyDown={(e) => e.key === "Enter" && commit()}
           />
           {marks && check && (
             <span className="flex flex-wrap gap-x-2 font-sans text-xs">
