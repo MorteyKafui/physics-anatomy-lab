@@ -38,3 +38,4 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0031](./0031-graphs-download-in-colour.md)           | Graphs download in colour                                            | 2026-11-06 |
 | [0032](./0032-decisions-apply-everywhere.md)          | Decisions apply everywhere, not only where first made                | 2026-11-06 |
 | [0033](./0033-phase-0-mockups-complete.md)            | Phase 0 mockup set complete                                          | 2026-11-06 |
+| [0034](./0034-type-geist-and-bricolage.md)            | Type: Geist, Geist Mono and Bricolage Grotesque                      | 2026-11-06 |
