@@ -39,3 +39,4 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0032](./0032-decisions-apply-everywhere.md)          | Decisions apply everywhere, not only where first made                | 2026-11-06 |
 | [0033](./0033-phase-0-mockups-complete.md)            | Phase 0 mockup set complete                                          | 2026-11-06 |
 | [0034](./0034-type-geist-and-bricolage.md)            | Type: Geist, Geist Mono and Bricolage Grotesque                      | 2026-11-06 |
+| [0035](./0035-digital-stopwatch.md)                   | The stopwatch is digital and reads to 0.01 s                         | 2026-11-06 |
