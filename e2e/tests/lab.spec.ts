@@ -523,14 +523,28 @@ async function clickAt(page: Page, x: number, y: number) {
 async function againstFirstTiming(page: Page) {
   const across = graph(page).getByRole("group", { name: "Across (x)" });
   const up = graph(page).getByRole("group", { name: "Up (y)" });
+  // Each change is waited for, so the next one (and any click) builds on the sheet as shown.
+  const choose = async (select: ReturnType<Page["getByLabel"]>, value: string) => {
+    await select.selectOption(value);
+    await expect(select).toHaveValue(value);
+  };
   await up.getByLabel("Plot").selectOption({ label: "t₁/s" });
-  await across.getByLabel("2 cm stands for").selectOption("0.01");
-  await up.getByLabel("2 cm stands for").selectOption("0.02");
-  // Each axis starts at the highest value at or below its smallest reading.
-  for (const axis of [across, up]) {
-    const starts = axis.getByLabel("Starts at").locator("option");
-    await axis.getByLabel("Starts at").selectOption({ index: (await starts.count()) - 1 });
-  }
+  await expect(graph(page).getByText(/A graph of t₁ against l/)).toBeVisible();
+  await choose(across.getByLabel("2 cm stands for"), "0.01");
+  await choose(across.getByLabel("Starts at"), "0.8");
+  await choose(up.getByLabel("2 cm stands for"), "0.02");
+  // The y axis starts at the highest whole division at or below the smallest timing.
+  const firstTiming = async (row: number) => {
+    const text = await graph(page)
+      .getByRole("button", { name: new RegExp(`^Row ${row}: `) })
+      .textContent();
+    return Number(/, ([\d.]+)/.exec(text ?? "")![1]);
+  };
+  const lowest = Math.min(await firstTiming(1), await firstTiming(2));
+  await choose(
+    up.getByLabel("Starts at"),
+    String(Number((Math.floor(lowest / 0.02 + 1e-9) * 0.02).toPrecision(10))),
+  );
 }
 
 const checksRow = (page: Page, part: string) =>
@@ -576,7 +590,7 @@ test("at Check my work the student plots, draws the line and the triangle, and e
 
   await graph(page).getByRole("button", { name: "Draw the line" }).click();
   await clickAt(page, p1.x, p1.y);
-  await clickAt(page, p2.x + 0.01, p2.y + slope * 0.01);
+  await clickAt(page, p2.x, p2.y);
   await expect(sheetSvg(page).locator('[data-graph="line"]')).toBeVisible();
 
   // A triangle squeezed between the points is too small, and its corners sit on them.
@@ -648,4 +662,102 @@ test("no sideways scrolling at phone width on the graph sheet", async ({ page },
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );
   expect(sideways).toBe(0);
+});
+
+/** Plot at Auto (the graph drawn for you, then kept), carry on, and arrive at Analyse. */
+async function toAnalyse(page: Page) {
+  await toPlot(page);
+  await page.getByRole("button", { name: "Finish plotting" }).click();
+  const carryOn = page.getByRole("button", { name: "Carry on as it is" });
+  if (await carryOn.isVisible()) await carryOn.click();
+  await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
+}
+
+const working = (page: Page) => page.getByRole("region", { name: "Your calculation" });
+
+/** The slope the student's own triangle gives, to 3 significant figures, from the working. */
+async function slopeFromWorking(page: Page) {
+  const line = await working(page)
+    .getByText(/^= [-\d.]+ ⁄ [-\d.]+ =/)
+    .textContent();
+  const [, rise, run] = /= ([-\d.]+) ⁄ ([-\d.]+)/.exec(line ?? "")!;
+  return Number(rise) / Number(run);
+}
+
+test("at Auto the slope and g are worked out for you, the book's way", async ({ page }) => {
+  await toAnalyse(page);
+  await expect(working(page).getByText(/^slope = CB ⁄ AC = \(/)).toBeVisible();
+  await expect(working(page).locator('[data-answer="slope"]')).toHaveText(/ s² m⁻¹$/);
+  await expect(working(page).locator('[data-answer="g"]')).toHaveText(/ m s⁻²$/);
+  await expect(working(page).getByText("Worked out for you")).toBeVisible();
+  await expect(working(page)).toContainText("stays hidden until you have read your feedback");
+});
+
+test("at Check my work each answer is checked for value, unit and significant figures", async ({
+  page,
+}) => {
+  await toAnalyse(page);
+  await chooseHelp(page, "Check my work");
+  const slope = await slopeFromWorking(page);
+  const value = working(page).getByRole("textbox", { name: "Value of the slope" });
+  const unit = working(page).getByRole("textbox", { name: "Unit of the slope" });
+  const marks = (text: string) => working(page).getByText(text, { exact: true }).locator("..");
+
+  // The catalogue's mistake: two significant figures and no unit.
+  await value.fill(slope.toPrecision(2));
+  await value.press("Enter");
+  await expect(marks("value right")).toHaveClass(/text-ok/);
+  await expect(marks("3 s.f.")).toHaveClass(/text-warn/);
+  await expect(marks("unit given")).toHaveClass(/text-warn/);
+
+  await value.fill(slope.toPrecision(3));
+  await value.press("Enter");
+  await unit.fill("s^2/m");
+  await unit.press("Enter");
+  await expect(marks("3 s.f.")).toHaveClass(/text-ok/);
+  await expect(marks("unit given")).toHaveClass(/text-ok/);
+
+  // g is checked against the student's own slope; a wrong one is flagged with its reason.
+  const g = working(page).getByRole("textbox", { name: "Value of g" });
+  await g.fill("1.00");
+  await g.press("Enter");
+  await working(page).getByRole("textbox", { name: "Unit of g" }).fill("m s⁻²");
+  await working(page).getByRole("textbox", { name: "Unit of g" }).press("Enter");
+  await page.getByRole("button", { name: "Check my working" }).click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Your g, 1.00, does not follow from your working" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Show me where" }).click();
+  await expect(g).toBeFocused();
+
+  // The working survives a reload.
+  await page.reload();
+  await expect(working(page).getByRole("textbox", { name: "Unit of the slope" })).toHaveValue(
+    "s^2/m",
+  );
+});
+
+test("the calculator works with units and says when a sum has no meaning", async ({ page }) => {
+  await toAnalyse(page);
+  const input = page.getByRole("textbox", { name: "Calculation, with units" });
+  await input.fill("4 pi^2 / (4.03 s^2 m^-1)");
+  await page.getByRole("button", { name: "Work it out" }).click();
+  await expect(page.getByText("= 9.80 m s⁻²")).toBeVisible();
+  await expect(page.getByText("Your measured values allow 3 significant figures.")).toBeVisible();
+  await input.fill("2 m + 3 s");
+  await page.getByRole("button", { name: "Work it out" }).click();
+  await expect(
+    page.getByText("You cannot add or take away quantities with different units."),
+  ).toBeVisible();
+});
+
+test("analysing, with answers marked, has no serious accessibility issues", async ({ page }) => {
+  await toAnalyse(page);
+  await chooseHelp(page, "Check my work");
+  const value = working(page).getByRole("textbox", { name: "Value of the slope" });
+  await value.fill("4.0");
+  await value.press("Enter");
+  await page.getByRole("button", { name: "Check my working" }).click();
+  await page.clock.resume();
+  expect(await seriousViolations(page)).toEqual([]);
 });

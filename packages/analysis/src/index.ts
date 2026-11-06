@@ -56,6 +56,7 @@ export {
   ON_POINT_MM,
   onLineAt,
   onPaper,
+  readingDecimals,
   referenceLine,
   scalesAround,
   SHEET,
@@ -80,3 +81,16 @@ export {
   triangleSmall,
 } from "./graph-rules";
 export type { GraphContext, GraphRule } from "./graph-rules";
+export {
+  BASE_UNITS,
+  calculate,
+  checkAnswer,
+  DIMENSIONLESS,
+  dimensionless,
+  formatDims,
+  formatQuantity,
+  parseUnit,
+  sameDimension,
+  UNIT_SYMBOLS,
+} from "./quantity";
+export type { AnswerCheck, CalcProblem, CalcResult, Dims, Quantity } from "./quantity";

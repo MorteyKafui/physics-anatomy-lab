@@ -5,11 +5,13 @@
  * Multiplication may be written by placing things side by side, as in "4π²l". Nothing is
  * evaluated with eval, so a formula can never run code.
  *
- * The calculator (step 8) adds units and significant figures on top of this.
+ * Powers may also be written as superscripts with a sign (m⁻¹, s⁻²), which the calculator
+ * (step 8, quantity.ts) uses to read units the way a textbook writes them.
  */
 
 export type Expr =
-  | { type: "number"; value: number }
+  /** A number, with the text it was written as, so its significant figures can be read. */
+  | { type: "number"; value: number; raw?: string }
   | { type: "symbol"; name: string }
   | { type: "unary"; op: "-"; arg: Expr }
   | { type: "binary"; op: "+" | "-" | "*" | "/" | "^"; left: Expr; right: Expr }
@@ -26,11 +28,18 @@ export type ParseResult =
   | { ok: false; problem: FormulaProblem; at: number; near?: string | undefined };
 
 type Token =
-  | { kind: "number"; value: number; at: number }
+  | { kind: "number"; value: number; raw: string; at: number }
   | { kind: "name"; value: string; at: number }
-  | { kind: "op"; value: string; at: number };
+  | { kind: "op"; value: string; at: number }
+  /** A superscript power: ² is 2, ⁻¹ is −1. */
+  | { kind: "power"; value: number; at: number };
 
-const SUPERSCRIPT_POWER: Record<string, number> = { "²": 2, "³": 3 };
+const SUPERSCRIPT_DIGITS = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+const SUPERSCRIPT = /^⁻?[⁰¹²³⁴⁵⁶⁷⁸⁹]+/;
+const superscriptValue = (text: string) => {
+  const digits = [...text.replace("⁻", "")].map((d) => SUPERSCRIPT_DIGITS.indexOf(d)).join("");
+  return (text.startsWith("⁻") ? -1 : 1) * Number(digits);
+};
 // An unknown symbol is one letter (Latin or Greek) with any subscript digits, primes or an
 // underscore suffix: l, t₁, θ, T_1, v'. So "lT" is l times T, as a student means it.
 const NAME = /^[\p{L}][₀-₉']*(?:_[\p{L}\d]+)?/u;
@@ -49,7 +58,7 @@ function tokenise(text: string, known: readonly string[]): Token[] | { at: numbe
     }
     const num = /^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/.exec(text.slice(i));
     if (num) {
-      tokens.push({ kind: "number", value: Number(num[0]), at: i });
+      tokens.push({ kind: "number", value: Number(num[0]), raw: num[0], at: i });
       i += num[0].length;
       continue;
     }
@@ -70,9 +79,15 @@ function tokenise(text: string, known: readonly string[]): Token[] | { at: numbe
       i += name[0].length;
       continue;
     }
+    const sup = SUPERSCRIPT.exec(text.slice(i));
+    if (sup) {
+      tokens.push({ kind: "power", value: superscriptValue(sup[0]), at: i });
+      i += sup[0].length;
+      continue;
+    }
     const op = { "×": "*", "·": "*", "÷": "/", "⁄": "/", "−": "-", "–": "-" }[c] ?? c;
-    if ("+-*/^()".includes(op) || c in SUPERSCRIPT_POWER) {
-      tokens.push({ kind: "op", value: c in SUPERSCRIPT_POWER ? c : op, at: i });
+    if ("+-*/^()".includes(op)) {
+      tokens.push({ kind: "op", value: op, at: i });
       i += 1;
       continue;
     }
@@ -141,14 +156,9 @@ export function parseFormula(text: string, known: readonly string[] = []): Parse
       if (t?.kind === "op" && t.value === "^") {
         pos += 1;
         base = { type: "binary", op: "^", left: base, right: unary() };
-      } else if (t?.kind === "op" && t.value in SUPERSCRIPT_POWER) {
+      } else if (t?.kind === "power") {
         pos += 1;
-        base = {
-          type: "binary",
-          op: "^",
-          left: base,
-          right: { type: "number", value: SUPERSCRIPT_POWER[t.value]! },
-        };
+        base = { type: "binary", op: "^", left: base, right: { type: "number", value: t.value } };
       } else return base;
     }
   }
@@ -158,7 +168,7 @@ export function parseFormula(text: string, known: readonly string[] = []): Parse
     if (!t) return fail("unexpected");
     if (t.kind === "number") {
       pos += 1;
-      return { type: "number", value: t.value };
+      return { type: "number", value: t.value, raw: t.raw };
     }
     if (t.kind === "name") {
       pos += 1;

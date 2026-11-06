@@ -161,3 +161,30 @@ test("a scale that uses exactly half an axis is enough, despite rounding in 0.85
   };
   expect(fired(half)).not.toContain("graph-scale-small");
 });
+
+test("a point half a small square from its place is within the tolerance (found in CI)", () => {
+  // The sheet snaps to 1 mm, so a click one step off lands exactly 1 mm away: still right.
+  const halfSquare: GraphContext = {
+    ...good,
+    sheet: {
+      x: { column: "l", start: 0.8, per2cm: 0.01 },
+      y: { column: "t1", start: 1.98, per2cm: 0.02 },
+    },
+    data: [
+      { row: "a", x: 0.8, y: 1.99 },
+      { row: "b", x: 0.85, y: 2.21 },
+    ],
+    plotted: [
+      { row: "a", x: 0.8, y: 1.991 },
+      { row: "b", x: 0.85, y: 2.21 },
+    ],
+    line: undefined,
+    triangle: undefined,
+  };
+  expect(fired(halfSquare)).not.toContain("graph-misplotted");
+  const twoSteps = {
+    ...halfSquare,
+    plotted: [{ row: "a", x: 0.8, y: 1.992 }, halfSquare.plotted[1]!],
+  };
+  expect(fired(twoSteps)).toContain("graph-misplotted");
+});

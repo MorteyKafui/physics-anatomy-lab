@@ -198,6 +198,45 @@ export const enGB = {
   "lab.graph.part.fine": "fine",
   "lab.steps.finishPlotting": "Finish plotting",
 
+  "lab.analyse.label": "Your calculation",
+  "lab.analyse.slopeFormula": "slope = CB ⁄ AC = ({yb} − {ya}) {yu} ⁄ ({xb} − {xa}) {xu}",
+  "lab.analyse.slopeStep": "= {rise} ⁄ {run} =",
+  "lab.analyse.gFormula": "g = 4π² ⁄ slope = {fourPiSquared} ⁄ {slope} =",
+  "lab.analyse.value": "Value of {name}",
+  "lab.analyse.unit": "Unit of {name}",
+  "lab.analyse.name.slope": "the slope",
+  "lab.analyse.name.g": "g",
+  "lab.analyse.mark.value": "value right",
+  "lab.analyse.mark.sigFigs": "3 s.f.",
+  "lab.analyse.mark.unit": "unit given",
+  "lab.analyse.workedOut": "Worked out for you",
+  "lab.analyse.needTriangle":
+    "Draw your slope triangle on the graph first: the slope comes from it.",
+  "lab.analyse.backToPlot": "Back to Plot",
+  "lab.analyse.otherGraph":
+    "Your graph plots {y} against {x}. The slope of T² against l is what gives g, so plot those to work g out.",
+  "lab.analyse.hidden":
+    "The accepted value for your location stays hidden until you have read your feedback.",
+  "lab.analyse.check": "Check my working",
+  "lab.analyse.calculator": "Calculator",
+  "lab.analyse.calcLabel": "Calculation, with units",
+  "lab.analyse.calcHint":
+    "Type a calculation with units, such as 4π² / (4.03 s² m⁻¹), or 4 pi^2 / (4.03 s^2 m^-1).",
+  "lab.analyse.calcResult": "= {value}",
+  "lab.analyse.calcFigures": "Your measured values allow {n} significant figures.",
+  "lab.analyse.calcGo": "Work it out",
+  "lab.steps.finishAnalysing": "Finish analysing",
+
+  "calc.problem.empty": "Type a calculation first.",
+  "calc.problem.unexpected": "Check the calculation near {near}.",
+  "calc.problem.unclosed": "A bracket is not closed.",
+  "calc.problem.unknown-unit": "{near} is not a unit the calculator knows.",
+  "calc.problem.unlike-units": "You cannot add or take away quantities with different units.",
+  "calc.problem.power-has-unit": "A power must be a plain number, without a unit.",
+  "calc.problem.needs-no-unit": "A logarithm needs a plain number, without a unit.",
+  "calc.problem.undefined":
+    "That has no value: check for a division by zero or a square root of a negative.",
+
   "quantity.length": "Length",
   "quantity.inverse-length": "Inverse length",
   "quantity.area": "Area",
@@ -288,6 +327,12 @@ export const enGB = {
   "experiments.simple-pendulum.plot.line": "Draw one straight best-fit line through the points",
   "experiments.simple-pendulum.plot.triangle":
     "Draw a large slope triangle, off the plotted points",
+  "experiments.simple-pendulum.analyse.title": "Work out g from your slope",
+  "experiments.simple-pendulum.analyse.why":
+    "From T² = (4π² ⁄ g) l, the slope of your line is 4π² ⁄ g, so g = 4π² ⁄ slope.",
+  "experiments.simple-pendulum.analyse.slope":
+    "Work out the slope from your triangle, to 3 significant figures, with its unit",
+  "experiments.simple-pendulum.analyse.g": "Work out g = 4π² ⁄ slope, with its unit",
   "experiments.simple-pendulum.measure.title": "Time {swings} oscillations",
   "experiments.simple-pendulum.measure.why":
     "Timing many swings and dividing makes your reaction time a tiny part of the result.",
@@ -394,6 +439,21 @@ export const enGB = {
   "graph.triangleOnPoint.title": "A corner of your triangle sits on a plotted point",
   "graph.triangleOnPoint.detail":
     "Take A and B from the line itself, away from the plotted points, as the marking guide asks.",
+  "analysis.valueWrong.title": "Your {name}, {typed}, does not follow from your working",
+  "analysis.valueWrong.detail":
+    "Work it out again from the values above. g is checked against your own slope, so one slip is not counted twice.",
+  "analysis.unitMissing.title": "Give the unit of your {name}",
+  "analysis.unitMissing.detail":
+    "An answer without its unit loses the mark. Work it out with the values: the slope's unit is the y unit over the x unit.",
+  "analysis.unitWrong.title": "{typed} is not the unit of your {name}",
+  "analysis.unitWrong.detail":
+    "Carry the units through the calculation as you do the numbers, and the unit of the answer follows.",
+  "analysis.sigFigs.title": "Your {name} has {written} significant figures",
+  "analysis.sigFigs.detail":
+    "Give the answer to three significant figures, as the marking guide asks.",
+  "analysis.unreadable.title": "{typed} is not a number",
+  "analysis.unreadable.detail":
+    "Write the value with digits and a decimal point only, such as 4.03.",
   "findings.pendulum.countFromOne.title": 'You said "one" on the first pass',
   "findings.pendulum.countFromOne.detail":
     "That pass starts the timing, so it is zero. Counting from one times {timed} swings, and your g would come out about {percent}% too high.",

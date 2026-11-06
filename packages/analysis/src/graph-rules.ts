@@ -112,7 +112,8 @@ export const misplotted: GraphRule = {
   check: ({ sheet, data, plotted }) => {
     const wrong = plotted.filter((p) => {
       const d = data.find((x) => x.row === p.row);
-      return d !== undefined && mmBetween(sheet, p, d) > PLOT_TOLERANCE_MM;
+      // Half a square is within the tolerance; the slack keeps rounding from tipping it over.
+      return d !== undefined && mmBetween(sheet, p, d) > PLOT_TOLERANCE_MM + 1e-6;
     });
     return wrong.length
       ? [

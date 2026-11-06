@@ -33,3 +33,5 @@ export type {
 } from "./table/table";
 export { decideGraph, EMPTY_GRAPH, graphProjection } from "./graph/graph";
 export type { GraphCommand, GraphDecision, GraphRefusal, GraphState } from "./graph/graph";
+export { answersProjection, EMPTY_ANSWERS, writeAnswer } from "./answers/answers";
+export type { AnswersState, WrittenAnswer } from "./answers/answers";

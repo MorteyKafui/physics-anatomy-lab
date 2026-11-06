@@ -8,6 +8,7 @@ import {
   mmFromLine,
   onLineAt,
   onPaper,
+  readingDecimals,
   referenceLine,
   scalesAround,
   SHEET,
@@ -163,6 +164,8 @@ export function graphView(
 const VIEW = { x: -26, y: -10, w: 234, h: 276 };
 const svgY = (mm: number) => SHEET.heightMm - mm;
 const fmt = (axis: Axis, v: number) => v.toFixed(decimalsForResolution(axis.per2cm));
+/** A value read off the sheet, to a small square: as the working in Analyse shows it. */
+const read = (axis: Axis, v: number) => v.toFixed(readingDecimals(axis));
 
 function gridPath(step: number, skip: number | undefined) {
   let d = "";
@@ -332,8 +335,8 @@ export function GraphPanel({
       ? nextRow
         ? t("lab.graph.next", {
             row: data.findIndex((d) => d.row === nextRow.row) + 1,
-            x: fmt(sheet.x, nextRow.x),
-            y: fmt(sheet.y, nextRow.y),
+            x: read(sheet.x, nextRow.x),
+            y: read(sheet.y, nextRow.y),
           })
         : data.length
           ? t("lab.graph.allPlotted")
@@ -714,8 +717,8 @@ export function GraphPanel({
                     >
                       {t("lab.graph.point", {
                         row: i + 1,
-                        x: fmt(sheet.x, d.x),
-                        y: fmt(sheet.y, d.y),
+                        x: read(sheet.x, d.x),
+                        y: read(sheet.y, d.y),
                       })}
                       {done && (
                         <CheckIcon
@@ -742,7 +745,7 @@ export function GraphPanel({
                 ] as const
               ).map(([name, p]) => (
                 <span key={name}>
-                  {t("lab.graph.corner", { name, x: fmt(sheet.x, p.x), y: fmt(sheet.y, p.y) })}
+                  {t("lab.graph.corner", { name, x: read(sheet.x, p.x), y: read(sheet.y, p.y) })}
                 </span>
               ))}
             </div>

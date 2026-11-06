@@ -53,3 +53,15 @@ export {
   stepLength,
 } from "./pendulum-table";
 export type { PendulumReading, PendulumTemplate } from "./pendulum-table";
+export {
+  ANALYSIS_RULES,
+  answerRules,
+  expectedAnswers,
+  G_DIMS,
+  gFromSlope,
+  PENDULUM_ANSWERS,
+  plotsTSquaredAgainstL,
+  slopeOf,
+  typedQuantity,
+} from "./pendulum-analysis";
+export type { AnalysisContext, PendulumAnswer, TypedAnswer } from "./pendulum-analysis";
