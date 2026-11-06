@@ -1,0 +1,14 @@
+# Known vulnerabilities we have looked at and accepted for a limited time.
+# Every entry needs a reason and an ignoreUntil date; when the date passes, CI fails again
+# and the entry must be fixed or reviewed. Never ignore a vulnerability in code that ships.
+
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249" # minimatch 10.x: denial of service from an attacker-supplied glob
+ignoreUntil = 2026-12-06T00:00:00Z
+reason = """
+Only @typescript-eslint/typescript-estree pulls in minimatch 10 (it asks for ^10.2.2, even in
+typescript-eslint 8.72.1, the latest). The fix is in minimatch 11 only, and Bun cannot override a
+nested dependency without also replacing the minimatch 3 that ESLint needs. minimatch runs only in
+ESLint, a development tool, on glob patterns from our own config, so no attacker can supply a
+pattern, and nothing ships to users. Remove this entry once typescript-eslint moves to minimatch 11.
+"""

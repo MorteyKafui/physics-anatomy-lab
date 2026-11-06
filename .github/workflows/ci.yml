@@ -25,7 +25,7 @@ jobs:
     name: Types, lint and tests (TypeScript)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.2
@@ -39,17 +39,19 @@ jobs:
     name: End to end, accessibility and performance
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
       - run: bun run build
-      - run: bunx playwright install --with-deps chromium
+      # Headless shell only, and no --with-deps: the runner image already has Chromium's system
+      # libraries, and the apt step alone took 8 minutes for fonts the tests do not use.
+      - run: bunx playwright install --only-shell chromium
         working-directory: e2e
       - run: bun run e2e
         working-directory: e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
@@ -75,8 +77,8 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://pa_app:pa_app@localhost:5432/physics_anatomy_test
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3 # setup-uv publishes no floating major tag
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
@@ -90,25 +92,33 @@ jobs:
       run:
         working-directory: validation
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3 # setup-uv publishes no floating major tag
       - run: uv sync --locked
       - run: uv run pytest
 
   secrets:
     name: Secret scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read # gitleaks lists a pull request's commits to scan only those
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   vulnerabilities:
     name: Known vulnerabilities
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.0.0
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.7.0
+    with:
+      # Code scanning is not available on this private repository, so the SARIF upload fails.
+      # The job still fails on any known vulnerability (fail-on-vuln defaults to true) and keeps
+      # the SARIF file as a run artifact. Turn this back on if code scanning is enabled.
+      upload-sarif: false
     permissions:
       contents: read
       security-events: write
