@@ -8,8 +8,13 @@ From the repository root, in PowerShell:
 powershell -ExecutionPolicy Bypass -File scripts\setup-windows.ps1
 ```
 
-It installs everything, runs every check, creates the lockfiles, offers to create the databases
-and commits the lockfiles. The steps below are what it does, if you prefer to run them by hand.
+It installs everything, turns on the pre-push guard, runs every check and offers to create the
+databases. It never commits: if a lockfile changed, it prints the commands to commit it on a
+branch. The steps below are what it does, if you prefer to run them by hand.
+
+The pre-push guard (`.githooks/pre-push`) refuses any push to `main`, so every change goes
+through a branch and a pull request. GitHub cannot enforce branch protection on this private
+repository on its current plan, so the guard is what keeps `main` safe.
 
 ## By hand
 
@@ -24,9 +29,8 @@ No Docker is needed (decision D23). You need:
 
 ```powershell
 cd $HOME\Desktop\physics-anatomy
-bun install
+bun install          # also turns on the pre-push guard (.githooks)
 bun run check        # typecheck, lint and tests
-git add bun.lock; git commit -m "chore: add bun lockfile"
 ```
 
 ## 2. Create the databases
@@ -43,10 +47,9 @@ This creates the `pa_app` role, `physics_anatomy_dev` and `physics_anatomy_test`
 ## 3. Run the API
 
 ```powershell
-uv sync                         # creates .venv and uv.lock
+uv sync                         # creates .venv from uv.lock
 uv run pytest
 uv run fastapi dev app/main.py  # http://localhost:8000/docs
-git add uv.lock; git commit -m "chore: add api lockfile"
 ```
 
 ## 4. Run the physics validation
@@ -55,7 +58,6 @@ git add uv.lock; git commit -m "chore: add api lockfile"
 cd ..\..\validation
 uv sync
 uv run pytest
-git add uv.lock; git commit -m "chore: add validation lockfile"
 ```
 
 ## 5. Run the apps

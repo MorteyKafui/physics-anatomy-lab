@@ -44,5 +44,8 @@ cd validation; uv sync; uv run pytest                   # independent physics mo
 
 - `main` is protected and always deployable. Work on short-lived branches:
   `feat/…`, `fix/…`, `exp/<experiment-id>`, `docs/…`, `chore/…`.
+- GitHub does not enforce branch protection on this private repository on its current plan.
+  The guard is `.githooks/pre-push`, which refuses pushes to `main`; `bun install` turns it on.
+  Never skip it with `--no-verify`.
 - Conventional Commits. Pull requests are squash-merged and use the template
   (problem, change, proof, risk). A human always presses merge.
