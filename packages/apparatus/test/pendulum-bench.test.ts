@@ -102,3 +102,11 @@ describe("the magnifier", () => {
     expect(html.match(/#[0-9a-fA-F]{3,6}\b/g)).toBeNull();
   });
 });
+
+describe("the length of the thread", () => {
+  test("is drawn to scale: a 1.000 m pendulum hangs 1.25 times as far as 0.800 m", () => {
+    const short = bobCentre(draw(0));
+    const long = bobCentre(draw(0, { length: 1 }));
+    expect((long.y - 148) / (short.y - 148)).toBeCloseTo(1.25, 9);
+  });
+});

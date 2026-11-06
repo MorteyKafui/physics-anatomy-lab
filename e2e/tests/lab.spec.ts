@@ -198,15 +198,15 @@ test("counting from one is caught, with the size of the error worked out from th
 test("a reading survives a reload, and Reset and try again removes it", async ({ page }) => {
   await toMeasure(page);
   await timeCountingFromOne(page);
-  await expect(page.getByText(/^Readings: \d+\.\d{2} s$/)).toBeVisible();
+  await expect(page.getByText(/^Readings: 0\.800 m: \d+\.\d{2} s$/)).toBeVisible();
 
   await page.reload();
   await expect(page.getByText("Step 5 of 10 · Measure")).toBeVisible();
-  await expect(page.getByText(/^Readings: \d+\.\d{2} s$/)).toBeVisible();
+  await expect(page.getByText(/^Readings: 0\.800 m: \d+\.\d{2} s$/)).toBeVisible();
 
   await timeCountingFromOne(page);
   await page.getByRole("button", { name: "Reset and try again" }).click();
-  await expect(page.getByText(/^Readings: \d+\.\d{2} s$/)).toBeVisible();
+  await expect(page.getByText(/^Readings: 0\.800 m: \d+\.\d{2} s$/)).toBeVisible();
   await expect(page.getByText(/^Readings: .*, /)).toHaveCount(0);
 });
 
@@ -229,7 +229,7 @@ test("the stopwatch works from the keyboard", async ({ page }, info) => {
   await page.keyboard.press(" ");
   await page.clock.runFor(1000);
   await page.keyboard.press("s");
-  await expect(page.getByText(/^Readings: \d+\.\d{2} s$/)).toBeVisible();
+  await expect(page.getByText(/^Readings: 0\.800 m: \d+\.\d{2} s$/)).toBeVisible();
 });
 
 test("building, with a part in hand and the coach speaking, has no serious accessibility issues", async ({
@@ -268,4 +268,212 @@ test("no sideways scrolling at phone width, building or measuring", async ({ pag
   await page.getByRole("button", { name: "Finish building" }).click();
   await page.getByRole("button", { name: "Continue to Measure" }).click();
   expect(await sideways()).toBe(0);
+});
+
+/** Time 20 oscillations that take `seconds` on the fake clock. */
+async function timeFor(page: Page, seconds: number) {
+  await page.getByRole("button", { name: "Start", exact: true }).click();
+  await page.clock.runFor(seconds * 1000);
+  await page.getByRole("button", { name: "Stop", exact: true }).click();
+}
+
+/** Measure twice at 0.800 m and twice at 0.850 m, then go on to Tabulate. */
+async function toTabulate(page: Page) {
+  await toMeasure(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await timeFor(page, 2);
+  await timeFor(page, 2);
+  await page.getByRole("button", { name: "Make the pendulum longer" }).click();
+  await timeFor(page, 2.2);
+  await timeFor(page, 2.2);
+  await page.getByRole("button", { name: "Finish measuring" }).click();
+  await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
+}
+
+const results = (page: Page) => page.getByRole("region", { name: "Results table" });
+const cell = (page: Page, row: number, head: string) =>
+  results(page).getByRole("textbox", { name: `Row ${row}, ${head}`, exact: true });
+
+/** The help level is chosen on the desktop header; the phone keeps the default (Auto). */
+async function chooseHelp(page: Page, level: "Auto" | "Check my work" | "On my own") {
+  test.skip(test.info().project.name === "phone", "The help level is set on desktop");
+  await page.getByRole("combobox", { name: "Help level" }).selectOption({ label: level });
+}
+
+test("the pendulum is timed at several lengths, each reading keeping its length", async ({
+  page,
+}) => {
+  await toMeasure(page);
+  const length = page.getByRole("group", { name: "Length l" });
+  await expect(length).toContainText("0.800 m");
+  await page.getByRole("button", { name: "Make the pendulum longer" }).click();
+  await expect(length).toContainText("0.850 m");
+  await page.getByRole("button", { name: "Make the pendulum shorter" }).click();
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await timeFor(page, 2);
+  await page.getByRole("button", { name: "Make the pendulum longer" }).click();
+  await timeFor(page, 2.2);
+  await expect(
+    page.getByText(/^Readings: 0\.800 m: \d+\.\d{2} s · 0\.850 m: \d+\.\d{2} s$/),
+  ).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("group", { name: "Length l" })).toContainText("0.850 m");
+});
+
+test("at Auto the standard table fills in the readings and works out t, T and T²", async ({
+  page,
+}) => {
+  await toTabulate(page);
+  await results(page).getByRole("button", { name: "Standard" }).click();
+  await expect(results(page).getByRole("columnheader")).toHaveText([
+    /^l\/m/,
+    /^t₁\/s/,
+    /^t₂\/s/,
+    /^t\/s/,
+    /^T\/s/,
+    /^T²\/s²/,
+    /Remove row/,
+  ]);
+  await results(page).getByRole("button", { name: "Fill in my readings" }).click();
+  await expect(cell(page, 1, "l/m")).toHaveValue("0.800");
+  await expect(cell(page, 2, "l/m")).toHaveValue("0.850");
+  await expect(cell(page, 1, "t₁/s")).toHaveValue(/^\d+\.\d{2}$/);
+  // The worked-out cells are shown, not typed: the mean to one more place, T and T² to 4 figures.
+  await expect(results(page).getByRole("row").nth(1)).toContainText(/\d+\.\d{3}/);
+  await expect(page.getByText("Worked out for you")).toBeVisible();
+});
+
+test("at Check my work each worked-out cell is ticked or flagged with its reason", async ({
+  page,
+}) => {
+  await toTabulate(page);
+  await chooseHelp(page, "Check my work");
+  await results(page).getByRole("button", { name: "Standard" }).click();
+  await cell(page, 1, "l/m").fill("0.800");
+  await cell(page, 1, "t₁/s").fill("2.00");
+  await cell(page, 1, "t₂/s").fill("2.00");
+  await cell(page, 1, "t/s").fill("2.0");
+  await cell(page, 1, "T/s").fill("0.1000");
+  await cell(page, 1, "T/s").press("Tab");
+  // A mean takes one more decimal place than its readings: 2.0 needs three.
+  await expect(cell(page, 1, "t/s")).toHaveAttribute("aria-invalid", "true");
+  await expect(cell(page, 1, "t/s")).toHaveAccessibleDescription(
+    "Row 1, mean t: 2.0 needs 3 decimal places",
+  );
+  await cell(page, 1, "t/s").fill("2.000");
+  await cell(page, 1, "t/s").press("Tab");
+  await expect(cell(page, 1, "t/s")).not.toHaveAttribute("aria-invalid", "true");
+  await expect(results(page).getByRole("row").nth(1).getByLabel("checked")).toHaveCount(2);
+
+  await cell(page, 1, "T/s").fill("0.2500");
+  await cell(page, 1, "T/s").press("Tab");
+  await expect(cell(page, 1, "T/s")).toHaveAttribute("aria-invalid", "true");
+
+  // Asked, the coach gives the single most serious problem: one complete row is too few.
+  await page.getByRole("button", { name: "Check my table" }).click();
+  const card = page.getByRole("status").filter({ hasText: "1 of 5 sets of readings so far" });
+  await expect(card).toBeVisible();
+  await card.getByRole("button", { name: "Back to Measure" }).click();
+  await expect(page.getByText("Step 5 of 10 · Measure")).toBeVisible();
+});
+
+test("a table of the student's own design is checked for what it means", async ({ page }) => {
+  await toTabulate(page);
+  await chooseHelp(page, "Check my work");
+  await results(page).getByRole("button", { name: "Draw your own" }).click();
+  await expect(results(page)).toContainText("Your table has no columns yet");
+
+  const addColumn = async (
+    button: "Column" | "Formula column",
+    symbol: string,
+    role: string,
+    quantity: string,
+    unit: string,
+    formula?: string,
+  ) => {
+    await results(page).getByRole("button", { name: button, exact: true }).click();
+    const form = results(page).getByRole("form", { name: "New column" });
+    await form.getByLabel("Symbol", { exact: true }).fill(symbol);
+    await form.getByLabel("What goes in it").selectOption({ label: role });
+    await form.getByLabel("Quantity").selectOption({ label: quantity });
+    await form.getByLabel("Unit").selectOption({ label: unit });
+    if (formula !== undefined) await form.getByLabel("Formula", { exact: true }).fill(formula);
+    return form;
+  };
+  const save = (form: Awaited<ReturnType<typeof addColumn>>) =>
+    form.getByRole("button", { name: "Save column" }).click();
+
+  await save(await addColumn("Column", "l", "A setting you choose", "Length", "cm"));
+  await save(await addColumn("Column", "t", "A reading", "Time", "s"));
+  // A formula may only use the table's own columns.
+  const bad = await addColumn(
+    "Formula column",
+    "T",
+    "Worked out by a formula",
+    "Time",
+    "s",
+    "t / n",
+  );
+  await expect(bad).toContainText("Your table has no column called n.");
+  await expect(bad.getByRole("button", { name: "Save column" })).toBeDisabled();
+  await bad.getByLabel("Formula", { exact: true }).fill("t / 20");
+  await save(bad);
+  // A heading without its unit is flagged on the heading itself.
+  await save(
+    await addColumn(
+      "Formula column",
+      "T²",
+      "Worked out by a formula",
+      "Time squared",
+      "No unit yet",
+      "T²",
+    ),
+  );
+  await expect(results(page).getByRole("columnheader", { name: /^T²/ })).toContainText(
+    "Add the unit to T²: T²/s²",
+  );
+
+  // Selecting the reading column lets it be repeated: t becomes t₁ and t₂ with their mean.
+  await results(page)
+    .getByRole("button", { name: /^t\/s reading ?, change this column$/ })
+    .click();
+  await results(page).getByRole("button", { name: "Cancel" }).click();
+  await results(page).getByRole("button", { name: "Repeat", exact: true }).click();
+  await expect(results(page).getByRole("columnheader")).toHaveText([
+    /^l\/cm/,
+    /^t₁\/s/,
+    /^t₂\/s/,
+    /^t\/s/,
+    /^T\/s/,
+    /^T²/,
+    /Remove row/,
+  ]);
+});
+
+test("tabulating, with cells flagged and the coach speaking, has no serious accessibility issues", async ({
+  page,
+}) => {
+  await toTabulate(page);
+  await chooseHelp(page, "Check my work");
+  await results(page).getByRole("button", { name: "Standard" }).click();
+  await cell(page, 1, "t/s").fill("35,9O");
+  await cell(page, 1, "t/s").press("Tab");
+  await page.getByRole("button", { name: "Check my table" }).click();
+  await page.clock.resume();
+  expect(await seriousViolations(page)).toEqual([]);
+});
+
+test("no sideways scrolling at phone width while tabulating, even with a cell flagged", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "phone", "Phone layout");
+  await toTabulate(page);
+  await results(page).getByRole("button", { name: "Standard" }).click();
+  await cell(page, 1, "t₁/s").fill("35,9O");
+  await cell(page, 1, "t₁/s").press("Tab");
+  await expect(cell(page, 1, "t₁/s")).toHaveAttribute("aria-invalid", "true");
+  const sideways = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(sideways).toBe(0);
 });

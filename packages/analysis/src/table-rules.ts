@@ -2,7 +2,7 @@ import type { Finding, Rule } from "./findings";
 import { findOutlier } from "./outliers";
 import { decimalsForResolution } from "./sigfigs";
 import { leastCountInColumnUnit, type ParsedTable } from "./table";
-import { fromSI, suspectedUnitSlip } from "./units";
+import { fromSI, suspectedUnitSlip, UNITS } from "./units";
 
 /**
  * Checks on the results table, harvested from Physics Bench and fitted to WASSCE tabulation:
@@ -48,6 +48,25 @@ export const tooFewRows: TableRule = {
       }),
     ];
   },
+};
+
+/** Headings are quantity over unit (T²/s², l/m): a column without its unit loses the mark. */
+export const headingUnits: TableRule = {
+  id: "table-heading-unit",
+  skill: "tabulation",
+  check: ({ table }) =>
+    table.columns
+      .filter((c) => c.unit === "" && c.kind !== "count")
+      .map((column) => {
+        const unit = UNITS[column.kind][0]!.symbol;
+        return finding({
+          rule: "table-heading-unit",
+          severity: "warning",
+          key: "table.headingUnit",
+          params: { symbol: column.symbol, heading: `${column.symbol}/${unit}` },
+          column: column.id,
+        });
+      }),
 };
 
 export const unreadableCells: TableRule = {
@@ -314,6 +333,7 @@ export const readingToRepeat: TableRule = {
 
 export const TABLE_RULES: TableRule[] = [
   tooFewRows,
+  headingUnits,
   unreadableCells,
   inconsistentDecimals,
   precisionVsInstrument,

@@ -39,3 +39,17 @@ export type {
   PendulumPart,
   PendulumSlot,
 } from "./pendulum-assembly";
+export {
+  asReading,
+  LENGTHS,
+  lengthProjection,
+  PENDULUM_INSTRUMENTS,
+  PENDULUM_PLOT,
+  PENDULUM_STANDARD_TABLE,
+  PENDULUM_TEMPLATES,
+  readingsIntoTable,
+  setLength,
+  STARTING_ROWS,
+  stepLength,
+} from "./pendulum-table";
+export type { PendulumReading, PendulumTemplate } from "./pendulum-table";
