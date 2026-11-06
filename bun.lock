@@ -72,6 +72,9 @@
     "packages/analysis": {
       "name": "@pa/analysis",
       "version": "0.0.0",
+      "devDependencies": {
+        "fast-check": "^4",
+      },
     },
     "packages/api-client": {
       "name": "@pa/api-client",
@@ -100,6 +103,9 @@
     "packages/physics": {
       "name": "@pa/physics",
       "version": "0.0.0",
+      "devDependencies": {
+        "@pa/analysis": "workspace:*",
+      },
     },
     "packages/ui": {
       "name": "@pa/ui",

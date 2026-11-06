@@ -10,5 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -p .",
     "test": "bun test"
+  },
+  "devDependencies": {
+    "@pa/analysis": "workspace:*"
   }
 }
