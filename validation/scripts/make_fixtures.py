@@ -6,6 +6,8 @@ lens.json      converging lens (ray-transfer matrices)    read by packages/physi
 mixtures.json  method of mixtures (SciPy brentq)          read by packages/physics
 fit.json       straight-line fits (SciPy linregress)       read by packages/analysis
 sigfigs.json   significant figures (Python decimal)        read by packages/analysis
+student_t.json Student's t CDF and quantiles (SciPy)      read by packages/analysis
+outliers.json  Bonferroni outlier test (hat matrix)       read by packages/analysis
 """
 
 import itertools
@@ -17,6 +19,7 @@ from pa_validation.circuits import balance_length, ohms_law_readings
 from pa_validation.fit import fit_line, fit_through_origin
 from pa_validation.lens import image
 from pa_validation.mixtures import final_temperature, solid_specific_heat
+from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
 from pa_validation.pendulum import period_exact
 from pa_validation.sigfigs import format_sig_figs, parse_figure
 
@@ -229,6 +232,75 @@ def build_mixtures() -> dict[str, object]:
     }
 
 
+def build_student_t() -> dict[str, object]:
+    from scipy import stats
+
+    dfs = [1, 2, 3, 4, 5, 7, 10, 20, 50]
+    ps = [0.9, 0.95, 0.975, 0.99, 0.995, 0.999, 0.9999]
+    ts = [-3.0, -1.0, 0.0, 0.5, 1.0, 2.0, 4.0, 10.0]
+    return {
+        "model": "Student's t, scipy.stats.t",
+        "quantiles": [{"p": p, "df": df, "t": float(stats.t.ppf(p, df))} for df in dfs for p in ps],
+        "cdf": [{"t": t, "df": df, "p": float(stats.t.cdf(t, df))} for df in dfs for t in ts],
+    }
+
+
+OUTLIER_DATASETS: list[dict[str, object]] = [
+    {
+        "name": "pendulum: T² against l, clean (the table mockup)",
+        "x": [1.0, 0.9, 0.8, 0.7, 0.6],
+        "y": [(t / 20) ** 2 for t in (40.1, 38.1, 35.9, 33.5, 31.1)],
+    },
+    {
+        "name": "8 readings, one 3 units off",
+        "x": [1, 2, 3, 4, 5, 6, 7, 8],
+        "y": [2 * x + (3 if x == 5 else 0.05 * (x % 2)) for x in range(1, 9)],
+    },
+    {
+        "name": "Ohm's law, one reading 10× (a unit slip)",
+        "x": [0.10, 0.20, 0.30, 0.40, 0.50, 0.60],
+        "y": [0.52, 1.01, 14.9, 2.03, 2.48, 3.02],
+    },
+    {
+        "name": "Ohm's law, clean",
+        "x": [0.10, 0.20, 0.30, 0.40, 0.50, 0.60],
+        "y": [0.52, 1.01, 1.49, 2.03, 2.48, 3.02],
+    },
+    {
+        "name": "cooling, one misread",
+        "x": [0, 60, 120, 180, 240, 300, 360],
+        "y": [80.0, 76.9, 74.1, 61.0, 68.2, 65.1, 62.3],
+    },
+    {
+        "name": "10 readings, mild scatter, no outlier",
+        "x": list(range(1, 11)),
+        "y": [1.02, 1.98, 3.05, 3.97, 5.01, 6.04, 6.95, 8.02, 8.99, 10.03],
+    },
+]
+
+
+def build_outliers() -> dict[str, object]:
+    cases = []
+    for data in OUTLIER_DATASETS:
+        xs = [float(v) for v in data["x"]]  # type: ignore[union-attr]
+        ys = [float(v) for v in data["y"]]  # type: ignore[union-attr]
+        cases.append(
+            {
+                "name": data["name"],
+                "x": xs,
+                "y": ys,
+                "deletedResiduals": deleted_residuals(xs, ys),
+                "critical": critical_value(len(xs)),
+                "outlier": find_outlier(xs, ys),
+            }
+        )
+    return {
+        "model": "Bonferroni outlier test, hat matrix and scipy.stats.t",
+        "alpha": 0.05,
+        "cases": cases,
+    }
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -245,3 +317,5 @@ if __name__ == "__main__":
     write("circuits.json", build_circuits())
     write("lens.json", build_lens())
     write("mixtures.json", build_mixtures())
+    write("student_t.json", build_student_t())
+    write("outliers.json", build_outliers())

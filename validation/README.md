@@ -10,9 +10,11 @@ validation", levels 1 and 2).
 - `pa_validation/lens.py` images with paraxial ray-transfer matrices.
 - `pa_validation/mixtures.py` solves the energy balance by root-finding with SciPy.
 - `pa_validation/fit.py` fits straight lines with SciPy's `linregress` and NumPy's least squares.
+- `pa_validation/outliers.py` computes deleted residuals from the hat matrix and the Bonferroni
+  critical value from `scipy.stats.t`.
 - `pa_validation/sigfigs.py` counts significant figures with Python's `decimal` module.
 - `scripts/make_fixtures.py` writes the fixtures: `pendulum.json`, `circuits.json`, `lens.json`,
-  `mixtures.json`, `fit.json` and `sigfigs.json`. The
+  `mixtures.json`, `fit.json`, `sigfigs.json`, `student_t.json` and `outliers.json`. The
   TypeScript tests in `packages/physics` and `packages/analysis` read them and must match to 1
   part in 10¹² (pendulum) and 10¹⁰ (fits); significant figures must match exactly.
 - `tests/` checks the Python model on its own and that the committed fixtures are current.
