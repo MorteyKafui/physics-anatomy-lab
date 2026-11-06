@@ -7,7 +7,7 @@ request that introduces it.
 
 - **Amplitude (θ₀).** The largest angle a pendulum swings from the vertical. Kept below 10° in
   the practical so the period does not depend on it.
-- **Least count.** The smallest division an instrument can read: 0.1 s for the stopwatch,
+- **Least count.** The smallest division an instrument can read: 0.01 s for the digital stopwatch,
   1 mm for the metre rule. It sets how many decimal places a reading carries.
 - **Zero error.** The reading an instrument shows when it should read zero.
 - **Oscillation (swing).** One full to-and-fro movement back to the starting position, moving the
