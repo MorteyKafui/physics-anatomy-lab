@@ -13,6 +13,7 @@
   "dependencies": {
     "@pa/analysis": "workspace:*",
     "@pa/apparatus": "workspace:*",
+    "@pa/audio": "workspace:*",
     "@pa/engine": "workspace:*",
     "@pa/experiments": "workspace:*",
     "@pa/i18n": "workspace:*",

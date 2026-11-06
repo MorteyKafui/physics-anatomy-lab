@@ -838,3 +838,60 @@ test("a symbol card open over the lab has no serious accessibility issues", asyn
   await expect(page.getByRole("dialog")).toBeVisible();
   expect(await seriousViolations(page)).toEqual([]);
 });
+
+async function turnSoundOn(page: Page) {
+  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page.getByRole("checkbox", { name: "Sound on" }).check();
+  await page.keyboard.press("Escape");
+}
+const caption = (page: Page) => page.getByRole("status", { name: "What the coach says" });
+
+test("sound is off until turned on; then every line is captioned, and the choice is kept", async ({
+  page,
+}) => {
+  await page.goto(LAB);
+  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(caption(page)).toHaveCount(0);
+  await turnSoundOn(page);
+  await expect(caption(page)).toHaveText(
+    "Question. This step's activity is built next in Phase 1.",
+  );
+  await page.getByRole("button", { name: "Continue to Predict" }).click();
+  await expect(caption(page)).toHaveText("Predict. This step's activity is built next in Phase 1.");
+  await page.reload();
+  await expect(caption(page)).toBeVisible();
+});
+
+test("the count-along says 0 at the start and counts each oscillation", async ({ page }) => {
+  await toMeasure(page);
+  await turnSoundOn(page);
+  await expect(caption(page)).toContainText("Time 20 oscillations");
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 3000));
+  await page.getByRole("button", { name: "Start", exact: true }).click();
+  await expect(caption(page)).toHaveText("0");
+  // The bench's period at 0.800 m is about 1.80 s: a little over one period gives "1".
+  await page.clock.runFor(2100);
+  await expect(caption(page)).toHaveText("1");
+  await page.clock.runFor(1800);
+  await expect(caption(page)).toHaveText("2");
+});
+
+test("the coach says a correction aloud, and its caption shows it", async ({ page }) => {
+  await toMeasure(page);
+  await turnSoundOn(page);
+  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page.getByRole("checkbox", { name: "Count along while timing" }).uncheck();
+  await page.keyboard.press("Escape");
+  await timeCountingFromOne(page);
+  await expect(caption(page)).toContainText('You said "one" on the first pass');
+});
+
+test("the sound settings, open over the lab, have no serious accessibility issues", async ({
+  page,
+}) => {
+  await page.goto(LAB);
+  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await expect(page.getByRole("checkbox", { name: "Sound on" })).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+});
