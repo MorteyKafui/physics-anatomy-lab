@@ -1,0 +1,30 @@
+# Every text file is stored and checked out with LF, on Windows too.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF so PowerShell and cmd read them correctly.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.mp4 binary
+*.ogg binary
+*.wav binary
+*.zip binary
+*.tar binary
+*.docx binary
+*.xlsx binary
+
+# Lockfiles: no diffs in review, still committed
+bun.lock linguist-generated=true -diff
+uv.lock linguist-generated=true -diff

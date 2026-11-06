@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lab on a phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0D0D0D; color: #F0F0F0; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45; display: flex; flex-direction: column; overflow: hidden">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 12px 12px 10px; border-bottom: 1px solid #242322">
+    <a href="#back" aria-label="Back to experiments" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #F0F0F0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+      <span style="font-weight: 600">Simple pendulum</span>
+      <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">5 of 10 · Measure</span>
+    </div>
+    <button type="button" aria-label="Voice on" style="width: 44px; height: 44px; background: #161616; border: 1px solid #2A2928; color: #F0F0F0; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path></svg></button>
+    <button type="button" aria-label="Take a snapshot" style="width: 44px; height: 44px; background: #F0482A; border: 0; color: #141414; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"></path><circle cx="12" cy="13" r="3"></circle></svg></button>
+  </div>
+  <div style="height: 3px; background: #2A2928"><div style="width: 40%; height: 3px; background: #F0482A"></div></div>
+
+  <div style="position: relative; height: 330px; display: flex; align-items: center; justify-content: center">
+    <svg viewBox="0 40 420 420" style="width: 330px; height: auto; display: block" role="img" aria-label="Simple pendulum on a retort stand, swinging">
+      <polygon points="210,300 400,380 210,460 20,380" fill="#121211" stroke="#2A2928"></polygon>
+      <polygon points="200,340 260,365 230,378 170,353" fill="#3A3936" stroke="#55534F"></polygon>
+      <polygon points="170,353 230,378 230,386 170,361" fill="#262524"></polygon>
+      <polygon points="230,378 260,365 260,373 230,386" fill="#1C1B1A"></polygon>
+      <rect x="202" y="70" width="7" height="280" fill="#8F8C86"></rect>
+      <rect x="196" y="96" width="19" height="14" fill="#5A5853"></rect>
+      <line x1="215" y1="103" x2="295" y2="136" stroke="#77746E" stroke-width="6" stroke-linecap="round"></line>
+      <polygon points="293,132 307,138 307,150 293,144" fill="#B98B5E"></polygon>
+      <line x1="300" y1="150" x2="300" y2="336" stroke="#4A4845" stroke-dasharray="3 4"></line>
+      <line x1="300" y1="148" x2="330" y2="318" stroke="#E8E4DC" stroke-width="1.3"></line>
+      <circle cx="330" cy="322" r="13" fill="#F0482A"></circle>
+      <ellipse cx="322" cy="404" rx="16" ry="5" fill="#000000" opacity="0.45"></ellipse>
+    </svg>
+    <div style="position: absolute; left: 12px; bottom: 10px; display: flex; gap: 16px; background: #161616; border: 1px solid #2A2928; padding: 8px 12px; font-family: 'Geist Mono', monospace">
+      <span><span style="font-size: 22px">17.9</span> <span style="color: #A3A19B">s</span></span>
+      <span><span style="font-size: 22px">10</span> <span style="color: #A3A19B">of 20</span></span>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; background: #161616; border-top: 1px solid #2A2928; display: flex; flex-direction: column">
+    <div style="display: flex; justify-content: center; padding: 8px 0 2px"><span style="width: 40px; height: 4px; background: #3A3936"></span></div>
+    <div role="tablist" aria-label="Coach" style="display: flex; gap: 20px; padding: 0 16px; border-bottom: 1px solid #2A2928; font-size: 14px">
+      <span role="tab" aria-selected="true" style="padding: 10px 0; border-bottom: 2px solid #F0482A">Instructions</span>
+      <span role="tab" aria-selected="false" style="padding: 10px 0; color: #A3A19B">Explanation</span>
+      <span role="tab" aria-selected="false" style="padding: 10px 0; color: #A3A19B">Tips</span>
+    </div>
+    <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 21px">Time 20 oscillations</span>
+      <div style="display: flex; align-items: center; gap: 10px; background: #2A1914; border: 1px solid #F0482A; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #F0482A; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">2</span><span>Start the stopwatch as the bob passes the mark. Say <b>zero</b>.</span></div>
+      <div role="status" style="background: #2B2112; border: 1px solid #F5A524; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600; color: #F5C46B">You said "one" on the first pass</span>
+        <span style="color: #E8E4DC">That pass is zero. Counting from one times 19 swings, so g comes out about 11% too high.</span>
+        <div style="display: flex; gap: 8px">
+          <button type="button" style="min-height: 44px; padding: 0 14px; background: #F0F0F0; color: #141414; border: 0; font: 600 14px Geist, sans-serif">Try again</button>
+          <button type="button" style="min-height: 44px; padding: 0 14px; background: transparent; color: #F0F0F0; border: 1px solid #55534F; font: 500 14px Geist, sans-serif">Show me</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav aria-label="Stages" style="display: flex; gap: 6px; padding: 10px 12px; background: #111110; border-top: 1px solid #242322; overflow-x: auto">
+    <span style="flex: 0 0 auto; padding: 8px 10px; border: 1px solid #242322; color: #C9C6BF; font-size: 13px">✓ Build</span>
+    <span style="flex: 0 0 auto; padding: 8px 10px; border: 1px solid #242322; color: #C9C6BF; font-size: 13px">✓ Check</span>
+    <span style="flex: 0 0 auto; padding: 8px 10px; border: 1px solid #F0482A; background: #1E1D1D; font-size: 13px">● Measure</span>
+    <span style="flex: 0 0 auto; padding: 8px 10px; border: 1px solid #242322; color: #8F8D88; font-size: 13px">Tabulate</span>
+    <span style="flex: 0 0 auto; padding: 8px 10px; border: 1px solid #242322; color: #8F8D88; font-size: 13px">Plot</span>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

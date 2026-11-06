@@ -1,0 +1,45 @@
+# Source scans and OCR are copyrighted: they stay on this computer only (decision D12)
+research/
+*.scan.*
+
+# Dependencies and builds
+node_modules/
+.turbo/
+.next/
+.open-next/
+.wrangler/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Tests and screenshots
+test-results/
+playwright-report/
+blob-report/
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+.dev.vars
+*.pem
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp

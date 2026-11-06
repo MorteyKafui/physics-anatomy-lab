@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin portal: overview</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+a{color:#F2F0EA}
+.ad-f:focus-visible{outline:2px solid #F0482A;outline-offset:2px}
+.ad-row:hover{background:#1A1A19}
+.ad-nav:hover{background:#1A1A19;color:#F2F0EA}
+.ad-btn:hover{border-color:#55534F}
+.ad-icon:hover{background:#242322}
+@keyframes adIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes adUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes adPop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.ad-drawer{animation:adIn .25s cubic-bezier(.2,.8,.2,1)}
+.ad-toast{animation:adUp .25s ease}
+.ad-pal{animation:adPop .18s ease}
+@media (prefers-reduced-motion:reduce){.ad-drawer,.ad-toast,.ad-pal{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 1000px; background: #0A0A0A; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45; padding: 14px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+
+  <!-- SIDEBAR -->
+  <nav aria-label="Admin" style="flex: 1 1 236px; max-width: 256px; background: #111110; border: 1px solid #1E1D1D; padding: 16px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 6px">
+      <span style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px"><span style="width: 28px; height: 28px; background: #F2F0EA; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#0D0D0D" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg></span>Admin</span>
+      <button class="ad-f ad-icon" type="button" aria-label="Notifications, 2 new" style="position: relative; width: 30px; height: 30px; background: transparent; border: 0; color: #C9C6BF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span style="position: absolute; top: 5px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: #F0482A"></span></button>
+    </div>
+    <button class="ad-f ad-btn" type="button" onClick="{{openPal}}" style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; background: #0D0D0D; border: 1px solid #2A2928; color: #A3A19B; font: 14px Geist, sans-serif; cursor: pointer; text-align: left"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span style="flex: 1">Search…</span><span style="font: 12px 'Geist Mono', monospace; border: 1px solid #2A2928; padding: 0 6px; color: #A3A19B">/</span></button>
+
+    <div style="display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 12px; color: #8F8D88; padding: 4px 8px">Platform</span>
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="12">
+        <div style="display: flex; flex-direction: column">
+          <button class="ad-f ad-nav" type="button" onClick="{{n.click}}" aria-expanded="{{n.expanded}}" style="{{n.st}}">
+            <span style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg></span>
+            <span style="flex: 1">{{n.name}}</span>
+            <span style="{{n.badgeSt}}">{{n.badge}}</span>
+            <span style="{{n.chevSt}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+          </button>
+          <sc-if value="{{n.expanded}}" hint-placeholder-val="{{false}}">
+            <div style="display: flex; flex-direction: column; padding: 2px 0 4px 34px">
+              <sc-for list="{{n.kids}}" as="k" hint-placeholder-count="3"><a class="ad-f ad-nav" href="#admin" style="padding: 6px 10px; font-size: 13px; color: #A3A19B; text-decoration: none">{{k}}</a></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 12px; color: #8F8D88; padding: 4px 8px">Flagship experiments, completion</span>
+      <sc-for list="{{flags}}" as="f" hint-placeholder-count="4">
+        <a class="ad-f ad-nav" href="#admin" style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; color: #C9C6BF; text-decoration: none; font-size: 13px">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="#2A2928" stroke-width="2.2"></circle><circle cx="8" cy="8" r="6" fill="none" stroke="{{f.hue}}" stroke-width="2.2" stroke-dasharray="{{f.dash}}" transform="rotate(-90 8 8)"></circle></svg>
+          <span style="flex: 1">{{f.name}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #8F8D88">{{f.pct}}</span>
+        </a>
+      </sc-for>
+    </div>
+
+    <span style="flex: 1"></span>
+    <div style="border: 1px solid #2A2928; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #0D0D0D">
+      <span style="font-size: 13px; font-weight: 600; color: #F5C46B">Running cost, projected</span>
+      <span style="font-size: 12px; color: #A3A19B">$222 this month for 1,000 students, from the cost model. $0.22 per student.</span>
+      <span style="display: flex; height: 6px; gap: 2px"><span style="flex: 174; background: #F2F0EA"></span><span style="flex: 48; background: repeating-linear-gradient(45deg, #F5A524 0 2px, #3A2A0F 2px 4px)"></span></span>
+      <span style="display: flex; justify-content: space-between; font-size: 12px"><span><b style="font-family: 'Geist Mono', monospace; font-weight: 500">$174</b> <span style="color: #8F8D88">fixed</span></span><span><b style="font-family: 'Geist Mono', monospace; font-weight: 500">$48</b> <span style="color: #8F8D88">usage</span></span></span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 6px">
+      <span style="width: 30px; height: 30px; background: #2A2928; display: flex; align-items: center; justify-content: center; font: 600 12px Geist, sans-serif">MK</span>
+      <span style="display: flex; flex-direction: column; flex: 1; min-width: 0"><span style="font-size: 13px; font-weight: 500">Mortey Kafui</span><span style="font-size: 12px; color: #8F8D88">Platform admin</span></span>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main style="flex: 999 1 720px; min-width: 0; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 16px; border-bottom: 1px solid #1E1D1D">
+      <span style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #A3A19B"><span style="width: 10px; height: 10px; border-radius: 50%; background: #F0482A"></span>Physics Anatomy <span>›</span> <span style="color: #F2F0EA">Overview</span></span>
+      <span style="font-size: 12px; color: #F5C46B; border: 1px solid #4A3A16; background: #1E180C; padding: 2px 8px" title="Numbers follow the 1,000-student scenario in the running-cost model">Example data: 1,000-student scenario</span>
+      <span style="flex: 1"></span>
+      <div role="group" aria-label="Time range" style="display: inline-flex; border: 1px solid #2A2928">
+        <sc-for list="{{ranges}}" as="r" hint-placeholder-count="3"><button class="ad-f" type="button" onClick="{{r.pick}}" aria-pressed="{{r.on}}" style="{{r.st}}">{{r.label}}</button></sc-for>
+      </div>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #A3A19B">Environment
+        <select class="ad-f" style="height: 32px; background: #0D0D0D; border: 1px solid #2A2928; color: #F2F0EA; padding: 0 8px; font: 13px Geist, sans-serif"><option>Production</option><option>Staging</option><option>Development</option></select>
+      </label>
+      <button class="ad-f" type="button" style="height: 32px; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: #F2F0EA; color: #0D0D0D; border: 0; font: 600 13px Geist, sans-serif; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>Export</button>
+    </div>
+
+    <div style="padding: 14px; display: flex; flex-direction: column; gap: 14px">
+      <!-- KPI tiles -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 500">Active students</span><span style="color: #8F8D88; font-size: 13px">30 days</span></span>
+            <span style="display: flex; align-items: baseline; gap: 10px"><span style="font-family: 'Geist Mono', monospace; font-size: 28px">1,000</span></span>
+            <span style="display: flex; height: 6px; gap: 3px"><span style="flex: 600; background: #6CC25A"></span><span style="flex: 400; background: #3A3936"></span></span>
+            <span style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: 12px; color: #C9C6BF"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>In a class <b style="margin-left: auto; font-family: 'Geist Mono', monospace; font-weight: 500">600</b></span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #55534F"></span>No class <b style="margin-left: auto; font-family: 'Geist Mono', monospace; font-weight: 500">400</b></span></span>
+          </div>
+          <a class="ad-f ad-row" href="#usage" style="margin-top: auto; padding: 10px 16px; border-top: 1px solid #1E1D1D; display: flex; justify-content: space-between; color: #C9C6BF; text-decoration: none; font-size: 13px">View usage<span>→</span></a>
+        </div>
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 500">Classes</span><span style="color: #8F8D88; font-size: 13px">Now</span></span>
+            <span style="display: flex; align-items: baseline; gap: 6px"><span style="font-family: 'Geist Mono', monospace; font-size: 28px">15</span><span style="font-size: 13px; color: #8F8D88">40 students each</span></span>
+            <span style="display: flex; height: 6px; gap: 3px"><span style="flex: 6; background: #8B7CF6"></span><span style="flex: 9; background: #3A3936"></span></span>
+            <span style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: 12px; color: #C9C6BF"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #8B7CF6"></span>AI on <b style="margin-left: auto; font-family: 'Geist Mono', monospace; font-weight: 500">6</b></span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #55534F"></span>AI off <b style="margin-left: auto; font-family: 'Geist Mono', monospace; font-weight: 500">9</b></span></span>
+          </div>
+          <a class="ad-f ad-row" href="#classes" style="margin-top: auto; padding: 10px 16px; border-top: 1px solid #1E1D1D; display: flex; justify-content: space-between; color: #C9C6BF; text-decoration: none; font-size: 13px">Review AI settings<span>→</span></a>
+        </div>
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+            <span style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 500">Reports finished</span><span style="color: #8F8D88; font-size: 13px">{{rangeLabel}}</span></span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 28px">{{reportsText}}</span>
+            <svg viewBox="0 0 200 44" preserveAspectRatio="none" style="width: 100%; height: 44px; display: block" aria-hidden="true"><path d="{{sparkArea}}" fill="rgba(108,194,90,.16)"></path><path d="{{sparkLine}}" fill="none" stroke="#6CC25A" stroke-width="1.6"></path></svg>
+          </div>
+          <a class="ad-f ad-row" href="#learning" style="margin-top: auto; padding: 10px 16px; border-top: 1px solid #1E1D1D; display: flex; justify-content: space-between; color: #C9C6BF; text-decoration: none; font-size: 13px">View learning<span>→</span></a>
+        </div>
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+            <span style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 500">Failed syncs</span><span style="color: #8F8D88; font-size: 13px">14 days</span></span>
+            <span style="display: flex; align-items: baseline; gap: 8px"><span style="font-family: 'Geist Mono', monospace; font-size: 28px">9</span><span style="font-size: 12px; color: #8F8D88">3 today, all retried</span></span>
+            <div aria-hidden="true" style="display: flex; align-items: flex-end; gap: 3px; height: 44px">
+              <sc-for list="{{failBars}}" as="b" hint-placeholder-count="14"><span style="{{b.st}}"></span></sc-for>
+            </div>
+          </div>
+          <a class="ad-f ad-row" href="#system" style="margin-top: auto; padding: 10px 16px; border-top: 1px solid #1E1D1D; display: flex; justify-content: space-between; color: #C9C6BF; text-decoration: none; font-size: 13px">View sync log<span>→</span></a>
+        </div>
+      </div>
+
+      <!-- Stage chart + needs attention -->
+      <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+        <section aria-label="Where students stop" style="flex: 999 1 520px; min-width: 0; background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #1E1D1D">
+            <span style="display: flex; flex-direction: column"><span style="font-weight: 500; font-size: 15px">Where students stop: simple pendulum</span><span style="font-size: 13px; color: #8F8D88">{{chartSub}}</span></span>
+            <span style="display: flex; align-items: center; gap: 14px; font-size: 12px; color: #C9C6BF">
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #6CC25A"></span>Reached</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #F0482A"></span>Biggest drop</span>
+              <span role="group" aria-label="Count" style="display: inline-flex; border: 1px solid #2A2928"><button class="ad-f" type="button" onClick="{{showAttempts}}" aria-pressed="{{byAttempts}}" style="{{segA}}">Attempts</button><button class="ad-f" type="button" onClick="{{showStudents}}" aria-pressed="{{byStudents}}" style="{{segS}}">Students</button></span>
+            </span>
+          </div>
+          <div style="position: relative; padding: 16px 16px 10px 54px; display: flex; flex-direction: column; gap: 6px">
+            <div aria-hidden="true" style="position: absolute; left: 12px; top: 16px; bottom: 34px; width: 36px; display: flex; flex-direction: column; justify-content: space-between; font: 11px 'Geist Mono', monospace; color: #6B6963; text-align: right">
+              <sc-for list="{{yTicks}}" as="t" hint-placeholder-count="4"><span>{{t}}</span></sc-for>
+            </div>
+            <div style="height: 250px; display: flex; align-items: stretch; gap: 8px">
+              <sc-for list="{{stages}}" as="s" hint-placeholder-count="10">
+                <div onMouseEnter="{{s.enter}}" onMouseLeave="{{barOff}}" style="position: relative; flex: 1; min-width: 0; background: #161616; display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer">
+                  <span style="{{s.fill}}"></span>
+                  <sc-if value="{{s.tip}}" hint-placeholder-val="{{false}}">
+                    <span role="tooltip" style="position: absolute; z-index: 3; bottom: calc({{s.pct}}% + 8px); left: 50%; transform: translateX(-50%); background: #F2F0EA; color: #0D0D0D; padding: 7px 9px; font-size: 12px; width: max-content; display: flex; flex-direction: column; gap: 1px; pointer-events: none"><b style="font-weight: 600">{{s.name}}</b><span style="font-family: 'Geist Mono', monospace">{{s.nText}} reached</span><span style="font-family: 'Geist Mono', monospace; color: #5F5D57">{{s.dropText}}</span></span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display: flex; gap: 8px; font-size: 11px; color: #8F8D88">
+              <sc-for list="{{stages}}" as="s" hint-placeholder-count="10"><span style="flex: 1; min-width: 0; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{s.name}}</span></sc-for>
+            </div>
+          </div>
+        </section>
+
+        <section aria-label="Needs attention" style="flex: 1 1 340px; min-width: 0; background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 16px; border-bottom: 1px solid #1E1D1D">
+            <span style="display: flex; flex-direction: column"><span style="font-weight: 500; font-size: 15px">Needs attention</span><span style="font-size: 13px; color: #8F8D88">{{attnSub}}</span></span>
+          </div>
+          <sc-for list="{{attn}}" as="a" hint-placeholder-count="5">
+            <button class="ad-f ad-row" type="button" onClick="{{a.open}}" style="{{a.rowSt}}">
+              <span style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; text-align: left">
+                <span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span style="font-size: 14px; color: #F2F0EA">{{a.title}}</span><span style="{{a.chipSt}}">{{a.chip}}</span></span>
+                <span style="font-size: 12px; color: #8F8D88">{{a.meta}}</span>
+              </span>
+              <span style="width: 30px; height: 30px; border: 1px solid #2A2928; display: flex; align-items: center; justify-content: center; color: #C9C6BF; flex: 0 0 auto"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{a.icon}}"></path></svg></span>
+            </button>
+          </sc-for>
+        </section>
+      </div>
+
+      <!-- Mistakes table + system health -->
+      <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+        <section aria-label="Most common mistakes" style="flex: 999 1 520px; min-width: 0; background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #1E1D1D">
+            <span style="display: flex; flex-direction: column"><span style="font-weight: 500; font-size: 15px">Most common mistakes</span><span style="font-size: 13px; color: #8F8D88">Across all four experiments, {{rangeLabelLower}}</span></span>
+            <button class="ad-f ad-btn" type="button" style="height: 30px; padding: 0 10px; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 13px Geist, sans-serif; cursor: pointer">Export CSV</button>
+          </div>
+          <div style="overflow-x: auto">
+            <div role="table" aria-label="Most common mistakes" style="min-width: 680px; font-size: 13px">
+              <div role="row" style="display: grid; grid-template-columns: minmax(220px, 2.2fr) minmax(110px, 1fr) 80px 140px 140px; gap: 0 8px; padding: 9px 16px; color: #8F8D88"><span role="columnheader">Mistake</span><span role="columnheader">Experiment</span><span role="columnheader" style="text-align: right">Students</span><span role="columnheader">Fixed after a hint</span><span role="columnheader">Coaching</span></div>
+              <sc-for list="{{mistakes}}" as="m" hint-placeholder-count="6">
+                <div role="row" class="ad-row" style="display: grid; grid-template-columns: minmax(220px, 2.2fr) minmax(110px, 1fr) 80px 140px 140px; gap: 0 8px; align-items: center; padding: 10px 16px; border-top: 1px solid #1E1D1D">
+                  <span role="cell">{{m.name}}</span>
+                  <span role="cell" style="color: #C9C6BF; display: inline-flex; align-items: center; gap: 6px"><span style="{{m.dot}}"></span>{{m.exp}}</span>
+                  <span role="cell" style="text-align: right; font-family: 'Geist Mono', monospace">{{m.nText}}</span>
+                  <span role="cell" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="#2A2928" stroke-width="2.2"></circle><circle cx="8" cy="8" r="6" fill="none" stroke="{{m.ringCol}}" stroke-width="2.2" stroke-dasharray="{{m.dash}}" transform="rotate(-90 8 8)"></circle></svg>{{m.fixed}}%</span>
+                  <span role="cell"><span style="{{m.chipSt}}">{{m.chip}}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+        <section aria-label="System health" style="flex: 1 1 340px; min-width: 0; background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="padding: 14px 16px; border-bottom: 1px solid #1E1D1D; display: flex; justify-content: space-between; align-items: center"><span style="font-weight: 500; font-size: 15px">System health</span><span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8FD18A"><span style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>All systems normal</span></div>
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 14px">
+            <div style="display: flex; flex-direction: column; gap: 6px"><span style="display: flex; justify-content: space-between"><span style="color: #C9C6BF">API response, 95th percentile</span><span style="font-family: 'Geist Mono', monospace">182 ms</span></span><svg viewBox="0 0 200 30" preserveAspectRatio="none" style="width: 100%; height: 30px; display: block" aria-hidden="true"><path d="{{latLine}}" fill="none" stroke="#2EC4B6" stroke-width="1.4"></path><line x1="0" y1="9" x2="200" y2="9" stroke="#F0482A" stroke-width="1" stroke-dasharray="3 3"></line></svg><span style="font-size: 12px; color: #8F8D88">Target under 300 ms (dashed line)</span></div>
+            <div style="display: flex; justify-content: space-between"><span style="color: #C9C6BF">Errors in the last hour</span><span style="font-family: 'Geist Mono', monospace">3</span></div>
+            <div style="display: flex; justify-content: space-between"><span style="color: #C9C6BF">Live classes right now</span><span style="font-family: 'Geist Mono', monospace">4</span></div>
+            <div style="display: flex; justify-content: space-between"><span style="color: #C9C6BF">Database storage</span><span style="font-family: 'Geist Mono', monospace">3.0 GB</span></div>
+            <div style="display: flex; justify-content: space-between"><span style="color: #C9C6BF">Snapshot storage (R2)</span><span style="font-family: 'Geist Mono', monospace">18 GB</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- DRAWER -->
+  <sc-if value="{{drawerOpen}}" hint-placeholder-val="{{false}}">
+    <div onClick="{{closeDrawer}}" style="position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 20"></div>
+    <aside class="ad-drawer" role="dialog" aria-modal="true" aria-label="{{dr.title}}" style="position: fixed; top: 14px; right: 14px; bottom: 14px; width: min(420px, calc(100% - 28px)); z-index: 21; background: #111110; border: 1px solid #2A2928; box-shadow: -20px 0 40px -20px rgba(0,0,0,.8); display: flex; flex-direction: column">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #1E1D1D">
+        <span style="font-weight: 600; font-size: 15px; flex: 1">{{dr.title}}</span><span style="{{dr.chipSt}}">{{dr.chip}}</span>
+        <button class="ad-f ad-icon" type="button" onClick="{{closeDrawer}}" aria-label="Close" style="width: 30px; height: 30px; background: transparent; border: 0; color: #C9C6BF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div style="flex: 1; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 18px">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 12px; color: #8F8D88">Details</span>
+          <sc-for list="{{dr.rows}}" as="r" hint-placeholder-count="4"><span style="display: flex; justify-content: space-between; gap: 16px; font-size: 13px"><span style="color: #A3A19B">{{r.k}}</span><span style="text-align: right">{{r.v}}</span></span></sc-for>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 12px; color: #8F8D88">What to do</span>
+          <span style="font-size: 14px; color: #C9C6BF">{{dr.body}}</span>
+        </div>
+        <div style="border: 1px solid #2A2928; background: #0D0D0D; padding: 12px; font-size: 13px; color: #C9C6BF">{{dr.rule}}</div>
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end; padding: 12px 16px; border-top: 1px solid #1E1D1D">
+        <button class="ad-f ad-btn" type="button" onClick="{{closeDrawer}}" style="height: 34px; padding: 0 14px; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 13px Geist, sans-serif; cursor: pointer">Close</button>
+        <button class="ad-f" type="button" onClick="{{drAct}}" style="height: 34px; padding: 0 14px; background: #F2F0EA; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">{{dr.action}}</button>
+      </div>
+    </aside>
+  </sc-if>
+
+  <!-- COMMAND PALETTE -->
+  <sc-if value="{{palOpen}}" hint-placeholder-val="{{false}}">
+    <div onClick="{{closePal}}" style="position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 30"></div>
+    <div class="ad-pal" role="dialog" aria-modal="true" aria-label="Search" style="position: fixed; z-index: 31; top: 70px; left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 28px)); background: #111110; border: 1px solid #2A2928; box-shadow: 0 30px 60px -20px rgba(0,0,0,.9); display: flex; flex-direction: column">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid #1E1D1D">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3A19B" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input class="ad-f" ref="{{setPalInput}}" type="text" value="{{q}}" onInput="{{setQ}}" placeholder="Search pages, classes and actions" aria-label="Search pages, classes and actions" style="flex: 1; height: 48px; background: transparent; border: 0; outline: none; color: #F2F0EA; font: 15px Geist, sans-serif">
+        <span style="font: 12px 'Geist Mono', monospace; border: 1px solid #2A2928; padding: 0 6px; color: #A3A19B">Esc</span>
+      </div>
+      <div style="max-height: 340px; overflow: auto; padding: 6px">
+        <sc-for list="{{palGroups}}" as="g" hint-placeholder-count="3">
+          <div style="display: flex; flex-direction: column">
+            <span style="font-size: 12px; color: #8F8D88; padding: 8px 10px 4px">{{g.name}}</span>
+            <sc-for list="{{g.items}}" as="it" hint-placeholder-count="3"><button class="ad-f ad-row" type="button" onClick="{{it.go}}" style="display: flex; align-items: center; gap: 10px; padding: 9px 10px; background: transparent; border: 0; color: #F2F0EA; font: 14px Geist, sans-serif; text-align: left; cursor: pointer"><span style="flex: 1">{{it.label}}</span><span style="font-size: 12px; color: #8F8D88">{{it.hint}}</span></button></sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{palEmpty}}" hint-placeholder-val="{{false}}"><span style="display: block; padding: 18px 10px; color: #A3A19B; font-size: 14px">Nothing matches "{{q}}". Try a class code, an experiment or a page name.</span></sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- TOAST -->
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+    <div class="ad-toast" role="status" style="position: fixed; z-index: 40; right: 28px; bottom: 28px; max-width: 380px; background: #F2F0EA; color: #0D0D0D; padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px; box-shadow: 0 20px 40px -20px rgba(0,0,0,.9)">
+      <span style="width: 18px; height: 18px; border-radius: 50%; background: #6CC25A; flex: 0 0 auto; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+      <span style="flex: 1; font-size: 13px">{{toastText}}</span>
+      <sc-if value="{{toastUndo}}" hint-placeholder-val="{{true}}"><button class="ad-f" type="button" onClick="{{undo}}" style="height: 26px; padding: 0 10px; background: #0D0D0D; color: #F2F0EA; border: 0; font: 600 12px Geist, sans-serif; cursor: pointer">Undo</button></sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { range: 1, open: { usage: false, learning: true }, byStudents: false, bar: null, drawer: null, handled: {}, pal: false, q: '', toast: null };
+  }
+  componentDidMount() {
+    this.onKey = (e) => {
+      const tag = (e.target && e.target.tagName) || '';
+      if (e.key === '/' && !this.state.pal && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') { e.preventDefault(); this.openPal(); }
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); this.openPal(); }
+      if (e.key === 'Escape') this.setState({ pal: false, drawer: null });
+    };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this.onKey); clearTimeout(this.toastT); }
+  openPal() { this.setState({ pal: true, q: '' }, () => { if (this.palInput) this.palInput.focus(); }); }
+  showToast(text, undoFn) {
+    clearTimeout(this.toastT); this.undoFn = undoFn;
+    this.setState({ toast: text, toastUndo: !!undoFn }); this.toastT = setTimeout(() => this.setState({ toast: null }), 6000);
+  }
+  renderVals() {
+    const st = this.state;
+    const chip = (kind) => {
+      const k = { red: ['#2A1414', '#F27A6E', '#5A2320'], amber: ['#22190A', '#F5C46B', '#4A3A16'], violet: ['#1A1730', '#B3A8FA', '#352D66'], green: ['#132111', '#8FD18A', '#24451F'], grey: ['#1A1A19', '#C9C6BF', '#2E2D2B'] }[kind];
+      return 'font-size: 12px; padding: 1px 7px; background: ' + k[0] + '; color: ' + k[1] + '; border: 1px solid ' + k[2] + '; white-space: nowrap';
+    };
+    const seg = (on) => 'height: 28px; padding: 0 10px; border: 0; cursor: pointer; font: 500 12px Geist, sans-serif; background: ' + (on ? '#F2F0EA' : 'transparent') + '; color: ' + (on ? '#0D0D0D' : '#C9C6BF');
+
+    /* sidebar */
+    const I = {
+      home: 'M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z', users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
+      chart: 'M3 3v18h18M7 16V9M12 16V5M17 16v-4', flask: 'M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2M8.5 2h7M7 16h10',
+      list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', spark: 'M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z', life: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.9 4.9l4.3 4.3M14.8 14.8l4.3 4.3M14.8 9.2l4.3-4.3M4.9 19.1l4.3-4.3',
+      shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
+      globe: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20', server: 'M2 4h20v6H2zM2 14h20v6H2zM6 7h.01M6 17h.01', scroll: 'M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4M19 17V5a2 2 0 0 0-2-2H4'
+    };
+    const navDef = [
+      ['overview', 'Overview', I.home, '', null], ['usage', 'Usage', I.users, '', ['Students', 'Classes', 'Devices']],
+      ['learning', 'Learning', I.chart, '', ['Where students stop', 'Mistakes', 'Skills']], ['content', 'Content', I.flask, '', null],
+      ['qbank', 'Question bank', I.list, '12', null], ['ai', 'AI', I.spark, '', null], ['support', 'Support', I.life, String(5 - Object.keys(st.handled).length), null],
+      ['people', 'People and access', I.shield, '', null], ['research', 'Research', I.book, '', null], ['translation', 'Translation', I.globe, '', null],
+      ['system', 'System', I.server, '', null], ['audit', 'Audit log', I.scroll, '', null]
+    ];
+    const nav = navDef.map(([id, name, icon, badge, kids]) => {
+      const on = id === 'overview', exp = !!(kids && st.open[id]);
+      return {
+        name, icon, badge: badge === '0' ? '' : badge, kids: kids || [], expanded: exp,
+        click: () => { if (kids) this.setState({ open: Object.assign({}, st.open, { [id]: !st.open[id] }) }); },
+        st: 'width: 100%; display: flex; align-items: center; gap: 10px; padding: 7px 8px; border: 0; cursor: pointer; text-align: left; font: 14px Geist, sans-serif; color: ' + (on ? '#F2F0EA' : '#C9C6BF') + '; background: ' + (on ? '#1E1D1D' : 'transparent'),
+        badgeSt: badge && badge !== '0' ? "font: 12px 'Geist Mono', monospace; color: #F5C46B" : 'display: none',
+        chevSt: kids ? 'display: flex; color: #8F8D88; transition: transform .2s; transform: rotate(' + (exp ? 0 : -90) + 'deg)' : 'display: none'
+      };
+    });
+    const C = 2 * Math.PI * 6;
+    const flags = [['Simple pendulum', 0.33, '#F5A524'], ["Ohm's law", 0.41, '#3B82F6'], ['Converging lens', 0.28, '#8B7CF6'], ['Method of mixtures', 0.37, '#FF7A3D']]
+      .map(([name, v, hue]) => ({ name, hue, pct: Math.round(v * 100) + '%', dash: (C * v).toFixed(2) + ' ' + C.toFixed(2) }));
+
+    /* time range */
+    const R = [['24 h', 1 / 7, 'Last 24 hours'], ['7 days', 1, 'Last 7 days'], ['30 days', 30 / 7, 'Last 30 days']];
+    const f = R[st.range][1];
+    const ranges = R.map((r, i) => ({ label: r[0], on: i === st.range, pick: () => this.setState({ range: i, bar: null }), st: seg(i === st.range) }));
+
+    /* stage chart (attempts per stage, example scenario) */
+    const base = [['Question', 2310], ['Predict', 2236], ['Build', 2122], ['Check', 2016], ['Measure', 1937], ['Tabulate', 1258], ['Plot', 1059], ['Analyse', 953], ['Conclude', 840], ['Report', 763]];
+    const per = st.byStudents ? 1 / 2.3 : 1;
+    const vals = base.map(([n, v]) => [n, Math.round(v * f * per)]);
+    const max = vals[0][1];
+    let worst = 1, worstDrop = 0;
+    vals.forEach((v, i) => { if (i > 0) { const d = vals[i - 1][1] - v[1]; if (d > worstDrop) { worstDrop = d; worst = i; } } });
+    const fmt = (n) => n.toLocaleString('en-US');
+    const stages = vals.map(([name, n], i) => {
+      const pct = n / max * 100, drop = i ? vals[i - 1][1] - n : 0, isW = i === worst;
+      const hue = isW ? ['#F0482A', '#3A1710'] : ['#6CC25A', '#183317'];
+      return {
+        name, pct: pct.toFixed(1), nText: fmt(n), tip: st.bar === i,
+        dropText: i ? '−' + fmt(drop) + ' from ' + vals[i - 1][0] + ' (' + (drop / vals[i - 1][1] * 100).toFixed(0) + '%)' : 'Everyone starts here',
+        enter: () => this.setState({ bar: i }),
+        fill: 'display: block; height: ' + pct.toFixed(1) + '%; background: repeating-linear-gradient(135deg, ' + hue[0] + ' 0 3px, ' + hue[1] + ' 3px 6px); border-top: 2px solid ' + hue[0] + '; transition: height .35s ease; opacity: ' + (st.bar === null || st.bar === i ? 1 : 0.55)
+      };
+    });
+    const yTicks = [max, Math.round(max * 2 / 3), Math.round(max / 3), 0].map(fmt);
+    const reports = vals[9][1];
+
+    /* sparks */
+    const spark = [0.52, 0.58, 0.55, 0.66, 0.62, 0.74, 0.8].map((v, i) => [i / 6 * 200, 44 - v * 40]);
+    const sparkLine = 'M' + spark.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
+    const sparkArea = sparkLine + ' L200 44 L0 44 Z';
+    const fails = [0, 1, 0, 0, 2, 0, 1, 0, 0, 1, 0, 0, 1, 3];
+    const failBars = fails.map((v, i) => ({ st: 'flex: 1; background: ' + (v ? 'repeating-linear-gradient(135deg, #F0482A 0 2px, #3A1710 2px 4px)' : '#1E1D1D') + '; height: ' + (v ? 22 + v * 7 : 44) + 'px' + (v ? '' : '; opacity: .7') }));
+    const lat = [170, 176, 168, 181, 190, 184, 178, 182, 175, 186, 192, 180, 182];
+    const latLine = 'M' + lat.map((v, i) => (i / 12 * 200).toFixed(1) + ' ' + (30 - (v - 120) / 200 * 30).toFixed(1)).join(' L');
+
+    /* needs attention */
+    const A = [
+      { id: 'safe', title: 'Display name with a phone number', chip: 'Safeguarding', kind: 'red', meta: 'Class 7KQ-42M · flagged by the name filter · 2 h ago', icon: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+        rows: [['Class', '7KQ-42M'], ['Flagged by', 'Display-name filter'], ['Seen by other students', 'No, hidden until you act'], ['Reply due', 'Within 1 day']],
+        body: 'Replace the name with a safe one and tell the teacher. The student keeps their work; only the name changes.',
+        rule: 'Children and Schools policy: names that look like phone numbers, emails or addresses are hidden at once and handled within one working day.',
+        action: 'Replace the name', done: 'Name replaced with "Student 14". The teacher has been told.' },
+      { id: 'sync', title: '3 devices failing to sync', chip: 'Sync failing', kind: 'amber', meta: 'Class 7KQ-42M · last success 26 h ago', icon: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5',
+        rows: [['Devices', '3 phones, Android 12'], ['Last success', '26 h ago'], ['Work at risk', 'None, saved on the devices'], ['Likely cause', 'Old app version cached']],
+        body: 'Ask the devices to refresh. Work stays on each phone until it syncs, so nothing is lost while you wait.',
+        rule: 'Local-first: attempts are stored on the device and synced when a connection returns.',
+        action: 'Send a refresh request', done: 'Refresh request sent to 3 devices.' },
+      { id: 'qbank', title: 'Question bank: 12 to review', chip: 'Review', kind: 'violet', meta: 'Submitted by teachers this week', icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+        rows: [['Waiting', '12 questions'], ['Experiments', 'Pendulum 7, Ohm\'s law 5'], ['Oldest', '4 days']],
+        body: 'Check each question against the experiment and its mark scheme before it goes live for other teachers.',
+        rule: 'Teacher questions are private to their class until an admin approves them.',
+        action: 'Start reviewing', done: 'Review queue opened. 12 questions waiting.' },
+      { id: 'mark', title: 'Teacher asks to export marks', chip: 'Question', kind: 'grey', meta: 'Support · reply due in 5 days', icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',
+        rows: [['From', 'A teacher, class 7KQ-42M'], ['Topic', 'Exporting marks to Excel'], ['Reply due', 'Within 5 days']],
+        body: 'Point them to Class › Marks › Export, which downloads an Excel file of every student\'s marks.',
+        rule: 'Support replies: safeguarding within 1 day, blocked classes within 1 day, questions within 5 days.',
+        action: 'Send the saved reply', done: 'Reply sent.' },
+      { id: 'hint', title: 'Hint not working: graph scale', chip: 'Content', kind: 'amber', meta: 'Only 58% fix it after the hint', icon: 'M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z',
+        rows: [['Mistake', 'Graph scale under half the sheet'], ['Students affected', fmt(Math.round(251 * f))], ['Fixed after hint', '58%']],
+        body: 'Rewrite the hint so it shows the student how to choose a scale that fills at least half the sheet, with one worked example.',
+        rule: 'Hints are reviewed when fewer than 70% of students fix the mistake after seeing them.',
+        action: 'Open the hint editor', done: 'Hint editor opened for "Graph scale".' }
+    ];
+    const attn = A.map((a) => {
+      const done = !!st.handled[a.id];
+      return {
+        title: a.title, meta: done ? 'Handled just now' : a.meta, chip: done ? 'Handled' : a.chip, icon: a.icon,
+        chipSt: chip(done ? 'green' : a.kind),
+        rowSt: 'width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: transparent; border: 0; border-top: 1px solid #1E1D1D; cursor: pointer; font: inherit; color: inherit; opacity: ' + (done ? 0.55 : 1),
+        open: () => this.setState({ drawer: a.id })
+      };
+    });
+    const open = A.filter((a) => !st.handled[a.id]).length;
+    const d = A.find((a) => a.id === st.drawer);
+    const dr = d ? { title: d.title, chip: st.handled[d.id] ? 'Handled' : d.chip, chipSt: chip(st.handled[d.id] ? 'green' : d.kind), rows: d.rows.map(([k, v]) => ({ k, v })), body: d.body, rule: d.rule, action: st.handled[d.id] ? 'Done' : d.action } : { title: '', chip: '', chipSt: '', rows: [], body: '', rule: '', action: '' };
+
+    /* mistakes */
+    const M = [['Counted the first swing as one', 'Pendulum', '#F5A524', 412, 82], ['Mean with too few decimal places', 'All four', '#8F8D88', 338, 91], ['Graph scale under half the sheet', 'All four', '#8F8D88', 251, 58],
+      ['Length measured to the top of the bob', 'Pendulum', '#F5A524', 187, 77], ['Reading the metre rule at an angle', 'Lens', '#8B7CF6', 140, 70], ['Final temperature read before stirring', 'Mixtures', '#FF7A3D', 96, 88]];
+    const mistakes = M.map(([name, exp, hue, n, fixed]) => {
+      const low = fixed < 70;
+      return { name, exp, nText: fmt(Math.round(n * f * per)), fixed, dot: 'width: 7px; height: 7px; background: ' + hue, ringCol: low ? '#F0482A' : fixed >= 85 ? '#6CC25A' : '#F5A524',
+        dash: (C * fixed / 100).toFixed(2) + ' ' + C.toFixed(2), chip: low ? 'Hint needs work' : 'Working', chipSt: chip(low ? 'red' : 'green') };
+    });
+
+    /* palette */
+    const P = [
+      ['Pages', [['Overview', 'Page'], ['Where students stop', 'Learning'], ['Mistakes', 'Learning'], ['Support inbox', '5 open'], ['Question bank', '12 to review'], ['System health', 'System'], ['Audit log', 'System']]],
+      ['Classes', [['7KQ-42M', 'Class code'], ['Simple pendulum attempts', 'Experiment']]],
+      ['Actions', [['Broadcast a notice to all teachers', 'Action'], ['Export this week\'s report', 'Action'], ['Turn AI off for a class', 'Action']]]
+    ];
+    const q = st.q.trim().toLowerCase();
+    const palGroups = P.map(([name, items]) => ({ name, items: items.filter(([l, h]) => !q || (l + ' ' + h).toLowerCase().indexOf(q) >= 0).map(([label, hint]) => ({ label, hint, go: () => { this.setState({ pal: false }); this.showToast('Opened "' + label + '".', null); } })) })).filter((g) => g.items.length);
+
+    return {
+      nav, flags, ranges, rangeLabel: R[st.range][2], rangeLabelLower: R[st.range][2].toLowerCase(),
+      reportsText: fmt(Math.round(base[9][1] * f)),
+      chartSub: (st.byStudents ? 'Students' : 'Attempts') + ' that reached each stage, ' + R[st.range][2].toLowerCase() + '. Point at a bar for the numbers.',
+      stages, yTicks, barOff: () => this.setState({ bar: null }),
+      byAttempts: !st.byStudents, byStudents: st.byStudents, segA: seg(!st.byStudents), segS: seg(st.byStudents),
+      showAttempts: () => this.setState({ byStudents: false }), showStudents: () => this.setState({ byStudents: true }),
+      sparkLine, sparkArea, failBars, latLine,
+      attn, attnSub: open ? open + ' open, most urgent first' : 'All clear',
+      drawerOpen: !!d, dr, closeDrawer: () => this.setState({ drawer: null }),
+      drAct: () => {
+        if (!d || st.handled[d.id]) { this.setState({ drawer: null }); return; }
+        const id = d.id;
+        this.setState({ drawer: null, handled: Object.assign({}, st.handled, { [id]: true }) });
+        this.showToast(d.done, () => { const h = Object.assign({}, this.state.handled); delete h[id]; this.setState({ handled: h }); });
+      },
+      mistakes,
+      palOpen: st.pal, q: st.q, palGroups, palEmpty: palGroups.length === 0,
+      openPal: () => this.openPal(), closePal: () => this.setState({ pal: false }),
+      setQ: (e) => this.setState({ q: e.target.value }), setPalInput: (el) => { this.palInput = el; },
+      toastOn: !!st.toast, toastText: st.toast || '', toastUndo: !!st.toastUndo,
+      undo: () => { if (this.undoFn) this.undoFn(); this.undoFn = null; clearTimeout(this.toastT); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Physics Anatomy: landing page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+.pa-focus:focus-visible{outline:2px solid #F0482A;outline-offset:3px}
+.pa-navd{display:flex}.pa-menub{display:none}
+@media (max-width:820px){.pa-navd{display:none}.pa-menub{display:inline-flex}}
+@media (max-width:520px){.pa-hwrap{padding:8px 8px !important}.pa-hbar{padding:6px 6px 6px 8px !important;gap:8px !important}}
+.pa-bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.pa-wide{grid-column:span 2}.pa-full{grid-column:1 / -1}
+@media (max-width:900px){.pa-bento{grid-template-columns:minmax(0,1fr)}.pa-wide{grid-column:auto}.pa-full{grid-column:auto}}
+.pa-outline{color:transparent;-webkit-text-stroke:1.6px #F2F0EA}
+@keyframes paWave{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+.pa-bar{transform-origin:50% 100%;animation:paWave 1.1s ease-in-out infinite}
+@keyframes paCursor{0%,8%{transform:translate(60px,250px)}22%,30%{transform:translate(318px,206px)}33%{transform:translate(318px,206px) scale(.86)}36%,58%{transform:translate(318px,206px)}70%,80%{transform:translate(470px,128px)}83%{transform:translate(470px,128px) scale(.86)}86%,100%{transform:translate(470px,128px)}}
+.pa-cursor{animation:paCursor 10s cubic-bezier(.45,0,.2,1) infinite}
+@keyframes paWrong{0%,34%{opacity:0}36%,82%{opacity:1}85%,100%{opacity:0}}
+@keyframes paRight{0%,84%{opacity:0}86%,100%{opacity:1}}
+@keyframes paToast{0%,38%{opacity:0;transform:translateY(12px)}42%,82%{opacity:1;transform:none}86%,100%{opacity:0;transform:translateY(12px)}}
+.pa-wrong{animation:paWrong 10s linear infinite}.pa-right{animation:paRight 10s linear infinite}.pa-toast{animation:paToast 10s ease infinite}
+@keyframes paPulse{0%,100%{opacity:.35}50%{opacity:1}}
+.pa-pulse{animation:paPulse 2.4s ease-in-out infinite}
+@keyframes paFlow{to{stroke-dashoffset:-22}}
+.pa-flow{animation:paFlow .9s linear infinite}
+@keyframes paRay{to{stroke-dashoffset:-18}}
+.pa-ray{animation:paRay 1.1s linear infinite}
+@keyframes paFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.pa-float{animation:paFloat 3.2s ease-in-out infinite}
+.pa-f2{animation-delay:.25s}.pa-f3{animation-delay:.5s}.pa-f4{animation-delay:.75s}.pa-f5{animation-delay:1s}
+@keyframes paHeat{0%,100%{fill:#FF7A3D}50%{fill:#F5A524}}
+.pa-heat{animation:paHeat 3.6s ease-in-out infinite}
+@keyframes paRowA{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes paRowB{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.pa-barg{transition:opacity .2s}
+@media (prefers-reduced-motion:reduce){.pa-bar,.pa-cursor,.pa-wrong,.pa-right,.pa-toast,.pa-pulse,.pa-flow,.pa-ray,.pa-float,.pa-heat{animation:none}.pa-right{opacity:1}}
+</style>
+</helmet>
+<div style="width: 100%; background: #0D0D0D; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 16px; line-height: 1.55">
+
+<!-- HEADER (after efferd Header 4: sticky, turns into a floating bar on scroll) -->
+<header style="position: sticky; top: 0; z-index: 50; height: 0">
+  <div class="pa-hwrap" style="{{hdrWrap}}">
+    <div class="pa-hbar" style="{{hdrBar}}">
+      <a class="pa-focus" href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #F2F0EA">
+        <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F2F0EA" stroke-width="18"></path><line x1="84" y1="26" x2="98" y2="60" stroke="#F2F0EA" stroke-width="5"></line><circle cx="100" cy="68" r="12" fill="#F0482A"></circle></svg>
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; white-space: nowrap">Physics Anatomy</span>
+      </a>
+      <nav class="pa-navd" aria-label="Main" style="gap: 4px; font-size: 15px">
+        <a class="pa-focus" href="#anatomy" style="color: #C9C6BF; text-decoration: none; padding: 8px 12px">How it works</a>
+        <a class="pa-focus" href="#experiments" style="color: #C9C6BF; text-decoration: none; padding: 8px 12px">Experiments</a>
+        <a class="pa-focus" href="#teachers" style="color: #C9C6BF; text-decoration: none; padding: 8px 12px">For teachers</a>
+        <a class="pa-focus" href="#research" style="color: #C9C6BF; text-decoration: none; padding: 8px 12px">For researchers</a>
+      </nav>
+      <div style="display: flex; gap: 6px; align-items: center">
+        <a class="pa-focus pa-navd" href="#login" style="color: #F2F0EA; text-decoration: none; padding: 9px 14px; font-size: 15px">Log in</a>
+        <a class="pa-focus" href="#signup" style="background: #F2F0EA; color: #0D0D0D; text-decoration: none; padding: 9px 14px; font-size: 15px; font-weight: 600; white-space: nowrap">Sign up free</a>
+        <button class="pa-focus pa-menub" type="button" onClick="{{toggleMenu}}" aria-expanded="{{menuOpen}}" aria-label="Menu" style="width: 40px; height: 40px; align-items: center; justify-content: center; background: transparent; border: 1px solid #3A3936; color: #F2F0EA; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+      </div>
+    </div>
+    <sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+      <nav aria-label="Main, small screens" style="margin-top: 6px; background: rgba(13,13,13,.94); border: 1px solid #2E2D2B; display: flex; flex-direction: column; padding: 8px">
+        <a class="pa-focus" href="#anatomy" onClick="{{closeMenu}}" style="color: #F2F0EA; text-decoration: none; padding: 12px">How it works</a>
+        <a class="pa-focus" href="#experiments" onClick="{{closeMenu}}" style="color: #F2F0EA; text-decoration: none; padding: 12px">Experiments</a>
+        <a class="pa-focus" href="#teachers" onClick="{{closeMenu}}" style="color: #F2F0EA; text-decoration: none; padding: 12px">For teachers</a>
+        <a class="pa-focus" href="#research" onClick="{{closeMenu}}" style="color: #F2F0EA; text-decoration: none; padding: 12px">For researchers</a>
+        <a class="pa-focus" href="#login" onClick="{{closeMenu}}" style="color: #F2F0EA; text-decoration: none; padding: 12px">Log in</a>
+      </nav>
+    </sc-if>
+  </div>
+</header>
+
+<!-- HERO (after efferd Hero 4: centred, outline type). Background: a live double-slit experiment, one particle at a time. -->
+<section id="top" aria-label="Introduction" style="position: relative; overflow: hidden; background: #0D0D0D; min-height: 840px; display: flex; align-items: center">
+  <canvas ref="{{setHits}}" role="img" aria-label="{{slitAria}}" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block; -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 20%, transparent 33%, transparent 67%, #000 80%, #000 100%); mask-image: linear-gradient(90deg, #000 0%, #000 20%, transparent 33%, transparent 67%, #000 80%, #000 100%)"></canvas>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(13,13,13,0) 0%, rgba(13,13,13,.6) 22%, rgba(13,13,13,.97) 34%, rgba(13,13,13,.97) 66%, rgba(13,13,13,.6) 78%, rgba(13,13,13,0) 100%); pointer-events: none"></div>
+  <div style="position: relative; width: 100%; max-width: 1080px; margin: 0 auto; padding: 140px 32px 120px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 26px">
+    <span role="status" style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #C9C6BF; background: rgba(13,13,13,.85); border: 1px solid #2E2D2B; padding: 7px 12px"><span class="pa-pulse" style="{{sceneDot}}"></span><span>Behind this text: {{sceneName}}, one particle at a time</span></span>
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(52px, 9vw, 132px); line-height: 0.9; letter-spacing: -0.04em; text-wrap: balance">Physics from<br><span class="pa-outline">first principles.</span></h1>
+    <p style="margin: 0; font-size: 20px; color: #D6D3CC; max-width: 32em; text-wrap: pretty">Build real experiments piece by piece, take your own readings, and get coached the moment something goes wrong. A full physics lab in your browser, even offline.</p>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px">
+      <a class="pa-focus" href="#lab" style="background: #F0482A; color: #0D0D0D; text-decoration: none; padding: 16px 26px; font-weight: 600; font-size: 17px">Start an experiment</a>
+      <a class="pa-focus" href="#signup" style="border: 1px solid #55534F; background: rgba(13,13,13,.85); color: #F2F0EA; text-decoration: none; padding: 15px 24px; font-weight: 500; font-size: 17px">Sign up free</a>
+    </div>
+  </div>
+</section>
+
+<!-- TRY IT: live pendulum -->
+<section aria-label="Time a pendulum" style="background: #111110; border-top: 1px solid #1E1D1D">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 104px 32px; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+    <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(38px, 5vw, 64px); line-height: 0.95; letter-spacing: -0.03em; text-wrap: balance">Time it yourself.</h2>
+      <p style="margin: 0; font-size: 18px; color: #C9C6BF; max-width: 30em">Pull the bob aside and let it go. The period and your value of g come from the same equations the lab runs. Now start the count at one instead of zero, and watch what happens to g.</p>
+      <p style="margin: 0; font-size: 15px; color: #A3A19B; max-width: 34em">It's the most common mistake in the WASSCE pendulum practical. The coach catches it every time.</p>
+    </div>
+    <figure style="flex: 1 1 380px; min-width: 0; max-width: 460px; margin: 0; background: #161616; border: 1px solid #2E2D2B; overflow: hidden; display: flex; flex-direction: column">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #2A2928; font-size: 13px; color: #A3A19B">
+        <span>Fig. 1 · Drag the bob, then let go</span><span style="font-family: 'Geist Mono', monospace">l = 0.800 m</span>
+      </div>
+      <canvas ref="{{setPend}}" onPointerDown="{{pendDown}}" onPointerMove="{{pendMove}}" onPointerUp="{{pendUp}}" onPointerCancel="{{pendUp}}" role="img" aria-label="A pendulum you can pull aside and release" style="width: 100%; height: 300px; display: block; touch-action: none; cursor: grab"></canvas>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #2A2928">
+        <div style="padding: 10px 14px; display: flex; flex-direction: column"><span style="font-size: 12px; color: #A3A19B">Swing</span><span style="font-family: 'Geist Mono', monospace; font-size: 20px">{{ampText}}</span></div>
+        <div style="padding: 10px 14px; border-left: 1px solid #2A2928; display: flex; flex-direction: column"><span style="font-size: 12px; color: #A3A19B">Period T</span><span style="font-family: 'Geist Mono', monospace; font-size: 20px">{{periodText}}</span></div>
+        <div style="padding: 10px 14px; border-left: 1px solid #2A2928; display: flex; flex-direction: column"><span style="font-size: 12px; color: #A3A19B">Your g</span><span style="{{gStyle}}">{{gText}}</span></div>
+      </div>
+      <div style="padding: 12px 16px; border-top: 1px solid #2A2928; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 14px">
+        <span style="color: #A3A19B">Start the count at</span>
+        <div role="group" aria-label="Start the count at" style="display: inline-flex; border: 1px solid #3A3936; overflow: hidden">
+          <button class="pa-focus" type="button" onClick="{{countZero}}" aria-pressed="{{isZero}}" style="{{zeroStyle}}">zero</button>
+          <button class="pa-focus" type="button" onClick="{{countOne}}" aria-pressed="{{isOne}}" style="{{oneStyle}}">one</button>
+        </div>
+      </div>
+      <div role="status" style="{{coachStyle}}"><b style="font-weight: 600">Coach: </b>{{coachText}}</div>
+    </figure>
+  </div>
+</section>
+
+<!-- ANATOMY: explode the apparatus -->
+<section id="anatomy" aria-label="Take the apparatus apart" style="background: #FBFBF6; color: #141414">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 104px 32px; display: flex; flex-direction: column; gap: 40px">
+    <div style="display: flex; flex-wrap: wrap; gap: 24px 64px; align-items: flex-end; justify-content: space-between">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(38px, 5vw, 68px); line-height: 0.95; letter-spacing: -0.03em; max-width: 11em; text-wrap: balance">Every part has a job. Learn what it is.</h2>
+      <p style="margin: 0; font-size: 18px; color: #4A4843; max-width: 26em">Pull the apparatus apart, point at any piece, and find out what it does and how it can spoil your result. Then put it back together yourself.</p>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: stretch">
+      <div style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+        <div style="position: relative"><svg viewBox="90 -10 400 350" style="width: 100%; height: auto; display: block" role="img" aria-label="Isometric exploded view of a pendulum apparatus: base plate, retort stand rod, boss and clamp, split cork, thread, bob and stopwatch. Point at a part to learn what it does."><defs><pattern id="paGrid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#EEEBE2" stroke-width="1"></path></pattern></defs><rect x="90" y="-10" width="400" height="350" fill="url(#paGrid)"></rect><g onMouseEnter="{{p.base.enter}}" onMouseLeave="{{unhover}}" style="{{p.base.st}}">
+<g><polygon points="166.5,253.0 279.1,318.0 279.1,308.0 166.5,243.0" fill="#E3DFD3" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="353.5,275.0 279.1,318.0 279.1,308.0 353.5,265.0" fill="#D3CEC0" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="240.9,200.0 353.5,265.0 279.1,308.0 166.5,243.0" fill="#F7F5EF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{p.rod.enter}}" onMouseLeave="{{unhover}}" style="{{p.rod.st}}">
+<g><polygon points="221.0,233.5 227.1,237.0 227.1,47.0 221.0,43.5" fill="#E4E2DB" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="233.2,233.5 227.1,237.0 227.1,47.0 233.2,43.5" fill="#CFCCC4" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="227.1,40.0 233.2,43.5 227.1,47.0 221.0,43.5" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{p.clamp.enter}}" onMouseLeave="{{unhover}}" style="{{p.clamp.st}}">
+<g><polygon points="212.4,83.5 227.1,92.0 227.1,76.0 212.4,67.5" fill="#A9A69E" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="241.8,83.5 227.1,92.0 227.1,76.0 241.8,67.5" fill="#8F8C86" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="227.1,59.0 241.8,67.5 227.1,76.0 212.4,67.5" fill="#D9D6CE" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="232.3,84.0 292.9,119.0 292.9,113.0 232.3,78.0" fill="#BDBAB2" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="297.2,116.5 292.9,119.0 292.9,113.0 297.2,110.5" fill="#A9A69E" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="236.6,75.5 297.2,110.5 292.9,113.0 232.3,78.0" fill="#E9E7E1" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{p.cork.enter}}" onMouseLeave="{{unhover}}" style="{{p.cork.st}}">
+<g><polygon points="286.8,131.5 295.5,136.5 295.5,118.5 286.8,113.5" fill="#C99A68" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="305.9,130.5 295.5,136.5 295.5,118.5 305.9,112.5" fill="#B3854F" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="297.2,107.5 305.9,112.5 295.5,118.5 286.8,113.5" fill="#E4BC8E" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{p.thread.enter}}" onMouseLeave="{{unhover}}" style="{{p.thread.st}}">
+<polyline points="296.4,131.0 296.4,221.0" fill="none" stroke="#141414" stroke-width="1.6"></polyline>
+<polyline points="296.4,131.0 296.4,221.0" fill="none" stroke="#141414" stroke-opacity="0" stroke-width="14"></polyline>
+</g>
+<g onMouseEnter="{{p.bob.enter}}" onMouseLeave="{{unhover}}" style="{{p.bob.st}}">
+<circle cx="296.4" cy="233.0" r="13" fill="#F0482A" stroke="#141414" stroke-width="1.2"></circle><circle cx="292.4" cy="229.0" r="4" fill="#FFB3A1"></circle><line x1="278.4" y1="233.0" x2="314.4" y2="233.0" stroke="#141414" stroke-width="1" stroke-dasharray="2 2"></line>
+</g>
+<g onMouseEnter="{{p.watch.enter}}" onMouseLeave="{{unhover}}" style="{{p.watch.st}}"><path d="M133.0 285.0 L133.0 295.0 A30 15 0 0 0 193.0 295.0 L193.0 285.0 Z" fill="#2B2A28" stroke="#141414" stroke-width="1"></path><ellipse cx="163.0" cy="285.0" rx="30" ry="15" fill="#FFFFFF" stroke="#141414" stroke-width="1.2"></ellipse><ellipse cx="163.0" cy="285.0" rx="23" ry="11.5" fill="#F7F5EE" stroke="#141414" stroke-width="0.8"></ellipse><line x1="163.0" y1="285.0" x2="175.0" y2="280.0" stroke="#F0482A" stroke-width="2"></line><line x1="163.0" y1="285.0" x2="157.0" y2="278.0" stroke="#141414" stroke-width="1.6"></line><rect x="159.0" y="264.0" width="8" height="8" fill="#141414"></rect></g></svg><sc-if value="{{tipAnat.on}}" hint-placeholder-val="{{false}}"><div role="tooltip" style="{{tipAnat.st}}"><b style="font-weight: 600">{{tipAnat.title}}</b><span style="color: #C9C6BF">{{tipAnat.text}}</span></div></sc-if></div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px">
+          <label for="explode" style="font-weight: 600">Assembled</label>
+          <input id="explode" class="pa-focus" type="range" min="0" max="100" value="{{explodeVal}}" onInput="{{setExplode}}" onChange="{{setExplode}}" style="flex: 1 1 200px; accent-color: #F0482A">
+          <span style="font-weight: 600">Apart</span>
+        </div>
+      </div>
+      <div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{partsList}}" as="pt" hint-placeholder-count="7">
+          <div onMouseEnter="{{pt.enter}}" onMouseLeave="{{unhover}}" style="{{pt.row}}">
+            <span style="font-weight: 600; font-size: 17px">{{pt.name}}</span>
+            <span style="color: #4A4843; font-size: 15px">{{pt.say}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COACH: cursor demo -->
+<section aria-label="The coach" style="background: #F3F1E8; color: #141414">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 104px 32px; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+    <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(38px, 5vw, 64px); line-height: 0.95; letter-spacing: -0.03em; text-wrap: balance">Caught the moment it happens.</h2>
+      <p style="margin: 0; font-size: 18px; color: #4A4843">The coach watches every reading you take and every number you write down. It lets you make the mistake, shows you what it did to your result, and explains why, from first principles. Turn the voice on and it talks you through while your hands are busy.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <span style="background: #FFFFFF; border: 1px solid #E0DDD2; padding: 8px 14px; border-radius: 0; font-size: 14px">Spoken steps and corrections</span>
+        <span style="background: #FFFFFF; border: 1px solid #E0DDD2; padding: 8px 14px; border-radius: 0; font-size: 14px">Auto, Check my work, On my own</span>
+        <span style="background: #FFFFFF; border: 1px solid #E0DDD2; padding: 8px 14px; border-radius: 0; font-size: 14px">Exam mode, coach off</span>
+      </div>
+    </div>
+    <div style="flex: 1 1 600px; min-width: 0; position: relative; background: #161616; color: #F0F0F0; border-radius: 0; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(20,20,20,.5)">
+      <div style="display: flex; gap: 6px; padding: 12px 14px; border-bottom: 1px solid #2A2928"><span style="width: 10px; height: 10px; border-radius: 50%; background: #3A3936"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #3A3936"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #3A3936"></span><span style="margin-left: 12px; font-size: 12px; color: #A3A19B">Simple pendulum · Tabulate</span></div>
+      <div style="position: relative; height: 340px; display: flex">
+        <div style="flex: 0 0 38%; border-right: 1px solid #2A2928; display: flex; align-items: center; justify-content: center">
+          <svg width="150" height="200" viewBox="0 0 150 200" aria-hidden="true"><rect x="30" y="10" width="6" height="180" fill="#8F8C86"></rect><line x1="36" y1="24" x2="100" y2="24" stroke="#77746E" stroke-width="5" stroke-linecap="round"></line><rect x="96" y="18" width="10" height="12" fill="#B98B5E"></rect><line x1="101" y1="30" x2="112" y2="150" stroke="#E8E4DC" stroke-width="1.4"></line><circle cx="113" cy="158" r="10" fill="#F0482A"></circle></svg>
+        </div>
+        <div style="flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 14px">
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; color: #A3A19B"><span>l/m</span><span>t/s</span><span>T/s</span></div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px"><span>0.900</span><span>38.10</span><span>1.905</span></div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; position: relative"><span>0.800</span><span style="position: relative"><span class="pa-wrong" style="position: absolute; left: -6px; top: -4px; padding: 3px 6px; outline: 1.5px solid #F0482A; background: #2A1914">35.9</span><span class="pa-right" style="position: absolute; left: -6px; top: -4px; padding: 3px 6px; outline: 1.5px solid #6CC25A; background: #15240F">35.90 ✓</span></span><span>1.795</span></div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; color: #55534F"><span>0.700</span><span>…</span><span>…</span></div>
+          <span style="align-self: flex-start; margin-top: 18px; background: #F0482A; color: #0D0D0D; padding: 8px 14px; border-radius: 0; font-family: Geist, sans-serif; font-weight: 600">Record reading</span>
+        </div>
+        <div class="pa-toast" role="status" style="position: absolute; left: 20px; right: 20px; bottom: 18px; background: #F2F0EA; color: #141414; border-radius: 0; padding: 12px 14px; font-size: 14px; display: flex; gap: 10px; align-items: flex-start">
+          <span style="width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: #F0482A; flex: 0 0 auto"></span>
+          <span><b>Check this mean.</b> Your stopwatch reads to 0.1 s, so the mean takes one more decimal place: 35.90. Examiners deduct for this.</span>
+        </div>
+        <svg class="pa-cursor" width="22" height="26" viewBox="0 0 22 26" aria-hidden="true" style="position: absolute; left: 0; top: 0"><path d="M2 2 L2 21 L7 16 L10.5 24 L14 22.5 L10.5 15 L18 15 Z" fill="#FFFFFF" stroke="#0D0D0D" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- EXPERIMENTS: live cards (after the Pulseboard reference) -->
+<section id="experiments" aria-label="Experiments" style="background: #FBFBF6; color: #141414">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 104px 32px; display: flex; flex-direction: column; gap: 36px">
+    <div style="display: flex; flex-wrap: wrap; gap: 20px 48px; align-items: flex-end; justify-content: space-between">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(38px, 5vw, 64px); line-height: 0.95; letter-spacing: -0.03em; max-width: 12em; text-wrap: balance">Four experiments at launch, built deep.</h2>
+      <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px; max-width: 26em">
+        <p style="margin: 0; color: #4A4843">Each one runs the real equations. Point at any part to see what it does. The readings on each card come straight from the simulation.</p>
+        <a class="pa-focus" href="#lab" style="background: #141414; color: #FBFBF6; text-decoration: none; padding: 11px 18px; font-weight: 600; font-size: 15px">Open the lab</a>
+      </div>
+    </div>
+    <div style="padding: 10px; background: linear-gradient(100deg, rgba(245,165,36,.45), rgba(59,130,246,.4) 35%, rgba(139,124,246,.42) 65%, rgba(255,122,61,.45))">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px">
+        <article style="background: #FFFFFF; display: flex; flex-direction: column; min-width: 0">
+          <div style="position: relative; background: #FDF3E1; padding: 12px 0 40px">
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 2"><div role="group" aria-label="Plot" style="display: inline-flex; background: #FFFFFF; border: 1px solid #E6E4DB"><button class="pa-focus" type="button" onClick="{{setT}}" aria-pressed="{{plotT}}" style="{{segT}}">T</button><button class="pa-focus" type="button" onClick="{{setSq}}" aria-pressed="{{plotSq}}" style="{{segSq}}">T²</button></div></div>
+            <div style="position: relative">
+              <svg viewBox="0 0 300 228" style="width: 100%; height: auto; display: block; overflow: visible" role="img" aria-label="A 3D bar chart of the pendulum period at six lengths, standing on stacked plates">
+<g><polygon points="63.4,142.0 150.0,192.0 150.0,186.0 63.4,136.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="236.6,142.0 150.0,192.0 150.0,186.0 236.6,136.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="150.0,86.0 236.6,136.0 150.0,186.0 63.4,136.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="145.7,90.5 150.0,93.0 150.0,73.0 145.7,70.5" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="154.3,90.5 150.0,93.0 150.0,73.0 154.3,70.5" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="150.0,68.0 154.3,70.5 150.0,73.0 145.7,70.5" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="224.5,136.0 228.8,138.5 228.8,118.5 224.5,116.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="233.1,136.0 228.8,138.5 228.8,118.5 233.1,116.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="228.8,113.5 233.1,116.0 228.8,118.5 224.5,116.0" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="66.9,136.0 71.2,138.5 71.2,118.5 66.9,116.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="75.5,136.0 71.2,138.5 71.2,118.5 75.5,116.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="71.2,113.5 75.5,116.0 71.2,118.5 66.9,116.0" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="145.7,181.5 150.0,184.0 150.0,164.0 145.7,161.5" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="154.3,181.5 150.0,184.0 150.0,164.0 154.3,161.5" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="150.0,159.0 154.3,161.5 150.0,164.0 145.7,161.5" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="63.4,116.0 150.0,166.0 150.0,160.0 63.4,110.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="236.6,116.0 150.0,166.0 150.0,160.0 236.6,110.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="150.0,60.0 236.6,110.0 150.0,160.0 63.4,110.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="145.7,64.5 150.0,67.0 150.0,47.0 145.7,44.5" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="154.3,64.5 150.0,67.0 150.0,47.0 154.3,44.5" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="150.0,42.0 154.3,44.5 150.0,47.0 145.7,44.5" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="224.5,110.0 228.8,112.5 228.8,92.5 224.5,90.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="233.1,110.0 228.8,112.5 228.8,92.5 233.1,90.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="228.8,87.5 233.1,90.0 228.8,92.5 224.5,90.0" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="66.9,110.0 71.2,112.5 71.2,92.5 66.9,90.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="75.5,110.0 71.2,112.5 71.2,92.5 75.5,90.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="71.2,87.5 75.5,90.0 71.2,92.5 66.9,90.0" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="145.7,155.5 150.0,158.0 150.0,138.0 145.7,135.5" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="154.3,155.5 150.0,158.0 150.0,138.0 154.3,135.5" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="150.0,133.0 154.3,135.5 150.0,138.0 145.7,135.5" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="63.4,90.0 150.0,140.0 150.0,134.0 63.4,84.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="236.6,90.0 150.0,140.0 150.0,134.0 236.6,84.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="150.0,34.0 236.6,84.0 150.0,134.0 63.4,84.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<polyline points="106.7,66.8 182.9,110.8" fill="none" stroke="#B9B5AA" stroke-width="1"></polyline>
+<g class="pa-barg" onMouseEnter="{{b1.b0.enter}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><polygon points="{{b1.b0.l}}" fill="{{b1.b0.fl}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b0.r}}" fill="{{b1.b0.fr}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b0.t}}" fill="{{b1.b0.ft}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g class="pa-barg" onMouseEnter="{{b1.b1.enter}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><polygon points="{{b1.b1.l}}" fill="{{b1.b1.fl}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b1.r}}" fill="{{b1.b1.fr}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b1.t}}" fill="{{b1.b1.ft}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g class="pa-barg" onMouseEnter="{{b1.b2.enter}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><polygon points="{{b1.b2.l}}" fill="{{b1.b2.fl}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b2.r}}" fill="{{b1.b2.fr}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b2.t}}" fill="{{b1.b2.ft}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g class="pa-barg" onMouseEnter="{{b1.b3.enter}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><polygon points="{{b1.b3.l}}" fill="{{b1.b3.fl}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b3.r}}" fill="{{b1.b3.fr}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b3.t}}" fill="{{b1.b3.ft}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g class="pa-barg" onMouseEnter="{{b1.b4.enter}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><polygon points="{{b1.b4.l}}" fill="{{b1.b4.fl}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b4.r}}" fill="{{b1.b4.fr}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b4.t}}" fill="{{b1.b4.ft}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g class="pa-barg" onMouseEnter="{{b1.b5.enter}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><polygon points="{{b1.b5.l}}" fill="{{b1.b5.fl}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b5.r}}" fill="{{b1.b5.fr}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="{{b1.b5.t}}" fill="{{b1.b5.ft}}" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<polyline points="{{b1.line}}" fill="none" stroke="#141414" stroke-width="1.4" stroke-dasharray="4 3" pointer-events="none"></polyline>
+              </svg>
+              <sc-if value="{{tipPend.on}}" hint-placeholder-val="{{false}}"><div role="tooltip" style="{{tipPend.st}}"><b style="font-weight: 600">{{tipPend.title}}</b><span style="color: #C9C6BF">{{tipPend.text}}</span></div></sc-if>
+            </div>
+          </div>
+          <div style="position: relative; margin: -30px 12px 0; background: #FFFFFF; border: 1px solid #E6E4DB; box-shadow: 0 10px 24px -16px rgba(20,20,20,.35); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5F5D57"><span class="pa-pulse" style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>Live from the simulation</span>
+            <sc-for list="{{feedPend}}" as="r" hint-placeholder-count="3"><div style="{{r.st}}"><span>{{r.a}}</span><span>{{r.b}}</span><span>{{r.c}}</span></div></sc-for>
+          </div>
+          <div style="padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5D57"><span style="width: 8px; height: 8px; background: #F5A524"></span>Mechanics</span>
+            <h3 style="margin: 0; font-size: 19px; font-weight: 600; line-height: 1.25">Simple pendulum</h3>
+            <p style="margin: 0; color: #4A4843; font-size: 14px">Time 20 swings at six lengths, plot T² against l, and find g from the slope.</p>
+          </div>
+        </article>
+        <article style="background: #FFFFFF; display: flex; flex-direction: column; min-width: 0">
+          <div style="position: relative; background: #E9F0FE; padding: 12px 0 40px">
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 2"><span style="display: inline-block; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 4px 8px; font: 500 12px 'Geist Mono', monospace; color: #141414">{{ohmBadge}}</span></div>
+            <div style="position: relative">
+              <svg viewBox="0 0 300 228" style="width: 100%; height: auto; display: block; overflow: visible" role="img" aria-label="An isometric circuit board with a cell, key, rheostat, ammeter, voltmeter and a resistor, with current flowing along the wires">
+<g><polygon points="24.4,91.0 171.7,176.0 171.7,168.0 24.4,83.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="275.6,116.0 171.7,176.0 171.7,168.0 275.6,108.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="128.3,23.0 275.6,108.0 171.7,168.0 24.4,83.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<polyline points="142.2,34.9 45.2,90.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="159.5,44.9 62.5,100.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="176.8,54.9 79.9,110.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="194.2,64.9 97.2,120.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="211.5,74.9 114.5,130.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="228.8,84.9 131.8,140.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="246.1,94.9 149.1,150.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="263.4,104.9 166.5,160.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="114.5,34.9 254.8,115.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="97.2,44.9 237.5,125.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="79.9,54.9 220.1,135.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="62.5,64.9 202.8,145.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="45.2,74.9 185.5,155.9" fill="none" stroke="#EEF2FB" stroke-width="1"></polyline>
+<polyline points="145.7,54.8 163.0,64.8" fill="none" stroke="#9DB8F4" stroke-width="1.6" stroke-linejoin="round"></polyline>
+<polyline points="145.7,54.8 163.0,64.8" fill="none" class="pa-flow" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 11" stroke-linejoin="round"></polyline>
+<polyline points="175.1,71.8 195.9,83.8" fill="none" stroke="#9DB8F4" stroke-width="1.6" stroke-linejoin="round"></polyline>
+<polyline points="175.1,71.8 195.9,83.8" fill="none" class="pa-flow" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 11" stroke-linejoin="round"></polyline>
+<polyline points="240.9,109.8 247.9,113.8 225.3,126.8 176.8,98.8 163.9,106.3 158.7,103.3" fill="none" stroke="#9DB8F4" stroke-width="1.6" stroke-linejoin="round"></polyline>
+<polyline points="240.9,109.8 247.9,113.8 225.3,126.8 176.8,98.8 163.9,106.3 158.7,103.3" fill="none" class="pa-flow" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 11" stroke-linejoin="round"></polyline>
+<polyline points="134.4,89.3 100.6,69.8 85.9,78.3" fill="none" stroke="#9DB8F4" stroke-width="1.6" stroke-linejoin="round"></polyline>
+<polyline points="134.4,89.3 100.6,69.8 85.9,78.3" fill="none" class="pa-flow" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 11" stroke-linejoin="round"></polyline>
+<polyline points="66.9,78.3 54.7,71.3 114.5,36.8 119.7,39.8" fill="none" stroke="#9DB8F4" stroke-width="1.6" stroke-linejoin="round"></polyline>
+<polyline points="66.9,78.3 54.7,71.3 114.5,36.8 119.7,39.8" fill="none" class="pa-flow" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 11" stroke-linejoin="round"></polyline>
+<polyline points="170.8,131.3 182.9,124.3 157.8,109.8 163.9,106.3" fill="none" stroke="#9DB8F4" stroke-width="1.6" stroke-linejoin="round"></polyline>
+<polyline points="170.8,131.3 182.9,124.3 157.8,109.8 163.9,106.3" fill="none" class="pa-flow" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 11" stroke-linejoin="round"></polyline>
+<polyline points="151.7,131.3 101.5,102.3 129.2,86.3 134.4,89.3" fill="none" stroke="#9DB8F4" stroke-width="1.6" stroke-linejoin="round"></polyline>
+<polyline points="151.7,131.3 101.5,102.3 129.2,86.3 134.4,89.3" fill="none" class="pa-flow" stroke="#3B82F6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 11" stroke-linejoin="round"></polyline>
+<g onMouseEnter="{{tips.circ.cell}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="112.8,44.0 138.7,59.0 138.7,45.0 112.8,30.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="152.6,51.0 138.7,59.0 138.7,45.0 152.6,37.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="126.6,22.0 152.6,37.0 138.7,45.0 112.8,30.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{tips.circ.key}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="156.9,68.5 169.1,75.5 169.1,67.5 156.9,60.5" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="181.2,68.5 169.1,75.5 169.1,67.5 181.2,60.5" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="169.1,53.5 181.2,60.5 169.1,67.5 156.9,60.5" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{tips.circ.rheo}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="189.8,87.5 234.9,113.5 234.9,105.5 189.8,79.5" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="247.0,106.5 234.9,113.5 234.9,105.5 247.0,98.5" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="202.0,72.5 247.0,98.5 234.9,105.5 189.8,79.5" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="207.2,91.5 212.4,94.5 212.4,88.5 207.2,85.5" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="227.9,85.5 212.4,94.5 212.4,88.5 227.9,79.5" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="222.7,76.5 227.9,79.5 212.4,88.5 207.2,85.5" fill="#F5F3EE" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{tips.circ.res}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="128.3,93.0 152.6,107.0 152.6,97.0 128.3,83.0" fill="#C4D6FB" stroke="#1E4FB8" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="164.7,100.0 152.6,107.0 152.6,97.0 164.7,90.0" fill="#AFC7F8" stroke="#1E4FB8" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="140.5,76.0 164.7,90.0 152.6,97.0 128.3,83.0" fill="#DCE7FD" stroke="#1E4FB8" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{tips.circ.amm}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="57.3,84.0 76.4,95.0 76.4,83.0 57.3,72.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="95.4,84.0 76.4,95.0 76.4,83.0 95.4,72.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="76.4,61.0 95.4,72.0 76.4,83.0 57.3,72.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<g onMouseEnter="{{tips.circ.volt}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="142.2,137.0 161.3,148.0 161.3,136.0 142.2,125.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="180.3,137.0 161.3,148.0 161.3,136.0 180.3,125.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="161.3,114.0 180.3,125.0 161.3,136.0 142.2,125.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+<text x="76.4" y="69.0" text-anchor="middle" font-family="Geist Mono, monospace" font-size="10" font-weight="600" fill="#141414" pointer-events="none">A</text>
+<text x="161.3" y="122.0" text-anchor="middle" font-family="Geist Mono, monospace" font-size="10" font-weight="600" fill="#141414" pointer-events="none">V</text>
+<text x="132.7" y="30.5" text-anchor="middle" font-family="Geist Mono, monospace" font-size="9" font-weight="600" fill="#141414" pointer-events="none">+  −</text>
+<text x="146.5" y="83.5" text-anchor="middle" font-family="Geist Mono, monospace" font-size="9" font-weight="600" fill="#1E4FB8" pointer-events="none">R</text>
+              </svg>
+              <sc-if value="{{tipCirc.on}}" hint-placeholder-val="{{false}}"><div role="tooltip" style="{{tipCirc.st}}"><b style="font-weight: 600">{{tipCirc.title}}</b><span style="color: #C9C6BF">{{tipCirc.text}}</span></div></sc-if>
+            </div>
+          </div>
+          <div style="position: relative; margin: -30px 12px 0; background: #FFFFFF; border: 1px solid #E6E4DB; box-shadow: 0 10px 24px -16px rgba(20,20,20,.35); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5F5D57"><span class="pa-pulse" style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>Live from the simulation</span>
+            <sc-for list="{{feedOhm}}" as="r" hint-placeholder-count="3"><div style="{{r.st}}"><span>{{r.a}}</span><span>{{r.b}}</span><span>{{r.c}}</span></div></sc-for>
+          </div>
+          <div style="padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5D57"><span style="width: 8px; height: 8px; background: #3B82F6"></span>Electricity</span>
+            <h3 style="margin: 0; font-size: 19px; font-weight: 600; line-height: 1.25">Ohm's law and the potentiometer</h3>
+            <p style="margin: 0; color: #4A4843; font-size: 14px">Wire the circuit yourself, step the current, and watch V/I hold steady.</p>
+          </div>
+        </article>
+        <article style="background: #FFFFFF; display: flex; flex-direction: column; min-width: 0">
+          <div style="position: relative; background: #EFECFE; padding: 12px 0 40px">
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 2"><span style="display: inline-block; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 4px 8px; font: 500 12px 'Geist Mono', monospace; color: #141414">{{lensBadge}}</span></div>
+            <div style="position: relative">
+              <svg viewBox="0 0 300 228" style="width: 100%; height: auto; display: block; overflow: visible" role="img" aria-label="An isometric optical bench with an illuminated object, a converging lens and a screen, with three rays forming an inverted image">
+<g><polygon points="49.5,72.0 219.3,170.0 219.3,165.0 49.5,67.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="250.5,152.0 219.3,170.0 219.3,165.0 250.5,147.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="80.7,49.0 250.5,147.0 219.3,165.0 49.5,67.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g><polygon points="70.3,65.0 226.2,155.0 226.2,151.0 70.3,61.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="233.1,151.0 226.2,155.0 226.2,151.0 233.1,147.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="77.3,57.0 233.1,147.0 226.2,151.0 70.3,61.0" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<polyline points="77.3,56.9 72.9,59.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="85.9,61.9 83.3,63.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="94.6,66.9 92.0,68.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="103.2,71.9 100.6,73.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="111.9,76.9 109.3,78.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="120.6,81.9 116.2,84.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="129.2,86.9 126.6,88.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="137.9,91.9 135.3,93.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="146.5,96.9 143.9,98.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="155.2,101.9 152.6,103.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="163.9,106.9 159.5,109.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="172.5,111.9 169.9,113.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="181.2,116.9 178.6,118.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="189.8,121.9 187.2,123.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="198.5,126.9 195.9,128.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="207.2,131.9 202.8,134.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="215.8,136.9 213.2,138.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="224.5,141.9 221.9,143.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<polyline points="233.1,146.9 230.5,148.4" fill="none" stroke="#8F8C86" stroke-width="0.8"></polyline>
+<g onMouseEnter="{{tips.lens.obj}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="75.5,66.0 82.5,70.0 82.5,36.0 75.5,32.0" fill="#F6E3B5" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="92.8,64.0 82.5,70.0 82.5,36.0 92.8,30.0" fill="#EED39A" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="85.9,26.0 92.8,30.0 82.5,36.0 75.5,32.0" fill="#FFF4D6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<polyline points="91.1,48.0 91.1,34.0" stroke="#F0482A" stroke-width="2.6" fill="none"></polyline><polygon points="91.1,29.0 88.5,34.5 93.7,37.5" fill="#F0482A"></polygon>
+</g>
+<g><polygon points="139.6,99.0 143.1,101.0 143.1,97.0 139.6,95.0" fill="#EFEDE6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="146.5,99.0 143.1,101.0 143.1,97.0 146.5,95.0" fill="#E2DFD6" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="143.1,93.0 146.5,95.0 143.1,97.0 139.6,95.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<g onMouseEnter="{{tips.lens.lens}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<polygon points="124.0,89.0 124.3,85.4 125.0,81.7 126.1,77.8 127.7,74.0 129.6,70.2 131.9,66.7 134.4,63.4 137.2,60.5 140.1,58.0 143.1,56.0 146.1,54.6 149.0,53.7 151.7,53.4 154.3,53.7 156.5,54.7 158.5,56.2 160.0,58.2 161.2,60.7 161.9,63.7 162.1,67.0 161.9,70.6 161.2,74.3 160.0,78.2 158.5,82.0 156.5,85.8 154.3,89.3 151.7,92.6 149.0,95.5 146.1,98.0 143.1,100.0 140.1,101.4 137.2,102.3 134.4,102.6 131.9,102.3 129.6,101.3 127.7,99.8 126.1,97.8 125.0,95.3 124.3,92.3" fill="rgba(139,124,246,0.22)" stroke="#2A2928" stroke-width="1" stroke-linejoin="round" stroke-width="1.4"></polygon>
+</g>
+<polyline points="73.8,38.0 229.7,128.0" fill="none" stroke="#B9B5AA" stroke-width="1" stroke-dasharray="3 4"></polyline>
+<polyline points="91.1,30.0 143.1,60.0 195.0,126.0" fill="none" class="pa-ray" stroke="#8B7CF6" stroke-width="1.6" stroke-dasharray="5 4"></polyline>
+<polyline points="91.1,30.0 195.0,126.0" fill="none" class="pa-ray" stroke="#8B7CF6" stroke-width="1.6" stroke-dasharray="5 4"></polyline>
+<polyline points="91.1,30.0 143.1,96.0 195.0,126.0" fill="none" class="pa-ray" stroke="#8B7CF6" stroke-width="1.6" stroke-dasharray="5 4"></polyline>
+<circle cx="117.1" cy="63.0" r="2.4" fill="#141414"></circle><circle cx="169.1" cy="93.0" r="2.4" fill="#141414"></circle>
+<text x="117.1" y="71.0" text-anchor="middle" font-family="Geist Mono, monospace" font-size="9" font-weight="600" fill="#141414" pointer-events="none">F</text>
+<text x="169.1" y="101.0" text-anchor="middle" font-family="Geist Mono, monospace" font-size="9" font-weight="600" fill="#141414" pointer-events="none">F</text>
+<g onMouseEnter="{{tips.lens.screen}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="181.2,137.0 183.8,138.5 183.8,86.5 181.2,85.0" fill="#F4F2EC" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="211.5,122.5 183.8,138.5 183.8,86.5 211.5,70.5" fill="#FAFAF7" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="208.9,69.0 211.5,70.5 183.8,86.5 181.2,85.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+<polyline points="197.6,109.5 197.6,123.5" stroke="#F0482A" stroke-width="2.6" fill="none"></polyline><polygon points="197.6,128.5 200.2,120.0 195.0,123.0" fill="#F0482A"></polygon>
+</g>
+<g onMouseEnter="{{tips.lens.rule}}" onMouseLeave="{{tipOff}}" style="cursor: pointer">
+<g><polygon points="51.3,66.0 221.0,164.0 221.0,162.5 51.3,64.5" fill="#E8D7A8" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="226.2,161.0 221.0,164.0 221.0,162.5 226.2,159.5" fill="#E8D7A8" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon><polygon points="56.5,61.5 226.2,159.5 221.0,162.5 51.3,64.5" fill="#F5E9C8" stroke="#2A2928" stroke-width="1" stroke-linejoin="round"></polygon></g>
+</g>
+              </svg>
+              <sc-if value="{{tipLens.on}}" hint-placeholder-val="{{false}}"><div role="tooltip" style="{{tipLens.st}}"><b style="font-weight: 600">{{tipLens.title}}</b><span style="color: #C9C6BF">{{tipLens.text}}</span></div></sc-if>
+            </div>
+          </div>
+          <div style="position: relative; margin: -30px 12px 0; background: #FFFFFF; border: 1px solid #E6E4DB; box-shadow: 0 10px 24px -16px rgba(20,20,20,.35); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5F5D57"><span class="pa-pulse" style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>Live from the simulation</span>
+            <sc-for list="{{feedLens}}" as="r" hint-placeholder-count="3"><div style="{{r.st}}"><span>{{r.a}}</span><span>{{r.b}}</span><span>{{r.c}}</span></div></sc-for>
+          </div>
+          <div style="padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5D57"><span style="width: 8px; height: 8px; background: #8B7CF6"></span>Light</span>
+            <h3 style="margin: 0; font-size: 19px; font-weight: 600; line-height: 1.25">Converging lens</h3>
+            <p style="margin: 0; color: #4A4843; font-size: 14px">Move the screen until the image is sharp, then find f from u and v.</p>
+          </div>
+        </article>
+        <article style="background: #FFFFFF; display: flex; flex-direction: column; min-width: 0">
+          <div style="position: relative; background: #FFEEE5; padding: 12px 0 40px">
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 2"><span style="display: inline-block; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 4px 8px; font: 500 12px 'Geist Mono', monospace; color: #141414">{{mixBadge}}</span></div>
+            <div style="position: relative">
+              <svg viewBox="0 0 300 228" style="width: 100%; height: auto; display: block; overflow: visible" role="img" aria-label="An exploded isometric calorimeter: outer can, lagging, copper calorimeter, water, and a lid with stirrer and thermometer">
+<g class="pa-float pa-f1" onMouseEnter="{{tips.mix.can}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><path d="M76.0 166.0 L76.0 186.0 A74.0 37.0 0 0 0 224.0 186.0 L224.0 166.0 Z" fill="#DCD8CE" stroke="#2A2928" stroke-width="1"></path><ellipse cx="150.0" cy="166.0" rx="74.0" ry="37.0" fill="#F7F5EF" stroke="#2A2928" stroke-width="1"></ellipse></g>
+<g class="pa-float pa-f2" onMouseEnter="{{tips.mix.lag}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><path d="M86.0 134.0 L86.0 146.0 A64.0 32.0 0 0 0 214.0 146.0 L214.0 134.0 Z" fill="#D7CBB4" stroke="#2A2928" stroke-width="1"></path><ellipse cx="150.0" cy="134.0" rx="64.0" ry="32.0" fill="#EFE5D3" stroke="#2A2928" stroke-width="1"></ellipse></g>
+<g class="pa-float pa-f3" onMouseEnter="{{tips.mix.cal}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><path d="M96.0 100.0 L96.0 122.0 A54.0 27.0 0 0 0 204.0 122.0 L204.0 100.0 Z" fill="#C98D5E" stroke="#2A2928" stroke-width="1"></path><ellipse cx="150.0" cy="100.0" rx="54.0" ry="27.0" fill="#EBB78C" stroke="#2A2928" stroke-width="1"></ellipse></g>
+<g class="pa-float pa-f4" onMouseEnter="{{tips.mix.water}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><path d="M104.0 74.0 L104.0 80.0 A46.0 23.0 0 0 0 196.0 80.0 L196.0 74.0 Z" fill="#E0612A" stroke="#2A2928" stroke-width="1"></path><ellipse cx="150.0" cy="74.0" rx="46.0" ry="23.0" fill="#FF7A3D" stroke="#2A2928" stroke-width="1" class="pa-heat"></ellipse></g>
+<g class="pa-float pa-f5" onMouseEnter="{{tips.mix.lid}}" onMouseLeave="{{tipOff}}" style="cursor: pointer"><g class=""><path d="M98.0 44.0 L98.0 49.0 A52.0 26.0 0 0 0 202.0 49.0 L202.0 44.0 Z" fill="#DAD7E2" stroke="#2A2928" stroke-width="1"></path><ellipse cx="150.0" cy="44.0" rx="52.0" ry="26.0" fill="#FFFFFF" stroke="#2A2928" stroke-width="1"></ellipse></g><line x1="178" y1="40" x2="178" y2="2" stroke="#141414" stroke-width="3"></line><line x1="178" y1="40" x2="178" y2="14" stroke="#F0482A" stroke-width="1.6"></line><circle cx="178" cy="41" r="3.6" fill="#F0482A" stroke="#141414" stroke-width="1"></circle><line x1="122" y1="44" x2="122" y2="8" stroke="#8F8C86" stroke-width="2"></line><ellipse cx="122" cy="8" rx="6" ry="3" fill="none" stroke="#8F8C86" stroke-width="2"></ellipse></g>
+              </svg>
+              <sc-if value="{{tipMix.on}}" hint-placeholder-val="{{false}}"><div role="tooltip" style="{{tipMix.st}}"><b style="font-weight: 600">{{tipMix.title}}</b><span style="color: #C9C6BF">{{tipMix.text}}</span></div></sc-if>
+            </div>
+          </div>
+          <div style="position: relative; margin: -30px 12px 0; background: #FFFFFF; border: 1px solid #E6E4DB; box-shadow: 0 10px 24px -16px rgba(20,20,20,.35); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5F5D57"><span class="pa-pulse" style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>Live from the simulation</span>
+            <sc-for list="{{feedMix}}" as="r" hint-placeholder-count="3"><div style="{{r.st}}"><span>{{r.a}}</span><span>{{r.b}}</span><span>{{r.c}}</span></div></sc-for>
+          </div>
+          <div style="padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 6px">
+            <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5D57"><span style="width: 8px; height: 8px; background: #FF7A3D"></span>Heat</span>
+            <h3 style="margin: 0; font-size: 19px; font-weight: 600; line-height: 1.25">Method of mixtures</h3>
+            <p style="margin: 0; color: #4A4843; font-size: 14px">Pour hot water into cold, stir, and balance heat lost against heat gained.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+    <p style="margin: 0; color: #4A4843; font-size: 15px">More experiments from the WASSCE and university practical lists follow after launch.</p>
+  </div>
+</section>
+
+<!-- BENTO -->
+<section aria-label="Features" style="background: #0D0D0D">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 104px 32px; display: flex; flex-direction: column; gap: 40px">
+    <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(38px, 5vw, 64px); line-height: 0.95; letter-spacing: -0.03em; max-width: 14em; text-wrap: balance">Everything a real lab gives you. Plus a teacher who never gets tired.</h2>
+    <div class="pa-bento">
+      <div class="pa-wide" style="background: #161616; border: 1px solid #2A2928; padding: 28px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center">
+        <div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+          <h3 style="margin: 0; font-size: 24px; font-weight: 600">Hear the coach</h3>
+          <p style="margin: 0; color: #C9C6BF">Every step and every correction read aloud, with captions. A count-along beat keeps you on 20 swings.</p>
+        </div>
+        <div style="flex: 1 1 300px; min-width: 0; background: #0D0D0D; border: 1px solid #2A2928; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; align-items: flex-end; gap: 4px; height: 48px">
+            <sc-for list="{{bars}}" as="b" hint-placeholder-count="28"><span class="pa-bar" style="{{b.st}}"></span></sc-for>
+          </div>
+          <span style="font-size: 15px">“Start the stopwatch as the bob passes the mark. Say zero.”</span>
+        </div>
+      </div>
+      <div style="background: #161616; border: 1px solid #2A2928; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+        <h3 style="margin: 0; font-size: 24px; font-weight: 600">Works offline</h3>
+        <p style="margin: 0; color: #C9C6BF">Install it once. The lab, sounds and print sheets keep working when the network doesn't.</p>
+        <button class="pa-focus" type="button" onClick="{{toggleNet}}" aria-pressed="{{offline}}" style="{{netStyle}}"><span style="{{knobStyle}}"></span>{{netText}}</button>
+      </div>
+      <div style="background: #161616; border: 1px solid #2A2928; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+        <h3 style="margin: 0; font-size: 24px; font-weight: 600">Snapshots, labelled</h3>
+        <p style="margin: 0; color: #C9C6BF">Capture any moment. Every image you export carries its figure number, caption, legend and our mark.</p>
+        <div style="position: relative; height: 120px">
+          <div style="position: absolute; left: 30px; top: 18px; width: 150px; height: 96px; background: #E8E4DC; transform: rotate(-8deg)"></div>
+          <div style="position: absolute; left: 60px; top: 8px; width: 150px; height: 96px; background: #F2F0EA; transform: rotate(4deg)"></div>
+          <div style="position: absolute; left: 90px; top: 4px; width: 160px; height: 104px; background: #FFFFFF; color: #141414; padding: 8px 10px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px">
+            <span style="display: flex; justify-content: space-between"><b>Fig 3</b><span>Set-up</span></span>
+            <svg width="60" height="40" viewBox="0 0 60 40" aria-hidden="true"><line x1="10" y1="2" x2="10" y2="38" stroke="#141414" stroke-width="2"></line><line x1="10" y1="6" x2="38" y2="6" stroke="#141414" stroke-width="2"></line><line x1="38" y1="6" x2="44" y2="30" stroke="#141414"></line><circle cx="45" cy="32" r="4" fill="#F0482A"></circle></svg>
+            <span style="display: flex; align-items: center; gap: 4px; color: #5F5D57"><svg width="10" height="10" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#141414" stroke-width="22"></path></svg>Physics Anatomy</span>
+          </div>
+        </div>
+      </div>
+      <div style="background: #161616; border: 1px solid #2A2928; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+        <h3 style="margin: 0; font-size: 24px; font-weight: 600">Exam mode</h3>
+        <p style="margin: 0; color: #C9C6BF">The coach goes quiet, a countdown runs, and your script is marked the way practicals are marked: tabulation, graph, slope and precautions.</p>
+        <span style="font-family: 'Geist Mono', monospace; font-size: 44px; line-height: 1">{{examText}}</span>
+        <span style="font-size: 13px; color: #A3A19B">Your teacher sets the time.</span>
+      </div>
+      <div id="research" style="background: #161616; border: 1px solid #2A2928; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+        <h3 style="margin: 0; font-size: 24px; font-weight: 600">Take your results with you</h3>
+        <p style="margin: 0; color: #C9C6BF">Download the graph in colour or black and white, the table as CSV or Excel, and the whole report as PDF. Every file keeps its labels and units.</p>
+        <div style="background: #FFFFFF; padding: 10px">
+          <svg viewBox="0 0 220 132" style="width: 100%; height: auto; display: block" role="img" aria-label="{{gx.label}}">
+            <sc-if value="{{gx.colour}}" hint-placeholder-val="{{true}}"><path d="{{gx.grid}}" stroke="#CDEBC6" stroke-width="0.6" fill="none"></path></sc-if>
+            <sc-if value="{{gx.mono}}" hint-placeholder-val="{{false}}"><path d="{{gx.grid}}" stroke="#E2E2E2" stroke-width="0.6" fill="none"></path></sc-if>
+            <path d="M24 8 V116 H214" stroke="#141414" stroke-width="1" fill="none"></path>
+            <polyline points="{{gx.tri}}" fill="{{gx.triFill}}" stroke="{{gx.triStroke}}" stroke-width="1" stroke-dasharray="3 2"></polyline>
+            <line x1="{{gx.l1x}}" y1="{{gx.l1y}}" x2="{{gx.l2x}}" y2="{{gx.l2y}}" stroke="{{gx.lineCol}}" stroke-width="1.6"></line>
+            <sc-for list="{{gx.pts}}" as="q" hint-placeholder-count="6"><circle cx="{{q.x}}" cy="{{q.y}}" r="3" fill="{{q.fill}}" stroke="#141414" stroke-width="0.8"></circle></sc-for>
+            <text x="119" y="129" text-anchor="middle" font-family="Geist Mono, monospace" font-size="8" fill="#141414">l / m</text>
+            <text x="8" y="62" text-anchor="middle" font-family="Geist Mono, monospace" font-size="8" fill="#141414" transform="rotate(-90 8 62)">T² / s²</text>
+          </svg>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between">
+          <div role="group" aria-label="Graph colours" style="display: inline-flex; border: 1px solid #3A3936">
+            <button class="pa-focus" type="button" onClick="{{gColour}}" aria-pressed="{{gx.colour}}" style="{{gx.segC}}">Colour</button>
+            <button class="pa-focus" type="button" onClick="{{gMono}}" aria-pressed="{{gx.mono}}" style="{{gx.segM}}">Black and white</button>
+          </div>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">PNG · SVG · PDF · CSV · XLSX</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGN UP -->
+<section id="signup" aria-label="Sign up" style="background: #F0482A; color: #0D0D0D">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 96px 32px; display: flex; flex-wrap: wrap; gap: 32px; align-items: stretch">
+    <div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 16px">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(40px, 5.4vw, 72px); line-height: 0.92; letter-spacing: -0.035em">Free for every student and every school.</h2>
+      <p style="margin: 0; font-size: 18px; max-width: 26em">Students can start without an account. Teachers sign up to run classes, set work and see every bench.</p>
+    </div>
+    <form aria-label="Teacher sign up" style="flex: 1 1 340px; min-width: 0; background: #0D0D0D; color: #F2F0EA; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+      <span style="font-size: 22px; font-weight: 600">Teachers and lecturers</span>
+      <label for="su-email" style="font-size: 14px; color: #C9C6BF">School email</label>
+      <input id="su-email" class="pa-focus" type="email" placeholder="you@school.edu.gh" style="height: 48px; border: 1px solid #3A3936; background: #161616; color: #F2F0EA; padding: 0 14px; font: 16px Geist, sans-serif">
+      <a class="pa-focus" href="#signup-email" style="height: 48px; background: #F2F0EA; color: #0D0D0D; text-decoration: none; display: flex; align-items: center; justify-content: center; font-weight: 600">Sign up with email</a>
+      <span style="font-size: 13px; color: #A3A19B">By signing up you agree to the <a href="#terms">Terms</a> and <a href="#privacy">Privacy Policy</a>.</span>
+    </form>
+    <form aria-label="Join a class" style="flex: 1 1 300px; min-width: 0; background: #FBFBF6; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+      <span style="font-size: 22px; font-weight: 600">Students</span>
+      <label for="su-code" style="font-size: 14px; color: #4A4843">Class code from your teacher</label>
+      <input id="su-code" class="pa-focus" type="text" placeholder="ABC-123" style="height: 48px; border: 1px solid #141414; background: #FFFFFF; padding: 0 14px; font: 500 18px 'Geist Mono', monospace; letter-spacing: 0.08em">
+      <a class="pa-focus" href="#join" style="height: 48px; background: #0D0D0D; color: #FBFBF6; text-decoration: none; display: flex; align-items: center; justify-content: center; font-weight: 600">Join the class</a>
+      <a class="pa-focus" href="#lab" style="color: #0D0D0D; font-weight: 500; text-align: center">No code? Start an experiment without an account</a>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER: large type with status (after efferd Footer 14) -->
+<footer aria-label="Site" style="background: #0D0D0D; color: #C9C6BF; overflow: hidden">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 72px 32px 0; display: flex; flex-direction: column; gap: 48px">
+    <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between">
+      <div style="flex: 1 1 280px; max-width: 360px; display: flex; flex-direction: column; gap: 16px">
+        <span style="display: flex; align-items: center; gap: 10px; color: #F2F0EA"><svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F2F0EA" stroke-width="18"></path><line x1="84" y1="26" x2="98" y2="60" stroke="#F2F0EA" stroke-width="5"></line><circle cx="100" cy="68" r="12" fill="#F0482A"></circle></svg><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px">Physics Anatomy</span></span>
+        <span style="font-size: 15px">Physics from first principles.</span>
+        <a class="pa-focus" href="#status" style="align-self: flex-start; display: flex; align-items: center; gap: 8px; color: #F2F0EA; text-decoration: none; font-size: 14px; border: 1px solid #2A2928; padding: 7px 12px"><span class="pa-pulse" style="width: 8px; height: 8px; border-radius: 50%; background: #6CC25A"></span>All systems normal</a>
+      </div>
+      <nav aria-label="Product" style="display: flex; flex-direction: column; gap: 10px; font-size: 15px"><span style="color: #F2F0EA; font-weight: 600">Product</span><a href="#experiments" style="color: #C9C6BF; text-decoration: none">Experiments</a><a href="#teachers" style="color: #C9C6BF; text-decoration: none">For teachers</a><a href="#research" style="color: #C9C6BF; text-decoration: none">For researchers</a><a href="#changelog" style="color: #C9C6BF; text-decoration: none">What's new</a></nav>
+      <nav aria-label="Help" style="display: flex; flex-direction: column; gap: 10px; font-size: 15px"><span style="color: #F2F0EA; font-weight: 600">Help</span><a href="#help" style="color: #C9C6BF; text-decoration: none">Help centre</a><a href="#report" style="color: #C9C6BF; text-decoration: none">Report a problem</a><a href="#accessibility" style="color: #C9C6BF; text-decoration: none">Accessibility</a><a href="#about" style="color: #C9C6BF; text-decoration: none">About</a></nav>
+      <nav aria-label="Legal" style="display: flex; flex-direction: column; gap: 10px; font-size: 15px"><span style="color: #F2F0EA; font-weight: 600">Legal</span><a href="#terms" style="color: #C9C6BF; text-decoration: none">Terms of use</a><a href="#privacy" style="color: #C9C6BF; text-decoration: none">Privacy</a><a href="#children" style="color: #C9C6BF; text-decoration: none">Children and schools</a><a href="#cookies" style="color: #C9C6BF; text-decoration: none">Cookie settings</a></nav>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; color: #8F8D88; border-top: 1px solid #242322; padding-top: 18px">
+      <span>© 2026 Physics Anatomy. Made in Winneba, Ghana.</span>
+    </div>
+  </div>
+  <div aria-hidden="true" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(56px, 12.6vw, 182px); line-height: 0.78; letter-spacing: -0.05em; white-space: nowrap; color: #1A1918; text-align: center; padding-top: 32px; margin-bottom: -0.12em">Physics Anatomy</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { countFrom: 0, explode: 55, hover: null, offline: false, amp: 8, period: 1.796, g: 9.79,
+      scrolled: false, menuOpen: false, scene: 0, tick: 0, plotSq: true, tip: null, exam: 2700, graphColour: true };
+    this.bins = new Float32Array(160); this.hitCount = 0; this.fade = 0;
+    this.pend = { th: 8 * Math.PI / 180, om: 0, drag: false, last: 0, lastUi: 0 };
+    this.t0 = 0;
+  }
+  componentDidMount() {
+    this.reduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.t0 = performance.now();
+    const loop = (t) => { this.stepSlit(this.reduced ? 0 : 70); this.stepPend(t); this.raf = requestAnimationFrame(loop); };
+    if (this.reduced) { this.stepSlit(9000); this.drawPend(); } else { this.raf = requestAnimationFrame(loop); }
+    const nextScene = () => {
+      let n = this.state.scene; while (n === this.state.scene) n = Math.floor(Math.random() * 4);
+      this.fade = 45; this.setState({ scene: n });
+      this.sceneTimer = setTimeout(nextScene, 9000 + Math.random() * 5000);
+    };
+    if (!this.reduced) this.sceneTimer = setTimeout(nextScene, 10000);
+    this.feedTimer = setInterval(() => this.setState({ tick: this.state.tick + 1 }), 2600);
+    this.examTimer = setInterval(() => this.setState({ exam: this.state.exam > 0 ? this.state.exam - 1 : 2700 }), 1000);
+    this.onScroll = (e) => {
+      const tgt = e && e.target && e.target !== document ? e.target : null;
+      const y = Math.max(window.scrollY || 0, (document.documentElement && document.documentElement.scrollTop) || 0, (tgt && tgt.scrollTop) || 0);
+      const sc = y > 24;
+      if (sc !== this.state.scrolled) this.setState({ scrolled: sc });
+    };
+    window.addEventListener('scroll', this.onScroll, { passive: true, capture: true });
+  }
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf); clearInterval(this.feedTimer); clearTimeout(this.sceneTimer); clearInterval(this.examTimer);
+    window.removeEventListener('scroll', this.onScroll, { capture: true });
+  }
+
+  /* ---------- Double slit: particles land one at a time ---------- */
+  intensity(u) {
+    const sinc2 = (x) => { if (Math.abs(x) < 1e-6) return 1; const v = Math.sin(x) / x; return v * v; };
+    const sc = this.state.scene;
+    if (sc === 1) return 0.5 * (sinc2(0.8 * Math.PI * (u - 0.07)) + sinc2(0.8 * Math.PI * (u + 0.07)));
+    if (sc === 2) return sinc2(2.6 * Math.PI * u);
+    if (sc === 3) { const be = 2.25 * Math.PI * u, sb = Math.sin(be); const g = Math.abs(sb) < 1e-6 ? 1 : Math.pow(Math.sin(4 * be) / (4 * sb), 2); return g * sinc2(0.8 * Math.PI * u); }
+    const c = Math.cos(4.5 * Math.PI * u);
+    return c * c * sinc2(0.8 * Math.PI * u);
+  }
+  sizeHit(c) {
+    const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    let fresh = false;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); fresh = true; }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return { g, w, h, fresh };
+  }
+  stepSlit(n) {
+    const c = this.hitsEl; if (!c) return;
+    const A = this.sizeHit(c); if (!A.w || !A.h) return;
+    const g = A.g, w = A.w, h = A.h;
+    if (A.fresh) { g.fillStyle = '#0D0D0D'; g.fillRect(0, 0, w, h); this.bins.fill(0); }
+    if (this.fade > 0) { g.fillStyle = 'rgba(13,13,13,0.09)'; g.fillRect(0, 0, w, h); for (let i = 0; i < this.bins.length; i++) this.bins[i] *= 0.9; this.fade--; }
+    else if (n) { g.fillStyle = 'rgba(13,13,13,0.004)'; g.fillRect(0, 0, w, h); }
+    const SC = ['240,96,150', '245,165,36', '46,196,182', '139,124,246'][this.state.scene], nb = this.bins.length;
+    for (let k = 0; k < n; k++) {
+      let u = 0, tries = 0;
+      do { u = Math.random() * 2 - 1; tries++; } while (Math.random() > this.intensity(u) && tries < 60);
+      const x = w / 2 + u * w * 0.49, y = Math.random() * (h - 8) + 4;
+      const warm = Math.random() < 0.18;
+      g.fillStyle = warm ? 'rgba(242,240,234,0.75)' : 'rgba(' + SC + ',0.95)';
+      g.fillRect(x - 1.2, y - 1.2, 2.4, 2.4);
+      const bi = Math.max(0, Math.min(nb - 1, Math.floor((u + 1) / 2 * nb)));
+      this.bins[bi] += 1;
+      this.hitCount++;
+    }
+    if (n) for (let i = 0; i < nb; i++) this.bins[i] *= 0.9985;
+  }
+
+  /* ---------- Pendulum ---------- */
+  sizeCanvas(c) {
+    const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return { g, w, h };
+  }
+  geom(c) { const w = c.clientWidth; return { px: w / 2, py: 28, Lpx: 220 }; }
+  stepPend(t) {
+    const p = this.pend; const dt = p.last ? Math.min(0.033, (t - p.last) / 1000) : 0.016; p.last = t;
+    const g0 = 9.81, L = 0.8;
+    if (!p.drag) { const n = 8, hh = dt / n; for (let i = 0; i < n; i++) { p.om += -(g0 / L) * Math.sin(p.th) * hh; p.th += p.om * hh; } p.om *= 0.9997; }
+    this.drawPend();
+    if (t - p.lastUi > 250) { p.lastUi = t; this.updateReadouts(); }
+  }
+  updateReadouts() {
+    const p = this.pend, g0 = 9.81, L = 0.8;
+    const c = Math.cos(p.th) - p.om * p.om * L / (2 * g0);
+    const th0 = Math.acos(Math.max(-1, Math.min(1, c)));
+    const T = 2 * Math.PI * Math.sqrt(L / g0) * (1 + th0 * th0 / 16 + 11 * Math.pow(th0, 4) / 3072);
+    const Tm = this.state.countFrom === 1 ? T * 19 / 20 : T;
+    const gEst = 4 * Math.PI * Math.PI * L / (Tm * Tm);
+    const amp = Math.round(th0 * 180 / Math.PI);
+    if (amp !== this.state.amp || Math.abs(Tm - this.state.period) > 0.0005) this.setState({ amp, period: Tm, g: gEst });
+  }
+  drawPend() {
+    const c = this.pendEl; if (!c) return;
+    const { g, w, h } = this.sizeCanvas(c); const { px, py, Lpx } = this.geom(c); const p = this.pend;
+    g.clearRect(0, 0, w, h);
+    g.strokeStyle = '#242322'; g.lineWidth = 1;
+    for (let x = 0; x < w; x += 20) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+    for (let y = 0; y < h; y += 20) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+    g.fillStyle = '#5A5853'; g.fillRect(px - 50, py - 12, 100, 8);
+    g.fillStyle = '#B98B5E'; g.fillRect(px - 7, py - 6, 14, 12);
+    g.setLineDash([3, 5]); g.strokeStyle = '#4A4845'; g.beginPath(); g.moveTo(px, py); g.lineTo(px, py + Lpx + 30); g.stroke(); g.setLineDash([]);
+    const bx = px + Lpx * Math.sin(p.th), by = py + Lpx * Math.cos(p.th);
+    g.strokeStyle = '#F5A524'; g.lineWidth = 1.5; g.beginPath();
+    if (Math.abs(p.th) > 0.01) { g.arc(px, py, 46, Math.PI / 2, Math.PI / 2 - p.th, p.th > 0); } g.stroke();
+    g.strokeStyle = '#E8E4DC'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(px, py + 4); g.lineTo(bx, by); g.stroke();
+    g.fillStyle = '#F0482A'; g.beginPath(); g.arc(bx, by, 14, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255,179,161,.9)'; g.beginPath(); g.arc(bx - 4, by - 4, 4, 0, Math.PI * 2); g.fill();
+  }
+  pointerIn(e, el) { const r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+
+  /* ---------- Experiment cards: values come from the physics ---------- */
+  physics() {
+    const gAcc = 9.81;
+    const pend = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map((l) => { const T = 2 * Math.PI * Math.sqrt(l / gAcc); return { l, T, T2: T * T }; });
+    const R = 5.0;
+    const ohm = [0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40].map((I) => ({ I, V: I * R }));
+    const f = 15.0;
+    const lens = [20, 25, 30, 40, 45, 60].map((u) => { const v = u * f / (u - f); return { u, v, f: u * v / (u + v) }; });
+    const cw = 4200, mh = 0.100, th = 80.0, tc = 25.0, can = 0.050 * 390;
+    const mix = [0.050, 0.075, 0.100, 0.125, 0.150, 0.200].map((m) => ({ m, th: (mh * cw * th + (m * cw + can) * tc) / (mh * cw + m * cw + can) }));
+    return { pend, ohm, lens, mix, R, f };
+  }
+  renderVals() {
+    const st = this.state;
+    const isOne = st.countFrom === 1, big = st.amp > 10;
+    const gErr = Math.abs(st.g - 9.81) / 9.81;
+    const coachText = isOne
+      ? 'You started the count at one, so you timed 19 swings and divided by 20. Your g is about 11% too high. Start the count at zero.'
+      : big ? 'That swing is ' + st.amp + '°. Above about 10° the period grows, so g comes out low. Pull it back less.'
+      : 'Good timing. Your g is within ' + Math.max(0.1, gErr * 100).toFixed(1) + '% of the accepted value.';
+    const pill = (on) => 'padding: 6px 14px; border: 0; font: 500 14px Geist, sans-serif; cursor: pointer; background: ' + (on ? '#F2F0EA' : 'transparent') + '; color: ' + (on ? '#0D0D0D' : '#C9C6BF');
+
+    /* anatomy */
+    const partsDef = [
+      ['base', 'Base plate', 'Heavy, so the stand cannot rock and add a swing of its own.', [0, 24]],
+      ['rod', 'Retort stand rod', 'Holds the pivot at a fixed height above the bench.', [0, 0]],
+      ['clamp', 'Boss and clamp', 'Sets the height of the pivot. Tighten it before you measure anything.', [30, -26]],
+      ['cork', 'Split cork', 'Grips the thread so the pivot cannot move. Tie the thread round the rod instead and your length is wrong.', [56, -44]],
+      ['thread', 'Thread', 'Light and does not stretch. The length l runs from the cork to the centre of the bob.', [72, -20]],
+      ['bob', 'Bob', 'A small, dense sphere. Its centre, not its top, is where the length ends.', [90, 6]],
+      ['watch', 'Stopwatch', 'Reads to 0.1 s, but your reaction time is about 0.2 s. That is why you time 20 swings.', [-36, 14]]
+    ];
+    const ANAT = {"base": [260.0, 254.0], "rod": [227.1, 123.0], "clamp": [257.4, 88.5], "cork": [296.4, 111.0], "thread": [296.4, 178.0], "bob": [296.4, 219.0], "watch": [163.0, 265.0]};
+    const e = st.explode / 100; const p = {}; const partsList = []; let tipAnat = { on: false, st: '', title: '', text: '' };
+    partsDef.forEach(([id, name, say, off]) => {
+      const dim = st.hover && st.hover !== id; const enter = () => this.setState({ hover: id });
+      p[id] = { enter, st: 'cursor: pointer; transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .2s; opacity: ' + (dim ? 0.22 : 1) + '; transform: translate(' + (off[0] * e).toFixed(1) + 'px, ' + (off[1] * e).toFixed(1) + 'px)' };
+      const on = st.hover === id;
+      partsList.push({ name, say, enter, row: 'display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; cursor: pointer; background: ' + (on ? '#FFFFFF' : 'transparent') + '; border: 1px solid ' + (on ? '#F0482A' : '#E6E4DB') });
+      if (on) {
+        const ax = ANAT[id][0] + off[0] * e, ay = ANAT[id][1] + off[1] * e;
+        tipAnat = { on: true, title: name, text: say,
+          st: 'position: absolute; z-index: 5; left: ' + ((ax - 90) / 400 * 100).toFixed(2) + '%; top: ' + ((ay + 10) / 350 * 100).toFixed(2) + '%; transform: translate(-50%, calc(-100% - 12px)); background: #141414; color: #FBFBF6; padding: 9px 11px; font-size: 13px; line-height: 1.4; width: max-content; max-width: 240px; pointer-events: none; display: flex; flex-direction: column; gap: 3px' };
+      }
+    });
+
+    /* graph export tile: real T² against l values, colour or black and white */
+    const gpts = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map((l) => ({ l, y: 4 * Math.PI * Math.PI * l / 9.81 }));
+    const GX = (l) => 24 + (l - 0.4) / 0.65 * 190, GY = (v) => 116 - (v - 1.5) / 2.8 * 108;
+    const col = st.graphColour;
+    let grid = '';
+    for (let x = 24; x <= 214; x += 9.5) grid += 'M' + x.toFixed(1) + ' 8V116';
+    for (let y = 8; y <= 116; y += 9) grid += 'M24 ' + y.toFixed(1) + 'H214';
+    const slope = 4 * Math.PI * Math.PI / 9.81;
+    const fit = (l) => slope * l;
+    const tA = [GX(0.55), GY(fit(0.55))], tB = [GX(0.95), GY(fit(0.95))];
+    const gx = {
+      colour: col, mono: !col, grid,
+      label: (col ? 'Colour' : 'Black and white') + ' graph of T² against l for six lengths, with the line of best fit and a slope triangle. Slope ' + slope.toFixed(2) + ' s² m⁻¹ gives g = 9.81 m s⁻².',
+      pts: gpts.map((q) => ({ x: GX(q.l).toFixed(1), y: GY(q.y).toFixed(1), fill: col ? '#F5A524' : '#FFFFFF' })),
+      l1x: GX(0.45).toFixed(1), l1y: GY(fit(0.45)).toFixed(1), l2x: GX(1.03).toFixed(1), l2y: GY(fit(1.03)).toFixed(1),
+      lineCol: col ? '#F0482A' : '#141414',
+      tri: tA[0].toFixed(1) + ',' + tA[1].toFixed(1) + ' ' + tB[0].toFixed(1) + ',' + tA[1].toFixed(1) + ' ' + tB[0].toFixed(1) + ',' + tB[1].toFixed(1) + ' ' + tA[0].toFixed(1) + ',' + tA[1].toFixed(1),
+      triFill: col ? 'rgba(139,124,246,.14)' : 'none', triStroke: col ? '#8B7CF6' : '#141414',
+      segC: pill(col), segM: pill(!col)
+    };
+
+    /* experiment cards */
+    const ph = this.physics(), tk = st.tick;
+    const anim = 'animation: ' + (tk % 2 ? 'paRowA' : 'paRowB') + ' .5s ease both';
+    const feed = (list, fmt) => [0, 1, 2].map((k) => {
+      const i = ((tk - k) % list.length + list.length) % list.length; const r = fmt(list[i]);
+      return { a: r[0], b: r[1], c: r[2], st: "display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; font-family: 'Geist Mono', monospace; font-size: 12px; color: " + ['#141414', '#5F5D57', '#A3A19B'][k] + (k === 0 ? '; ' + anim : '') };
+    });
+    const fx = (v, n) => v.toFixed(n);
+    const feedPend = feed(ph.pend, (r) => ['l ' + fx(r.l, 3) + ' m', 'T ' + fx(r.T, 3) + ' s', 'T² ' + fx(r.T2, 2) + ' s²']);
+    const feedOhm = feed(ph.ohm, (r) => ['I ' + fx(r.I, 2) + ' A', 'V ' + fx(r.V, 2) + ' V', 'V/I ' + fx(r.V / r.I, 1) + ' Ω']);
+    const feedLens = feed(ph.lens, (r) => ['u ' + fx(r.u, 1) + ' cm', 'v ' + fx(r.v, 1) + ' cm', 'f ' + fx(r.f, 1) + ' cm']);
+    const feedMix = feed(ph.mix, (r) => ['cold ' + Math.round(r.m * 1000) + ' g', 'θ ' + fx(r.th, 1) + ' °C', 'hot 100 g']);
+    const mixNow = ph.mix[tk % ph.mix.length];
+
+    /* card 1: 3D bar chart of T or T² against l */
+    const OX = 150.0, OY = 92.0;
+    const pr = (x, y, z) => [OX + (x - y) * 0.8660254, OY + (x + y) * 0.5 - z];
+    const ps = (arr) => arr.map((q) => { const v = pr(q[0], q[1], q[2]); return v[0].toFixed(1) + ',' + v[1].toFixed(1); }).join(' ');
+    const cur = tk % ph.pend.length; const b1 = {}; const tops = [];
+    ph.pend.forEach((r, i) => {
+      const x = 8 + i * 15, y = 44, z = 58, w = 11, d = 11;
+      const hgt = st.plotSq ? (r.T2 - 1) * 19 : (r.T - 1.2) * 70;
+      const on = i === cur;
+      tops.push([x + w / 2, y + d / 2, z + hgt]);
+      b1['b' + i] = {
+        l: ps([[x, y + d, z], [x + w, y + d, z], [x + w, y + d, z + hgt], [x, y + d, z + hgt]]),
+        r: ps([[x + w, y, z], [x + w, y + d, z], [x + w, y + d, z + hgt], [x + w, y, z + hgt]]),
+        t: ps([[x, y, z + hgt], [x + w, y, z + hgt], [x + w, y + d, z + hgt], [x, y + d, z + hgt]]),
+        fl: on ? '#E8901A' : '#FCE3B4', fr: on ? '#D27E10' : '#F5C46B', ft: on ? '#F5A524' : '#FFF4DD',
+        enter: () => this.setState({ tip: { card: 'pend', key: 'b' + i } })
+      };
+    });
+    b1.line = ps(tops);
+
+    /* tooltips */
+    const A = {"pend": {}, "circ": {"cell": [132.7, 33.5], "key": [169.1, 60.5], "rheo": [218.4, 81.0], "res": [146.5, 86.5], "amm": [76.4, 72.0], "volt": [161.3, 125.0]}, "lens": {"obj": [91.1, 28.0], "lens": [143.1, 56.0], "screen": [195.9, 77.5], "rule": [140.5, 112.5]}, "mix": {"can": [150, 129], "lag": [150, 102], "cal": [150, 73], "water": [150, 52], "lid": [150, 20]}};
+    ph.pend.forEach((r, i) => { const t = tops[i]; const v = pr(t[0], t[1], t[2]); A.pend['b' + i] = [v[0], v[1]]; });
+    const TT = {
+      circ: { cell: ['Cell', 'Drives the current. Open the key between readings so it does not run down.'],
+        key: ['Key', 'Close it only while you read the meters.'],
+        rheo: ['Rheostat', 'Slide it to change the current I.'],
+        res: ['Resistor under test', 'V/I stays the same at every current: Ohm\'s law.'],
+        amm: ['Ammeter', 'In series with the resistor. Reads the current I.'],
+        volt: ['Voltmeter', 'In parallel across the resistor. Reads the voltage V.'] },
+      lens: { obj: ['Illuminated object', 'Its distance from the lens is u.'],
+        lens: ['Converging lens, f = 15.0 cm', 'A ray through the centre goes straight on. A ray parallel to the axis passes through F.'],
+        screen: ['Screen', 'Move it until the image is sharp. Its distance from the lens is v.'],
+        rule: ['Metre rule', 'Read u and v from the centre of the lens.'] },
+      mix: { can: ['Outer can', 'The air gap and lagging cut heat lost to the room.'],
+        lag: ['Lagging', 'Felt or cotton wool: a poor conductor of heat.'],
+        cal: ['Copper calorimeter, 0.050 kg', 'It warms up too, so its heat capacity goes into the calculation.'],
+        water: ['Hot meets cold', 'Heat lost by the hot water = heat gained by the cold water and the can.'],
+        lid: ['Lid, stirrer, thermometer', 'Stir, then read the final steady temperature.'] },
+      pend: {}
+    };
+    ph.pend.forEach((r, i) => { TT.pend['b' + i] = ['l = ' + fx(r.l, 3) + ' m', 'T = ' + fx(r.T, 3) + ' s,  T² = ' + fx(r.T2, 3) + ' s²']; });
+    const tips = {}; ['circ', 'lens', 'mix'].forEach((cd) => { tips[cd] = {}; Object.keys(TT[cd]).forEach((k) => { tips[cd][k] = () => this.setState({ tip: { card: cd, key: k } }); }); });
+    const tipFor = (cd) => {
+      const t = st.tip && st.tip.card === cd ? st.tip : null;
+      if (!t) return { on: false, st: '', title: '', text: '' };
+      const a = A[cd][t.key], d = TT[cd][t.key];
+      return { on: true, title: d[0], text: d[1],
+        st: 'position: absolute; z-index: 5; left: ' + (a[0] / 300 * 100).toFixed(2) + '%; top: ' + (a[1] / 228 * 100).toFixed(2) + '%; transform: translate(-50%, calc(-100% - 10px)); background: #141414; color: #FBFBF6; padding: 8px 10px; font-size: 12px; line-height: 1.35; width: max-content; max-width: 200px; pointer-events: none; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 10px 24px -12px rgba(0,0,0,.5)' };
+    };
+    const seg = (on) => 'padding: 3px 9px; border: 0; cursor: pointer; font: 500 12px \'Geist Mono\', monospace; background: ' + (on ? '#141414' : 'transparent') + '; color: ' + (on ? '#FBFBF6' : '#5F5D57');
+
+    /* bento */
+    const heights = [0.4, 0.7, 0.5, 0.9, 0.6, 1, 0.8, 0.5, 0.7, 0.4, 0.6, 0.9, 1, 0.7, 0.5, 0.8, 0.6, 0.4, 0.7, 0.9, 0.5, 0.6, 0.8, 0.4, 0.7, 0.5, 0.3, 0.6];
+    const bars = heights.map((v, i) => ({ st: 'flex: 1; height: ' + Math.round(v * 48) + 'px; background: ' + (i < 16 ? '#F0482A' : '#3A3936') + '; animation-delay: ' + (i * 0.07).toFixed(2) + 's' }));
+    const stuck = [3, 7, 12, 18, 25, 33];
+    const seats = Array.from({ length: 40 }, (_, i) => ({ st: 'aspect-ratio: 1; background: ' + (stuck.indexOf(i) >= 0 ? '#F5A524' : i % 9 === 0 ? '#3A3936' : '#2E5E2B') }));
+    const mm = Math.floor(st.exam / 60), ss = st.exam % 60;
+
+    const sc = st.scrolled;
+    return {
+      /* header */
+      hdrWrap: 'padding: ' + (sc ? '10px 16px' : '14px 16px') + '; transition: padding .3s ease',
+      hdrBar: 'box-sizing: border-box; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; transition: max-width .35s ease, background .35s ease, border-color .35s ease, padding .35s ease; ' +
+        (sc ? 'max-width: 1040px; padding: 8px 10px 8px 16px; background: rgba(13,13,13,.88); border: 1px solid #2E2D2B; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 12px 30px -18px rgba(0,0,0,.8)'
+            : 'max-width: 1280px; padding: 8px 16px; background: transparent; border: 1px solid transparent'),
+      menuOpen: st.menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !st.menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      /* quantum hero: four real patterns, switching at random */
+      setHits: (el) => { this.hitsEl = el; },
+      sceneName: ['two slits', 'two slits with a detector watching which slit', 'a single slit', 'four slits'][st.scene],
+      sceneDot: 'width: 8px; height: 8px; border-radius: 50%; background: ' + ['#F06096', '#F5A524', '#2EC4B6', '#8B7CF6'][st.scene],
+      slitAria: ['Particles landing one at a time behind two slits, building interference stripes.', 'Particles landing with a which-slit detector on: one broad band, no stripes.', 'Particles landing behind one slit: a wide central band with faint side bands.', 'Particles landing behind four slits: narrow, sharp bright stripes.'][st.scene],
+      /* pendulum */
+      setPend: (el) => { this.pendEl = el; },
+      pendDown: (ev) => {
+        const el = ev.currentTarget, q = this.pointerIn(ev, el), gm = this.geom(el), pp = this.pend;
+        const bx = gm.px + gm.Lpx * Math.sin(pp.th), by = gm.py + gm.Lpx * Math.cos(pp.th);
+        if (Math.hypot(q.x - bx, q.y - by) < 36) { pp.drag = true; if (el.setPointerCapture) el.setPointerCapture(ev.pointerId); }
+      },
+      pendMove: (ev) => {
+        const pp = this.pend; if (!pp.drag) return;
+        const el = ev.currentTarget, q = this.pointerIn(ev, el), gm = this.geom(el);
+        pp.th = Math.max(-1.05, Math.min(1.05, Math.atan2(q.x - gm.px, q.y - gm.py))); pp.om = 0;
+        if (this.reduced) this.drawPend();
+      },
+      pendUp: () => { if (this.pend.drag) { this.pend.drag = false; this.updateReadouts(); } },
+      ampText: st.amp + '°', periodText: st.period.toFixed(3) + ' s', gText: st.g.toFixed(2),
+      gStyle: "font-family: 'Geist Mono', monospace; font-size: 20px; color: " + (isOne || big ? '#F5C46B' : '#8FD18A'),
+      isZero: !isOne, isOne, zeroStyle: pill(!isOne), oneStyle: pill(isOne),
+      countZero: () => { this.setState({ countFrom: 0 }, () => this.updateReadouts()); },
+      countOne: () => { this.setState({ countFrom: 1 }, () => this.updateReadouts()); },
+      coachText,
+      coachStyle: 'padding: 14px 16px; font-size: 14px; line-height: 1.45; border-top: 1px solid #2A2928; background: ' + (isOne || big ? '#2B2112' : '#152313') + '; color: ' + (isOne || big ? '#F5D9A3' : '#C8E8C2'),
+      /* anatomy */
+      explodeVal: st.explode,
+      setExplode: (ev) => this.setState({ explode: +ev.target.value }),
+      unhover: () => this.setState({ hover: null }),
+      p, partsList, tipAnat,
+      gx, gColour: () => this.setState({ graphColour: true }), gMono: () => this.setState({ graphColour: false }),
+      /* cards */
+      b1, tips, tipOff: () => this.setState({ tip: null }),
+      tipPend: tipFor('pend'), tipCirc: tipFor('circ'), tipLens: tipFor('lens'), tipMix: tipFor('mix'),
+      feedPend, feedOhm, feedLens, feedMix,
+      plotSq: st.plotSq, plotT: !st.plotSq,
+      setSq: () => this.setState({ plotSq: true }), setT: () => this.setState({ plotSq: false }),
+      segSq: seg(st.plotSq), segT: seg(!st.plotSq),
+      pendBadge: st.plotSq ? 'T² against l: a straight line' : 'T against l: a curve',
+      ohmBadge: 'R = ' + ph.R.toFixed(1) + ' Ω', lensBadge: 'f = ' + ph.f.toFixed(1) + ' cm', mixBadge: 'θ = ' + mixNow.th.toFixed(1) + ' °C',
+      /* bento */
+      bars, seats,
+      examText: String(mm).padStart(2, '0') + ':' + String(ss).padStart(2, '0'),
+      offline: st.offline,
+      toggleNet: () => this.setState({ offline: !st.offline }),
+      netText: st.offline ? 'Offline · the lab still works' : 'Online · synced',
+      netStyle: 'align-self: flex-start; display: flex; align-items: center; gap: 12px; padding: 6px 14px 6px 6px; border: 1px solid #3A3936; cursor: pointer; font: 500 14px Geist, sans-serif; color: #F2F0EA; background: ' + (st.offline ? '#2B2112' : '#152313'),
+      knobStyle: 'width: 26px; height: 26px; background: ' + (st.offline ? '#F5A524' : '#6CC25A')
+    };
+  }
+}
+
+</script>
+</body>
+</html>

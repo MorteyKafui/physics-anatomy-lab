@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Report and labelled export</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+.rp-f:focus-visible{outline:2px solid #F0482A;outline-offset:2px}
+.rp-row:hover{background:#1A1A19}
+@keyframes rpUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rp-toast{animation:rpUp .25s ease}
+@media (prefers-reduced-motion:reduce){.rp-toast{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 1000px; background: #0A0A0A; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45; padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; background: #111110; border: 1px solid #1E1D1D; padding: 12px 16px">
+    <span style="width: 30px; height: 30px; background: #F2F0EA; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#0D0D0D" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg></span>
+    <span style="display: flex; align-items: center; gap: 8px; color: #A3A19B">Simple pendulum <span>›</span> <span style="color: #F2F0EA">Report</span></span>
+    <span style="font-size: 12px; color: #C9C6BF; border: 1px solid #2E2D2B; padding: 2px 8px">Step 10 of 10</span>
+    <span style="flex: 1"></span>
+    <span style="font-size: 13px; color: #8FD18A; display: flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>Saved on this device</span>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
+    <!-- Sections -->
+    <nav aria-label="Report sections" style="flex: 1 1 230px; max-width: 280px; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+      <div style="padding: 14px 16px; border-bottom: 1px solid #1E1D1D; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-weight: 500; font-size: 15px">Sections</span>
+        <div role="group" aria-label="Report format" style="display: inline-flex; border: 1px solid #2A2928; align-self: flex-start">
+          <sc-for list="{{formats}}" as="f" hint-placeholder-count="2"><button class="rp-f" type="button" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.st}}">{{f.label}}</button></sc-for>
+        </div>
+      </div>
+      <sc-for list="{{sections}}" as="s" hint-placeholder-count="10">
+        <a class="rp-f rp-row" href="#section" style="display: flex; align-items: center; gap: 10px; padding: 9px 16px; color: #F2F0EA; text-decoration: none; border-top: 1px solid #1A1A19">
+          <span style="{{s.markSt}}">{{s.mark}}</span><span style="flex: 1">{{s.name}}</span><span style="font-size: 12px; color: #F5C46B">{{s.note}}</span>
+        </a>
+      </sc-for>
+    </nav>
+
+    <!-- Paper preview -->
+    <section aria-label="Report preview" style="flex: 999 1 560px; min-width: 0; background: #1A1A19; border: 1px solid #1E1D1D; padding: 24px; display: flex; justify-content: center">
+      <article style="width: 100%; max-width: 640px; background: #FFFFFF; color: #141414; padding: 40px 44px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; font-size: 13px; line-height: 1.55; box-shadow: 0 30px 60px -30px rgba(0,0,0,.8)">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; border-bottom: 1.5px solid #141414; padding-bottom: 10px">
+          <span style="display: flex; flex-direction: column"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 22px">Simple pendulum</span><span style="color: #5F5D57">Kofi_A · SHS 2 Science A · 6 November 2026</span></span>
+          <sc-if value="{{incMark}}" hint-placeholder-val="{{true}}"><span style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #5F5D57"><svg width="14" height="14" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#141414" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg>Physics Anatomy</span></sc-if>
+        </div>
+        <div><b>Aim.</b> To determine the acceleration due to gravity, g, using a simple pendulum.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start">
+          <figure style="margin: 0; flex: 0 0 170px; display: flex; flex-direction: column; gap: 4px">
+            <svg viewBox="0 0 170 190" style="width: 170px; height: auto; display: block" role="img" aria-label="Set-up diagram: retort stand A, clamp B, split cork C, thread D and bob E, with the length l marked">
+              <line x1="20" y1="180" x2="120" y2="180" stroke="#141414" stroke-width="2"></line>
+              <line x1="34" y1="180" x2="34" y2="14" stroke="#141414" stroke-width="2.4"></line>
+              <line x1="34" y1="26" x2="104" y2="26" stroke="#141414" stroke-width="2"></line>
+              <rect x="100" y="20" width="10" height="14" fill="#FFFFFF" stroke="#141414" stroke-width="1.4"></rect>
+              <line x1="105" y1="34" x2="105" y2="140" stroke="#141414" stroke-width="1.2"></line>
+              <circle cx="105" cy="148" r="8" fill="{{bobFill}}" stroke="#141414" stroke-width="1.4"></circle>
+              <line x1="128" y1="34" x2="128" y2="148" stroke="#5F5D57" stroke-width="1" marker-start="" ></line>
+              <line x1="123" y1="34" x2="133" y2="34" stroke="#5F5D57"></line><line x1="123" y1="148" x2="133" y2="148" stroke="#5F5D57"></line>
+              <text x="136" y="96" font-family="Geist Mono, monospace" font-size="11" fill="#141414">l</text>
+              <g font-family="Geist Mono, monospace" font-size="11" fill="#141414"><text x="20" y="100">A</text><text x="64" y="20">B</text><text x="114" y="24">C</text><text x="94" y="92">D</text><text x="88" y="166">E</text></g>
+            </svg>
+            <sc-if value="{{incCaps}}" hint-placeholder-val="{{true}}"><figcaption style="font-size: 11px; color: #3D3B37">Fig. 1 Set-up. A retort stand, B clamp, C split cork, D thread, E bob.</figcaption></sc-if>
+          </figure>
+          <div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+            <b>Table 1</b>
+            <div role="table" aria-label="Table 1" style="font-family: 'Geist Mono', monospace; font-size: 11.5px; border: 1px solid #141414">
+              <div role="row" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-bottom: 1px solid #141414; font-weight: 600"><span style="padding: 4px 6px">l/m</span><span style="padding: 4px 6px">t/s</span><span style="padding: 4px 6px">T/s</span><span style="padding: 4px 6px">T²/s²</span><span style="padding: 4px 6px">n</span></div>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="5"><div role="row" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr))"><span style="padding: 3px 6px">{{r.l}}</span><span style="padding: 3px 6px">{{r.t}}</span><span style="padding: 3px 6px">{{r.T}}</span><span style="padding: 3px 6px">{{r.T2}}</span><span style="padding: 3px 6px">20</span></div></sc-for>
+            </div>
+          </div>
+        </div>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 4px">
+          <svg viewBox="0 0 520 250" style="width: 100%; height: auto; display: block" role="img" aria-label="{{gAria}}">
+            <rect x="50" y="10" width="450" height="200" fill="#FFFFFF" stroke="{{g.frame}}"></rect>
+            <path d="{{grid}}" stroke="{{g.grid}}" stroke-width="0.6" fill="none"></path>
+            <polygon points="{{tri}}" fill="{{g.triFill}}" stroke="{{g.tri}}" stroke-width="1.2" stroke-dasharray="5 3"></polygon>
+            <line x1="{{lx1}}" y1="{{ly1}}" x2="{{lx2}}" y2="{{ly2}}" stroke="{{g.line}}" stroke-width="1.8"></line>
+            <sc-for list="{{pts}}" as="q" hint-placeholder-count="5"><path d="{{q}}" stroke="{{g.pt}}" stroke-width="2"></path></sc-for>
+            <g font-family="Geist Mono, monospace" font-size="11" fill="#141414"><text x="275" y="240" text-anchor="middle">l/m</text><text x="8" y="16">T²/s²</text></g>
+            <g font-family="Geist Mono, monospace" font-size="10" fill="#3D3B37"><text x="50.0" y="224" text-anchor="middle">0.50</text><text x="125.0" y="224" text-anchor="middle">0.60</text><text x="200.0" y="224" text-anchor="middle">0.70</text><text x="275.0" y="224" text-anchor="middle">0.80</text><text x="350.0" y="224" text-anchor="middle">0.90</text><text x="425.0" y="224" text-anchor="middle">1.00</text><text x="500.0" y="224" text-anchor="middle">1.10</text><text x="44" y="213.0" text-anchor="end">2.00</text><text x="44" y="176.6" text-anchor="end">2.40</text><text x="44" y="140.3" text-anchor="end">2.80</text><text x="44" y="103.9" text-anchor="end">3.20</text><text x="44" y="67.5" text-anchor="end">3.60</text><text x="44" y="31.2" text-anchor="end">4.00</text></g><g font-family="Geist Mono, monospace" font-size="11" fill="{{g.tri}}"><text x="128.0" y="160.7">A</text><text x="415.0" y="176.7">C</text><text x="416.0" y="36.8">B</text></g>
+          </svg>
+          <sc-if value="{{incCaps}}" hint-placeholder-val="{{true}}"><figcaption style="font-size: 11px; color: #3D3B37">Fig. 2 A graph of T² against l. Slope from triangle ABC.</figcaption></sc-if>
+        </figure>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 12px; display: flex; flex-direction: column; gap: 2px"><b style="font-family: Geist, sans-serif; font-size: 13px">Calculation</b><span>slope = (3.944 − 2.494) ⁄ (0.98 − 0.62) = 4.03 s² m⁻¹</span><span>g = 4π² ⁄ slope = 39.48 ⁄ 4.03 = 9.80 m s⁻²</span></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><b>Precautions</b><span>I kept the angle of swing below 10°.</span><span>I started counting at zero as the bob passed the mark.</span><span style="color: #B86E00">One more precaution needed before you submit.</span></div>
+        <sc-if value="{{incNotes}}" hint-placeholder-val="{{false}}"><div style="border-left: 3px solid #F0482A; padding: 6px 10px; background: #FBF3F0; font-size: 12px"><b>Coach's notes.</b> Mean in row 3 corrected from 35.9 to 35.90.</div></sc-if>
+        <span style="align-self: flex-end; font-size: 10px; color: #8F8D88">Page 1 of 3</span>
+      </article>
+    </section>
+
+    <!-- Export -->
+    <aside aria-label="Download" style="flex: 1 1 280px; max-width: 340px; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+      <div style="padding: 14px 16px; border-bottom: 1px solid #1E1D1D"><span style="font-weight: 500; font-size: 15px">Download</span></div>
+      <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 18px">
+        <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px">
+          <legend style="font-size: 12px; color: #8F8D88; padding: 0 0 6px">What to download</legend>
+          <sc-for list="{{kinds}}" as="k" hint-placeholder-count="4">
+            <button class="rp-f" type="button" role="radio" aria-checked="{{k.on}}" onClick="{{k.pick}}" style="{{k.st}}"><span style="{{k.dot}}"></span><span style="display: flex; flex-direction: column; flex: 1; text-align: left"><span>{{k.label}}</span><span style="font-size: 12px; color: #8F8D88">{{k.sub}}</span></span></button>
+          </sc-for>
+        </fieldset>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 12px; color: #8F8D88">Graph colours</span>
+          <div role="group" aria-label="Graph colours" style="display: inline-flex; border: 1px solid #2A2928; align-self: flex-start">
+            <button class="rp-f" type="button" onClick="{{setColour}}" aria-pressed="{{colour}}" style="{{segC}}">Colour</button>
+            <button class="rp-f" type="button" onClick="{{setMono}}" aria-pressed="{{mono}}" style="{{segM}}">Black and white</button>
+          </div>
+          <span style="font-size: 12px; color: #8F8D88">{{colourNote}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 12px; color: #8F8D88">Include</span>
+          <sc-for list="{{incs}}" as="c" hint-placeholder-count="4">
+            <button class="rp-f" type="button" role="checkbox" aria-checked="{{c.on}}" onClick="{{c.toggle}}" style="display: flex; align-items: center; gap: 10px; background: transparent; border: 0; padding: 2px 0; color: #F2F0EA; font: 14px Geist, sans-serif; cursor: pointer; text-align: left"><span style="{{c.box}}">{{c.tick}}</span>{{c.label}}</button>
+          </sc-for>
+        </div>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #8F8D88">Paper
+          <select class="rp-f" style="height: 34px; background: #0D0D0D; border: 1px solid #2A2928; color: #F2F0EA; padding: 0 8px; font: 14px Geist, sans-serif"><option>A4</option><option>Letter</option></select>
+        </label>
+        <button class="rp-f" type="button" onClick="{{download}}" style="height: 40px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 14px Geist, sans-serif; cursor: pointer">{{dlText}}</button>
+        <span style="font-size: 12px; color: #8F8D88">Made on this device, so it works offline.</span>
+      </div>
+    </aside>
+  </div>
+
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+    <div class="rp-toast" role="status" style="position: fixed; z-index: 40; right: 28px; bottom: 28px; max-width: 380px; background: #F2F0EA; color: #0D0D0D; padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px">
+      <span style="width: 18px; height: 18px; border-radius: 50%; background: #6CC25A; flex: 0 0 auto; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+      <span style="flex: 1; font-size: 13px">{{toastText}}</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { fmt: 0, kind: 0, colour: true, inc: { caps: true, mark: true, logo: false, notes: false }, toast: null }; }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  renderVals() {
+    const st = this.state, col = st.colour;
+    const seg = (on) => 'height: 30px; padding: 0 10px; border: 0; cursor: pointer; font: 500 13px Geist, sans-serif; background: ' + (on ? '#F2F0EA' : 'transparent') + '; color: ' + (on ? '#0D0D0D' : '#C9C6BF');
+    const formats = ['WASSCE', 'University'].map((label, i) => ({ label, on: st.fmt === i, st: seg(st.fmt === i), pick: () => this.setState({ fmt: i }) }));
+    const W = [['Aim', 1], ['Apparatus', 1], ['Diagram', 1], ['Observations', 1], ['Table', 1], ['Graph', 1], ['Calculation', 1], ['Precautions', 0, '2 of 3'], ['Sources of error', 1], ['Part (b)', 0, 'To do']];
+    const U = [['Date and title', 1], ['Aim', 1], ['Apparatus', 1], ['Diagram', 1], ['Theory', 0, 'To do'], ['Method', 1], ['Observations', 1], ['Graph', 1], ['Calculation', 1], ['Discussion', 0, 'To do'], ['Precautions', 0, '2 of 3'], ['Sources of error', 1], ['Conclusion', 0, 'To do'], ['References', 0, 'To do']];
+    const sections = (st.fmt === 0 ? W : U).map(([name, done, note]) => ({ name, note: note || '', mark: done ? '✓' : '', markSt: 'width: 18px; height: 18px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; ' + (done ? 'background: #132111; color: #8FD18A; border: 1px solid #24451F' : 'border: 1px solid #4A3A16') }));
+    /* table from the attempt */
+    const L = [1.0, 0.9, 0.8, 0.7, 0.6], tt = [40.10, 38.10, 35.90, 33.50, 31.10];
+    const rows = L.map((l, i) => { const T = tt[i] / 20; return { l: l.toFixed(3), t: tt[i].toFixed(2), T: T.toFixed(3), T2: (T * T).toFixed(3) }; });
+    /* graph */
+    const X = (l) => 50 + (l - 0.5) / 0.6 * 450, Y = (v) => 210 - (v - 2.0) / 2.2 * 200;
+    let grid = '';
+    for (let i = 0; i <= 30; i++) grid += 'M' + (50 + i * 15).toFixed(1) + ' 10V210';
+    for (let j = 0; j <= 20; j++) grid += 'M50 ' + (10 + j * 10) + 'H500';
+    const pts = rows.map((r) => { const x = X(+r.l), y = Y(+r.T2); return 'M' + (x - 5) + ' ' + (y - 5) + 'L' + (x + 5) + ' ' + (y + 5) + 'M' + (x + 5) + ' ' + (y - 5) + 'L' + (x - 5) + ' ' + (y + 5); });
+    const fit = (l) => 4.03 * l;
+    const g = col ? { frame: '#4F8F4A', grid: '#CFE7C8', line: '#F0482A', pt: '#B86E00', tri: '#6D5BD8', triFill: 'rgba(139,124,246,0.10)' } : { frame: '#555555', grid: '#E3E3E3', line: '#141414', pt: '#141414', tri: '#141414', triFill: 'none' };
+    const tri = [[0.62, fit(0.62)], [0.98, fit(0.62)], [0.98, fit(0.98)]].map((p) => X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' ');
+    const xt = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1].map((v) => ({ x: X(v).toFixed(1), t: v.toFixed(2) }));
+    const yt = [2.0, 2.4, 2.8, 3.2, 3.6, 4.0].map((v) => ({ y: (Y(v) + 3).toFixed(1), t: v.toFixed(2) }));
+    /* export */
+    const K = [['Report', 'PDF, ready to print or hand in'], ['Report for editing', 'Word (.docx)'], ['Figures only', 'PNG and SVG, labelled'], ['Data only', 'CSV and Excel, with units']];
+    const kinds = K.map(([label, sub], i) => ({ label, sub, on: st.kind === i, pick: () => this.setState({ kind: i }),
+      st: 'display: flex; align-items: center; gap: 10px; padding: 8px 10px; cursor: pointer; font: 14px Geist, sans-serif; color: #F2F0EA; border: 1px solid ' + (st.kind === i ? '#F2F0EA' : '#2A2928') + '; background: ' + (st.kind === i ? '#1A1A19' : 'transparent'),
+      dot: 'width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; border: 2px solid ' + (st.kind === i ? '#F0482A' : '#55534F') + '; background: ' + (st.kind === i ? '#F0482A' : 'transparent') }));
+    const I = [['caps', 'Figure numbers and captions'], ['mark', 'Physics Anatomy mark'], ['logo', 'Your school\'s logo'], ['notes', 'Coach\'s notes']];
+    const incs = I.map(([k, label]) => { const on = !!st.inc[k]; return { label, on, tick: on ? '✓' : '', toggle: () => this.setState({ inc: Object.assign({}, st.inc, { [k]: !on }) }),
+      box: 'width: 18px; height: 18px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 1px solid ' + (on ? '#F2F0EA' : '#55534F') + '; background: ' + (on ? '#F2F0EA' : 'transparent') + '; color: #0D0D0D' }; });
+    const dlNames = ['Download report (PDF)', 'Download report (Word)', 'Download figures', 'Download data'];
+    const done = ['Report downloaded as PDF, 3 pages', 'Report downloaded as a Word file', 'Fig. 1 and Fig. 2 downloaded as PNG and SVG', 'Table 1 downloaded as CSV and Excel'];
+    return {
+      formats, sections, rows, grid, pts, tri, g, xt, yt,
+      lx1: X(0.52).toFixed(1), ly1: Y(fit(0.52)).toFixed(1), lx2: X(1.035).toFixed(1), ly2: Y(fit(1.035)).toFixed(1),
+      bobFill: col ? '#F0482A' : '#FFFFFF',
+      gAria: 'Fig. 2, ' + (col ? 'in colour' : 'in black and white') + ': five points of T² against l on a straight line, slope 4.03 s² m⁻¹, giving g = 9.80 m s⁻².',
+      kinds, incs, incCaps: !!st.inc.caps, incMark: !!st.inc.mark, incNotes: !!st.inc.notes,
+      colour: col, mono: !col, segC: seg(col), segM: seg(!col),
+      setColour: () => this.setState({ colour: true }), setMono: () => this.setState({ colour: false }),
+      colourNote: col ? 'Points, line and slope triangle each get their own colour. Shapes tell series apart too.' : 'Matches the black-and-white WAEC sheet. Best for photocopying.',
+      dlText: dlNames[st.kind],
+      download: () => { clearTimeout(this.tt); this.setState({ toast: done[st.kind] + (st.kind < 3 ? ', graphs in ' + (col ? 'colour' : 'black and white') : '') + '.' }); this.tt = setTimeout(() => this.setState({ toast: null }), 5000); },
+      toastOn: !!st.toast, toastText: st.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

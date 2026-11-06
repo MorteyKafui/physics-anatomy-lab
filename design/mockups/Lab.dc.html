@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lab: simple pendulum, measuring</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; background: #0D0D0D; color: #F0F0F0; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="App" style="flex: 0 0 64px; background: #111110; border-right: 1px solid #242322; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0">
+    <svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true" style="margin-bottom: 14px"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F0F0F0" stroke-width="18"/><line x1="84" y1="26" x2="98" y2="60" stroke="#F0F0F0" stroke-width="5"/><circle cx="100" cy="68" r="12" fill="#F0482A"/></svg>
+    <a href="#home" aria-label="Home" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="#experiments" aria-label="Experiments" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #F0F0F0; background: #1E1D1D; border-left: 2px solid #F0482A"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></a>
+    <a href="#notebook" aria-label="Notebook" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></a>
+    <a href="#reference" aria-label="Reference" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></a>
+    <span style="flex: 1"></span>
+    <a href="#help" aria-label="Help" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></a>
+    <a href="#settings" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></a>
+  </nav>
+
+  <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 20px; border-bottom: 1px solid #242322">
+      <div style="display: flex; align-items: center; gap: 12px; background: #161616; border: 1px solid #2A2928; padding: 8px 14px">
+        <span style="width: 10px; height: 10px; background: #F5A524" aria-hidden="true"></span>
+        <div style="display: flex; flex-direction: column">
+          <span style="font-weight: 600">Simple pendulum</span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">Step 5 of 10 · Measure</span>
+        </div>
+        <div style="width: 120px; height: 4px; background: #2A2928" aria-label="40% complete"><div style="width: 40%; height: 4px; background: #F0482A"></div></div>
+      </div>
+      <div role="toolbar" aria-label="Playback" style="display: flex; align-items: center; gap: 2px; background: #161616; border: 1px solid #2A2928; padding: 3px">
+        <button type="button" aria-label="Reset the step" style="width: 36px; height: 36px; background: transparent; border: 0; color: #C9C6BF; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+        <button type="button" aria-label="Rotate view" style="width: 36px; height: 36px; background: transparent; border: 0; color: #C9C6BF; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2.1 6.3-6.3 2.1 2.1-6.3z"/></svg></button>
+        <button type="button" aria-label="Layers and labels" style="width: 36px; height: 36px; background: transparent; border: 0; color: #C9C6BF; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l10 5-10 5L2 7z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+        <button type="button" aria-label="Step back" style="width: 36px; height: 36px; background: transparent; border: 0; color: #C9C6BF; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 20L9 12l10-8z"/><path d="M5 19V5"/></svg></button>
+        <button type="button" aria-label="Pause" style="width: 36px; height: 36px; background: #F0F0F0; border: 0; color: #141414; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+        <button type="button" aria-label="Playback speed" style="height: 36px; padding: 0 10px; background: transparent; border: 0; color: #C9C6BF; font-family: 'Geist Mono', monospace; font-size: 13px">1×</button>
+      </div>
+      <span style="flex: 1"></span>
+      <label for="assist" style="display: flex; align-items: center; gap: 8px; color: #A3A19B; font-size: 13px">Help level
+        <select id="assist" style="background: #161616; color: #F0F0F0; border: 1px solid #2A2928; padding: 8px 10px; font: 500 13px Geist, sans-serif"><option>Auto</option><option selected="selected">Check my work</option><option>On my own</option></select>
+      </label>
+      <button type="button" onClick="{{toggleVoice}}" aria-pressed="{{voiceOn}}" style="height: 38px; padding: 0 12px; background: #161616; border: 1px solid #2A2928; color: #F0F0F0; display: flex; align-items: center; gap: 8px; font: 500 13px Geist, sans-serif"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>{{voiceLabel}}</button>
+      <button type="button" style="height: 38px; padding: 0 14px; background: #F0482A; border: 0; color: #141414; display: flex; align-items: center; gap: 8px; font: 600 13px Geist, sans-serif"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>Snapshot</button>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+      <div style="flex: 999 1 520px; min-width: 0; position: relative; background: #0D0D0D; display: flex; align-items: center; justify-content: center; padding: 24px">
+        <svg viewBox="0 0 420 460" style="width: 100%; max-width: 600px; height: auto; display: block" role="img" aria-label="Simple pendulum on a retort stand: bob swinging, stopwatch on the bench">
+          <polygon points="210,300 400,380 210,460 20,380" fill="#121211" stroke="#2A2928"/>
+          <g stroke="#1F1E1D" stroke-width="1">
+            <line x1="248" y1="316" x2="58" y2="396"/><line x1="286" y1="332" x2="96" y2="412"/><line x1="324" y1="348" x2="134" y2="428"/><line x1="362" y1="364" x2="172" y2="444"/>
+            <line x1="172" y1="316" x2="362" y2="396"/><line x1="134" y1="332" x2="324" y2="412"/><line x1="96" y1="348" x2="286" y2="428"/><line x1="58" y1="364" x2="248" y2="444"/>
+          </g>
+          <polygon points="200,340 260,365 230,378 170,353" fill="#3A3936" stroke="#55534F"/>
+          <polygon points="170,353 230,378 230,386 170,361" fill="#262524"/>
+          <polygon points="230,378 260,365 260,373 230,386" fill="#1C1B1A"/>
+          <rect x="202" y="70" width="7" height="280" fill="#8F8C86"/>
+          <rect x="202" y="70" width="2" height="280" fill="#C9C6BF"/>
+          <rect x="196" y="96" width="19" height="14" fill="#5A5853" stroke="#77746E"/>
+          <line x1="215" y1="103" x2="295" y2="136" stroke="#77746E" stroke-width="6" stroke-linecap="round"/>
+          <polygon points="293,132 307,138 307,150 293,144" fill="#B98B5E" stroke="#8A6440"/>
+          <line x1="300" y1="150" x2="300" y2="336" stroke="#4A4845" stroke-dasharray="3 4"/>
+          <line x1="300" y1="148" x2="300" y2="318" stroke="#F0F0F0" stroke-opacity="0.2"/>
+          <circle cx="300" cy="322" r="13" fill="none" stroke="#F0482A" stroke-opacity="0.32"/>
+          <line x1="300" y1="148" x2="330" y2="318" stroke="#E8E4DC" stroke-width="1.3"/>
+          <path d="M300,190 A42,42 0 0,0 307.3,189.4" fill="none" stroke="#F5A524" stroke-width="1.5"/>
+          <circle cx="330" cy="322" r="13" fill="#F0482A"/>
+          <circle cx="326" cy="317" r="4" fill="#FF9A80"/>
+          <ellipse cx="322" cy="404" rx="16" ry="5" fill="#000000" opacity="0.45"/>
+          <circle cx="110" cy="378" r="17" fill="#1E1D1D" stroke="#5A5853"/>
+          <circle cx="110" cy="378" r="12" fill="#E8E4DC"/>
+          <line x1="110" y1="378" x2="110" y2="369" stroke="#141414" stroke-width="1.5"/>
+          <line x1="110" y1="378" x2="116" y2="381" stroke="#F0482A" stroke-width="1.5"/>
+          <rect x="107" y="357" width="6" height="5" fill="#5A5853"/>
+        </svg>
+        <div style="position: absolute; left: 24px; top: 20px; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B; letter-spacing: 0.06em">FIG 1</span>
+          <span style="font-weight: 600">Simple pendulum: timing</span>
+        </div>
+        <div style="position: absolute; right: 24px; top: 20px; background: #161616; border: 1px solid #2A2928; padding: 8px 12px; font-size: 13px; display: flex; align-items: center; gap: 8px">
+          <span style="width: 8px; height: 8px; background: #B98B5E" aria-hidden="true"></span>Split cork grips the thread, so the pivot cannot move
+        </div>
+        <div style="position: absolute; left: 24px; bottom: 20px; background: #161616; border: 1px solid #2A2928; padding: 12px 16px; display: flex; gap: 24px; align-items: flex-end">
+          <div style="display: flex; flex-direction: column">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #A3A19B; letter-spacing: 0.06em">STOPWATCH · READS TO 0.1 s</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500; line-height: 1.1">17.9 <span style="font-size: 16px; color: #A3A19B">s</span></span>
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #A3A19B; letter-spacing: 0.06em">COUNT</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500; line-height: 1.1">10 <span style="font-size: 16px; color: #A3A19B">of 20</span></span>
+          </div>
+        </div>
+        <div style="position: absolute; right: 24px; bottom: 20px; font-family: 'Geist Mono', monospace; font-size: 13px; color: #C9C6BF; text-align: right">l = 0.800 m · θ ≈ 8°</div>
+      </div>
+
+      <aside aria-label="Coach" style="flex: 1 1 380px; min-width: 0; background: #161616; border-left: 1px solid #242322; display: flex; flex-direction: column">
+        <div role="tablist" aria-label="Coach" style="display: flex; gap: 22px; padding: 0 20px; border-bottom: 1px solid #2A2928">
+          <button type="button" role="tab" aria-selected="{{isInstr}}" onClick="{{showInstr}}" style="{{instrTab}}">Instructions</button>
+          <button type="button" role="tab" aria-selected="{{isExpl}}" onClick="{{showExpl}}" style="{{explTab}}">Explanation</button>
+          <button type="button" role="tab" aria-selected="{{isTips}}" onClick="{{showTips}}" style="{{tipsTab}}">Tips</button>
+        </div>
+
+        <sc-if value="{{isInstr}}" hint-placeholder-val="{{ true }}">
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">Time 20 oscillations</span>
+          <span style="color: #C9C6BF">Timing many swings and dividing makes your reaction time a tiny part of the result.</span>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; align-items: center; gap: 10px; color: #8F8D88; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #6CC25A; color: #6CC25A; display: flex; align-items: center; justify-content: center" aria-label="Done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span><span>Pull the bob aside, less than 10°</span></div>
+            <div style="display: flex; align-items: center; gap: 10px; background: #2A1914; border: 1px solid #F0482A; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #F0482A; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">2</span><span>Start the stopwatch as the bob passes the mark. Say <b>zero</b>.</span></div>
+            <div style="display: flex; align-items: center; gap: 10px; color: #A3A19B; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #55534F; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">3</span><span>Stop on the 20th pass in the same direction</span></div>
+            <div style="display: flex; align-items: center; gap: 10px; color: #A3A19B; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #55534F; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">4</span><span>Record t in your table, then repeat</span></div>
+          </div>
+          <div role="status" style="background: #2B2112; border: 1px solid #F5A524; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #F5C46B"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>You said "one" on the first pass</span>
+            <span style="color: #E8E4DC">That pass starts the timing, so it is zero. Counting from one times 19 swings, and your g would come out about 11% too high.</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <button type="button" style="padding: 9px 14px; background: #F0F0F0; color: #141414; border: 0; font: 600 13px Geist, sans-serif">Reset and try again</button>
+              <button type="button" style="padding: 9px 14px; background: transparent; color: #F0F0F0; border: 1px solid #55534F; font: 500 13px Geist, sans-serif">Show me</button>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isExpl}}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">Why the period depends on length</span>
+          <span style="color: #C9C6BF">Gravity pulls the bob back toward the middle. For small swings the pull grows in step with the distance from the middle, which is exactly the condition for a steady, repeating swing.</span>
+          <div style="background: #0D0D0D; border: 1px solid #2A2928; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+            <span style="font-family: 'Geist Mono', monospace; font-size: 22px; text-align: center">T = 2π √( l ⁄ g )</span>
+            <div style="display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 4px 10px; font-size: 13px; color: #C9C6BF">
+              <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">T</span><span>period, the time for one full swing · s · from your table</span>
+              <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">l</span><span>length, pivot to the centre of the bob · m · you measure it</span>
+              <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">g</span><span>acceleration of free fall · m s⁻² · what you are finding</span>
+            </div>
+          </div>
+          <span style="color: #C9C6BF">Square both sides: T² = (4π² ⁄ g) l. A graph of T² against l is a straight line through the origin, and its slope is 4π² ⁄ g.</span>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isTips}}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">Precautions examiners look for</span>
+          <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; color: #E8E4DC">
+            <li>I kept the angle of swing small, less than 10°.</li>
+            <li>I timed from the centre mark, where the bob moves fastest.</li>
+            <li>I clamped the thread between split corks so the length stayed fixed.</li>
+            <li>I repeated each timing and used the mean.</li>
+            <li>I made sure the bob swung in a plane, not in a circle.</li>
+          </ul>
+        </div>
+        </sc-if>
+      </aside>
+    </div>
+
+    <nav aria-label="Stages" style="border-top: 1px solid #242322; background: #111110; padding: 10px 20px; display: flex; gap: 8px; overflow-x: auto">
+      <sc-for list="{{stages}}" as="s" hint-placeholder-count="10">
+        <a href="#stage" style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #8F8D88">{{s.n}}</span><span>{{s.name}}</span></span></a>
+      </sc-for>
+    </nav>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'instr', voice: true }; }
+  renderVals() {
+    const tab = this.state.tab;
+    const tabStyle = (on) => 'background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; cursor: pointer; color: ' + (on ? '#F0F0F0' : '#A3A19B') + '; border-bottom: 2px solid ' + (on ? '#F0482A' : 'transparent');
+    const names = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const stages = names.map((name, i) => {
+      const done = i < 4, cur = i === 4;
+      return {
+        name, n: String(i + 1).padStart(2, '0'),
+        mark: done ? '✓' : cur ? '●' : '',
+        style: 'flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 8px 14px; text-decoration: none; color: ' + (cur ? '#F0F0F0' : done ? '#C9C6BF' : '#8F8D88') + '; background: ' + (cur ? '#1E1D1D' : 'transparent') + '; border: 1px solid ' + (cur ? '#F0482A' : '#242322'),
+        markStyle: 'width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (done ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (done ? '#6CC25A' : cur ? '#F0482A' : '#55534F')
+      };
+    });
+    return {
+      isInstr: tab === 'instr', isExpl: tab === 'expl', isTips: tab === 'tips',
+      instrTab: tabStyle(tab === 'instr'), explTab: tabStyle(tab === 'expl'), tipsTab: tabStyle(tab === 'tips'),
+      showInstr: () => this.setState({ tab: 'instr' }), showExpl: () => this.setState({ tab: 'expl' }), showTips: () => this.setState({ tab: 'tips' }),
+      voiceOn: this.state.voice, voiceLabel: this.state.voice ? 'Voice on' : 'Voice off',
+      toggleVoice: () => this.setState({ voice: !this.state.voice }),
+      stages
+    };
+  }
+}
+</script>
+</body>
+</html>

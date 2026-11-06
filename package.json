@@ -1,0 +1,29 @@
+{
+  "name": "physics-anatomy",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Physics from first principles: a virtual physics lab with a coach, for SHS to university.",
+  "packageManager": "bun@1.4.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "check": "turbo run typecheck lint test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.3",
+    "eslint": "^9",
+    "fast-check": "^4",
+    "prettier": "^3",
+    "turbo": "^2",
+    "typescript": "^5"
+  }
+}

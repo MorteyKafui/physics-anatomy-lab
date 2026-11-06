@@ -1,0 +1,8 @@
+# Physics models and experiment content need a physics reviewer's approval (master plan, software factory).
+# Replace each name below with the person's GitHub username once the private repository exists.
+# Until then these lines are comments, so they do not block anything.
+#
+# *                         @mortey-github-username
+# /packages/physics/        @acquah-github-username
+# /packages/experiments/    @acquah-github-username
+# /validation/              @acquah-github-username

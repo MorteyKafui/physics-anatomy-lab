@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>First-run tour</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+.tr-f:focus-visible{outline:2px solid #F0482A;outline-offset:2px}
+.tr-spot{transition:left .35s cubic-bezier(.2,.8,.2,1),top .35s cubic-bezier(.2,.8,.2,1),width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1)}
+.tr-card{transition:left .35s cubic-bezier(.2,.8,.2,1),top .35s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){.tr-spot,.tr-card{transition:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: #0D0D0D; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45">
+
+  <!-- the lab, underneath -->
+  <nav aria-label="App" style="position: absolute; left: 0; top: 0; bottom: 0; width: 64px; background: #111110; border-right: 1px solid #1E1D1D; display: flex; flex-direction: column; align-items: center; padding-top: 14px; gap: 8px">
+    <span style="width: 34px; height: 34px; background: #F2F0EA; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#0D0D0D" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg></span>
+  </nav>
+  <div style="position: absolute; left: 64px; right: 0; top: 0; height: 64px; border-bottom: 1px solid #1E1D1D; display: flex; align-items: center; gap: 14px; padding: 0 16px">
+    <span style="display: flex; flex-direction: column"><span style="font-weight: 600">Simple pendulum</span><span style="font-size: 12px; color: #8F8D88">Step 3 of 10: Build</span></span>
+    <span style="flex: 1"></span>
+    <span style="height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #F0482A; color: #0D0D0D; font-weight: 600; width: 80px; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>Snap</span>
+    <span style="width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid #2A2928; font-weight: 600">?</span>
+  </div>
+  <div style="position: absolute; left: 64px; top: 64px; width: 976px; height: 716px; display: flex; align-items: center; justify-content: center; background: #0D0D0D">
+    <svg viewBox="0 40 420 420" style="width: 520px; height: auto" aria-hidden="true">
+      <polygon points="210,300 400,380 210,460 20,380" fill="#121211" stroke="#2A2928"></polygon>
+      <rect x="202" y="70" width="7" height="280" fill="#8F8C86"></rect>
+      <rect x="196" y="96" width="19" height="14" fill="#5A5853"></rect>
+      <line x1="215" y1="103" x2="295" y2="136" stroke="#77746E" stroke-width="6" stroke-linecap="round"></line>
+      <polygon points="293,132 307,138 307,150 293,144" fill="#B98B5E"></polygon>
+      <line x1="300" y1="148" x2="300" y2="318" stroke="#E8E4DC" stroke-width="1.3"></line>
+      <circle cx="300" cy="322" r="13" fill="#F0482A"></circle>
+    </svg>
+  </div>
+  <aside style="position: absolute; left: 1040px; top: 64px; width: 400px; height: 716px; border-left: 1px solid #1E1D1D; background: #111110; padding: 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 22px">Fix the clamp</span>
+    <span style="color: #C9C6BF">Clamp the split cork so its lower edge is level. The pivot must not move while the bob swings.</span>
+    <span style="background: #161616; border: 1px solid #2A2928; padding: 12px; color: #C9C6BF">Why: if the pivot slips, the length changes during the swing and your period is wrong.</span>
+  </aside>
+  <div style="position: absolute; left: 64px; right: 0; top: 780px; bottom: 0; border-top: 1px solid #1E1D1D; display: flex; align-items: center; gap: 6px; padding: 0 16px">
+    <sc-for list="{{strip}}" as="s" hint-placeholder-count="10"><span style="{{s.st}}">{{s.name}}</span></sc-for>
+  </div>
+
+  <!-- spotlight -->
+  <sc-if value="{{touring}}" hint-placeholder-val="{{true}}">
+    <div class="tr-spot" aria-hidden="true" style="{{spotSt}}"></div>
+    <div class="tr-card" role="dialog" aria-modal="true" aria-labelledby="tr-title" style="{{cardSt}}">
+      <span style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #8F8D88"><span>Stop {{stopN}} of 5</span>
+        <button class="tr-f" type="button" onClick="{{toggleVoice}}" aria-pressed="{{voice}}" style="{{voiceSt}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path></svg>{{voiceText}}</button>
+      </span>
+      <span id="tr-title" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 20px; color: #0D0D0D">{{stopTitle}}</span>
+      <span style="color: #3D3B37">{{stopText}}</span>
+      <span aria-hidden="true" style="display: flex; gap: 4px"><sc-for list="{{dots}}" as="d" hint-placeholder-count="5"><span style="{{d}}"></span></sc-for></span>
+      <span style="display: flex; align-items: center; gap: 8px">
+        <button class="tr-f" type="button" onClick="{{skip}}" style="background: transparent; border: 0; padding: 0; color: #5F5D57; font: 14px Geist, sans-serif; cursor: pointer; text-decoration: underline">Skip the tour</button>
+        <span style="flex: 1"></span>
+        <sc-if value="{{canBack}}" hint-placeholder-val="{{false}}"><button class="tr-f" type="button" onClick="{{back}}" style="height: 34px; padding: 0 12px; background: transparent; border: 1px solid #C9C6BF; color: #0D0D0D; font: 500 14px Geist, sans-serif; cursor: pointer">Back</button></sc-if>
+        <button class="tr-f" type="button" onClick="{{next}}" style="height: 34px; padding: 0 14px; background: #0D0D0D; border: 0; color: #F2F0EA; font: 600 14px Geist, sans-serif; cursor: pointer">{{nextText}}</button>
+      </span>
+    </div>
+  </sc-if>
+
+  <!-- level and goal picker -->
+  <sc-if value="{{picking}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(0,0,0,.72)"></div>
+    <div role="dialog" aria-modal="true" aria-labelledby="pk-title" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 620px; background: #F2F0EA; color: #0D0D0D; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+      <span style="display: flex; flex-direction: column; gap: 4px"><span id="pk-title" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px">Where should we start?</span><span style="color: #3D3B37">Two quick choices. You can change them any time in Settings.</span></span>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600">I am</span>
+        <div role="radiogroup" aria-label="Level" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px"><sc-for list="{{levels}}" as="o" hint-placeholder-count="4"><button class="tr-f" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="{{o.st}}">{{o.label}}</button></sc-for></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600">I want to</span>
+        <div role="radiogroup" aria-label="Goal" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px"><sc-for list="{{goals}}" as="o" hint-placeholder-count="4"><button class="tr-f" type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="{{o.st}}">{{o.label}}</button></sc-for></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px; background: #FFFFFF; border: 1px solid #DCDAD0; padding: 14px">
+        <span style="{{recSwatch}}"></span>
+        <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 12px; color: #5F5D57">We suggest</span><span style="font-weight: 600; font-size: 17px">{{recName}}</span><span style="font-size: 13px; color: #3D3B37">{{recWhy}}</span></span>
+        <button class="tr-f" type="button" onClick="{{start}}" style="height: 40px; padding: 0 16px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 14px Geist, sans-serif; cursor: pointer">{{startText}}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{done}}" hint-placeholder-val="{{false}}">
+    <div role="status" style="position: absolute; left: 50%; bottom: 140px; transform: translateX(-50%); background: #F2F0EA; color: #0D0D0D; padding: 12px 16px; display: flex; gap: 14px; align-items: center">
+      <span>{{doneText}}</span>
+      <button class="tr-f" type="button" onClick="{{replay}}" style="height: 30px; padding: 0 12px; background: #0D0D0D; border: 0; color: #F2F0EA; font: 600 13px Geist, sans-serif; cursor: pointer">Replay the tour</button>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { stop: 0, mode: 'tour', voice: false, level: 0, goal: 0, doneText: '' }; }
+  componentDidMount() {
+    this.onKey = (e) => {
+      if (this.state.mode !== 'tour') return;
+      if (e.key === 'ArrowRight') this.go(1); if (e.key === 'ArrowLeft') this.go(-1); if (e.key === 'Escape') this.setState({ mode: 'pick' });
+    };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this.onKey); }
+  go(d) { const s = this.state.stop + d; if (s < 0) return; if (s > 4) this.setState({ mode: 'pick' }); else this.setState({ stop: s }); }
+  renderVals() {
+    const st = this.state;
+    const STOPS = [
+      { t: 'This is your bench', x: 'You build every experiment here from real parts. Drag a part in, fix it, and the readings come from your own set-up.', r: [80, 80, 944, 684], c: [620, 560] },
+      { t: 'The coach', x: 'Instructions for each step, the reason behind it, and tips. It speaks up the moment a reading or a table entry goes wrong.', r: [1048, 72, 384, 700], c: [700, 300] },
+      { t: 'Your ten steps', x: 'From the question to the report. Green steps are done. You can go back to any of them.', r: [72, 788, 1360, 104], c: [560, 600] },
+      { t: 'The camera', x: 'Take a snapshot of the bench, table or graph at any moment. Each one is labelled and can be reopened in the lab later.', r: [1264, 14, 104, 36], c: [900, 78] },
+      { t: 'Help', x: 'Guides, the symbol finder and this tour again. Help works offline.', r: [1382, 14, 42, 36], c: [1010, 78] }
+    ];
+    const s = STOPS[Math.min(st.stop, 4)];
+    const pad = 6;
+    const spotSt = 'position: absolute; left: ' + (s.r[0] - pad) + 'px; top: ' + (s.r[1] - pad) + 'px; width: ' + (s.r[2] + pad * 2) + 'px; height: ' + (s.r[3] + pad * 2) + 'px; box-shadow: 0 0 0 9999px rgba(0,0,0,.74); outline: 2px solid #F0482A; pointer-events: none';
+    const cardSt = 'position: absolute; left: ' + s.c[0] + 'px; top: ' + s.c[1] + 'px; width: 360px; background: #F2F0EA; color: #0D0D0D; padding: 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 30px 60px -20px rgba(0,0,0,.8)';
+    const STAGES = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const strip = STAGES.map((name, i) => ({ name: (i < 2 ? '✓ ' : '') + name, st: 'flex: 1; text-align: center; padding: 10px 4px; font-size: 13px; border: 1px solid ' + (i === 2 ? '#F0482A' : '#242322') + '; color: ' + (i < 2 ? '#8FD18A' : i === 2 ? '#F2F0EA' : '#8F8D88') + '; background: ' + (i === 2 ? '#1E1D1D' : 'transparent') }));
+    const dots = STOPS.map((_, i) => 'width: ' + (i === st.stop ? 18 : 6) + 'px; height: 6px; background: ' + (i <= st.stop ? '#0D0D0D' : '#C9C6BF'));
+    const opt = (on) => 'height: 44px; padding: 0 12px; text-align: left; cursor: pointer; font: 500 14px Geist, sans-serif; color: #0D0D0D; border: 1px solid ' + (on ? '#0D0D0D' : '#DCDAD0') + '; background: ' + (on ? '#FFFFFF' : 'transparent') + '; box-shadow: ' + (on ? 'inset 3px 0 0 #F0482A' : 'none');
+    const LV = ['SHS student', 'University student', 'Teacher or lecturer', 'Just exploring'];
+    const GL = ['Prepare for the WASSCE practical', 'Learn a topic properly', 'Run a class', 'Try something new'];
+    const levels = LV.map((label, i) => ({ label, on: st.level === i, pick: () => this.setState({ level: i }), st: opt(st.level === i) }));
+    const goals = GL.map((label, i) => ({ label, on: st.goal === i, pick: () => this.setState({ goal: i }), st: opt(st.goal === i) }));
+    /* recommendation follows the four launch experiments */
+    let rec = ['Simple pendulum', 'A core WASSCE practical, sized to fit one practical hour.', '#F5A524'];
+    if (st.goal === 2 || st.level === 2) rec = ['Set up your first class', 'Create a class code, then run the simple pendulum together.', '#F0482A'];
+    else if (st.level === 1) rec = ["Ohm's law and the potentiometer", 'Matches the level-200 lab manual. Includes error analysis.', '#3B82F6'];
+    else if (st.goal === 1) rec = ['Converging lens', 'Ray diagrams you can move, then find f from u and v.', '#8B7CF6'];
+    else if (st.goal === 3) rec = ['Method of mixtures', 'Hot meets cold. A short one to try the lab.', '#FF7A3D'];
+    return {
+      strip, touring: st.mode === 'tour', picking: st.mode === 'pick', done: st.mode === 'done', doneText: st.doneText,
+      spotSt, cardSt, stopN: st.stop + 1, stopTitle: s.t, stopText: s.x, dots,
+      canBack: st.stop > 0, nextText: st.stop === 4 ? 'Finish' : 'Next',
+      next: () => this.go(1), back: () => this.go(-1), skip: () => this.setState({ mode: 'pick' }),
+      voice: st.voice, voiceText: st.voice ? 'Reading aloud' : 'Read aloud',
+      voiceSt: 'display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 8px; cursor: pointer; font: 500 12px Geist, sans-serif; border: 1px solid ' + (st.voice ? '#0D0D0D' : '#C9C6BF') + '; background: ' + (st.voice ? '#0D0D0D' : 'transparent') + '; color: ' + (st.voice ? '#F2F0EA' : '#3D3B37'),
+      toggleVoice: () => this.setState({ voice: !st.voice }),
+      levels, goals, recName: rec[0], recWhy: rec[1], recSwatch: 'width: 40px; height: 40px; flex: 0 0 auto; background: ' + rec[2],
+      startText: st.goal === 2 || st.level === 2 ? 'Create a class' : 'Start',
+      start: () => this.setState({ mode: 'done', doneText: 'Opening ' + rec[0] + '. The tour is in Help whenever you want it.' }),
+      replay: () => this.setState({ mode: 'tour', stop: 0 })
+    };
+  }
+}
+</script>
+</body>
+</html>

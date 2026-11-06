@@ -1,0 +1,5 @@
+# Generates the credits page. Add yourself in the same pull request as your first contribution.
+- name: Mortey Kafui
+  roles: [lead developer]
+- name: Dr Isaac Kwesi Acquah
+  roles: [lead supervisor, physics reviewer]

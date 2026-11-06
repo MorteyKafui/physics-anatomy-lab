@@ -1,0 +1,37 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "python.defaultInterpreterPath": "apps/api/.venv/Scripts/python.exe",
+  "files.exclude": {
+    "**/.turbo": true,
+    "**/.next": true
+  },
+  "search.exclude": {
+    "research/**": true,
+    "**/node_modules": true
+  },
+  "cSpell.language": "en-GB",
+  "cSpell.words": [
+    "WASSCE",
+    "WAEC",
+    "Winneba",
+    "Acquah",
+    "uvicorn",
+    "asyncpg",
+    "pyright",
+    "Procrastinate",
+    "OpenNext",
+    "Serwist",
+    "Dexie",
+    "potentiometer"
+  ]
+}

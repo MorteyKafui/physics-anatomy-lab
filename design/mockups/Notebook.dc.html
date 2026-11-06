@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Snapshot notebook</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+.nb-f:focus-visible{outline:2px solid #F0482A;outline-offset:2px}
+.nb-card:hover{border-color:#55534F !important}
+@keyframes nbUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.nb-toast{animation:nbUp .25s ease}
+@media (prefers-reduced-motion:reduce){.nb-toast{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 960px; background: #0A0A0A; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45; padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; background: #111110; border: 1px solid #1E1D1D; padding: 12px 16px">
+    <span style="width: 30px; height: 30px; background: #F2F0EA; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#0D0D0D" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg></span>
+    <span style="display: flex; align-items: center; gap: 8px; color: #A3A19B">Simple pendulum <span>›</span> <span style="color: #F2F0EA">Notebook</span></span>
+    <span style="font-size: 12px; color: #C9C6BF; border: 1px solid #2E2D2B; padding: 2px 8px">{{countText}}</span>
+    <span style="flex: 1"></span>
+    <button class="nb-f" type="button" onClick="{{zipAll}}" style="height: 32px; padding: 0 12px; background: #F2F0EA; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">Download all with the report (ZIP)</button>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+    <!-- Preview: the labelled figure exactly as it exports -->
+    <section aria-label="Snapshot preview" style="flex: 999 1 640px; min-width: 0; background: #1A1A19; border: 1px solid #1E1D1D; padding: 24px; display: flex; justify-content: center; align-items: center">
+      <figure style="margin: 0; width: 100%; max-width: 720px; background: #FFFFFF; color: #141414; padding: 18px 20px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; font-size: 13px"><b>{{cur.fig}}</b><span style="color: #5F5D57">{{cur.stage}}</span></div>
+        <div style="height: 300px; display: flex; align-items: center; justify-content: center; background: #FAFAF7; border: 1px solid #ECEAE2">
+          <sc-if value="{{cur.isBench}}" hint-placeholder-val="{{true}}">
+            <svg viewBox="0 0 300 240" style="height: 280px; width: auto" role="img" aria-label="{{cur.alt}}">
+              <line x1="40" y1="220" x2="190" y2="220" stroke="#141414" stroke-width="2"></line>
+              <line x1="60" y1="220" x2="60" y2="20" stroke="#141414" stroke-width="3"></line>
+              <line x1="60" y1="34" x2="170" y2="34" stroke="#141414" stroke-width="2.4"></line>
+              <rect x="164" y="27" width="12" height="16" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"></rect>
+              <line x1="170" y1="43" x2="{{cur.bobX}}" y2="182" stroke="#141414" stroke-width="1.3"></line>
+              <circle cx="{{cur.bobX}}" cy="190" r="9" fill="#F0482A" stroke="#141414" stroke-width="1.4"></circle>
+              <sc-if value="{{cur.showWatch}}" hint-placeholder-val="{{false}}"><g><rect x="214" y="150" width="70" height="34" fill="#141414"></rect><text x="249" y="173" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#F2F0EA">35.90 s</text></g></sc-if>
+              <sc-if value="{{cur.showLen}}" hint-placeholder-val="{{false}}"><g><line x1="196" y1="43" x2="196" y2="190" stroke="#F0482A" stroke-width="1.2"></line><line x1="190" y1="43" x2="202" y2="43" stroke="#F0482A"></line><line x1="190" y1="190" x2="202" y2="190" stroke="#F0482A"></line><text x="206" y="120" font-family="Geist Mono, monospace" font-size="12" fill="#141414">l = 0.800 m</text></g></sc-if>
+            </svg>
+          </sc-if>
+          <sc-if value="{{cur.isTable}}" hint-placeholder-val="{{false}}">
+            <div role="table" aria-label="{{cur.alt}}" style="width: 440px; font-family: 'Geist Mono', monospace; font-size: 13px; border: 1px solid #141414; background: #FFFFFF">
+              <div role="row" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); font-weight: 600; border-bottom: 1px solid #141414"><span style="padding: 6px 8px">l/m</span><span style="padding: 6px 8px">t/s</span><span style="padding: 6px 8px">T/s</span><span style="padding: 6px 8px">T²/s²</span></div>
+              <sc-for list="{{tableRows}}" as="r" hint-placeholder-count="5"><div role="row" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr))"><span style="padding: 5px 8px">{{r.l}}</span><span style="padding: 5px 8px">{{r.t}}</span><span style="padding: 5px 8px">{{r.T}}</span><span style="padding: 5px 8px">{{r.T2}}</span></div></sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{cur.isGraph}}" hint-placeholder-val="{{false}}">
+            <svg viewBox="0 0 440 260" style="height: 280px; width: auto; max-width: 100%" role="img" aria-label="{{cur.alt}}">
+              <rect x="40" y="10" width="390" height="220" fill="#FFFFFF" stroke="#4F8F4A"></rect>
+              <path d="{{grid}}" stroke="#CFE7C8" stroke-width="0.6" fill="none"></path>
+              <sc-if value="{{cur.showTri}}" hint-placeholder-val="{{false}}"><polygon points="{{tri}}" fill="rgba(139,124,246,0.12)" stroke="#6D5BD8" stroke-width="1.2" stroke-dasharray="5 3"></polygon></sc-if>
+              <line x1="{{line.x1}}" y1="{{line.y1}}" x2="{{line.x2}}" y2="{{line.y2}}" stroke="#F0482A" stroke-width="1.8"></line>
+              <path d="{{crosses}}" stroke="#B86E00" stroke-width="2"></path>
+              <text x="235" y="252" text-anchor="middle" font-family="Geist Mono, monospace" font-size="11" fill="#141414">l/m</text>
+              <text x="6" y="20" font-family="Geist Mono, monospace" font-size="11" fill="#141414">T²/s²</text>
+            </svg>
+          </sc-if>
+        </div>
+        <figcaption style="display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; font-size: 13px"><span>{{cur.fig}} {{cur.caption}}</span><span style="display: flex; align-items: center; gap: 5px; font-size: 11px; color: #5F5D57; white-space: nowrap"><svg width="12" height="12" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#141414" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg>Physics Anatomy · Kofi_A · 6 Nov 2026</span></figcaption>
+      </figure>
+    </section>
+
+    <!-- Details -->
+    <aside aria-label="Snapshot details" style="flex: 1 1 320px; max-width: 380px; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+      <div style="padding: 14px 16px; border-bottom: 1px solid #1E1D1D; display: flex; justify-content: space-between; align-items: center"><span style="font-weight: 500; font-size: 15px">{{cur.fig}}</span><span style="{{cur.kindSt}}">{{cur.kind}}</span></div>
+      <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 16px; flex: 1">
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #8F8D88">Caption
+          <input class="nb-f" type="text" value="{{cur.caption}}" onInput="{{setCaption}}" style="height: 38px; background: #0D0D0D; border: 1px solid #2A2928; color: #F2F0EA; padding: 0 10px; font: 14px Geist, sans-serif">
+        </label>
+        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+          <span style="display: flex; justify-content: space-between"><span style="color: #A3A19B">Step</span><span>{{cur.stage}}</span></span>
+          <span style="display: flex; justify-content: space-between"><span style="color: #A3A19B">Taken</span><span>{{cur.time}}</span></span>
+          <span style="display: flex; justify-content: space-between"><span style="color: #A3A19B">Saved with it</span><span>Image and the exact lab state</span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <button class="nb-f" type="button" onClick="{{reopen}}" style="height: 38px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 14px Geist, sans-serif; cursor: pointer">Reopen in the lab</button>
+          <button class="nb-f" type="button" onClick="{{download}}" style="height: 38px; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 500 14px Geist, sans-serif; cursor: pointer">Download (PNG, SVG, PDF)</button>
+          <span style="display: flex; gap: 8px">
+            <button class="nb-f" type="button" onClick="{{moveEarlier}}" aria-label="Move earlier" style="flex: 1; height: 34px; background: transparent; border: 1px solid #2A2928; color: #C9C6BF; font: 13px Geist, sans-serif; cursor: pointer">Move earlier</button>
+            <button class="nb-f" type="button" onClick="{{moveLater}}" aria-label="Move later" style="flex: 1; height: 34px; background: transparent; border: 1px solid #2A2928; color: #C9C6BF; font: 13px Geist, sans-serif; cursor: pointer">Move later</button>
+          </span>
+          <button class="nb-f" type="button" onClick="{{remove}}" style="height: 34px; background: transparent; border: 1px solid #5A2320; color: #F27A6E; font: 13px Geist, sans-serif; cursor: pointer">Delete this snapshot</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Timeline -->
+  <section aria-label="Timeline" style="background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+    <div style="padding: 12px 16px; border-bottom: 1px solid #1E1D1D; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px"><span style="font-weight: 500; font-size: 15px">Timeline</span><span style="font-size: 12px; color: #8F8D88">Auto snapshots are taken when you finish a step. Press S or the camera any time for your own.</span></div>
+    <div style="overflow-x: auto">
+      <div style="min-width: 980px; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px">
+        <div aria-hidden="true" style="display: flex; gap: 4px"><sc-for list="{{stages}}" as="g" hint-placeholder-count="10"><span style="{{g.st}}">{{g.name}}</span></sc-for></div>
+        <div role="listbox" aria-label="Snapshots" style="display: flex; gap: 10px">
+          <sc-for list="{{shots}}" as="s" hint-placeholder-count="6">
+            <button class="nb-f nb-card" type="button" role="option" aria-selected="{{s.on}}" onClick="{{s.pick}}" style="{{s.card}}">
+              <span style="height: 66px; background: #FAFAF7; display: flex; align-items: center; justify-content: center; overflow: hidden">
+                <sc-if value="{{s.isBench}}" hint-placeholder-val="{{true}}"><svg width="70" height="58" viewBox="0 0 300 240" aria-hidden="true"><line x1="60" y1="220" x2="60" y2="20" stroke="#141414" stroke-width="8"></line><line x1="60" y1="34" x2="170" y2="34" stroke="#141414" stroke-width="7"></line><line x1="170" y1="40" x2="170" y2="182" stroke="#141414" stroke-width="4"></line><circle cx="170" cy="192" r="16" fill="#F0482A"></circle></svg></sc-if>
+                <sc-if value="{{s.isTable}}" hint-placeholder-val="{{false}}"><svg width="80" height="54" viewBox="0 0 80 54" aria-hidden="true"><rect x="1" y="1" width="78" height="52" fill="#FFFFFF" stroke="#141414"></rect><path d="M1 11H79M1 22H79M1 32H79M1 43H79M20 1V53M40 1V53M60 1V53" stroke="#141414" stroke-width="0.6"></path></svg></sc-if>
+                <sc-if value="{{s.isGraph}}" hint-placeholder-val="{{false}}"><svg width="84" height="56" viewBox="0 0 84 56" aria-hidden="true"><rect x="1" y="1" width="82" height="54" fill="#FFFFFF" stroke="#4F8F4A"></rect><line x1="8" y1="48" x2="78" y2="8" stroke="#F0482A" stroke-width="1.6"></line><path d="M18 40l4 4M22 40l-4 4M38 29l4 4M42 29l-4 4M58 18l4 4M62 18l-4 4" stroke="#B86E00" stroke-width="1.4"></path></svg></sc-if>
+              </span>
+              <span style="display: flex; justify-content: space-between; gap: 6px; font-size: 12px"><b style="font-weight: 600">{{s.fig}}</b><span style="color: #8F8D88">{{s.kind}}</span></span>
+              <span style="font-size: 12px; color: #C9C6BF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{s.caption}}</span>
+            </button>
+          </sc-for>
+          <sc-if value="{{empty}}" hint-placeholder-val="{{false}}"><span style="padding: 20px 0; color: #A3A19B">No snapshots yet. Press S or the camera button in the lab to take one.</span></sc-if>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+    <div class="nb-toast" role="status" style="position: fixed; z-index: 40; right: 28px; bottom: 28px; max-width: 380px; background: #F2F0EA; color: #0D0D0D; padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px">
+      <span style="width: 18px; height: 18px; border-radius: 50%; background: #6CC25A; flex: 0 0 auto; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+      <span style="flex: 1; font-size: 13px">{{toastText}}</span>
+      <sc-if value="{{toastUndo}}" hint-placeholder-val="{{false}}"><button class="nb-f" type="button" onClick="{{undo}}" style="height: 26px; padding: 0 10px; background: #0D0D0D; color: #F2F0EA; border: 0; font: 600 12px Geist, sans-serif; cursor: pointer">Undo</button></sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      sel: 'm1', toast: null, toastUndo: false,
+      shots: [
+        { id: 'a1', type: 'bench', auto: true, si: 2, time: '10:04', caption: 'Apparatus set up', bobX: 170 },
+        { id: 'a2', type: 'bench', auto: true, si: 3, time: '10:09', caption: 'Length checked to the centre of the bob', bobX: 170, len: true },
+        { id: 'm1', type: 'bench', auto: false, si: 4, time: '10:15', caption: 'First run: 20 swings in 35.90 s', bobX: 186, watch: '35.90 s' },
+        { id: 'a3', type: 'table', auto: true, si: 5, time: '10:27', caption: 'Table 1 complete' },
+        { id: 'a4', type: 'graph', auto: true, si: 6, time: '10:36', caption: 'T² against l' },
+        { id: 'm2', type: 'graph', auto: false, si: 7, time: '10:41', caption: 'Slope triangle ABC', tri: true }
+      ]
+    };
+  }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  toast(text, undoFn) { clearTimeout(this.tt); this.undoFn = undoFn; this.setState({ toast: text, toastUndo: !!undoFn }); this.tt = setTimeout(() => this.setState({ toast: null }), 6000); }
+  renderVals() {
+    const st = this.state;
+    const STAGES = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const list = st.shots;
+    const idx = Math.max(0, list.findIndex((s) => s.id === st.sel));
+    const fig = (i) => 'Fig. ' + (i + 1);
+    const chip = (auto) => 'font-size: 12px; padding: 1px 7px; border: 1px solid ' + (auto ? '#2E2D2B' : '#352D66') + '; background: ' + (auto ? '#1A1A19' : '#1A1730') + '; color: ' + (auto ? '#C9C6BF' : '#B3A8FA');
+    const shots = list.map((s, i) => ({
+      fig: fig(i), kind: s.auto ? 'Auto' : 'Yours', caption: s.caption, on: s.id === st.sel,
+      isBench: s.type === 'bench', isTable: s.type === 'table', isGraph: s.type === 'graph',
+      pick: () => this.setState({ sel: s.id }),
+      card: 'flex: 0 0 150px; display: flex; flex-direction: column; gap: 6px; padding: 8px; text-align: left; cursor: pointer; background: #0D0D0D; color: #F2F0EA; font: 13px Geist, sans-serif; border: 1px solid ' + (s.id === st.sel ? '#F0482A' : '#2A2928')
+    }));
+    const c = list[idx];
+    const has = new Set(list.map((s) => s.si));
+    const stages = STAGES.map((name, i) => ({ name, st: 'flex: 1; text-align: center; font-size: 11px; padding: 4px 0; border-top: 3px solid ' + (c && c.si === i ? '#F0482A' : has.has(i) ? '#6CC25A' : '#242322') + '; color: ' + (c && c.si === i ? '#F2F0EA' : '#8F8D88') }));
+    const L = [1.0, 0.9, 0.8, 0.7, 0.6], tt = [40.10, 38.10, 35.90, 33.50, 31.10];
+    const tableRows = L.map((l, i) => { const T = tt[i] / 20; return { l: l.toFixed(3), t: tt[i].toFixed(2), T: T.toFixed(3), T2: (T * T).toFixed(3) }; });
+    const X = (l) => 40 + (l - 0.5) / 0.6 * 390, Y = (v) => 230 - (v - 2.0) / 2.2 * 220;
+    let grid = ''; for (let i = 0; i <= 26; i++) grid += 'M' + (40 + i * 15).toFixed(0) + ' 10V230'; for (let j = 0; j <= 22; j++) grid += 'M40 ' + (10 + j * 10) + 'H430';
+    const crosses = tableRows.map((r) => { const x = X(+r.l), y = Y(+r.T2); return 'M' + (x - 5) + ' ' + (y - 5) + 'L' + (x + 5) + ' ' + (y + 5) + 'M' + (x + 5) + ' ' + (y - 5) + 'L' + (x - 5) + ' ' + (y + 5); }).join('');
+    const fit = (l) => 4.03 * l;
+    const tri = [[0.62, fit(0.62)], [0.98, fit(0.62)], [0.98, fit(0.98)]].map((p) => X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' ');
+    const line = { x1: X(0.52).toFixed(1), y1: Y(fit(0.52)).toFixed(1), x2: X(1.035).toFixed(1), y2: Y(fit(1.035)).toFixed(1) };
+    const cur = c ? {
+      fig: fig(idx), caption: c.caption, stage: 'Step ' + (c.si + 1) + ': ' + STAGES[c.si], time: '6 Nov 2026, ' + c.time,
+      kind: c.auto ? 'Auto snapshot' : 'Your snapshot', kindSt: chip(c.auto),
+      isBench: c.type === 'bench', isTable: c.type === 'table', isGraph: c.type === 'graph',
+      bobX: c.bobX || 170, showWatch: !!c.watch, watch: c.watch || '', showLen: !!c.len, showTri: !!c.tri,
+      alt: c.caption + ', ' + (c.type === 'bench' ? 'the pendulum on the bench' : c.type === 'table' ? 'the results table' : 'the graph of T² against l')
+    } : { fig: '', caption: '', stage: '', time: '', kind: '', kindSt: '', isBench: false, isTable: false, isGraph: false, bobX: 170, showWatch: false, watch: '', showLen: false, showTri: false, alt: '' };
+    const setShots = (shots, sel) => this.setState(sel ? { shots, sel } : { shots });
+    const move = (d) => { const j = idx + d; if (j < 0 || j >= list.length) return; const a = list.slice(); const t = a[idx]; a[idx] = a[j]; a[j] = t; setShots(a); };
+    return {
+      shots, stages, cur, tableRows, grid, crosses, tri, line,
+      countText: list.length + ' snapshots, ' + list.filter((s) => !s.auto).length + ' yours',
+      empty: list.length === 0,
+      setCaption: (e) => { const v = e.target.value; setShots(list.map((s) => s.id === st.sel ? Object.assign({}, s, { caption: v }) : s)); },
+      moveEarlier: () => move(-1), moveLater: () => move(1),
+      remove: () => {
+        if (!c) return; const before = list.slice(), selBefore = st.sel;
+        const a = list.filter((s) => s.id !== c.id); const next = a[Math.min(idx, a.length - 1)];
+        setShots(a, next ? next.id : null);
+        this.toast(fig(idx) + ' deleted.', () => setShots(before, selBefore));
+      },
+      reopen: () => this.toast('Opening the lab exactly as it was at ' + (c ? c.time : '') + '. Your later work is kept.', null),
+      download: () => this.toast((c ? fig(idx) : 'Snapshot') + ' downloaded as PNG, SVG and PDF, with its caption and mark.', null),
+      zipAll: () => this.toast(list.length + ' snapshots and the report downloaded as one ZIP.', null),
+      toastOn: !!st.toast, toastText: st.toast || '', toastUndo: st.toastUndo,
+      undo: () => { if (this.undoFn) this.undoFn(); this.undoFn = null; clearTimeout(this.tt); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

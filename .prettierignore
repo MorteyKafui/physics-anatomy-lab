@@ -1,0 +1,6 @@
+research/
+bun.lock
+uv.lock
+.next/
+.open-next/
+coverage/

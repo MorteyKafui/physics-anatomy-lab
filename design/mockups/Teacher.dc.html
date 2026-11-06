@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Teacher: live class</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+.tc-f:focus-visible{outline:2px solid #F0482A;outline-offset:2px}
+.tc-row:hover{background:#1A1A19}
+.tc-card:hover{border-color:#55534F !important}
+.tc-rail:hover{background:#1A1A19;color:#F2F0EA}
+@keyframes tcIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes tcUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes tcPulse{0%,100%{opacity:.35}50%{opacity:1}}
+.tc-drawer{animation:tcIn .25s cubic-bezier(.2,.8,.2,1)}.tc-toast{animation:tcUp .25s ease}.tc-pulse{animation:tcPulse 2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.tc-drawer,.tc-toast,.tc-pulse{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 960px; background: #0A0A0A; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45; padding: 14px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+
+  <!-- RAIL: same as the lab -->
+  <nav aria-label="App" style="flex: 0 0 60px; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0">
+    <span style="width: 34px; height: 34px; background: #F2F0EA; display: flex; align-items: center; justify-content: center; margin-bottom: 10px"><svg width="22" height="22" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#0D0D0D" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg></span>
+    <a class="tc-f tc-rail" href="#home" aria-label="Home" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"></path></svg></a>
+    <a class="tc-f tc-rail" href="#classes" aria-label="Classes" aria-current="page" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: #F2F0EA; background: #1E1D1D; border-left: 2px solid #F0482A"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></a>
+    <a class="tc-f tc-rail" href="#experiments" aria-label="Experiments" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2M8.5 2h7M7 16h10"></path></svg></a>
+    <a class="tc-f tc-rail" href="#marks" aria-label="Marks" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></a>
+    <a class="tc-f tc-rail" href="#settings" aria-label="Settings" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: #A3A19B; margin-top: auto"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></a>
+  </nav>
+
+  <main style="flex: 999 1 720px; min-width: 0; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 16px; border-bottom: 1px solid #1E1D1D">
+      <span style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #A3A19B">Classes <span>›</span> <span style="color: #F2F0EA">SHS 2 Science A</span> <span>›</span> <span style="color: #F2F0EA">Simple pendulum</span></span>
+      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #8FD18A; border: 1px solid #24451F; background: #132111; padding: 2px 8px"><span class="tc-pulse" style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>Live, 24 min</span>
+      <span style="font-size: 12px; color: #C9C6BF; border: 1px solid #2E2D2B; padding: 2px 8px">Class code <b style="font-family: 'Geist Mono', monospace; font-weight: 500; color: #F2F0EA">7KQ-42M</b></span>
+      <span style="font-size: 12px; color: #F5C46B; border: 1px solid #4A3A16; background: #1E180C; padding: 2px 8px">Example class</span>
+      <span style="flex: 1"></span>
+      <button class="tc-f" type="button" onClick="{{toggleLock}}" aria-pressed="{{locked}}" style="{{lockSt}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10"></rect><path d="{{lockPath}}"></path></svg>{{lockText}}</button>
+      <button class="tc-f" type="button" onClick="{{broadcast}}" style="height: 32px; padding: 0 12px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">Broadcast an instruction</button>
+    </div>
+
+    <div style="padding: 14px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px">
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+          <span style="display: flex; justify-content: space-between"><span style="font-weight: 500">Here now</span><span style="font-size: 13px; color: #8F8D88">Now</span></span>
+          <span style="display: flex; align-items: baseline; gap: 4px"><span style="font-family: 'Geist Mono', monospace; font-size: 28px">38</span><span style="font-family: 'Geist Mono', monospace; font-size: 15px; color: #8F8D88">/40</span></span>
+          <span style="display: flex; height: 6px; gap: 3px"><span style="flex: 38; background: #6CC25A"></span><span style="flex: 2; background: #3A3936"></span></span>
+          <span style="font-size: 12px; color: #A3A19B">2 joined but went offline. Their work is saved on their phones.</span>
+        </div>
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+          <span style="display: flex; justify-content: space-between"><span style="font-weight: 500">Need help</span><span style="font-size: 13px; color: #8F8D88">Now</span></span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 28px; color: #F5C46B">{{helpCount}}</span>
+          <span style="display: flex; height: 6px; gap: 3px"><span style="{{helpBarA}}"></span><span style="{{helpBarB}}"></span><span style="{{helpBarC}}"></span></span>
+          <span style="font-size: 12px; color: #A3A19B">Most are counting from one. See the list on the right.</span>
+        </div>
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+          <span style="display: flex; justify-content: space-between"><span style="font-weight: 500">Finished measuring</span><span style="font-size: 13px; color: #8F8D88">of 38</span></span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 28px">14</span>
+          <div aria-hidden="true" style="display: flex; align-items: flex-end; gap: 3px; height: 26px"><sc-for list="{{doneBars}}" as="b" hint-placeholder-count="12"><span style="{{b}}"></span></sc-for></div>
+        </div>
+        <div style="background: #0D0D0D; border: 1px solid #1E1D1D; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+          <span style="display: flex; justify-content: space-between"><span style="font-weight: 500">Lesson time left</span><span style="font-size: 13px; color: #8F8D88">of 40 min</span></span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 28px">{{leftText}}</span>
+          <span style="display: block; height: 6px; background: #1E1D1D"><span style="{{leftBar}}"></span></span>
+          <span style="font-size: 12px; color: #A3A19B">At this pace, about 26 of 38 will reach the graph.</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
+        <section aria-label="Benches" style="flex: 999 1 560px; min-width: 0; background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #1E1D1D">
+            <span style="display: flex; flex-direction: column"><span style="font-weight: 500; font-size: 15px">Benches</span><span style="font-size: 13px; color: #8F8D88">Needs help first. Select a bench to see it.</span></span>
+            <div role="group" aria-label="Show" style="display: inline-flex; border: 1px solid #2A2928"><sc-for list="{{filters}}" as="f" hint-placeholder-count="3"><button class="tc-f" type="button" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.st}}">{{f.label}}</button></sc-for></div>
+          </div>
+          <div style="padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 8px">
+            <sc-for list="{{benches}}" as="s" hint-placeholder-count="16">
+              <button class="tc-f tc-card" type="button" onClick="{{s.open}}" style="{{s.card}}">
+                <span style="display: flex; justify-content: space-between; gap: 8px; width: 100%"><span style="font-weight: 600">{{s.name}}</span><span style="font-size: 12px; color: #8F8D88">{{s.stage}}</span></span>
+                <span aria-hidden="true" style="display: flex; gap: 2px; width: 100%"><sc-for list="{{s.steps}}" as="p" hint-placeholder-count="10"><span style="{{p}}"></span></sc-for></span>
+                <span style="{{s.statusSt}}">{{s.status}}</span>
+              </button>
+            </sc-for>
+          </div>
+        </section>
+
+        <aside style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+          <section aria-label="Mistakes happening now" style="background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+            <div style="padding: 14px 16px; border-bottom: 1px solid #1E1D1D; display: flex; flex-direction: column"><span style="font-weight: 500; font-size: 15px">Mistakes happening now</span><span style="font-size: 13px; color: #8F8D88">One hint reaches everyone with the same mistake</span></div>
+            <sc-for list="{{mistakes}}" as="m" hint-placeholder-count="3">
+              <div class="tc-row" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid #1E1D1D">
+                <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span>{{m.name}}</span><span style="{{m.chipSt}}">{{m.chip}}</span></span>
+                <button class="tc-f" type="button" onClick="{{m.push}}" style="{{m.btnSt}}">{{m.btn}}</button>
+              </div>
+            </sc-for>
+          </section>
+          <section aria-label="Where the class is" style="background: #0D0D0D; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+            <div style="padding: 14px 16px; border-bottom: 1px solid #1E1D1D"><span style="font-weight: 500; font-size: 15px">Where the class is</span></div>
+            <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 8px">
+              <sc-for list="{{stages}}" as="st" hint-placeholder-count="6">
+                <div style="display: grid; grid-template-columns: 76px minmax(0, 1fr) 26px; gap: 10px; align-items: center; font-size: 13px">
+                  <span style="color: #C9C6BF">{{st.name}}</span>
+                  <span style="height: 12px; background: #161616; display: block"><span style="{{st.bar}}"></span></span>
+                  <span style="font-family: 'Geist Mono', monospace; text-align: right">{{st.n}}</span>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- DRAWER: one student's bench -->
+  <sc-if value="{{drOpen}}" hint-placeholder-val="{{false}}">
+    <div onClick="{{closeDr}}" style="position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 20"></div>
+    <aside class="tc-drawer" role="dialog" aria-modal="true" aria-label="{{dr.name}}" style="position: fixed; top: 14px; right: 14px; bottom: 14px; width: min(420px, calc(100% - 28px)); z-index: 21; background: #111110; border: 1px solid #2A2928; display: flex; flex-direction: column">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #1E1D1D">
+        <span style="display: flex; flex-direction: column; flex: 1"><span style="font-weight: 600; font-size: 15px">{{dr.name}}</span><span style="font-size: 12px; color: #8F8D88">{{dr.stage}}</span></span>
+        <span style="{{dr.chipSt}}">{{dr.status}}</span>
+        <button class="tc-f" type="button" onClick="{{closeDr}}" aria-label="Close" style="width: 30px; height: 30px; background: transparent; border: 0; color: #C9C6BF; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div style="flex: 1; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 12px; color: #8F8D88">Their readings so far</span>
+          <div style="font-family: 'Geist Mono', monospace; font-size: 13px; border: 1px solid #1E1D1D">
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 10px; color: #8F8D88; border-bottom: 1px solid #1E1D1D"><span>l/m</span><span>t/s</span><span>T/s</span></div>
+            <sc-for list="{{dr.rows}}" as="r" hint-placeholder-count="3"><div style="{{r.st}}"><span>{{r.l}}</span><span>{{r.t}}</span><span>{{r.T}}</span></div></sc-for>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: #8F8D88">What the coach sees</span><span style="color: #C9C6BF">{{dr.why}}</span></div>
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end; padding: 12px 16px; border-top: 1px solid #1E1D1D">
+        <a class="tc-f" href="#bench" style="height: 34px; padding: 0 14px; border: 1px solid #2A2928; color: #F2F0EA; text-decoration: none; display: flex; align-items: center; font-size: 13px">Watch their bench</a>
+        <button class="tc-f" type="button" onClick="{{drPush}}" style="height: 34px; padding: 0 14px; background: #F2F0EA; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">{{dr.action}}</button>
+      </div>
+    </aside>
+  </sc-if>
+
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+    <div class="tc-toast" role="status" style="position: fixed; z-index: 40; right: 28px; bottom: 28px; max-width: 380px; background: #F2F0EA; color: #0D0D0D; padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px">
+      <span style="width: 18px; height: 18px; border-radius: 50%; background: #6CC25A; flex: 0 0 auto; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+      <span style="flex: 1; font-size: 13px">{{toastText}}</span>
+      <sc-if value="{{toastUndo}}" hint-placeholder-val="{{true}}"><button class="tc-f" type="button" onClick="{{undo}}" style="height: 26px; padding: 0 10px; background: #0D0D0D; color: #F2F0EA; border: 0; font: 600 12px Geist, sans-serif; cursor: pointer">Undo</button></sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 0, drawer: null, hinted: {}, locked: false, toast: null, toastUndo: false, left: 16 * 60 };
+  }
+  componentDidMount() {
+    this.clock = setInterval(() => this.setState({ left: Math.max(0, this.state.left - 1) }), 1000);
+    this.onKey = (e) => { if (e.key === 'Escape') this.setState({ drawer: null }); };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { clearInterval(this.clock); clearTimeout(this.tt); window.removeEventListener('keydown', this.onKey); }
+  toast(text, undoFn) { clearTimeout(this.tt); this.undoFn = undoFn; this.setState({ toast: text, toastUndo: !!undoFn }); this.tt = setTimeout(() => this.setState({ toast: null }), 6000); }
+  renderVals() {
+    const st = this.state;
+    const chip = (kind) => {
+      const k = { red: ['#2A1414', '#F27A6E', '#5A2320'], amber: ['#22190A', '#F5C46B', '#4A3A16'], green: ['#132111', '#8FD18A', '#24451F'], violet: ['#1A1730', '#B3A8FA', '#352D66'], grey: ['#1A1A19', '#C9C6BF', '#2E2D2B'] }[kind];
+      return 'align-self: flex-start; font-size: 12px; padding: 1px 7px; background: ' + k[0] + '; color: ' + k[1] + '; border: 1px solid ' + k[2] + '; white-space: nowrap';
+    };
+    const seg = (on) => 'height: 28px; padding: 0 10px; border: 0; cursor: pointer; font: 500 12px Geist, sans-serif; background: ' + (on ? '#F2F0EA' : 'transparent') + '; color: ' + (on ? '#0D0D0D' : '#C9C6BF');
+    const STAGES = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    /* example class: display names chosen by students */
+    const M = {
+      one: ['Counted the first swing as one', 'Their T is 5% short, so g comes out about 11% high.', 'Counts from one'],
+      top: ['Length measured to the top of the bob', 'Their l is about 1 cm short, so g comes out low.', 'Length to top of bob'],
+      big: ['Swing angle above 10°', 'Large swings take longer, so g comes out low.', 'Swing over 10°'],
+      clamp: ['Stuck fixing the clamp', 'No change for 4 minutes on the Build step.', 'Stuck on the clamp']
+    };
+    const raw = [
+      ['Kofi_A', 4, 'one'], ['Ama.S', 4, 'one'], ['Yaw7', 2, 'clamp'], ['Efua', 4, 'top'], ['K.Boateng', 4, 'one'], ['Adwoa_M', 4, 'big'],
+      ['Nana', 5, null], ['Esi', 6, null], ['Kwame.O', 4, null], ['Akosua', 5, null], ['Fiifi', 4, null], ['Abena22', 6, null],
+      ['Kojo', 4, null], ['Afia', 5, null], ['Yaa.K', 4, null], ['Mawuli', 7, null]
+    ];
+    const hinted = st.hinted;
+    const all = raw.map(([name, si, mk]) => {
+      const help = mk && !hinted[mk];
+      const sentHint = mk && hinted[mk];
+      const status = !mk ? 'On track' : sentHint ? 'Hint sent' : M[mk][2];
+      const kind = !mk ? 'green' : sentHint ? 'violet' : 'amber';
+      return {
+        name, si, mk, help,
+        stage: STAGES[si], status, statusSt: chip(kind),
+        steps: STAGES.map((_, i) => 'flex: 1; height: 4px; background: ' + (i < si ? '#6CC25A' : i === si ? (help ? '#F5A524' : '#F2F0EA') : '#242322')),
+        card: 'display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; background: #111110; color: #F2F0EA; font: 14px Geist, sans-serif; text-align: left; cursor: pointer; border: 1px solid ' + (help ? '#5A4518' : '#1E1D1D'),
+        open: () => this.setState({ drawer: name })
+      };
+    });
+    const benches = all.filter((b) => st.filter === 0 || (st.filter === 1 ? b.help : !b.help));
+    const helpCount = all.filter((b) => b.help).length;
+    const filters = ['All 16 shown', 'Need help', 'On track'].map((label, i) => ({ label: i === 0 ? 'All' : label, on: st.filter === i, pick: () => this.setState({ filter: i }), st: seg(st.filter === i) }));
+    const counts = {}; all.forEach((b) => { if (b.mk && !hinted[b.mk]) counts[b.mk] = (counts[b.mk] || 0) + 1; });
+    const mistakes = ['one', 'top', 'big', 'clamp'].map((mk) => {
+      const n = all.filter((b) => b.mk === mk).length, sent = !!hinted[mk];
+      return {
+        name: M[mk][0], chip: sent ? 'Hint sent to ' + n : n + (n === 1 ? ' student' : ' students'), chipSt: chip(sent ? 'violet' : 'amber'),
+        btn: sent ? 'Sent' : 'Push hint', btnSt: 'height: 30px; padding: 0 10px; cursor: pointer; font: 500 13px Geist, sans-serif; border: 1px solid ' + (sent ? '#2A2928' : '#F2F0EA') + '; background: ' + (sent ? 'transparent' : '#F2F0EA') + '; color: ' + (sent ? '#8F8D88' : '#0D0D0D'),
+        push: () => { if (sent) return; this.setState({ hinted: Object.assign({}, hinted, { [mk]: true }) }); this.toast('Hint sent to ' + n + (n === 1 ? ' student' : ' students') + ': "' + M[mk][0] + '".', () => { const h = Object.assign({}, this.state.hinted); delete h[mk]; this.setState({ hinted: h }); }); }
+      };
+    });
+    const stCount = {}; all.forEach((b) => { stCount[b.si] = (stCount[b.si] || 0) + 1; });
+    const stages = [2, 3, 4, 5, 6, 7].map((i) => ({ name: STAGES[i], n: stCount[i] || 0, bar: 'display: block; height: 12px; background: repeating-linear-gradient(135deg, #6CC25A 0 3px, #183317 3px 6px); width: ' + Math.round((stCount[i] || 0) / 9 * 100) + '%' }));
+    const doneBars = [1, 1, 2, 1, 0, 2, 1, 3, 1, 0, 1, 1].map((v) => 'flex: 1; height: ' + (4 + v * 7) + 'px; background: ' + (v ? '#6CC25A' : '#242322'));
+    const h1 = counts.one || 0, h2 = (counts.top || 0) + (counts.big || 0), h3 = counts.clamp || 0;
+    /* drawer */
+    const b = all.find((x) => x.name === st.drawer);
+    const readings = (mk) => {
+      const L = [1.0, 0.9, 0.8], g = 9.81;
+      return L.map((l) => { let T = 2 * Math.PI * Math.sqrt((mk === 'top' ? l + 0.01 : l) / g); if (mk === 'one') T = T * 19 / 20; if (mk === 'big') T = T * 1.004; const t = T * 20; return { l: l.toFixed(3), t: t.toFixed(2), T: T.toFixed(3), st: "display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 10px; border-top: 1px solid #1E1D1D; color: " + (mk && mk !== 'clamp' ? '#F5C46B' : '#F2F0EA') }; });
+    };
+    const dr = b ? {
+      name: b.name, stage: 'Step ' + (b.si + 1) + ' of 10: ' + b.stage, status: b.status, chipSt: b.statusSt,
+      rows: b.mk === 'clamp' ? [] : readings(b.mk),
+      why: b.mk ? M[b.mk][1] : 'Readings are consistent and the decimals are right.',
+      action: b.mk && !hinted[b.mk] ? 'Send them the hint' : 'Send a note'
+    } : { name: '', stage: '', status: '', chipSt: '', rows: [], why: '', action: '' };
+    const mm = Math.floor(st.left / 60), ss = st.left % 60;
+    return {
+      benches, filters, mistakes, stages, doneBars,
+      helpCount, helpBarA: 'flex: ' + (h1 || 0.0001) + '; background: #F5A524', helpBarB: 'flex: ' + (h2 || 0.0001) + '; background: #F5C46B', helpBarC: 'flex: ' + (h3 || 0.0001) + '; background: #8F8D88',
+      leftText: String(mm).padStart(2, '0') + ':' + String(ss).padStart(2, '0'),
+      leftBar: 'display: block; height: 6px; background: #F2F0EA; width: ' + (st.left / 2400 * 100).toFixed(1) + '%',
+      locked: st.locked, lockText: st.locked ? 'Steps locked' : 'Lock steps', lockPath: st.locked ? 'M8 11V7a4 4 0 0 1 8 0v4' : 'M8 11V7a4 4 0 0 1 7.5-2',
+      lockSt: 'height: 32px; display: flex; align-items: center; gap: 6px; padding: 0 12px; cursor: pointer; font: 500 13px Geist, sans-serif; border: 1px solid ' + (st.locked ? '#F5A524' : '#2A2928') + '; background: ' + (st.locked ? '#2B2112' : 'transparent') + '; color: ' + (st.locked ? '#F5D9A3' : '#F2F0EA'),
+      toggleLock: () => { const v = !st.locked; this.setState({ locked: v }); this.toast(v ? 'Steps locked. Students stay on their current step until you unlock.' : 'Steps unlocked.', () => this.setState({ locked: !v })); },
+      broadcast: () => this.toast('Instruction sent to all 38 students.', null),
+      drOpen: !!b, dr, closeDr: () => this.setState({ drawer: null }),
+      drPush: () => {
+        if (b && b.mk && !hinted[b.mk]) { const mk = b.mk; this.setState({ drawer: null, hinted: Object.assign({}, hinted, { [mk]: true }) }); this.toast('Hint sent to everyone with "' + M[mk][0] + '".', () => { const h = Object.assign({}, this.state.hinted); delete h[mk]; this.setState({ hinted: h }); }); }
+        else { this.setState({ drawer: null }); this.toast('Note sent to ' + (b ? b.name : '') + '.', null); }
+      },
+      toastOn: !!st.toast, toastText: st.toast || '', toastUndo: st.toastUndo,
+      undo: () => { if (this.undoFn) this.undoFn(); this.undoFn = null; clearTimeout(this.tt); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

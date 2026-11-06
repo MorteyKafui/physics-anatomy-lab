@@ -1,0 +1,73 @@
+/*
+ * Physics Anatomy design tokens, taken from the approved mockups (design/mockups).
+ * Apps use these variables only; no app hard-codes a colour or a radius (AGENTS.md).
+ */
+:root {
+  /* Dark surfaces: the lab, the hero, the dashboards */
+  --pa-ink-1000: #0a0a0a;
+  --pa-ink-950: #0d0d0d;
+  --pa-ink-900: #111110;
+  --pa-ink-850: #161616;
+  --pa-ink-800: #1e1d1d;
+  --pa-line: #2a2928;
+  --pa-line-strong: #3a3936;
+  --pa-text: #f2f0ea;
+  --pa-text-soft: #c9c6bf;
+  --pa-text-muted: #a3a19b;
+  --pa-text-faint: #8f8d88;
+
+  /* Light surfaces: the public site sections, reports, printed sheets */
+  --pa-paper: #fbfbf6;
+  --pa-paper-2: #f3f1e8;
+  --pa-paper-line: #e6e4db;
+  --pa-on-paper: #141414;
+  --pa-on-paper-muted: #4a4843;
+
+  /* Signature accent: the bob in the logo, primary actions */
+  --pa-accent: #f0482a;
+  --pa-accent-soft: #ff8a6e;
+
+  /* One hue per physics topic */
+  --pa-topic-mechanics: #f5a524;
+  --pa-topic-heat: #ff7a3d;
+  --pa-topic-light: #8b7cf6;
+  --pa-topic-waves: #2ec4b6;
+  --pa-topic-electricity: #3b82f6;
+  --pa-topic-measurement: #6cc25a;
+  --pa-topic-modern: #e64980;
+
+  /* Status: always paired with an icon or words, never colour alone */
+  --pa-ok: #6cc25a;
+  --pa-ok-text: #8fd18a;
+  --pa-warn: #f5a524;
+  --pa-warn-text: #f5c46b;
+  --pa-danger: #f0482a;
+  --pa-danger-text: #f27a6e;
+
+  /* Graph sheet (D31): colour export */
+  --pa-graph-grid-minor: #cfe7c8;
+  --pa-graph-grid-major: #8fc98a;
+  --pa-graph-frame: #4f8f4a;
+  --pa-graph-point: #b86e00;
+  --pa-graph-fit: #f0482a;
+  --pa-graph-triangle: #6d5bd8;
+
+  /* Lyra: square corners everywhere. Round things use --pa-round. */
+  --pa-radius: 0;
+  --pa-round: 9999px;
+
+  /* Type */
+  --pa-font-sans: "Geist", system-ui, sans-serif;
+  --pa-font-mono: "Geist Mono", ui-monospace, monospace;
+  --pa-font-display: "Bricolage Grotesque", "Geist", sans-serif;
+
+  /* Motion: respect reduced motion in every animation */
+  --pa-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --pa-duration: 250ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pa-duration: 0ms;
+  }
+}

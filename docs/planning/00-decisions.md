@@ -1,0 +1,45 @@
+# Physics Anatomy: decision log
+
+- Master plan (draft for approval): Claude Doc "Physics Anatomy — Master Plan", claude.ai/artifact/DNiNxasKLhQYdB6jMJ5fuN (tabs: main plan, Gap fixes)
+- Legal and Policy Pack (drafts for UEW review): claude.ai/artifact/GUuasFC7PQhYAj67nFiNmA
+- Phase 0 mockups (Design canvas): claude.ai/artifact/NUVrA7XN8LsNdYNFzJ19iJ
+
+| # | Date | Decision | Notes |
+|---|---|---|---|
+| D1 | 2026-11-05 | v1 = full platform + 4 flagship experiments | Simple pendulum, Ohm's law / potentiometer, converging lens, method of mixtures. |
+| D2 | 2026-11-05 | Cloudflare for the frontend and edge | Next.js on Workers via OpenNext; R2, WAF, Turnstile, Access. Backend is FastAPI (D16). |
+| D3 | 2026-11-05 | Dark lab, light marketing site; expanded palette | Signature #F0482A; warm bench-paper light lab; one hue per physics topic. Updated by D30 (admin portal now dark). |
+| D4 | 2026-11-05 | Skip REA | Structured product teardown instead; PhET is GPL: study, don't copy. |
+| D5 | 2026-11-05 | Harvest, don't import | Wavelab and Physics Bench reviewed module by module. |
+| D6 | 2026-11-05 | Own design system on shadcn + Base UI (Lyra), Lucide icons | TanStack DS rejected. Lyra = zero radius everywhere; only truly round things (dots, bobs, rings) are round. |
+| D7 | 2026-11-05 | "Anatomy paper" = Anatomy print pipeline | Poster, technical drawing, explainer PDFs per experiment. |
+| D8 | 2026-11-05 | AI = Claude from the FastAPI backend | Online only. AI needs a signed-in adult or a class with AI turned on by the teacher; never for signed-out users. Off by default for classes. |
+| D9 | 2026-11-05 | Private repository for now | |
+| D10 | 2026-11-05 | Translation-ready; English first; Twi, Ga, Ewe later | |
+| D11 | 2026-11-05 | Accounts optional | Students: display name + class token only, no email/age. Under-13: signed out or school class only. Teacher confirms school permission when creating a class. |
+| D12 | 2026-11-05 | Source scans stay private | |
+| D13 | 2026-11-05 | Windows + Linux repo hygiene | Bun, Git, PostgreSQL 18 installed on Windows. |
+| D14 | 2026-11-05 | Engineering system = pstack + tstack + Matt Pocock skills | See planning/02-skills-selection.md. |
+| D15 | 2026-11-05 | Name stays "Physics Anatomy" | Preliminary web search 6 Nov 2026 found no conflicting product; formal trademark search (Ghana RGD, WIPO, USPTO) in Phase 0. |
+| D16 | 2026-11-05 | Own backend: FastAPI + PostgreSQL only | Full stack in the master plan's Backend section. No Redis. |
+| D17 | 2026-11-05 | Dashboards | Teacher/lecturer inside the app; admin portal separate (apps/admin) behind Cloudflare Access. |
+| D18 | 2026-11-05 | Mockups on a Claude Design canvas | |
+| D19 | 2026-11-05 | Audio mode in v1 | Spoken coach, count-along, lab sounds; AI voice tutor online. No recording of users' voices in v1. |
+| D20 | 2026-11-05 | Flexible tables and assist levels | |
+| D21 | 2026-11-05 | Snapshots and labelled exports | |
+| D22 | 2026-11-05 | Lab screen layout | Backcountry 101 / Learn ESP32 references. |
+| D23 | 2026-11-05 | Local dev on the user's PostgreSQL 18, no Docker | Production matches major version 18 (confirm Neon support in Phase 0). |
+| D24 | 2026-11-05 | Environments and services | See master plan Backend section. |
+| D25 | 2026-11-06 | Legal pack drafted | Terms, Privacy, Children and Schools (student card + parent letter), Cookies and Storage, AI and Acceptable Use (+ responsible disclosure), Accessibility Statement, Research Participation (info sheet, parent consent, learner assent). Written against Ghana Act 843 (+ pending Data Protection Bill 2025), Act 1038, Act 560, Act 772, GDPR, amended COPPA (Apr 2026). Consent records + 30-day notice for material changes. Needs UEW legal/ethics review, DPC registration, Data Protection Supervisor, safeguarding lead. |
+| D26 | 2026-11-06 | Gap specs written | Master plan "Gap fixes" tab: versioning, onboarding, lite mode, print, search, account recovery, email, content editing, licences, device testing, support/incident, name check. Cost model: claude.ai/artifact/63pmFzYBcjftH7YdjAQWKY. |
+| D27 | 2026-11-06 | Logo = direction C, the pendulum P | Letter P whose bowl holds a swinging pendulum; bob is the only #F0482A part. Applied to landing, lab rail and admin. Directions A and B retired. |
+| D28 | 2026-11-06 | Landing page direction (revised twice) | Sticky header that becomes a floating bar on scroll (after efferd Header 4). Centred hero with an outlined second line (after efferd Hero 4). Hero background is a live double-slit experiment: particles land one at a time and build interference stripes, "Watch which slit" removes them, a histogram along the bottom shows the pattern, and a dark fade keeps the text readable (the ripple tank was dropped because it hurt readability). Then: draggable pendulum with the count-from-zero/one coach demo; isometric exploded pendulum stand with hover tooltips; coach cursor demo; four live experiment cards in the Pulseboard format; feature bento; teacher sign-up + student class-code join; large-type footer with status (after efferd Footer 14). |
+| D29 | 2026-11-06 | No dummy content on the site | Every number on the public site is either computed from the physics or a stated fact. No fake counters, version numbers, partner links or unplanned experiments. Dashboards show example data only with a visible "Example data" label, using the 1,000-student cost scenario. |
+| D30 | 2026-11-06 | Admin portal redesigned dark, after the "Signal" dashboard reference | Lyra square corners, mono numbers, hatched bar charts, KPI tiles with segment bars and "View…" links, Needs attention list with chips, slide-in detail drawer with one primary action, undo toasts, ⌘K / "/" command palette, collapsible sidebar groups, running-cost meter. Teacher dashboard to follow the same patterns. |
+| D31 | 2026-11-06 | Graphs download in colour | Colour or black-and-white choice in the export dialog (PNG, SVG, PDF). Colour uses the topic hue for points, #F0482A for the fit line, a distinct slope-triangle colour, a hue per series plus marker shapes, green graph-paper ruling; checked for contrast and colour-blind safety. Teachers can set the class default. Master plan updated. |
+| D32 | 2026-11-06 | Decisions apply everywhere, not only where first made | Written into the master plan as "Design rules agreed in the mockup round". Applied so far: teacher live class rebuilt in the D30 dashboard pattern (drawer per bench, one hint to everyone with the same mistake, undo toasts); table board gets the colour/black-and-white graph switch and loses all-caps labels; join screen loses a real school name; new report and labelled-export board (WASSCE and university formats, PDF/Word/figures/data, colour or black and white, captions, mark, school logo, coach's notes). |
+| D33 | 2026-11-06 | Phase 0 mockup set complete | Added the snapshot notebook (labelled figure preview, auto and own snapshots on a step timeline, caption, reopen in the lab, reorder, delete with undo, ZIP with the report) and the first-run tour (five stops from the plan with spotlight, read aloud, skip and replay, ending at a level-and-goal picker that recommends one of the four launch experiments). Next: Phase 0 repo setup on the Desktop once the mockups are approved. |
+
+## Still open (non-blocking)
+- Mockup approval from you, then Phase 0 repo setup (needs this chat linked to your computer).
+- Benchmark phone model; domain; AI budget; donation route; pilot dates; voice and email providers; whether teacher sign-up offers Google sign-in (removed from the mockup until decided).

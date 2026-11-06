@@ -1,0 +1,142 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Admin.dc.html": {
+      "expand": "fill",
+      "h": 1080,
+      "title": "Admin portal: overview (dark, interactive)",
+      "w": 1440,
+      "x": 3120,
+      "y": 1020,
+      "is_interactive": true
+    },
+    "Join.dc.html": {
+      "h": 844,
+      "title": "Joining a class: notices and consent",
+      "w": 390,
+      "x": 3590,
+      "y": 0
+    },
+    "Lab.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "title": "Lab: measuring (desktop, dark)",
+      "w": 1440,
+      "x": 1560,
+      "y": 0
+    },
+    "LabPhone.dc.html": {
+      "h": 844,
+      "title": "Lab on a phone",
+      "w": 390,
+      "x": 3120,
+      "y": 0
+    },
+    "Logo.dc.html": {
+      "h": 760,
+      "title": "Logo: C chosen (the pendulum P)",
+      "w": 1440,
+      "x": 3120,
+      "y": 2080
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 6684,
+      "is_interactive": true,
+      "title": "Landing page (interactive)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Table.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "title": "Table builder and graph sheet (colour export)",
+      "w": 1440,
+      "x": 1560,
+      "y": 1020,
+      "is_interactive": true
+    },
+    "Teacher.dc.html": {
+      "expand": "fill",
+      "h": 980,
+      "title": "Teacher: live class (interactive)",
+      "w": 1440,
+      "x": 1560,
+      "y": 2080,
+      "is_interactive": true
+    },
+    "Report.dc.html": {
+      "x": 4680,
+      "y": 0,
+      "w": 1440,
+      "h": 1120,
+      "title": "Report and labelled export",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Notebook.dc.html": {
+      "x": 4680,
+      "y": 1240,
+      "w": 1440,
+      "h": 980,
+      "title": "Snapshot notebook and timeline",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Tour.dc.html": {
+      "x": 4680,
+      "y": 2340,
+      "w": 1440,
+      "h": 900,
+      "title": "First-run tour and level picker",
+      "is_interactive": true
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-06T00:20:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "title",
+    "read"
+  ],
+  "notes": {
+    "read": {
+      "size": 24,
+      "text": "Comment on anything: layout, wording, colour. Every screen uses the real experiment (simple pendulum) and real WASSCE rules. Dark = the lab, the hero and the admin portal; light = the rest of the public site. Dashboard numbers are labelled example data from the 1,000-student cost scenario.",
+      "w": 560,
+      "x": -700,
+      "y": 0
+    },
+    "title": {
+      "kind": "title1",
+      "maxW": 4560,
+      "text": "Physics Anatomy · Phase 0 mockups for approval",
+      "w": 240,
+      "x": 0,
+      "y": -320
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Lab.dc.html",
+    "LabPhone.dc.html",
+    "Join.dc.html",
+    "Table.dc.html",
+    "Report.dc.html",
+    "Notebook.dc.html",
+    "Tour.dc.html",
+    "Teacher.dc.html",
+    "Admin.dc.html",
+    "Logo.dc.html"
+  ],
+  "pages": [],
+  "title": "Physics Anatomy Mockups"
+}

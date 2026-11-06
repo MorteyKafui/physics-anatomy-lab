@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Table builder and graph sheet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 940px; box-sizing: border-box; background: #0D0D0D; color: #F0F0F0; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.5; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+    <div style="display: flex; flex-direction: column">
+      <span style="font-size: 13px; color: #A3A19B">Simple pendulum, steps 6 and 7</span>
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px">Tabulate and plot</span>
+    </div>
+    <span style="flex: 1"></span>
+    <label for="assist2" style="display: flex; align-items: center; gap: 8px; color: #A3A19B; font-size: 13px">Help level
+      <select id="assist2" style="background: #161616; color: #F0F0F0; border: 1px solid #2A2928; padding: 8px 10px; font: 500 13px Geist, sans-serif"><option>Auto</option><option selected="selected">Check my work</option><option>On my own</option></select>
+    </label>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+    <section aria-label="Results table" style="flex: 1 1 560px; min-width: 0; background: #161616; border: 1px solid #2A2928; display: flex; flex-direction: column">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px; border-bottom: 1px solid #2A2928">
+        <div role="group" aria-label="Table type" style="display: inline-flex; border: 1px solid #2A2928">
+          <button type="button" style="padding: 8px 12px; background: transparent; border: 0; color: #A3A19B; font: 500 13px Geist, sans-serif">Standard</button>
+          <button type="button" style="padding: 8px 12px; background: transparent; border: 0; border-left: 1px solid #2A2928; color: #A3A19B; font: 500 13px Geist, sans-serif">Template</button>
+          <button type="button" aria-pressed="true" style="padding: 8px 12px; background: #F0F0F0; border: 0; color: #141414; font: 600 13px Geist, sans-serif">Draw your own</button>
+        </div>
+        <span style="flex: 1"></span>
+        <button type="button" style="padding: 8px 12px; background: #1E1D1D; border: 1px solid #2A2928; color: #F0F0F0; font: 500 13px Geist, sans-serif">+ Column</button>
+        <button type="button" style="padding: 8px 12px; background: #1E1D1D; border: 1px solid #2A2928; color: #F0F0F0; font: 500 13px Geist, sans-serif">+ Repeat</button>
+        <button type="button" style="padding: 8px 12px; background: #1E1D1D; border: 1px solid #2A2928; color: #F0F0F0; font: 500 13px Geist, sans-serif">ƒ Formula column</button>
+      </div>
+      <div style="overflow-x: auto">
+        <div role="table" aria-label="Results" style="min-width: 620px; font-family: 'Geist Mono', monospace; font-size: 14px">
+          <div role="row" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0"><div role="columnheader" style="padding: 10px 12px; border-bottom: 1px solid #2A2928;"><span style="display: block; font-size: 15px">l/m</span><span style="display: block; font-size: 11px; color: #8F8D88; font-family: Geist, sans-serif">measured, metre rule</span></div><div role="columnheader" style="padding: 10px 12px; border-bottom: 1px solid #2A2928;"><span style="display: block; font-size: 15px">t₁/s</span><span style="display: block; font-size: 11px; color: #8F8D88; font-family: Geist, sans-serif">repeat 1, 20 swings</span></div><div role="columnheader" style="padding: 10px 12px; border-bottom: 1px solid #2A2928;"><span style="display: block; font-size: 15px">t₂/s</span><span style="display: block; font-size: 11px; color: #8F8D88; font-family: Geist, sans-serif">repeat 2, 20 swings</span></div><div role="columnheader" style="padding: 10px 12px; border-bottom: 1px solid #2A2928;"><span style="display: block; font-size: 15px">t/s</span><span style="display: block; font-size: 11px; color: #8F8D88; font-family: Geist, sans-serif">mean</span></div><div role="columnheader" style="padding: 10px 12px; border-bottom: 1px solid #2A2928;"><span style="display: block; font-size: 15px">T/s</span><span style="display: block; font-size: 11px; color: #8F8D88; font-family: Geist, sans-serif">T = t ⁄ 20</span></div><div role="columnheader" style="padding: 10px 12px; border-bottom: 1px solid #2A2928; background: #2B2112; outline: 1px solid #F5A524;"><span style="display: block; font-size: 15px">T2</span><span style="display: block; font-size: 11px; color: #F5C46B; font-family: Geist, sans-serif">add the unit: T²/s²</span></div></div>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+            <div role="row" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0">
+              <span role="cell" style="padding: 9px 12px; border-bottom: 1px solid #242322">{{r.l}}</span>
+              <span role="cell" style="padding: 9px 12px; border-bottom: 1px solid #242322">{{r.t1}}</span>
+              <span role="cell" style="padding: 9px 12px; border-bottom: 1px solid #242322">{{r.t2}}</span>
+              <span role="cell" style="{{r.meanStyle}}">{{r.t}}</span>
+              <span role="cell" style="padding: 9px 12px; border-bottom: 1px solid #242322; color: #C9C6BF">{{r.T}} <span style="color: #6CC25A">✓</span></span>
+              <span role="cell" style="padding: 9px 12px; border-bottom: 1px solid #242322; color: #C9C6BF">{{r.T2}} <span style="color: #6CC25A">✓</span></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div role="status" style="margin: 12px; background: #2A1914; border: 1px solid #F0482A; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+        <span style="font-weight: 600; color: #FF9A80">Row 3, mean t: 35.9 should be 35.90</span>
+        <span style="color: #E8E4DC">Your stopwatch reads to 0.1 s, so the mean carries one more decimal place: two places. Examiners deduct for inconsistent decimals in a column.</span>
+      </div>
+    </section>
+
+    <section aria-label="Graph" style="flex: 1 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: #161616; border: 1px solid #2A2928; padding: 10px 12px">
+        <span style="font-size: 13px; color: #A3A19B">Graph colours</span>
+        <div role="group" aria-label="Graph colours" style="display: inline-flex; border: 1px solid #2A2928">
+          <button type="button" onClick="{{setColour}}" aria-pressed="{{colour}}" style="{{segC}}">Colour</button>
+          <button type="button" onClick="{{setMono}}" aria-pressed="{{mono}}" style="{{segM}}">Black and white</button>
+        </div>
+        <span style="flex: 1"></span>
+        <span style="font-size: 12px; color: #8F8D88">Downloads keep the title, axes, units, scales and figure number</span>
+        <button type="button" onClick="{{download}}" style="padding: 8px 12px; background: #F0F0F0; border: 0; color: #141414; font: 600 13px Geist, sans-serif; cursor: pointer">Download graph (PNG, SVG, PDF)</button>
+      </div>
+      <sc-if value="{{toast}}" hint-placeholder-val="{{false}}"><div role="status" style="background: #F2F0EA; color: #141414; padding: 10px 12px; font-size: 13px">{{toastText}}</div></sc-if>
+      <div style="background: #FAFAF2; color: #141414; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 13px">
+          <span style="font-weight: 600">Fig. 2  A graph of T² against l</span>
+          <span style="font-family: 'Geist Mono', monospace; color: #3D3B37">Scale: 2 cm : 0.10 m on l · 2 cm : 0.20 s² on T²</span>
+        </div>
+        <svg viewBox="-56 -16 560 470" style="width: 100%; height: auto; display: block" role="img" aria-label="Five points rising in a straight line, a best-fit line through them, and a large slope triangle ABC">
+          <rect x="0" y="0" width="480" height="400" fill="#FFFFFF"/>
+          <path d="{{minorGrid}}" stroke="{{gc.minor}}" stroke-width="0.6" fill="none"/>
+          <path d="{{majorGrid}}" stroke="{{gc.major}}" stroke-width="1" fill="none"/>
+          <rect x="0" y="0" width="480" height="400" fill="none" stroke="{{gc.frame}}" stroke-width="1.2"/>
+          <line x1="40" y1="361.5" x2="432" y2="2.7" stroke="{{gc.line}}" stroke-width="1.8"/>
+          <polygon points="96,310.2 384,310.2 384,46.5" fill="{{gc.triFill}}" stroke="{{gc.tri}}" stroke-width="1.4" stroke-dasharray="6 4"/>
+          <g stroke="{{gc.pt}}" stroke-width="2">
+            <line x1="74" y1="318" x2="86" y2="330"/><line x1="86" y1="318" x2="74" y2="330"/>
+            <line x1="154" y1="247.5" x2="166" y2="259.5"/><line x1="166" y1="247.5" x2="154" y2="259.5"/>
+            <line x1="234" y1="171.8" x2="246" y2="183.8"/><line x1="246" y1="171.8" x2="234" y2="183.8"/>
+            <line x1="314" y1="97.8" x2="326" y2="109.8"/><line x1="326" y1="97.8" x2="314" y2="109.8"/>
+            <line x1="394" y1="26.7" x2="406" y2="38.7"/><line x1="406" y1="26.7" x2="394" y2="38.7"/>
+          </g>
+          <g font-family="Geist Mono, monospace" font-size="15" fill="{{gc.tri}}">
+            <text x="80" y="306">A</text><text x="390" y="328">C</text><text x="390" y="44">B</text>
+          </g>
+          <g font-family="Geist Mono, monospace" font-size="12" fill="#3D3B37">
+            <text x="0" y="420" text-anchor="middle">0.50</text><text x="80" y="420" text-anchor="middle">0.60</text><text x="160" y="420" text-anchor="middle">0.70</text><text x="240" y="420" text-anchor="middle">0.80</text><text x="320" y="420" text-anchor="middle">0.90</text><text x="400" y="420" text-anchor="middle">1.00</text><text x="480" y="420" text-anchor="middle">1.10</text>
+            <text x="-8" y="404" text-anchor="end">2.00</text><text x="-8" y="331" text-anchor="end">2.40</text><text x="-8" y="258" text-anchor="end">2.80</text><text x="-8" y="186" text-anchor="end">3.20</text><text x="-8" y="113" text-anchor="end">3.60</text><text x="-8" y="40" text-anchor="end">4.00</text>
+            <text x="240" y="446" text-anchor="middle">l/m</text>
+            <text x="-44" y="-4">T²/s²</text>
+            <text x="480" y="446" text-anchor="end" font-size="11" fill="#6B6963">Physics Anatomy · Fig. 2</text>
+          </g>
+        </svg>
+      </div>
+      <div style="background: #161616; border: 1px solid #2A2928; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 13px; color: #A3A19B">Your calculation, checked</span>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 15px; display: flex; flex-direction: column; gap: 4px">
+          <span>slope = CB ⁄ AC = (3.944 − 2.494) s² ⁄ (0.98 − 0.62) m</span>
+          <span>      = 1.450 ⁄ 0.36 = 4.03 s² m⁻¹ <span style="color: #6CC25A">✓ 3 s.f., unit given</span></span>
+          <span>g = 4π² ⁄ slope = 39.48 ⁄ 4.03 = <b>9.80 m s⁻²</b></span>
+        </div>
+        <span style="color: #C9C6BF; font-size: 13px">The triangle is large and its corners avoid your plotted points, as WASSCE marking expects. The accepted value for your location stays hidden until you have read your feedback.</span>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":940}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { colour: true, toast: false }; }
+  componentWillUnmount() { clearTimeout(this.t); }
+  renderVals() {
+    const col = this.state.colour;
+    const seg = (on) => 'padding: 6px 10px; border: 0; cursor: pointer; font: 500 13px Geist, sans-serif; background: ' + (on ? '#F0F0F0' : 'transparent') + '; color: ' + (on ? '#141414' : '#C9C6BF');
+    const gc = col
+      ? { minor: '#CFE7C8', major: '#8FC98A', frame: '#4F8F4A', line: '#F0482A', pt: '#B86E00', tri: '#6D5BD8', triFill: 'rgba(139,124,246,0.10)' }
+      : { minor: '#E3E3E3', major: '#BDBDBD', frame: '#555555', line: '#141414', pt: '#141414', tri: '#141414', triFill: 'none' };
+    let minor = '', major = '';
+    for (let i = 0; i <= 30; i++) { const x = i * 16; (i % 5 === 0 ? (major += 'M' + x + ' 0V400') : (minor += 'M' + x + ' 0V400')); }
+    for (let j = 0; j <= 55; j++) { const y = +(400 - j * 400 / 55).toFixed(2); (j % 5 === 0 ? (major += 'M0 ' + y + 'H480') : (minor += 'M0 ' + y + 'H480')); }
+    const base = 'padding: 9px 12px; border-bottom: 1px solid #242322; color: #C9C6BF';
+    const rows = [
+      { l: '1.000', t1: '40.2', t2: '40.0', t: '40.10', T: '2.005', T2: '4.020' },
+      { l: '0.900', t1: '38.0', t2: '38.2', t: '38.10', T: '1.905', T2: '3.629' },
+      { l: '0.800', t1: '35.8', t2: '36.0', t: '35.9', T: '1.795', T2: '3.222', flag: true },
+      { l: '0.700', t1: '33.6', t2: '33.4', t: '33.50', T: '1.675', T2: '2.806' },
+      { l: '0.600', t1: '31.2', t2: '31.0', t: '31.10', T: '1.555', T2: '2.418' }
+    ].map(r => ({ ...r, meanStyle: r.flag ? base + '; background: #2A1914; outline: 1.5px solid #F0482A; color: #F0F0F0' : base }));
+    return { minorGrid: minor, majorGrid: major, rows, gc, colour: col, mono: !col, segC: seg(col), segM: seg(!col),
+      setColour: () => this.setState({ colour: true }), setMono: () => this.setState({ colour: false }),
+      toast: this.state.toast, toastText: 'Fig. 2 downloaded in ' + (col ? 'colour' : 'black and white') + ' as PNG, SVG and PDF, with its labels.',
+      download: () => { clearTimeout(this.t); this.setState({ toast: true }); this.t = setTimeout(() => this.setState({ toast: false }), 4000); } };
+  }
+}
+</script>
+</body>
+</html>
