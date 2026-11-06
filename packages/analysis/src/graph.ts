@@ -168,3 +168,10 @@ export function mmBetween(sheet: Sheet, p: Point, q: Point): number {
   const b = onPaper(sheet, q);
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
+
+/**
+ * Decimal places a value read off an axis carries: to a small square, a tenth of the 2 cm
+ * scale (0.2 s² per 2 cm reads to 0.02 s², so two places).
+ */
+export const readingDecimals = (axis: Axis) =>
+  Math.max(0, -Math.floor(Math.log10(axis.per2cm / 10) + 1e-9));

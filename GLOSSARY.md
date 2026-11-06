@@ -24,6 +24,10 @@ request that introduces it.
   ten, and a scale should use at least half of each axis.
 - **Best-fit line.** The one straight line a student draws through their points: through the mean
   point, with the points balanced on each side. It is checked against the least-squares line.
+- **Calculator.** The Analyse step's calculation line, which works with units ("4π² / (4.03 s²
+  m⁻¹)" gives 9.80 m s⁻²) and says how many significant figures the measured values allow.
+- **Error carried forward.** Marking a later answer against the student's own earlier one, so one
+  slip loses one mark: g is checked against the slope the student wrote.
 - **Accepted value.** The reference value an experiment should recover, such as g at Winneba.
 
 ## The lab

@@ -13,18 +13,23 @@ import {
 } from "@pa/analysis";
 import { snapSlot } from "@pa/apparatus";
 import {
+  answersProjection,
   coach,
   coachIsOn,
   frontier,
   HELP_LEVELS,
   replay,
+  writeAnswer,
   STEPS,
   type Advice,
   type HelpLevel,
   type Step,
 } from "@pa/engine";
 import {
+  ANALYSIS_RULES,
   ASSEMBLY_RULES,
+  expectedAnswers,
+  plotsTSquaredAgainstL,
   asReading,
   assembled,
   assemblyProjection,
@@ -89,6 +94,7 @@ import {
   useDragPart,
 } from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
+import { AnalysePanel } from "./analyse";
 import { GraphPanel, graphView, useGraph } from "./graph-sheet";
 import { flagsFor, TableBuilder, useTable } from "./table-builder";
 import { useAttempt } from "./use-attempt";
@@ -126,6 +132,11 @@ export function LabScreen() {
   const results = useTable(handle);
   const plot = useGraph(handle);
   const [checkedGraph, setCheckedGraph] = useState<string>();
+  const [checkedAnalysis, setCheckedAnalysis] = useState<string>();
+  const answers = useMemo(
+    () => (handle ? replay(answersProjection, handle.attempt, handle.events) : {}),
+    [handle],
+  );
 
   const [timing, setTiming] = useState<Timing | undefined>();
   const [advice, setAdvice] = useState<Advice[]>([]);
@@ -584,6 +595,32 @@ export function LabScreen() {
   );
   const graphSignature = JSON.stringify(plot.graph);
 
+  // The analysis (step 8): the slope from the student's triangle and g from their slope.
+  const graphUnits = {
+    x: columnFor(graphColumns.x)?.unit ?? "",
+    y: columnFor(graphColumns.y)?.unit ?? "",
+  };
+  const forG = plotsTSquaredAgainstL(graphColumns);
+  const expected = expectedAnswers(graphShown.triangle, graphColumns, graphUnits, answers);
+  const analysisFindings = tableAssist ? [] : runRules(ANALYSIS_RULES, { answers, expected });
+  const answered = (id: "slope" | "g") =>
+    tableAssist
+      ? expected[id] !== undefined
+      : (answers[id]?.value ?? "") !== "" &&
+        !analysisFindings.some((f) => f.column === id && f.severity === "error");
+  const analysisSignature = JSON.stringify(answers);
+
+  const finishAnalysing = async () => {
+    if (analysisFindings.length && checkedAnalysis !== analysisSignature) {
+      setCheckedAnalysis(analysisSignature);
+      const out = coach(handle.state, analysisFindings, "step-exit");
+      await handle.record(out.events);
+      setAdvice(out.advice);
+      if (out.advice.length) return;
+    }
+    await finishStep();
+  };
+
   const finishPlotting = async () => {
     if (graphFindings.length && checkedGraph !== graphSignature) {
       setCheckedGraph(graphSignature);
@@ -592,8 +629,25 @@ export function LabScreen() {
       setAdvice(out.advice);
       if (out.advice.length) return;
     }
+    // At Auto the graph was drawn for the student; finishing makes it theirs, so the later
+    // steps (and a change of help level) keep it.
+    if (tableAssist) await keepDrawnGraph();
     await finishStep();
   };
+
+  const keepDrawnGraph = () =>
+    plot.run([
+      ...(graphShown.drawn.sheet ? [{ type: "set-axes" as const, sheet: graphShown.sheet }] : []),
+      ...(graphShown.drawn.plotted
+        ? graphShown.plotted.map((point) => ({ type: "plot" as const, point }))
+        : []),
+      ...(graphShown.drawn.line && graphShown.line
+        ? [{ type: "draw-line" as const, line: graphShown.line }]
+        : []),
+      ...(graphShown.drawn.triangle && graphShown.triangle
+        ? [{ type: "draw-triangle" as const, triangle: graphShown.triangle }]
+        : []),
+    ]);
 
   const finishTabulating = async () => {
     const signature = JSON.stringify(shownTable.rows) + JSON.stringify(table.columns);
@@ -605,8 +659,26 @@ export function LabScreen() {
       setAdvice(out.advice);
       if (out.advice.length) return;
     }
+    // At Auto the worked-out cells were filled in for the student; finishing writes them in.
+    if (tableAssist) await keepWorkedCells();
     await finishStep();
   };
+
+  const keepWorkedCells = () =>
+    results.run(
+      shownTable.rows.flatMap((row) => {
+        const typed = table.rows.find((r) => r.id === row.id)?.cells ?? {};
+        return table.columns
+          .filter((c) => c.role === "mean" || c.role === "derived")
+          .filter((c) => (row.cells[c.id] ?? "") !== (typed[c.id] ?? ""))
+          .map((c) => ({
+            type: "set-cell" as const,
+            row: row.id,
+            column: c.id,
+            value: row.cells[c.id] ?? "",
+          }));
+      }),
+    );
 
   // The bob hangs still until there is something to time; before the bench is built, the
   // figure describes what is on it.
@@ -618,7 +690,9 @@ export function LabScreen() {
     coachIsOn(state) && state.helpLevel === "auto" ? nextPart(assembly) : undefined;
 
   const aboutTable = (a: Advice) =>
-    a.finding.rule.startsWith("table-") || a.finding.rule.startsWith("graph-");
+    a.finding.rule.startsWith("table-") ||
+    a.finding.rule.startsWith("graph-") ||
+    a.finding.rule.startsWith("analysis-");
   /** Findings about the readings as a whole are fixed by measuring more, not in a cell. */
   const needsMeasuring = (a: Advice) =>
     a.finding.rule === "table-too-few-rows" || a.finding.rule === "table-narrow-range";
@@ -646,11 +720,13 @@ export function LabScreen() {
               const f = a.finding;
               const target = f.rule.startsWith("graph-")
                 ? 'svg[role="application"]'
-                : f.rows?.[0] && f.column
-                  ? `[data-cell="${f.rows[0]}:${f.column}"]`
-                  : f.column
-                    ? `th[data-column="${f.column}"] button`
-                    : `[data-cell^="${f.rows?.[0] ?? "-"}:"]`;
+                : f.rule.startsWith("analysis-")
+                  ? `[data-answer="${f.column}-${f.rule === "analysis-unit" ? "unit" : "value"}"]`
+                  : f.rows?.[0] && f.column
+                    ? `[data-cell="${f.rows[0]}:${f.column}"]`
+                    : f.column
+                      ? `th[data-column="${f.column}"] button`
+                      : `[data-cell^="${f.rows?.[0] ?? "-"}:"]`;
               document.querySelector<HTMLElement>(target)?.focus();
             },
           }
@@ -836,7 +912,35 @@ export function LabScreen() {
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-            {state.step === "plot" ? (
+            {state.step === "analyse" ? (
+              <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+                <AnalysePanel
+                  triangle={graphShown.triangle}
+                  sheet={graphShown.sheet}
+                  symbols={{
+                    x: columnFor(graphColumns.x)?.symbol ?? graphColumns.x,
+                    y: columnFor(graphColumns.y)?.symbol ?? graphColumns.y,
+                  }}
+                  units={graphUnits}
+                  forG={forG}
+                  answers={answers}
+                  expected={expected}
+                  findings={analysisFindings}
+                  assist={tableAssist}
+                  marks={tableMarks && !tableAssist}
+                  onWrite={(id, answer) => {
+                    const e = writeAnswer(answers, id, answer);
+                    if (e) void handle.record([e]);
+                  }}
+                  onBackToPlot={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3">{adviceCards}</div>
+                    ) : null
+                  }
+                />
+              </section>
+            ) : state.step === "plot" ? (
               <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
                 <GraphPanel
                   state={plot.graph}
@@ -1108,6 +1212,58 @@ export function LabScreen() {
                         </Button>
                       )}
                       {!building && next && (
+                        <Button
+                          className="self-start"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
+                        >
+                          {t("lab.steps.continue", { step: stepName(next) })}
+                        </Button>
+                      )}
+                    </>
+                  ) : state.step === "analyse" ? (
+                    <>
+                      <h2 className="font-display text-2xl leading-tight font-bold">
+                        {t("experiments.simple-pendulum.analyse.title")}
+                      </h2>
+                      <p className="text-soft">{t("experiments.simple-pendulum.analyse.why")}</p>
+                      <div className="flex flex-col gap-2">
+                        {(["slope", "g"] as const).map((key, i) => (
+                          <CheckItem
+                            key={key}
+                            n={i + 1}
+                            state={
+                              answered(key)
+                                ? "done"
+                                : key === "slope" || answered("slope")
+                                  ? "current"
+                                  : "todo"
+                            }
+                          >
+                            {t(`experiments.simple-pendulum.analyse.${key}` as MessageKey)}
+                          </CheckItem>
+                        ))}
+                      </div>
+                      {state.helpLevel !== "auto" && coachIsOn(state) && (
+                        <Button
+                          variant="link"
+                          className="self-start px-0"
+                          onClick={() => void consult(analysisFindings, "asked")}
+                        >
+                          {t("lab.analyse.check")}
+                        </Button>
+                      )}
+                      {!state.completed.includes("analyse") && (
+                        <Button
+                          data-finish-analysing
+                          className="self-start"
+                          onClick={() => void finishAnalysing()}
+                        >
+                          {checkedAnalysis === analysisSignature && advice.length
+                            ? t("lab.steps.carryOn")
+                            : t("lab.steps.finishAnalysing")}
+                        </Button>
+                      )}
+                      {state.completed.includes("analyse") && next && (
                         <Button
                           className="self-start"
                           onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}

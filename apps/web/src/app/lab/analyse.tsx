@@ -1,0 +1,275 @@
+"use client";
+
+import {
+  calculate,
+  checkAnswer,
+  formatQuantity,
+  readingDecimals,
+  type Finding,
+  type Quantity,
+  type Sheet,
+  type SlopeTriangle,
+} from "@pa/analysis";
+import type { AnswersState, WrittenAnswer } from "@pa/engine";
+import { gFromSlope, slopeOf, typedQuantity, type PendulumAnswer } from "@pa/experiments";
+import { t, type MessageKey } from "@pa/i18n";
+import { cn } from "@pa/ui";
+import { Button } from "@pa/ui/components/button";
+import { CheckIcon, TriangleAlertIcon } from "@pa/ui/icons";
+import { useState, type ReactNode } from "react";
+
+const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
+
+/** One answer the student writes: its value and unit, each with its own box, then the marks. */
+function AnswerLine({
+  id,
+  lead,
+  written,
+  expected,
+  assist,
+  marks,
+  flagged,
+  onWrite,
+}: {
+  id: PendulumAnswer;
+  lead: string;
+  written: WrittenAnswer | undefined;
+  expected: Quantity | undefined;
+  assist: boolean;
+  marks: boolean;
+  flagged: readonly Finding[];
+  onWrite: (answer: WrittenAnswer) => void;
+}) {
+  const [draft, setDraft] = useState<WrittenAnswer>();
+  const shown = draft ?? written ?? { value: "", unit: "" };
+  const name = msg(`lab.analyse.name.${id}`);
+  const commit = (next: WrittenAnswer) => {
+    setDraft(undefined);
+    onWrite({ value: next.value.trim(), unit: next.unit.trim() });
+  };
+  const check = expected && (shown.value || shown.unit) ? checkAnswer(shown, expected) : undefined;
+  const field =
+    "h-9 border border-input bg-background px-2 font-mono text-sm text-foreground aria-invalid:border-warn";
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+      <span>{lead}</span>
+      {assist ? (
+        <span className="font-semibold" data-answer={id}>
+          {expected ? formatQuantity(expected) : "…"}
+        </span>
+      ) : (
+        <>
+          <input
+            aria-label={t("lab.analyse.value", { name })}
+            data-answer={`${id}-value`}
+            inputMode="decimal"
+            autoComplete="off"
+            maxLength={40}
+            className={cn(field, "w-24")}
+            aria-invalid={flagged.some((f) => f.rule !== "analysis-unit") || undefined}
+            value={shown.value}
+            onChange={(e) => setDraft({ ...shown, value: e.target.value })}
+            onBlur={() => draft && commit(draft)}
+            onKeyDown={(e) => e.key === "Enter" && draft && commit(draft)}
+          />
+          <input
+            aria-label={t("lab.analyse.unit", { name })}
+            data-answer={`${id}-unit`}
+            autoComplete="off"
+            maxLength={40}
+            className={cn(field, "w-28")}
+            aria-invalid={flagged.some((f) => f.rule === "analysis-unit") || undefined}
+            value={shown.unit}
+            onChange={(e) => setDraft({ ...shown, unit: e.target.value })}
+            onBlur={() => draft && commit(draft)}
+            onKeyDown={(e) => e.key === "Enter" && draft && commit(draft)}
+          />
+          {marks && check && (
+            <span className="flex flex-wrap gap-x-2 font-sans text-xs">
+              {(
+                [
+                  ["value", check.value === "ok"],
+                  ["sigFigs", check.sigFigs === "ok"],
+                  ["unit", check.unit === "ok"],
+                ] as const
+              ).map(([part, good]) => (
+                <span
+                  key={part}
+                  className={cn("flex items-center gap-1", good ? "text-ok" : "text-warn")}
+                >
+                  {good ? (
+                    <CheckIcon className="size-3.5" aria-hidden />
+                  ) : (
+                    <TriangleAlertIcon className="size-3.5" aria-hidden />
+                  )}
+                  <span>{msg(`lab.analyse.mark.${part}`)}</span>
+                </span>
+              ))}
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+/** A calculator line with units: type a calculation, see the answer and how many figures it can carry. */
+function Calculator() {
+  const [text, setText] = useState("");
+  const [shown, setShown] = useState<string>();
+  const result = shown === undefined ? undefined : calculate(shown);
+  return (
+    <form
+      className="flex flex-col gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setShown(text);
+      }}
+    >
+      <label className="flex flex-col gap-1 text-sm text-muted-foreground">
+        {t("lab.analyse.calcLabel")}
+        <span className="flex flex-wrap gap-2">
+          <input
+            className="h-9 min-w-56 flex-1 border border-input bg-background px-2.5 font-mono text-sm text-foreground"
+            value={text}
+            maxLength={120}
+            placeholder="4π² / (4.03 s² m⁻¹)"
+            aria-describedby="calc-hint"
+            onChange={(e) => setText(e.target.value)}
+          />
+          <Button type="submit" variant="outline">
+            {t("lab.analyse.calcGo")}
+          </Button>
+        </span>
+      </label>
+      <span id="calc-hint" className="text-xs text-muted-foreground">
+        {t("lab.analyse.calcHint")}
+      </span>
+      <p role="status" className="min-h-6 font-mono text-[15px]">
+        {result === undefined
+          ? ""
+          : result.ok
+            ? t("lab.analyse.calcResult", {
+                value: formatQuantity(result.quantity, result.sigFigs ?? 3),
+              })
+            : msg(`calc.problem.${result.problem}`, { near: result.near ?? "" })}
+      </p>
+      {result?.ok && result.sigFigs !== undefined && (
+        <span className="text-xs text-muted-foreground">
+          {t("lab.analyse.calcFigures", { n: result.sigFigs })}
+        </span>
+      )}
+    </form>
+  );
+}
+
+/** Step 8: the slope from the student's triangle and g from the slope, each answer checked. */
+export function AnalysePanel({
+  triangle,
+  sheet,
+  symbols,
+  units,
+  forG,
+  answers,
+  expected,
+  findings,
+  assist,
+  marks,
+  onWrite,
+  onBackToPlot,
+  below,
+}: {
+  triangle: SlopeTriangle | undefined;
+  sheet: Sheet;
+  symbols: { x: string; y: string };
+  units: { x: string; y: string };
+  /** Whether the graph is T² against l, whose slope gives g. */
+  forG: boolean;
+  answers: AnswersState;
+  expected: Partial<Record<PendulumAnswer, Quantity>>;
+  findings: readonly Finding[];
+  assist: boolean;
+  marks: boolean;
+  onWrite: (id: PendulumAnswer, answer: WrittenAnswer) => void;
+  onBackToPlot: () => void;
+  below: ReactNode;
+}) {
+  const s = triangle && slopeOf(triangle, units);
+  const dx = readingDecimals(sheet.x);
+  const dy = readingDecimals(sheet.y);
+  const slopeUsed = s && (typedQuantity(answers.slope, s.slope) ?? s.slope);
+  const flaggedFor = (id: PendulumAnswer) => (marks ? findings.filter((f) => f.column === id) : []);
+
+  return (
+    <section aria-label={t("lab.analyse.label")} className="flex w-full min-w-0 flex-col gap-4">
+      <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+        <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+        {!triangle || !s ? (
+          <div className="flex flex-col items-start gap-3">
+            <p className="text-soft">{t("lab.analyse.needTriangle")}</p>
+            <Button variant="outline" onClick={onBackToPlot}>
+              {t("lab.analyse.backToPlot")}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+            <span>
+              {t("lab.analyse.slopeFormula", {
+                yb: triangle.b.y.toFixed(dy),
+                ya: triangle.a.y.toFixed(dy),
+                yu: units.y,
+                xb: triangle.b.x.toFixed(dx),
+                xa: triangle.a.x.toFixed(dx),
+                xu: units.x,
+              })}
+            </span>
+            <AnswerLine
+              id="slope"
+              lead={t("lab.analyse.slopeStep", {
+                rise: s.rise.toFixed(dy),
+                run: s.run.toFixed(dx),
+              })}
+              written={answers.slope}
+              expected={expected.slope}
+              assist={assist}
+              marks={marks}
+              flagged={flaggedFor("slope")}
+              onWrite={(a) => onWrite("slope", a)}
+            />
+            {forG ? (
+              <AnswerLine
+                id="g"
+                lead={t("lab.analyse.gFormula", {
+                  fourPiSquared: (4 * Math.PI ** 2).toFixed(2),
+                  slope: slopeUsed ? formatQuantity(slopeUsed).split(" ")[0]! : "slope",
+                })}
+                written={answers.g}
+                expected={expected.g ?? (slopeUsed ? gFromSlope(slopeUsed) : undefined)}
+                assist={assist}
+                marks={marks}
+                flagged={flaggedFor("g")}
+                onWrite={(a) => onWrite("g", a)}
+              />
+            ) : (
+              <p className="font-sans text-sm text-soft">
+                {t("lab.analyse.otherGraph", { x: symbols.x, y: symbols.y })}
+              </p>
+            )}
+            {assist && (
+              <span className="font-sans text-xs text-muted-foreground">
+                {t("lab.analyse.workedOut")}
+              </span>
+            )}
+          </div>
+        )}
+        <p className="text-sm text-soft">{t("lab.analyse.hidden")}</p>
+      </div>
+      <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+        <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+        <Calculator />
+      </div>
+      {below}
+    </section>
+  );
+}
