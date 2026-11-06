@@ -1,15 +1,22 @@
 """Write the fixtures in fixtures/ from the independent Python models.
 
 pendulum.json  exact pendulum period (SciPy ellipk)        read by packages/physics
+circuits.json  Ohm's law and potentiometer (NumPy MNA)    read by packages/physics
+lens.json      converging lens (ray-transfer matrices)    read by packages/physics
+mixtures.json  method of mixtures (SciPy brentq)          read by packages/physics
 fit.json       straight-line fits (SciPy linregress)       read by packages/analysis
 sigfigs.json   significant figures (Python decimal)        read by packages/analysis
 """
 
+import itertools
 import json
 import math
 from pathlib import Path
 
+from pa_validation.circuits import balance_length, ohms_law_readings
 from pa_validation.fit import fit_line, fit_through_origin
+from pa_validation.lens import image
+from pa_validation.mixtures import final_temperature, solid_specific_heat
 from pa_validation.pendulum import period_exact
 from pa_validation.sigfigs import format_sig_figs, parse_figure
 
@@ -110,6 +117,118 @@ def build_sigfigs() -> dict[str, object]:
     }
 
 
+def build_circuits() -> dict[str, object]:
+    """Ohm's law readings, and potentiometer balance lengths with the galvanometer in circuit."""
+    ohms = []
+    for emf, internal, rheostat, resistor, voltmeter in itertools.product(
+        [1.5, 3.0], [0.5, 1.0], [0.0, 5.0, 20.0], [2.2, 10.0], [math.inf, 1000.0, 20000.0]
+    ):
+        ohms.append(
+            {
+                "emf": emf,
+                "internalResistance": internal,
+                "rheostat": rheostat,
+                "resistor": resistor,
+                # JSON has no infinity: null is an ideal voltmeter.
+                "voltmeterResistance": None if math.isinf(voltmeter) else voltmeter,
+                **ohms_law_readings(emf, internal, rheostat, resistor, voltmeter),
+            }
+        )
+
+    drivers = [
+        {
+            "driverEmf": 2.0,
+            "driverInternalResistance": 0.05,
+            "seriesResistance": 0.0,
+            "wireResistance": 4.0,
+            "wireLength": 1.0,
+        },
+        {
+            "driverEmf": 2.0,
+            "driverInternalResistance": 0.1,
+            "seriesResistance": 2.0,
+            "wireResistance": 4.0,
+            "wireLength": 1.0,
+        },
+        {
+            "driverEmf": 2.2,
+            "driverInternalResistance": 0.05,
+            "seriesResistance": 1.0,
+            "wireResistance": 3.0,
+            "wireLength": 1.0,
+        },
+    ]
+    balances = []
+    for driver, emf, internal, load in itertools.product(
+        drivers, [1.02, 1.08, 1.5, 1.8], [0.5, 2.0], [math.inf, 2.0, 5.0, 10.0]
+    ):
+        balances.append(
+            {
+                "driver": driver,
+                "testEmf": emf,
+                "testInternalResistance": internal,
+                "load": None if math.isinf(load) else load,
+                "galvanometerResistance": 50.0,
+                "balanceLength": balance_length(driver, emf, internal, load, 50.0),
+            }
+        )
+    return {
+        "model": "DC circuits, modified nodal analysis (NumPy) and SciPy brentq",
+        "units": {"emf": "V", "resistance": "ohm", "current": "A", "length": "m"},
+        "ohmsLaw": ohms,
+        "potentiometer": balances,
+    }
+
+
+def build_lens() -> dict[str, object]:
+    cases = []
+    for f in (10.0, 15.0, 20.0):
+        for u in (5.0, 8.0, 12.0, 15.0, 20.0, 25.0, 30.0, 40.0, 60.0, 100.0):
+            if u != f:
+                cases.append({"objectDistance": u, "focalLength": f, **image(u, f)})
+    return {
+        "model": "thin converging lens, paraxial ray-transfer matrices, real-is-positive",
+        "units": {"distance": "cm"},
+        "cases": cases,
+    }
+
+
+SOLIDS = {"copper": 390.0, "aluminium": 900.0, "iron": 450.0, "brass": 380.0}
+
+
+def build_mixtures() -> dict[str, object]:
+    cases = []
+    for (name, c), solid_mass, water_mass, cold, calorimeter_mass in itertools.product(
+        SOLIDS.items(), [0.05, 0.1], [0.1, 0.2], [25.0, 30.0], [0.0, 0.05]
+    ):
+        bodies = [(solid_mass, c, 100.0), (water_mass, 4200.0, cold)]
+        if calorimeter_mass:
+            bodies.append((calorimeter_mass, 390.0, cold))
+        final = final_temperature(bodies)
+        cases.append(
+            {
+                "solid": name,
+                "solidMass": solid_mass,
+                "solidSpecificHeatCapacity": c,
+                "solidTemperature": 100.0,
+                "waterMass": water_mass,
+                "calorimeterMass": calorimeter_mass,
+                "calorimeterSpecificHeatCapacity": 390.0,
+                "initialTemperature": cold,
+                "finalTemperature": final,
+                "recoveredSpecificHeatCapacity": solid_specific_heat(
+                    solid_mass, 100.0, water_mass, calorimeter_mass, 390.0, cold, final
+                ),
+            }
+        )
+    return {
+        "model": "method of mixtures, energy balance solved with SciPy brentq",
+        "units": {"mass": "kg", "specificHeatCapacity": "J kg^-1 K^-1", "temperature": "degC"},
+        "waterSpecificHeatCapacity": 4200.0,
+        "cases": cases,
+    }
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -123,3 +242,6 @@ if __name__ == "__main__":
     write("pendulum.json", build())
     write("fit.json", build_fit())
     write("sigfigs.json", build_sigfigs())
+    write("circuits.json", build_circuits())
+    write("lens.json", build_lens())
+    write("mixtures.json", build_mixtures())
