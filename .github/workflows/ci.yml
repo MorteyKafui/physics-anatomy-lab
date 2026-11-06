@@ -45,7 +45,9 @@ jobs:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
       - run: bun run build
-      - run: bunx playwright install --with-deps chromium
+      # Headless shell only, and no --with-deps: the runner image already has Chromium's system
+      # libraries, and the apt step alone took 8 minutes for fonts the tests do not use.
+      - run: bunx playwright install --only-shell chromium
         working-directory: e2e
       - run: bun run e2e
         working-directory: e2e
