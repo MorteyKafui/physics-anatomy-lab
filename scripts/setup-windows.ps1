@@ -2,8 +2,9 @@
 # Run from the repository root:
 #   powershell -ExecutionPolicy Bypass -File scripts\setup-windows.ps1
 #
-# It installs every dependency, runs every check, creates the lockfiles, optionally creates the
-# local PostgreSQL databases, and commits the lockfiles. Safe to run again.
+# It installs every dependency (bun install also turns on the pre-push guard in .githooks), runs
+# every check, optionally creates the local PostgreSQL databases, and tells you if a lockfile
+# changed. It never commits. Safe to run again.
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -75,14 +76,18 @@ if (Get-Command psql -ErrorAction SilentlyContinue) {
   Write-Host "Add your PostgreSQL 18 bin folder (usually C:\Program Files\PostgreSQL\18\bin) to PATH and run apps\api\scripts\create-dev-databases.ps1."
 }
 
-# 6. Commit the lockfiles
-Step "commit lockfiles" {
-  git add bun.lock apps/api/uv.lock validation/uv.lock
-  git diff --cached --quiet
+# 6. Check the lockfiles. Nothing is committed here: main only changes through a pull request,
+# and the pre-push hook (installed by bun install) refuses pushes to main.
+Step "check lockfiles" {
+  git diff --quiet -- bun.lock apps/api/uv.lock validation/uv.lock
   if ($LASTEXITCODE -ne 0) {
-    git commit -m "chore: update lockfiles after install on Windows"
-  } else {
     $global:LASTEXITCODE = 0
+    Write-Host "   lockfiles changed. Commit them on a branch and open a pull request:" -ForegroundColor Yellow
+    Write-Host "     git switch -c chore/update-lockfiles"
+    Write-Host "     git add bun.lock apps/api/uv.lock validation/uv.lock"
+    Write-Host "     git commit -m `"chore: update lockfiles`""
+    Write-Host "     git push -u origin chore/update-lockfiles"
+  } else {
     Write-Host "   lockfiles unchanged"
   }
 }

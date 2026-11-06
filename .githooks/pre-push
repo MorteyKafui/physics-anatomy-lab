@@ -1,0 +1,26 @@
+#!/bin/sh
+# Refuse pushes to main: every change goes through a short-lived branch and a pull request
+# (AGENTS.md, "Git"). GitHub cannot enforce branch protection on this private repository on
+# its current plan, so this hook is the guard. It runs on every machine where `bun install`
+# has run, which points git at .githooks.
+#
+# Git passes one line per ref being pushed: <local ref> <local sha> <remote ref> <remote sha>.
+
+protected="refs/heads/main"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "$protected" ]; then
+    echo "" >&2
+    echo "pre-push: pushing to main is not allowed." >&2
+    echo "" >&2
+    echo "  Make a branch, push it, and open a pull request:" >&2
+    echo "    git switch -c chore/what-it-does" >&2
+    echo "    git push -u origin chore/what-it-does" >&2
+    echo "" >&2
+    echo "  Branch names: feat/, fix/, exp/<experiment-id>, docs/, chore/ (AGENTS.md)." >&2
+    echo "" >&2
+    exit 1
+  fi
+done
+
+exit 0
