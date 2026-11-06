@@ -65,3 +65,5 @@ export {
   typedQuantity,
 } from "./pendulum-analysis";
 export type { AnalysisContext, PendulumAnswer, TypedAnswer } from "./pendulum-analysis";
+export { PENDULUM_FORMULAS, PENDULUM_SYMBOLS, symbolFacts } from "./pendulum-symbols";
+export type { FormulaCard, PendulumSymbol, SymbolFacts } from "./pendulum-symbols";

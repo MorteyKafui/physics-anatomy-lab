@@ -237,6 +237,49 @@ export const enGB = {
   "calc.problem.undefined":
     "That has no value: check for a division by zero or a square root of a negative.",
 
+  "lab.symbol.open": "What is {symbol}?",
+  "lab.symbol.unit": "SI unit: {unit}",
+  "lab.symbol.typical": "Typical size",
+  "lab.symbol.origin": "Where it comes from",
+  "lab.formula.label": "Formula: {text}",
+  "lab.formula.legend": "What each symbol stands for",
+
+  "lab.assist.perSkill": "Per skill",
+  "lab.assist.title": "Help level for each skill",
+  "lab.assist.hint": "Set a skill on its own, or leave it to follow the help level above.",
+  "lab.assist.same": "Same as overall ({level})",
+  "lab.assist.skill.apparatus": "Setting up",
+  "lab.assist.skill.measurement": "Measuring",
+  "lab.assist.skill.tabulation": "Tables",
+  "lab.assist.skill.graph": "Graphs",
+  "lab.assist.skill.analysis": "Calculations",
+
+  "symbols.l.name": "Length of the pendulum",
+  "symbols.l.meaning":
+    "From the point where the split cork grips the thread to the centre of the bob.",
+  "symbols.l.origin":
+    "The bob swings on an arc of radius l. A longer arc takes longer to cover under the same pull of gravity.",
+  "symbols.l.typical": "{min} m to {max} m on this bench",
+  "symbols.T.name": "Period",
+  "symbols.T.meaning": "The time for one full oscillation, there and back to the same point.",
+  "symbols.T.origin":
+    "The pull back to the middle grows with the distance from it, so each swing takes the same time: T = 2π√(l ⁄ g).",
+  "symbols.T.typical": "{min} s to {max} s on this bench",
+  "symbols.t.name": "Time for the oscillations",
+  "symbols.t.meaning": "What the stopwatch reads for {swings} oscillations. T = t ⁄ {swings}.",
+  "symbols.t.origin": "Timing many swings makes your reaction time a small part of the reading.",
+  "symbols.t.typical": "{min} s to {max} s for {swings} oscillations",
+  "symbols.g.name": "Acceleration of free fall",
+  "symbols.g.meaning":
+    "How quickly a falling object gains speed near the Earth's surface. It is what this experiment finds.",
+  "symbols.g.origin": "From T² = (4π² ⁄ g) l, the slope of T² against l is 4π² ⁄ g.",
+  "symbols.g.typical": "Hidden until you have read your feedback",
+  "symbols.θ.name": "Angle of swing",
+  "symbols.θ.meaning": "The largest angle the thread makes with the vertical.",
+  "symbols.θ.origin":
+    "Below about 10°, sin θ is close to θ in radians, so the period does not depend on the angle.",
+  "symbols.θ.typical": "{angle}° on this bench",
+
   "quantity.length": "Length",
   "quantity.inverse-length": "Inverse length",
   "quantity.area": "Area",
@@ -454,6 +497,9 @@ export const enGB = {
   "analysis.unreadable.title": "{typed} is not a number",
   "analysis.unreadable.detail":
     "Write the value with digits and a decimal point only, such as 4.03.",
+  "table.formulaUnits.title": "{symbol} = {formula} works out in {gives}, not {unit}",
+  "table.formulaUnits.detail":
+    "The units of a formula must balance. Carry them through as you do the numbers, or change the heading's unit.",
   "findings.pendulum.countFromOne.title": 'You said "one" on the first pass',
   "findings.pendulum.countFromOne.detail":
     "That pass starts the timing, so it is zero. Counting from one times {timed} swings, and your g would come out about {percent}% too high.",

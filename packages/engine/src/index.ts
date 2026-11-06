@@ -21,7 +21,7 @@ export {
   STEPS,
 } from "./steps/machine";
 export type { Command, Decision, GuidedState, HelpLevel, Refusal, Step } from "./steps/machine";
-export { coach, coachProjection, ESCALATION } from "./coach/coach";
+export { coach, coachProjection, ESCALATION, helpLevelFor, setSkillLevel } from "./coach/coach";
 export type { Advice, CoachState, Escalation, Moment } from "./coach/coach";
 export { decideTable, EMPTY_TABLE, MAX_CELL, TABLE_LAYOUTS, tableProjection } from "./table/table";
 export type {

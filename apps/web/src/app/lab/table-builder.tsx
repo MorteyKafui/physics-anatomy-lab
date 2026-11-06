@@ -3,10 +3,12 @@
 import {
   addRepeat,
   checkFormula,
+  formulaUnitFindings,
   heading,
   newColumnId,
   parseFormula,
   repeatsOf,
+  toSIText,
   UNITS,
   type ColumnRole,
   type DesignColumn,
@@ -213,6 +215,12 @@ function ColumnEditor({
           })()
         : undefined;
 
+  // The dimension check, as the student writes the formula: a warning, not a block.
+  const unitsWarning =
+    role === "derived"
+      ? formulaUnitFindings({ columns: [...others, draft] }).find((f) => f.column === draft.id)
+      : undefined;
+
   const field = "h-9 border border-input bg-background px-2.5 text-sm text-foreground";
   return (
     <form
@@ -283,6 +291,7 @@ function ColumnEditor({
               ))}
               <option value="">{t("lab.column.noUnit")}</option>
             </select>
+            <span className="min-h-4 font-mono">{toSIText(kind, unit) ?? ""}</span>
           </label>
         </>
       )}
@@ -329,6 +338,11 @@ function ColumnEditor({
       {problem && symbol !== "" && (
         <p role="status" className="basis-full text-sm text-warn">
           {problem}
+        </p>
+      )}
+      {!problem && unitsWarning && (
+        <p role="status" className="basis-full text-sm text-warn">
+          {msg(`${unitsWarning.key}.title`, unitsWarning.params)}
         </p>
       )}
     </form>
@@ -575,6 +589,11 @@ export function TableBuilder({
                             ? msg(`${flag.key}.title`, { ...flag.params, row: "" })
                             : roleNote(table, c)}
                         </span>
+                        {toSIText(c.kind, c.unit) && (
+                          <span className="font-sans text-[11px] text-muted-foreground">
+                            {toSIText(c.kind, c.unit)}
+                          </span>
+                        )}
                         <span className="sr-only">, {t("lab.table.editColumn")}</span>
                       </button>
                     </th>

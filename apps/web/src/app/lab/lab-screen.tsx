@@ -2,6 +2,7 @@
 
 import {
   fillDerived,
+  formulaUnitFindings,
   parseTable,
   runRules,
   TABLE_RULES,
@@ -16,6 +17,8 @@ import {
   answersProjection,
   coach,
   coachIsOn,
+  helpLevelFor,
+  setSkillLevel,
   frontier,
   HELP_LEVELS,
   replay,
@@ -25,6 +28,7 @@ import {
   type HelpLevel,
   type Step,
 } from "@pa/engine";
+import type { Skill } from "@pa/analysis";
 import {
   ANALYSIS_RULES,
   ASSEMBLY_RULES,
@@ -44,6 +48,7 @@ import {
   nextPart,
   PENDULUM_PARTS,
   passTimes,
+  PENDULUM_FORMULAS,
   PENDULUM_PLOT,
   readingsIntoTable,
   readySlots,
@@ -64,6 +69,13 @@ import { hasMessage, t, type MessageKey } from "@pa/i18n";
 import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT } from "@pa/instruments";
 import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@pa/ui/components/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { TooltipProvider } from "@pa/ui/components/tooltip";
 import {
@@ -95,6 +107,7 @@ import {
 } from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
 import { AnalysePanel } from "./analyse";
+import { FormulaBox, Sym } from "./formula";
 import { GraphPanel, graphView, useGraph } from "./graph-sheet";
 import { flagsFor, TableBuilder, useTable } from "./table-builder";
 import { useAttempt } from "./use-attempt";
@@ -460,14 +473,23 @@ export function LabScreen() {
   // at Auto and Check my work each cell is ticked or flagged as they go; On my own shows only
   // what the coach says when asked (master plan, "Assist levels").
   const table = results.table;
-  const tableAssist = coachIsOn(state) && state.helpLevel === "auto";
-  const tableMarks = coachIsOn(state) && state.helpLevel !== "on-my-own";
+  // Help levels per skill (master plan, "Assist levels"): each part of the lab asks the level
+  // for its own skill, which follows the overall level unless it was set on its own.
+  const levelFor = (skill: Skill): HelpLevel =>
+    coachIsOn(state) ? helpLevelFor(state, skill) : "on-my-own";
+  const tableAssist = levelFor("tabulation") === "auto";
+  const tableMarks = levelFor("tabulation") !== "on-my-own";
+  const graphAssist = levelFor("graph") === "auto";
+  const graphMarks = levelFor("graph") !== "on-my-own";
+  const analysisAssist = levelFor("analysis") === "auto";
+  const analysisMarks = levelFor("analysis") !== "on-my-own";
   const shownTable = tableAssist ? fillDerived(table) : table;
   const checkTable = (design = shownTable) =>
     design.layout
       ? runRules(TABLE_RULES, { table: parseTable(toTableView(design)), plot: PENDULUM_PLOT })
       : [];
-  const tableFindings = checkTable();
+  // The table checks, and the dimension check on the student's formula columns.
+  const tableFindings = [...checkTable(), ...(table.layout ? formulaUnitFindings(table) : [])];
   const tableFlags = flagsFor(
     tableMarks
       ? tableFindings.filter((f) => f.severity !== "good")
@@ -560,7 +582,7 @@ export function LabScreen() {
         };
   const columnFor = (id: string) => table.columns.find((c) => c.id === id);
   const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
-  const graphShown = graphView(plot.graph, graphData, graphColumns, tableAssist);
+  const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist);
   const graphFindings =
     graphData.length >= 2
       ? runRules(GRAPH_RULES, {
@@ -589,7 +611,7 @@ export function LabScreen() {
   >;
   for (const f of graphFindings) partFindings[graphPart(f.rule)].push(f);
   const graphFlagged = new Set(
-    (tableMarks ? graphFindings : advice.map((a) => a.finding).filter((f) => f.skill === "graph"))
+    (graphMarks ? graphFindings : advice.map((a) => a.finding).filter((f) => f.skill === "graph"))
       .filter((f) => f.rule === "graph-misplotted" || f.rule === "graph-off-sheet")
       .flatMap((f) => f.rows ?? []),
   );
@@ -602,9 +624,9 @@ export function LabScreen() {
   };
   const forG = plotsTSquaredAgainstL(graphColumns);
   const expected = expectedAnswers(graphShown.triangle, graphColumns, graphUnits, answers);
-  const analysisFindings = tableAssist ? [] : runRules(ANALYSIS_RULES, { answers, expected });
+  const analysisFindings = analysisAssist ? [] : runRules(ANALYSIS_RULES, { answers, expected });
   const answered = (id: "slope" | "g") =>
-    tableAssist
+    analysisAssist
       ? expected[id] !== undefined
       : (answers[id]?.value ?? "") !== "" &&
         !analysisFindings.some((f) => f.column === id && f.severity === "error");
@@ -631,7 +653,7 @@ export function LabScreen() {
     }
     // At Auto the graph was drawn for the student; finishing makes it theirs, so the later
     // steps (and a change of help level) keep it.
-    if (tableAssist) await keepDrawnGraph();
+    if (graphAssist) await keepDrawnGraph();
     await finishStep();
   };
 
@@ -686,8 +708,7 @@ export function LabScreen() {
   const builtYet = state.completed.includes("build");
   const inHand = held ?? (dragging.drag?.moved ? dragging.drag.part : undefined);
   const lit: PendulumSlot[] = inHand ? slotsFor(assembly, inHand) : demoSlot ? [demoSlot] : [];
-  const nextToTouch =
-    coachIsOn(state) && state.helpLevel === "auto" ? nextPart(assembly) : undefined;
+  const nextToTouch = levelFor("apparatus") === "auto" ? nextPart(assembly) : undefined;
 
   const aboutTable = (a: Advice) =>
     a.finding.rule.startsWith("table-") ||
@@ -906,6 +927,49 @@ export function LabScreen() {
                 ))}
               </select>
             </label>
+            {coachIsOn(state) && (
+              <Popover>
+                <PopoverTrigger className="hidden h-9 items-center border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:flex">
+                  {t("lab.assist.perSkill")}
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-80">
+                  <PopoverTitle>{t("lab.assist.title")}</PopoverTitle>
+                  <PopoverDescription>{t("lab.assist.hint")}</PopoverDescription>
+                  <div className="flex flex-col gap-2">
+                    {(["apparatus", "measurement", "tabulation", "graph", "analysis"] as const).map(
+                      (skill) => (
+                        <label
+                          key={skill}
+                          className="flex items-center justify-between gap-3 text-sm"
+                        >
+                          {t(`lab.assist.skill.${skill}` as MessageKey)}
+                          <select
+                            className="h-9 border border-input bg-background px-2 text-sm text-foreground"
+                            value={state.skillLevels[skill] ?? ""}
+                            onChange={(e) => {
+                              const level = (e.target.value || undefined) as HelpLevel | undefined;
+                              const ev = setSkillLevel(handle.state, skill, level);
+                              if (ev) void handle.record([ev]);
+                            }}
+                          >
+                            <option value="">
+                              {t("lab.assist.same", {
+                                level: t(`lab.helpLevel.${state.helpLevel}` as MessageKey),
+                              })}
+                            </option>
+                            {HELP_LEVELS.map((level) => (
+                              <option key={level} value={level}>
+                                {t(`lab.helpLevel.${level}` as MessageKey)}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      ),
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </header>
           <div className="h-[3px] bg-border md:hidden" aria-hidden>
             <div className="h-[3px] bg-primary" style={{ width: `${percent}%` }} />
@@ -926,8 +990,8 @@ export function LabScreen() {
                   answers={answers}
                   expected={expected}
                   findings={analysisFindings}
-                  assist={tableAssist}
-                  marks={tableMarks && !tableAssist}
+                  assist={analysisAssist}
+                  marks={analysisMarks && !analysisAssist}
                   onWrite={(id, answer) => {
                     const e = writeAnswer(answers, id, answer);
                     if (e) void handle.record([e]);
@@ -959,7 +1023,7 @@ export function LabScreen() {
                   numericColumns={numericColumns}
                   flaggedRows={graphFlagged}
                   partFindings={partFindings}
-                  showChecks={tableMarks && !tableAssist}
+                  showChecks={graphMarks && !graphAssist}
                   onRun={plot.run}
                   latest={plot.now}
                   below={
@@ -1125,10 +1189,8 @@ export function LabScreen() {
                     building && "md:hidden",
                   )}
                 >
-                  {t("experiments.simple-pendulum.conditions", {
-                    length: length.toFixed(3),
-                    angle: E.amplitudeDeg,
-                  })}
+                  <Sym id="l" g={g} /> = {length.toFixed(3)} m · <Sym id="θ" g={g} /> ≈{" "}
+                  {E.amplitudeDeg}°
                 </div>
               </section>
             )}
@@ -1187,17 +1249,19 @@ export function LabScreen() {
                         ))}
                       </div>
                       {adviceCards}
-                      {state.helpLevel === "on-my-own" && assembled(assembly) && (
-                        <Button
-                          variant="link"
-                          className="self-start px-0"
-                          onClick={() =>
-                            void consult(runRules(ASSEMBLY_RULES, { assembly }), "asked")
-                          }
-                        >
-                          {t("lab.coach.ask")}
-                        </Button>
-                      )}
+                      {levelFor("apparatus") === "on-my-own" &&
+                        coachIsOn(state) &&
+                        assembled(assembly) && (
+                          <Button
+                            variant="link"
+                            className="self-start px-0"
+                            onClick={() =>
+                              void consult(runRules(ASSEMBLY_RULES, { assembly }), "asked")
+                            }
+                          >
+                            {t("lab.coach.ask")}
+                          </Button>
+                        )}
                       <p className="text-xs text-muted-foreground">{t("lab.build.keys")}</p>
                       {building && (
                         <Button
@@ -1243,7 +1307,7 @@ export function LabScreen() {
                           </CheckItem>
                         ))}
                       </div>
-                      {state.helpLevel !== "auto" && coachIsOn(state) && (
+                      {levelFor("analysis") !== "auto" && coachIsOn(state) && (
                         <Button
                           variant="link"
                           className="self-start px-0"
@@ -1314,7 +1378,7 @@ export function LabScreen() {
                           </CheckItem>
                         ))}
                       </div>
-                      {state.helpLevel !== "auto" && coachIsOn(state) && (
+                      {levelFor("graph") !== "auto" && coachIsOn(state) && (
                         <Button
                           variant="link"
                           className="self-start px-0"
@@ -1389,7 +1453,7 @@ export function LabScreen() {
                           </CheckItem>
                         ))}
                       </div>
-                      {state.helpLevel !== "auto" && coachIsOn(state) && table.layout && (
+                      {levelFor("tabulation") !== "auto" && coachIsOn(state) && table.layout && (
                         <Button
                           variant="link"
                           className="self-start px-0"
@@ -1448,15 +1512,17 @@ export function LabScreen() {
                         {t("experiments.simple-pendulum.measure.lengths")}
                       </p>
                       {adviceCards}
-                      {state.helpLevel === "on-my-own" && timing?.stoppedAt !== undefined && (
-                        <Button
-                          variant="link"
-                          className="self-start px-0"
-                          onClick={() => void consult(findingsFor(timing), "asked")}
-                        >
-                          {t("lab.coach.ask")}
-                        </Button>
-                      )}
+                      {levelFor("measurement") === "on-my-own" &&
+                        coachIsOn(state) &&
+                        timing?.stoppedAt !== undefined && (
+                          <Button
+                            variant="link"
+                            className="self-start px-0"
+                            onClick={() => void consult(findingsFor(timing), "asked")}
+                          >
+                            {t("lab.coach.ask")}
+                          </Button>
+                        )}
                       {state.readings.length > 0 && (
                         <p className="font-mono text-sm text-muted-foreground">
                           {t("lab.readout.readings", { list: byLength(readings) })}
@@ -1488,20 +1554,17 @@ export function LabScreen() {
                     {t("experiments.simple-pendulum.explanation.title")}
                   </h2>
                   <p className="text-soft">{t("experiments.simple-pendulum.explanation.body")}</p>
-                  <div className="flex flex-col gap-2.5 border border-border bg-background p-4">
-                    <span className="text-center font-mono text-[22px]">
-                      {t("experiments.simple-pendulum.explanation.formula")}
-                    </span>
-                    <dl className="grid grid-cols-[32px_minmax(0,1fr)] gap-x-2.5 gap-y-1 text-sm text-soft">
-                      {(["T", "l", "g"] as const).map((s) => (
-                        <div key={s} className="contents">
-                          <dt className="font-mono text-foreground">{s}</dt>
-                          <dd>{t(`experiments.simple-pendulum.explanation.${s}`)}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
+                  <FormulaBox
+                    card={PENDULUM_FORMULAS.find((f) => f.id === "period")!}
+                    g={g}
+                    legend={{
+                      T: t("experiments.simple-pendulum.explanation.T"),
+                      l: t("experiments.simple-pendulum.explanation.l"),
+                      g: t("experiments.simple-pendulum.explanation.g"),
+                    }}
+                  />
                   <p className="text-soft">{t("experiments.simple-pendulum.explanation.graph")}</p>
+                  <FormulaBox card={PENDULUM_FORMULAS.find((f) => f.id === "graph")!} g={g} />
                 </TabsContent>
                 <TabsContent value="tips" className="flex flex-col gap-3 p-5">
                   <h2 className="font-display text-2xl leading-tight font-bold">

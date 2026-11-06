@@ -6,6 +6,7 @@ import {
   coach,
   coachProjection,
   createMemoryStore,
+  helpLevelFor,
   replay,
   resume,
   type Attempt,
@@ -14,6 +15,7 @@ import {
   type LabEvent,
   type Moment,
   type NewEvent,
+  setSkillLevel,
 } from "../src";
 
 const attempt = (mode: Attempt["mode"]): Attempt => ({
@@ -218,5 +220,44 @@ describe("from a student's table to the coach", () => {
     const findings = runRules(TABLE_RULES, { table: parseTable(table) });
     const out = coach({ ...start("guided"), seen: { tabulation: 2 } }, findings, "live");
     expect(out.advice.map((a) => a.finding.rule)).toEqual(["table-too-few-rows"]);
+  });
+});
+
+describe("help levels per skill", () => {
+  const withLevel = (state: CoachState, skill: "graph" | "tabulation", level?: HelpLevel) => {
+    const e = setSkillLevel(state, skill, level);
+    return e ? asEvents([e]).reduce(coachProjection.apply, state) : state;
+  };
+
+  test("a skill set to On my own keeps quiet while the others follow the overall level", () => {
+    // Watch once, so the next live finding is shown.
+    let s = step(start("guided"), [meanSlip, scaleTooSmall], "live").state;
+    s = withLevel(s, "graph", "on-my-own");
+    expect(helpLevelFor(s, "graph")).toBe("on-my-own");
+    expect(helpLevelFor(s, "tabulation")).toBe("auto");
+    const shown = coach(s, [meanSlip, scaleTooSmall], "live").advice.map((a) => a.finding.skill);
+    expect(shown).toEqual(["tabulation"]);
+    expect(coach(s, [scaleTooSmall], "step-exit").advice).toEqual([]);
+    // Asked, the coach still answers for that skill.
+    expect(coach(s, [scaleTooSmall], "asked").advice.map((a) => a.finding.skill)).toEqual([
+      "graph",
+    ]);
+  });
+
+  test("clearing a skill's level returns it to the overall one", () => {
+    const s = withLevel(
+      withLevel(start("guided", "check-my-work"), "tabulation", "auto"),
+      "tabulation",
+    );
+    expect(helpLevelFor(s, "tabulation")).toBe("check-my-work");
+  });
+
+  test("exam mode cannot be given a skill level, and a smuggled one is ignored", () => {
+    const exam = start("exam");
+    expect(setSkillLevel(exam, "graph", "auto")).toBeUndefined();
+    const smuggled = asEvents([
+      { kind: "coach.set-skill-level", data: { skill: "graph", level: "auto" } },
+    ]).reduce(coachProjection.apply, exam);
+    expect(smuggled.skillLevels).toEqual({});
   });
 });
