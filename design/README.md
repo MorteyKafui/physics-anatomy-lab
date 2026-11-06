@@ -24,7 +24,8 @@ the reference for type.
 
 ## How a screen is accepted
 
-1. Build it with components and tokens from `packages/ui` (no one-off colours or radii).
+1. Build it with components and tokens from `packages/ui` (no one-off colours or radii). The
+   catalogue at `/design-system` in the admin app shows every component in all four themes.
 2. Take a screenshot at the same size as the mockup and attach both to the pull request.
 3. Any difference from the mockup is either fixed or listed in the pull request and approved
    by Mortey before merge.

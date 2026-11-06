@@ -4,7 +4,7 @@ export default function AdminHome() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col justify-center gap-4 px-6">
       <h1 className="font-display text-4xl font-bold">Admin</h1>
-      <p className="text-[var(--pa-text-muted)]">Signed-in team members only.</p>
+      <p className="text-muted-foreground">Signed-in team members only.</p>
     </main>
   );
 }

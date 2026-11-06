@@ -1,0 +1,100 @@
+/*
+ * Theme roles, generated from themes.ts (bun run themes). Do not edit by hand:
+ * change themes.ts, run the script, and the tests check contrast and that the two match.
+ *
+ * Set a theme with data-theme on any element; the lab theme is the default.
+ */
+:root {
+  --pa-bg: #0d0d0d;
+  --pa-surface: #161616;
+  --pa-raised: #1e1d1d;
+  --pa-border: #2a2928;
+  --pa-control: #66645e;
+  --pa-fg: #f2f0ea;
+  --pa-fg-soft: #c9c6bf;
+  --pa-fg-muted: #a3a19b;
+  --pa-accent-fill: #f0482a;
+  --pa-on-accent: #0d0d0d;
+  --pa-accent-text: #ff8a6e;
+  --pa-ring: #ff8a6e;
+  --pa-ok-fg: #8fd18a;
+  --pa-warn-fg: #f5c46b;
+  --pa-danger-fg: #f27a6e;
+  color-scheme: dark;
+}
+
+[data-theme="lab"] {
+  --pa-bg: #0d0d0d;
+  --pa-surface: #161616;
+  --pa-raised: #1e1d1d;
+  --pa-border: #2a2928;
+  --pa-control: #66645e;
+  --pa-fg: #f2f0ea;
+  --pa-fg-soft: #c9c6bf;
+  --pa-fg-muted: #a3a19b;
+  --pa-accent-fill: #f0482a;
+  --pa-on-accent: #0d0d0d;
+  --pa-accent-text: #ff8a6e;
+  --pa-ring: #ff8a6e;
+  --pa-ok-fg: #8fd18a;
+  --pa-warn-fg: #f5c46b;
+  --pa-danger-fg: #f27a6e;
+  color-scheme: dark;
+}
+
+[data-theme="bench"] {
+  --pa-bg: #f4efe6;
+  --pa-surface: #fbf8f2;
+  --pa-raised: #ffffff;
+  --pa-border: #e6dfd2;
+  --pa-control: #8c8579;
+  --pa-fg: #1f1d1a;
+  --pa-fg-soft: #3d3b37;
+  --pa-fg-muted: #5f5a51;
+  --pa-accent-fill: #e2401f;
+  --pa-on-accent: #0d0d0d;
+  --pa-accent-text: #a8300f;
+  --pa-ring: #a8300f;
+  --pa-ok-fg: #2f6b2a;
+  --pa-warn-fg: #7a5200;
+  --pa-danger-fg: #a8300f;
+  color-scheme: light;
+}
+
+[data-theme="site"] {
+  --pa-bg: #fbfbf6;
+  --pa-surface: #ffffff;
+  --pa-raised: #efede6;
+  --pa-border: #e2dfd6;
+  --pa-control: #8f8c86;
+  --pa-fg: #141414;
+  --pa-fg-soft: #3d3b37;
+  --pa-fg-muted: #5f5d57;
+  --pa-accent-fill: #f0482a;
+  --pa-on-accent: #141414;
+  --pa-accent-text: #c2361b;
+  --pa-ring: #c2361b;
+  --pa-ok-fg: #2f6b2a;
+  --pa-warn-fg: #7a5200;
+  --pa-danger-fg: #c2361b;
+  color-scheme: light;
+}
+
+[data-theme="projector"] {
+  --pa-bg: #ffffff;
+  --pa-surface: #ffffff;
+  --pa-raised: #f1f0eb;
+  --pa-border: #8f8c86;
+  --pa-control: #3d3b37;
+  --pa-fg: #0a0a0a;
+  --pa-fg-soft: #2a2928;
+  --pa-fg-muted: #3d3b37;
+  --pa-accent-fill: #9e2a12;
+  --pa-on-accent: #ffffff;
+  --pa-accent-text: #8f2410;
+  --pa-ring: #0a0a0a;
+  --pa-ok-fg: #1f4d1b;
+  --pa-warn-fg: #5c3d00;
+  --pa-danger-fg: #8f2410;
+  color-scheme: light;
+}

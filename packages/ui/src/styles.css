@@ -1,0 +1,118 @@
+/*
+ * The design system's stylesheet. An app imports it once, after Tailwind:
+ *
+ *   @import "tailwindcss";
+ *   @import "@pa/ui/styles.css";
+ *
+ * Components use shadcn's colour names (bg-primary, text-muted-foreground…); this file points
+ * each one at a theme role, so changing data-theme re-colours everything. Note the naming:
+ * shadcn's "accent" is a hover background; our signature red-orange is shadcn's "primary".
+ */
+@import "./tokens.css";
+@import "./themes.css";
+
+/* Let Tailwind see the classes used inside this package's components. */
+@source "./components";
+@source "./logo.tsx";
+
+@custom-variant dark (&:where([data-theme="lab"], [data-theme="lab"] *));
+
+:root,
+[data-theme] {
+  --background: var(--pa-bg);
+  --foreground: var(--pa-fg);
+  --card: var(--pa-surface);
+  --card-foreground: var(--pa-fg);
+  --popover: var(--pa-raised);
+  --popover-foreground: var(--pa-fg);
+  --primary: var(--pa-accent-fill);
+  --primary-foreground: var(--pa-on-accent);
+  --secondary: var(--pa-raised);
+  --secondary-foreground: var(--pa-fg);
+  --muted: var(--pa-raised);
+  --muted-foreground: var(--pa-fg-muted);
+  --accent: var(--pa-raised);
+  --accent-foreground: var(--pa-fg);
+  --destructive: var(--pa-danger-fg);
+  --border: var(--pa-border);
+  --input: var(--pa-control);
+  --ring: var(--pa-ring);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Our own roles, for text that is not a shadcn component. */
+  --color-surface: var(--pa-surface);
+  --color-raised: var(--pa-raised);
+  --color-soft: var(--pa-fg-soft);
+  --color-accent-text: var(--pa-accent-text);
+  --color-ok: var(--pa-ok-fg);
+  --color-warn: var(--pa-warn-fg);
+  --color-danger: var(--pa-danger-fg);
+
+  /* One hue per physics topic: for data, tags and illustrations, never for body text. */
+  --color-topic-mechanics: var(--pa-topic-mechanics);
+  --color-topic-heat: var(--pa-topic-heat);
+  --color-topic-light: var(--pa-topic-light);
+  --color-topic-waves: var(--pa-topic-waves);
+  --color-topic-electricity: var(--pa-topic-electricity);
+  --color-topic-measurement: var(--pa-topic-measurement);
+  --color-topic-modern: var(--pa-topic-modern);
+
+  /* Type: apps load the fonts with next/font and set these three variables. */
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-bricolage), var(--font-geist), sans-serif;
+
+  /* Lyra: no rounded-sm/md/lg. rounded-none and rounded-full (for truly round things) remain. */
+  --radius-*: initial;
+  --radius: 0;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+  /* Every number, unit and code lines up in columns. */
+  .font-mono,
+  code,
+  kbd,
+  samp {
+    font-variant-numeric: tabular-nums;
+  }
+  :focus-visible {
+    outline-color: var(--ring);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
