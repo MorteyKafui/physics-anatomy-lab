@@ -9,7 +9,7 @@ Organised by what you need (the technical-writing standard from the master plan)
   [design rules and mockups](../design/README.md), [services](ops/services.md).
 - **Explanation:** [architecture](explanation/architecture.md).
 - **Content:** [corrections to the source book](content/corrections.md).
-- **Planning:** the [decision log](planning/00-decisions.md). Discovery notes, skills selection and the cost summary are in the Claude project "Physics Anatomy Simulations Laboratory".
+- **Planning:** the [decision log](planning/00-decisions.md) and the [harvest review](planning/harvest-review.md) of Physics Bench and Wavelab. Discovery notes, skills selection and the cost summary are in the Claude project "Physics Anatomy Simulations Laboratory".
 
 The master plan and legal pack are Claude Docs:
 
