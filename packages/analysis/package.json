@@ -8,6 +8,10 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "fast-check": "^4"
   }
 }

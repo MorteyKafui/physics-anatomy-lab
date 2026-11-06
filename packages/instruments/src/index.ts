@@ -1,3 +1,11 @@
-// @pa/instruments: The measurement layer: least count, zero error, human reaction time and seeded noise.
-// Filled in during Phase 1. See the master plan, "Repository layout".
-export {};
+// @pa/instruments: the measurement layer. Seeded noise, least count, zero error, parallax and
+// human reaction time. Harvested from Physics Bench (docs/planning/harvest-review.md).
+export { createRng, gaussian, newSeed, substream, uniform, withTolerance } from "./random";
+export type { Rng } from "./random";
+export { actualConditions, DEFAULT_ENVIRONMENT } from "./conditions";
+export type { Conditions, Environment } from "./conditions";
+export { classifySlip, parallaxShift, quantise, takeReading } from "./reading";
+export type { InstrumentSpec, Reading, TranscriptionSlip } from "./reading";
+export { ANTICIPATED_EVENT, handTimedInterval, pressDelay } from "./timing";
+export type { ReactionTime } from "./timing";
+export { METRE_RULE, STOPWATCH, THERMOMETER } from "./catalogue";

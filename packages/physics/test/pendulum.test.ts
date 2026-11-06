@@ -1,13 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import { fitLine } from "@pa/analysis";
 import fixtures from "../../../validation/fixtures/pendulum.json";
-import {
-  fitLine,
-  gFromPeriod,
-  gFromSlope,
-  periodExact,
-  periodSmallAngle,
-  recordedPeriod,
-} from "../src";
+import { gFromPeriod, gFromSlope, periodExact, periodSmallAngle, recordedPeriod } from "../src";
 
 const deg = (d: number) => (d * Math.PI) / 180;
 const rel = (a: number, b: number) => Math.abs(a - b) / Math.abs(b);
@@ -67,7 +61,7 @@ describe("the worked example in the approved mockups", () => {
   });
 
   test("a least-squares fit of T² against l passes close to the origin", () => {
-    const fit = fitLine(rows.map(([l, t]) => [l, (t / 20) ** 2] as const));
+    const fit = fitLine(rows.map(([l, t]) => ({ x: l, y: (t / 20) ** 2 })));
     expect(fit.r2).toBeGreaterThan(0.999);
     expect(Math.abs(fit.intercept)).toBeLessThan(0.05);
     expect(gFromSlope(fit.slope)).toBeGreaterThan(9.7);

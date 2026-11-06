@@ -6,3 +6,5 @@ uv.lock
 coverage/
 # The approved mockups are exported from the design canvas: keep them byte for byte.
 design/mockups/
+# Written by validation/scripts/make_fixtures.py; regenerate rather than reformat.
+validation/fixtures/
