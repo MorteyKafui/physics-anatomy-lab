@@ -57,3 +57,22 @@ GitHub, SHA-256 in `.github/workflows/ci.yml`):
 cd packages/engine/spec
 java -cp path\to\tla2tools.jar tlc2.TLC -config GuidedSteps.cfg -workers auto GuidedSteps.tla
 ```
+
+## The coach
+
+`coach/coach.ts` decides which findings (from `@pa/analysis`) to show, when, and how strongly.
+It escalates per skill: it watches silently, then highlights the part, then gives a written hint,
+then a demonstration. It shows one problem per skill at a time, the most serious first.
+
+| Help level    | Live, as the student works | When a step is finished | When asked      |
+| ------------- | -------------------------- | ----------------------- | --------------- |
+| Auto          | Escalating                 | At least a written hint | The top problem |
+| Check my work | Nothing                    | At least a written hint | The top problem |
+| On my own     | Nothing                    | Nothing                 | The top problem |
+| Exam mode     | Nothing                    | Nothing                 | Nothing         |
+
+Everything the coach does is an event (`coach.note` for a silent watch, `coach.hint` for anything
+shown), so `coachProjection` rebuilds its memory on resume. A hint counts only if the step machine
+accepted it, so exam mode stays silent even with tampered events. Findings never block a step:
+procedure mistakes are let through and carried into the results (master plan, "Allowed
+mistakes").

@@ -1,5 +1,5 @@
 // @pa/engine: the event log, the guided ten-step state machine, the rule engine, the coach, audio
-// cues and scoring. So far: the event log (attempts, stores, exact resume) and the ten-step machine.
+// cues and scoring. So far: the event log, the ten-step machine and the coach.
 export { ATTEMPT_FORMAT_VERSION, assertJson, compareEvents } from "./events/types";
 export type { Attempt, AttemptMode, Json, LabEvent, NewEvent } from "./events/types";
 export { newDeviceId } from "./events/store";
@@ -21,3 +21,5 @@ export {
   STEPS,
 } from "./steps/machine";
 export type { Command, Decision, GuidedState, HelpLevel, Refusal, Step } from "./steps/machine";
+export { coach, coachProjection, ESCALATION } from "./coach/coach";
+export type { Advice, CoachState, Escalation, Moment } from "./coach/coach";

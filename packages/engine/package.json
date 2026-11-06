@@ -12,6 +12,7 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@pa/analysis": "workspace:*",
     "dexie": "^4"
   },
   "devDependencies": {

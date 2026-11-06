@@ -88,6 +88,7 @@
       "name": "@pa/engine",
       "version": "0.0.0",
       "dependencies": {
+        "@pa/analysis": "workspace:*",
         "dexie": "^4",
       },
       "devDependencies": {

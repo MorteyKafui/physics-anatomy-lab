@@ -35,6 +35,9 @@ request that introduces it.
   by replaying its events in order. The same events always give the same state.
 - **Coach.** The guidance panel that explains each step and responds to mistakes, in text and,
   if voice is on, aloud.
+- **Finding.** What a check says about the student's work: the rule, how serious it is (error,
+  warning, tip or good), the skill it is about and the rows it points at. The coach decides which
+  findings to show.
 - **Help level (assist level).** How much the coach steps in: Auto, Check my work, On my own.
   Exam mode turns the coach off.
 - **Mistake catalogue.** The list of known mistakes for an experiment, each with its effect on the
