@@ -24,8 +24,19 @@ def test_thirty_degrees_matches_the_textbook_ratio() -> None:
 
 
 def test_committed_fixtures_are_current() -> None:
+    # The inputs must match exactly. The periods are compared at a relative tolerance of 1e-12,
+    # because SciPy builds on different platforms can differ in the last binary digit.
     committed = json.loads(FIXTURES.read_text(encoding="utf-8"))
-    assert committed == json.loads(json.dumps(build()))
+    current = json.loads(json.dumps(build()))
+    assert _without(committed, "cases") == _without(current, "cases")
+    assert len(committed["cases"]) == len(current["cases"])
+    for old, new in zip(committed["cases"], current["cases"], strict=True):
+        assert _without(old, "period") == _without(new, "period")
+        assert old["period"] == pytest.approx(new["period"], rel=1e-12)
+
+
+def _without(record: dict[str, object], key: str) -> dict[str, object]:
+    return {k: v for k, v in record.items() if k != key}
 
 
 @given(

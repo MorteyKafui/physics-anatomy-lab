@@ -80,10 +80,10 @@ Step "commit lockfiles" {
   git add bun.lock apps/api/uv.lock validation/uv.lock
   git diff --cached --quiet
   if ($LASTEXITCODE -ne 0) {
-    git commit -m "chore: add lockfiles from the first install on Windows"
+    git commit -m "chore: update lockfiles after install on Windows"
   } else {
     $global:LASTEXITCODE = 0
-    Write-Host "   lockfiles already committed"
+    Write-Host "   lockfiles unchanged"
   }
 }
 

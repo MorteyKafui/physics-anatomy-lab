@@ -24,6 +24,7 @@
     "fast-check": "^4",
     "prettier": "^3",
     "turbo": "^2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.72.1"
   }
 }
