@@ -1,0 +1,176 @@
+{
+  "model": "thin converging lens, paraxial ray-transfer matrices, real-is-positive",
+  "units": {
+    "distance": "cm"
+  },
+  "cases": [
+    {
+      "objectDistance": 5.0,
+      "focalLength": 10.0,
+      "imageDistance": -10.0,
+      "magnification": -2.0
+    },
+    {
+      "objectDistance": 8.0,
+      "focalLength": 10.0,
+      "imageDistance": -40.00000000000014,
+      "magnification": -5.000000000000014
+    },
+    {
+      "objectDistance": 12.0,
+      "focalLength": 10.0,
+      "imageDistance": 60.00000000000021,
+      "magnification": 5.000000000000021
+    },
+    {
+      "objectDistance": 15.0,
+      "focalLength": 10.0,
+      "imageDistance": 30.0,
+      "magnification": 2.0
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 10.0,
+      "imageDistance": 20.0,
+      "magnification": 1.0
+    },
+    {
+      "objectDistance": 25.0,
+      "focalLength": 10.0,
+      "imageDistance": 16.666666666666668,
+      "magnification": 0.6666666666666669
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 10.0,
+      "imageDistance": 15.0,
+      "magnification": 0.5000000000000001
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 10.0,
+      "imageDistance": 13.333333333333334,
+      "magnification": 0.3333333333333335
+    },
+    {
+      "objectDistance": 60.0,
+      "focalLength": 10.0,
+      "imageDistance": 12.0,
+      "magnification": 0.20000000000000007
+    },
+    {
+      "objectDistance": 100.0,
+      "focalLength": 10.0,
+      "imageDistance": 11.11111111111111,
+      "magnification": 0.11111111111111113
+    },
+    {
+      "objectDistance": 5.0,
+      "focalLength": 15.0,
+      "imageDistance": -7.4999999999999964,
+      "magnification": -1.4999999999999998
+    },
+    {
+      "objectDistance": 8.0,
+      "focalLength": 15.0,
+      "imageDistance": -17.14285714285714,
+      "magnification": -2.1428571428571423
+    },
+    {
+      "objectDistance": 12.0,
+      "focalLength": 15.0,
+      "imageDistance": -60.00000000000021,
+      "magnification": -5.000000000000014
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 15.0,
+      "imageDistance": 60.00000000000021,
+      "magnification": 3.000000000000014
+    },
+    {
+      "objectDistance": 25.0,
+      "focalLength": 15.0,
+      "imageDistance": 37.499999999999936,
+      "magnification": 1.4999999999999958
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 15.0,
+      "imageDistance": 30.0,
+      "magnification": 1.0
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 15.0,
+      "imageDistance": 24.000000000000036,
+      "magnification": 0.6000000000000023
+    },
+    {
+      "objectDistance": 60.0,
+      "focalLength": 15.0,
+      "imageDistance": 20.0,
+      "magnification": 0.3333333333333333
+    },
+    {
+      "objectDistance": 100.0,
+      "focalLength": 15.0,
+      "imageDistance": 17.647058823529395,
+      "magnification": 0.176470588235293
+    },
+    {
+      "objectDistance": 5.0,
+      "focalLength": 20.0,
+      "imageDistance": -6.666666666666667,
+      "magnification": -1.3333333333333333
+    },
+    {
+      "objectDistance": 8.0,
+      "focalLength": 20.0,
+      "imageDistance": -13.333333333333341,
+      "magnification": -1.6666666666666672
+    },
+    {
+      "objectDistance": 12.0,
+      "focalLength": 20.0,
+      "imageDistance": -30.000000000000107,
+      "magnification": -2.5000000000000053
+    },
+    {
+      "objectDistance": 15.0,
+      "focalLength": 20.0,
+      "imageDistance": -60.0,
+      "magnification": -4.0
+    },
+    {
+      "objectDistance": 25.0,
+      "focalLength": 20.0,
+      "imageDistance": 100.0,
+      "magnification": 4.0
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 20.0,
+      "imageDistance": 60.0,
+      "magnification": 2.0
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 20.0,
+      "imageDistance": 40.0,
+      "magnification": 1.0
+    },
+    {
+      "objectDistance": 60.0,
+      "focalLength": 20.0,
+      "imageDistance": 30.0,
+      "magnification": 0.5000000000000001
+    },
+    {
+      "objectDistance": 100.0,
+      "focalLength": 20.0,
+      "imageDistance": 25.0,
+      "magnification": 0.25000000000000006
+    }
+  ]
+}
