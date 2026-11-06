@@ -761,3 +761,80 @@ test("analysing, with answers marked, has no serious accessibility issues", asyn
   await page.clock.resume();
   expect(await seriousViolations(page)).toEqual([]);
 });
+
+test("one skill can be given its own help level while the rest follow the overall one", async ({
+  page,
+}) => {
+  test.skip(test.info().project.name === "phone", "The help levels are set on desktop");
+  await toAnalyse(page);
+  await expect(working(page).getByText("Worked out for you")).toBeVisible();
+  await page.getByRole("button", { name: "Per skill" }).click();
+  await page
+    .getByRole("combobox", { name: "Calculations" })
+    .selectOption({ label: "Check my work" });
+  await page.keyboard.press("Escape");
+  // Calculations now ask the student; the overall help level is still Auto.
+  await expect(working(page).getByRole("textbox", { name: "Value of the slope" })).toBeVisible();
+  await expect(page.getByRole("combobox", { name: "Help level" })).toHaveValue("auto");
+  await page.reload();
+  await expect(working(page).getByRole("textbox", { name: "Value of the slope" })).toBeVisible();
+});
+
+test("formulas are typeset, and each symbol opens its card", async ({ page }) => {
+  await page.goto(LAB);
+  await page.getByRole("tab", { name: "Explanation" }).click();
+  await expect(page.getByRole("math", { name: "Formula: T = 2π sqrt(l / g)" })).toBeVisible();
+  await page.getByRole("button", { name: "What is T?" }).first().click();
+  const card = page.getByRole("dialog");
+  await expect(card).toContainText("Period");
+  await expect(card).toContainText("SI unit: s");
+  // Its typical size comes from the bench's own periods, to two figures.
+  await expect(card).toContainText(/\d\.\d s to \d\.\d s on this bench/);
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "What is g?" }).first().click();
+  // The accepted value stays hidden until the student has read their feedback.
+  await expect(page.getByRole("dialog")).toContainText("Hidden until you have read your feedback");
+});
+
+test("units that are not SI say what they are in SI, and a formula's units are checked", async ({
+  page,
+}) => {
+  await toTabulate(page);
+  await results(page).getByRole("button", { name: "Draw your own" }).click();
+  const add = async (button: "Column" | "Formula column") => {
+    await results(page).getByRole("button", { name: button, exact: true }).click();
+    return results(page).getByRole("form", { name: "New column" });
+  };
+  let form = await add("Column");
+  await form.getByLabel("Symbol", { exact: true }).fill("l");
+  await form.getByLabel("What goes in it").selectOption({ label: "A setting you choose" });
+  await form.getByLabel("Quantity").selectOption({ label: "Length" });
+  await form.getByLabel("Unit").selectOption({ label: "cm" });
+  await expect(form).toContainText("1 cm = 0.01 m");
+  await form.getByRole("button", { name: "Save column" }).click();
+  await expect(results(page).getByRole("columnheader", { name: /^l\/cm/ })).toContainText(
+    "1 cm = 0.01 m",
+  );
+
+  form = await add("Column");
+  await form.getByLabel("Symbol", { exact: true }).fill("t");
+  await form.getByLabel("Quantity").selectOption({ label: "Time" });
+  await form.getByRole("button", { name: "Save column" }).click();
+
+  // T = t / 20 headed in metres: the units do not balance, and the editor says so.
+  form = await add("Formula column");
+  await form.getByLabel("Symbol", { exact: true }).fill("T");
+  await form.getByLabel("Quantity").selectOption({ label: "Length" });
+  await form.getByLabel("Formula", { exact: true }).fill("t / 20");
+  await expect(form).toContainText("T = t / 20 works out in s, not m");
+  await form.getByLabel("Quantity").selectOption({ label: "Time" });
+  await expect(form).not.toContainText("works out in");
+});
+
+test("a symbol card open over the lab has no serious accessibility issues", async ({ page }) => {
+  await page.goto(LAB);
+  await page.getByRole("tab", { name: "Explanation" }).click();
+  await page.getByRole("button", { name: "What is l?" }).first().click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+});

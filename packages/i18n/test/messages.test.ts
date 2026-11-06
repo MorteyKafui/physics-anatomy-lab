@@ -69,3 +69,14 @@ describe("every finding the rules can raise", () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe("every symbol card", () => {
+  test("has its name, meaning, typical size and origin", () => {
+    const missing = ["l", "T", "t", "g", "θ"].flatMap((s) =>
+      ["name", "meaning", "typical", "origin"]
+        .map((part) => `symbols.${s}.${part}`)
+        .filter((key) => !hasMessage(key)),
+    );
+    expect(missing).toEqual([]);
+  });
+});

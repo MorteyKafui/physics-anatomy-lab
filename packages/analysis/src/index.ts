@@ -37,11 +37,13 @@ export {
   deriveFor,
   expectedDecimals,
   fillDerived,
+  formulaUnitFindings,
   heading,
   newColumnId,
   pointsFor,
   repeatsOf,
   subscript,
+  toSIText,
   toTableView,
 } from "./table-design";
 export type { ColumnRole, DesignColumn, FormulaCheck, TableDesign, TableRow } from "./table-design";
@@ -92,5 +94,6 @@ export {
   parseUnit,
   sameDimension,
   UNIT_SYMBOLS,
+  unitsOf,
 } from "./quantity";
 export type { AnswerCheck, CalcProblem, CalcResult, Dims, Quantity } from "./quantity";

@@ -179,7 +179,7 @@ export function parseFormula(text: string, known: readonly string[] = []): Parse
         pos += 1;
         return { type: "call", fn: t.value as FunctionName, arg };
       }
-      if (t.value === "π" || t.value === "pi") return { type: "number", value: Math.PI };
+      if (t.value === "π" || t.value === "pi") return { type: "number", value: Math.PI, raw: "π" };
       if (!known.includes(t.value)) fail("unknown-symbol", t);
       symbols.add(t.value);
       return { type: "symbol", name: t.value };

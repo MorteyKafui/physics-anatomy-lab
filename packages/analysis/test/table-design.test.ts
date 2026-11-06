@@ -6,11 +6,13 @@ import {
   checkFormula,
   evaluate,
   fillDerived,
+  formulaUnitFindings,
   heading,
   parseFormula,
   parseTable,
   runRules,
   TABLE_RULES,
+  toSIText,
   toTableView,
   type DesignColumn,
   type TableDesign,
@@ -194,5 +196,34 @@ describe("the checks mark the student's own design", () => {
     expect(byRule["table-heading-unit"]).toMatchObject({ params: { heading: "T²/s²" } });
     expect(byRule["table-derived-arithmetic"]).toMatchObject({ column: "T", rows: ["r3"] });
     expect(byRule["table-mean-decimals"]).toMatchObject({ column: "t", rows: ["r2"] });
+  });
+});
+
+describe("the dimension check and unit conversions", () => {
+  test("a formula whose units do not balance with its heading is caught", () => {
+    expect(formulaUnitFindings(single)).toEqual([]);
+    const wrongHeading = {
+      ...single,
+      columns: single.columns.map((c) =>
+        c.id === "T" ? { ...c, kind: "length" as const, unit: "m" } : c,
+      ),
+    };
+    const found = formulaUnitFindings(wrongHeading);
+    expect(found[0]).toMatchObject({
+      rule: "table-formula-units",
+      column: "T",
+      params: { symbol: "T", formula: "t / 20", gives: "s", unit: "m" },
+    });
+    // And T² then comes out in m², which its heading (s²) does not say either.
+    expect(found[1]).toMatchObject({ column: "T2", params: { gives: "m²", unit: "s²" } });
+    // T² from a T in seconds is in s², which its heading says: fine.
+    expect(formulaUnitFindings({ columns: [timing, period, periodSquared] })).toEqual([]);
+  });
+
+  test("a unit that is not SI says what it is in SI", () => {
+    expect(toSIText("length", "cm")).toBe("1 cm = 0.01 m");
+    expect(toSIText("time", "min")).toBe("1 min = 60 s");
+    expect(toSIText("length", "m")).toBeUndefined();
+    expect(toSIText("temperature", "°C")).toBeUndefined();
   });
 });

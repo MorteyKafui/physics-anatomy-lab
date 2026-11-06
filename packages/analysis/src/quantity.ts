@@ -46,6 +46,9 @@ export const UNIT_SYMBOLS: Readonly<Record<string, Quantity>> = {
   Ω: { value: 1, dims: d(2, 1, -3, -2) },
   kΩ: { value: 1e3, dims: d(2, 1, -3, -2) },
   K: { value: 1, dims: d(0, 0, 0, 0, 1) },
+  // Angles have no dimension in SI; a degree is π ⁄ 180 of a radian.
+  rad: { value: 1, dims: d() },
+  "°": { value: Math.PI / 180, dims: d() },
 };
 const UNIT_NAMES = Object.keys(UNIT_SYMBOLS);
 
@@ -74,21 +77,24 @@ class CalcError extends Error {
   }
 }
 
-function evaluateQuantity(expr: Expr): Quantity {
+function evaluateQuantity(
+  expr: Expr,
+  symbols: Readonly<Record<string, Quantity>> = UNIT_SYMBOLS,
+): Quantity {
   switch (expr.type) {
     case "number":
       return { value: expr.value, dims: DIMENSIONLESS };
     case "symbol": {
-      const unit = UNIT_SYMBOLS[expr.name];
+      const unit = symbols[expr.name];
       if (!unit) throw new CalcError("unknown-unit");
       return unit;
     }
     case "unary": {
-      const q = evaluateQuantity(expr.arg);
+      const q = evaluateQuantity(expr.arg, symbols);
       return { value: -q.value, dims: q.dims };
     }
     case "call": {
-      const q = evaluateQuantity(expr.arg);
+      const q = evaluateQuantity(expr.arg, symbols);
       if (expr.fn === "sqrt") {
         if (q.value < 0) throw new CalcError("undefined");
         return { value: Math.sqrt(q.value), dims: q.dims.map((p) => p / 2) as unknown as Dims };
@@ -101,8 +107,8 @@ function evaluateQuantity(expr: Expr): Quantity {
       };
     }
     case "binary": {
-      const a = evaluateQuantity(expr.left);
-      const b = evaluateQuantity(expr.right);
+      const a = evaluateQuantity(expr.left, symbols);
+      const b = evaluateQuantity(expr.right, symbols);
       switch (expr.op) {
         case "+":
         case "-":
@@ -266,4 +272,23 @@ export function checkAnswer(
             : "ok",
     written,
   };
+}
+
+/**
+ * The units a formula gives when each of its symbols stands for a quantity (a table column's
+ * unit, say): "t / 20" with t in s gives s. Undefined when the formula cannot be read, or its
+ * units do not combine (t + l).
+ */
+export function unitsOf(
+  formula: string,
+  symbols: Readonly<Record<string, Quantity>>,
+): Quantity | undefined {
+  const parsed = parseFormula(formula, Object.keys(symbols));
+  if (!parsed.ok) return undefined;
+  try {
+    return evaluateQuantity(parsed.expr, symbols);
+  } catch (e) {
+    if (e instanceof CalcError) return undefined;
+    throw e;
+  }
 }

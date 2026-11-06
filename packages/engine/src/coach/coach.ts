@@ -6,8 +6,10 @@ import {
   coachIsOn,
   decide,
   guidedProjection,
+  HELP_LEVELS,
   initialGuidedState,
   type GuidedState,
+  type HelpLevel,
 } from "../steps/machine";
 
 /**
@@ -34,6 +36,30 @@ export type Moment = "live" | "step-exit" | "asked";
 export interface CoachState extends GuidedState {
   /** How many times the coach has acted on each skill (watched or shown), for escalation. */
   seen: Partial<Record<Skill, number>>;
+  /**
+   * A help level for one skill, where the student or teacher set one (master plan, "Assist
+   * levels ... per skill"): Auto for graphs and On my own for tables, say. Unset skills follow
+   * the overall help level.
+   */
+  skillLevels: Partial<Record<Skill, HelpLevel>>;
+}
+
+/** The help level that applies to one skill. */
+export const helpLevelFor = (state: CoachState, skill: Skill): HelpLevel =>
+  state.skillLevels[skill] ?? state.helpLevel;
+
+/**
+ * The event for setting (or, with undefined, clearing) one skill's help level, or undefined if
+ * it cannot be set: exam mode keeps the coach off for every skill.
+ */
+export function setSkillLevel(
+  state: CoachState,
+  skill: Skill,
+  level: HelpLevel | undefined,
+): NewEvent | undefined {
+  if (!coachIsOn(state) || !SKILLS.includes(skill)) return undefined;
+  if (state.skillLevels[skill] === level) return undefined;
+  return { kind: "coach.set-skill-level", data: { skill, level: level ?? null } };
 }
 
 export interface Advice {
@@ -90,13 +116,17 @@ export function coach(
       chosen = [
         { finding: first, level: levelFor(state, first.skill, ESCALATION.indexOf("hint")) },
       ];
-  } else if (moment === "live" && state.helpLevel === "auto") {
-    chosen = top.map((finding) => ({ finding, level: levelFor(state, finding.skill) }));
-  } else if (moment === "step-exit" && state.helpLevel !== "on-my-own") {
-    chosen = top.map((finding) => ({
-      finding,
-      level: levelFor(state, finding.skill, ESCALATION.indexOf("hint")),
-    }));
+  } else if (moment === "live") {
+    chosen = top
+      .filter((f) => helpLevelFor(state, f.skill) === "auto")
+      .map((finding) => ({ finding, level: levelFor(state, finding.skill) }));
+  } else if (moment === "step-exit") {
+    chosen = top
+      .filter((f) => helpLevelFor(state, f.skill) !== "on-my-own")
+      .map((finding) => ({
+        finding,
+        level: levelFor(state, finding.skill, ESCALATION.indexOf("hint")),
+      }));
   }
 
   return {
@@ -110,10 +140,22 @@ export function coach(
  * machine accepted it, so a hint smuggled into an exam attempt is ignored here too.
  */
 export const coachProjection: Projection<CoachState> = {
-  initial: (attempt) => ({ ...initialGuidedState(attempt), seen: {} }),
+  initial: (attempt) => ({ ...initialGuidedState(attempt), seen: {}, skillLevels: {} }),
   apply(state, event) {
     const next = guidedProjection.apply(state, event) as CoachState;
     const skill = (event.data as Record<string, Json> | null)?.skill;
+    if (event.kind === "coach.set-skill-level") {
+      const level = (event.data as Record<string, Json> | null)?.level;
+      const valid =
+        typeof skill === "string" &&
+        SKILLS.includes(skill as Skill) &&
+        (level === null || (HELP_LEVELS as readonly Json[]).includes(level ?? null));
+      if (!valid || !coachIsOn(state)) return next;
+      const skillLevels = { ...next.skillLevels };
+      if (level === null) delete skillLevels[skill as Skill];
+      else skillLevels[skill as Skill] = level as HelpLevel;
+      return { ...next, skillLevels };
+    }
     if (typeof skill !== "string" || !SKILLS.includes(skill as Skill)) return next;
     const counts =
       (event.kind === "coach.hint" && next.hintsShown > state.hintsShown) ||

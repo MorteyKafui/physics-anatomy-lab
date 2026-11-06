@@ -64,7 +64,13 @@ request that introduces it.
   warning, tip or good), the skill it is about and the rows it points at. The coach decides which
   findings to show.
 - **Help level (assist level).** How much the coach steps in: Auto, Check my work, On my own.
-  Exam mode turns the coach off.
+  It can be set for each skill (setting up, measuring, tables, graphs, calculations); a skill not
+  set on its own follows the overall level. Exam mode turns the coach off.
+- **Symbol card.** What opens when a symbol is tapped: its name, meaning, SI unit, typical size
+  and where it comes from. The card for g gives no value until feedback is read.
+- **Formula card.** A formula typeset as the book prints it, with a legend of its symbols.
+- **Dimension check.** Working a formula's units through, to warn when they do not balance with
+  its heading, as T = t / 20 headed in m would not.
 - **Mistake catalogue.** The list of known mistakes for an experiment, each with its effect on the
   result and its coaching text.
 - **Snapshot.** A labelled capture of the bench, table or graph that also stores the exact lab

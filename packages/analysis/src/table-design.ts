@@ -1,7 +1,9 @@
 import { evaluate, parseFormula, type FormulaProblem } from "./expression";
+import type { Finding } from "./findings";
+import { formatDims, parseUnit, sameDimension, unitsOf, type Quantity } from "./quantity";
 import { decimalsForResolution, formatSigFigs, parseFigure } from "./sigfigs";
 import type { TableColumn, TableView } from "./table";
-import { findUnit, fromSI, toSI, type QuantityKind } from "./units";
+import { findUnit, fromSI, toSI, UNITS, type QuantityKind } from "./units";
 
 /**
  * A results table as the student designs it (master plan, "Results table: generated or your
@@ -256,4 +258,57 @@ export function pointsFor(
     const fy = parseFigure(r.cells[y] ?? "");
     return fx && fy ? [{ row: r.id, x: fx.value, y: fy.value }] : [];
   });
+}
+
+/**
+ * The dimension check (master plan, "Formulas, symbols and units"): a formula column whose units
+ * do not balance with its heading, such as T = t / 20 headed in m. Only formulas whose columns
+ * all have units are judged; a missing unit is the heading check's business.
+ */
+export function formulaUnitFindings(design: Pick<TableDesign, "columns">): Finding[] {
+  return design.columns.flatMap((column): Finding[] => {
+    if (column.role !== "derived" || !column.formula || column.unit === "") return [];
+    const own = parseUnit(column.unit);
+    if (!own) return [];
+    const others = design.columns.filter((c) => c.id !== column.id && c.role !== "notes");
+    const symbols: Record<string, Quantity> = {};
+    for (const c of others) {
+      // A count has no unit; any other column without one cannot be judged yet.
+      if (c.unit === "" && c.kind === "count") symbols[c.symbol] = DIMENSIONLESS_QUANTITY;
+      const u = c.unit === "" ? undefined : parseUnit(c.unit);
+      if (u) symbols[c.symbol] = { value: 1, dims: u.dims };
+    }
+    const parsed = parseFormula(
+      column.formula,
+      others.map((c) => c.symbol),
+    );
+    if (!parsed.ok || parsed.symbols.some((s) => !(s in symbols))) return [];
+    const gives = unitsOf(column.formula, symbols);
+    if (!gives || sameDimension(gives.dims, own.dims)) return [];
+    return [
+      {
+        rule: "table-formula-units",
+        severity: "warning",
+        skill: "tabulation",
+        key: "table.formulaUnits",
+        params: {
+          symbol: column.symbol,
+          formula: column.formula,
+          gives: formatDims(gives.dims) || "no unit",
+          unit: column.unit,
+        },
+        column: column.id,
+      },
+    ];
+  });
+}
+
+const DIMENSIONLESS_QUANTITY: Quantity = { value: 1, dims: [0, 0, 0, 0, 0] };
+
+/** A unit's size in SI, written out: "1 cm = 0.01 m". Undefined for SI units themselves. */
+export function toSIText(kind: QuantityKind, unit: string): string | undefined {
+  const u = findUnit(kind, unit);
+  const si = UNITS[kind][0];
+  if (!u || !si || u.symbol === si.symbol || u.offset) return undefined;
+  return `1 ${u.symbol} = ${Number(u.toSI.toPrecision(6))} ${si.symbol}`;
 }
