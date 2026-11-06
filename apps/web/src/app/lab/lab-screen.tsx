@@ -13,6 +13,7 @@ import {
   type Finding,
 } from "@pa/analysis";
 import { snapSlot } from "@pa/apparatus";
+import { RATES, VERBOSITY } from "@pa/audio";
 import {
   answersProjection,
   coach,
@@ -85,6 +86,8 @@ import {
   PauseIcon,
   PlayIcon,
   PlusIcon,
+  Volume2Icon,
+  VolumeXIcon,
   RotateCcwIcon,
   SearchIcon,
   SkipBackIcon,
@@ -111,6 +114,7 @@ import { FormulaBox, Sym } from "./formula";
 import { GraphPanel, graphView, useGraph } from "./graph-sheet";
 import { flagsFor, TableBuilder, useTable } from "./table-builder";
 import { useAttempt } from "./use-attempt";
+import { useAudio } from "./use-audio";
 import { useBenchClock } from "./use-bench-clock";
 
 const E = simplePendulum;
@@ -141,6 +145,9 @@ const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
 export function LabScreen() {
   const handle = useAttempt(E.id);
   const clock = useBenchClock();
+  const audio = useAudio();
+  // The audio callbacks are stable, so effects can list them without running every frame.
+  const { say: speak, count: countAloud, sound: playSound } = audio;
   const g = DEFAULT_ENVIRONMENT.g;
   const results = useTable(handle);
   const plot = useGraph(handle);
@@ -209,7 +216,10 @@ export function LabScreen() {
     setAdvice([]);
     acted.current = new Set();
     setTiming({ startedAt: clock.now(), counts: [] });
-  }, [clock]);
+    playSound("stopwatch");
+    // The pass the stopwatch starts on is zero (the count-along says so).
+    countAloud("0");
+  }, [clock, playSound, countAloud]);
 
   const countPass = useCallback(() => {
     if (!timing || timing.stoppedAt !== undefined) return;
@@ -224,6 +234,8 @@ export function LabScreen() {
     if (!handle || !timing || timing.stoppedAt !== undefined) return;
     const done = { ...timing, stoppedAt: clock.now() };
     setTiming(done);
+    playSound("stopwatch");
+    speak(t("lab.audio.reading", { t: recordedTime(done)!.toFixed(2) }), "status");
     await handle.dispatch({
       type: "record-reading",
       id: globalThis.crypto.randomUUID(),
@@ -235,7 +247,7 @@ export function LabScreen() {
       },
     });
     await consult(findingsFor(done), "step-exit");
-  }, [handle, timing, clock, period, length, consult, findingsFor]);
+  }, [handle, timing, clock, period, length, consult, findingsFor, playSound, speak]);
 
   const tryAgain = useCallback(async () => {
     const last = state?.readings.at(-1);
@@ -437,6 +449,69 @@ export function LabScreen() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [state?.step, running, start, stop, countPass]);
+
+  // The spoken coach: each step's instructions as the student arrives, and on turning sound on.
+  const step = state?.step;
+  const soundOn = audio.settings.on;
+  useEffect(() => {
+    if (!step || !soundOn) return;
+    const line = (key: string) =>
+      `${t(`experiments.simple-pendulum.${key}.title` as MessageKey, { swings: E.swings })}. ${t(
+        `experiments.simple-pendulum.${key}.why` as MessageKey,
+      )}`;
+    const known = ["build", "measure", "tabulate", "plot", "analyse"];
+    speak(
+      known.includes(step) ? line(step) : `${stepName(step)}. ${t("lab.steps.notBuilt")}`,
+      "step",
+    );
+  }, [step, soundOn, speak]);
+
+  // Every correction the coach raises, said once at each level it reaches.
+  const spokenAdvice = useRef(new Set<string>());
+  useEffect(() => {
+    for (const a of advice) {
+      const id = `${a.finding.rule}:${a.level}`;
+      if (spokenAdvice.current.has(id)) continue;
+      spokenAdvice.current.add(id);
+      const rowIndex = results.table.rows.findIndex((r) => r.id === a.finding.rows?.[0]);
+      const params = { ...a.finding.params, row: rowIndex >= 0 ? rowIndex + 1 : "" };
+      const parts = [
+        `${msg(`${a.finding.key}.title`, params)}.`,
+        msg(`${a.finding.key}.detail`, params),
+      ];
+      if (a.level === "demonstrate" && hasMessage(`${a.finding.key}.demonstrate`))
+        parts.push(msg(`${a.finding.key}.demonstrate`));
+      speak(parts.join(" "), "correction");
+    }
+  }, [advice, speak, results.table.rows]);
+
+  // What the bench says as the student builds, for those who asked for everything.
+  useEffect(() => {
+    if (buildStatus) speak(buildStatus, "status");
+  }, [buildStatus, speak]);
+
+  // The count-along: a beat and the count at each pass in the counting direction, and the
+  // bob's swish at every pass through the mark, while the stopwatch runs.
+  const counted = useRef({ count: 0, half: 0 });
+  const runningSince = timing && timing.stoppedAt === undefined ? timing.startedAt : undefined;
+  useEffect(() => {
+    counted.current = { count: 0, half: 0 };
+  }, [runningSince]);
+  useEffect(() => {
+    if (runningSince === undefined) return;
+    const now = clock.time;
+    const first = passTimes(runningSince + period / 4, 1, period)[0]!;
+    const n = now >= first ? Math.floor((now - first) / period) + 1 : 0;
+    if (n > counted.current.count) {
+      counted.current.count = n;
+      countAloud(n === E.swings ? t("lab.audio.lastCount", { n }) : String(n));
+    }
+    const half = Math.floor((now - runningSince) / (period / 2));
+    if (half > counted.current.half) {
+      counted.current.half = half;
+      playSound("swish");
+    }
+  }, [clock.time, runningSince, period, countAloud, playSound]);
 
   if (!handle || !state) {
     return (
@@ -927,6 +1002,116 @@ export function LabScreen() {
                 ))}
               </select>
             </label>
+            <Popover>
+              <PopoverTrigger
+                aria-label={t("lab.audio.label")}
+                className="ml-auto flex h-9 items-center gap-1.5 border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:ml-0"
+              >
+                {audio.settings.on ? (
+                  <Volume2Icon className="size-4" aria-hidden />
+                ) : (
+                  <VolumeXIcon className="size-4" aria-hidden />
+                )}
+                <span className="hidden md:inline">{t("lab.audio.label")}</span>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80">
+                <PopoverTitle>{t("lab.audio.title")}</PopoverTitle>
+                <PopoverDescription>
+                  {audio.canSpeak ? t("lab.audio.hint") : t("lab.audio.noSpeech")}
+                </PopoverDescription>
+                <div className="flex flex-col gap-3 text-sm">
+                  <label className="flex items-center gap-2 font-medium">
+                    <input
+                      type="checkbox"
+                      className="size-4 accent-primary"
+                      checked={audio.settings.on}
+                      onChange={(e) => audio.update({ on: e.target.checked })}
+                    />
+                    {t("lab.audio.on")}
+                  </label>
+                  <label className="flex items-center justify-between gap-3">
+                    {t("lab.audio.verbosity")}
+                    <select
+                      className="h-9 border border-input bg-background px-2 text-sm text-foreground"
+                      value={audio.settings.verbosity}
+                      onChange={(e) =>
+                        audio.update({
+                          verbosity: e.target.value as (typeof VERBOSITY)[number],
+                        })
+                      }
+                    >
+                      {VERBOSITY.map((v) => (
+                        <option key={v} value={v}>
+                          {t(`lab.audio.verbosity.${v}` as MessageKey)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="flex items-center justify-between gap-3">
+                    {t("lab.audio.rate")}
+                    <select
+                      className="h-9 border border-input bg-background px-2 font-mono text-sm text-foreground"
+                      value={audio.settings.rate}
+                      onChange={(e) =>
+                        audio.update({ rate: Number(e.target.value) as (typeof RATES)[number] })
+                      }
+                    >
+                      {RATES.map((r) => (
+                        <option key={r} value={r}>
+                          {r}×
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {audio.voices.length > 0 && (
+                    <label className="flex items-center justify-between gap-3">
+                      {t("lab.audio.voice")}
+                      <select
+                        className="h-9 max-w-40 border border-input bg-background px-2 text-sm text-foreground"
+                        value={audio.settings.voice ?? ""}
+                        onChange={(e) => audio.update({ voice: e.target.value || undefined })}
+                      >
+                        <option value="">{t("lab.audio.voiceAuto")}</option>
+                        {audio.voices.map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                  {(
+                    [
+                      ["voiceVolume", "lab.audio.voiceVolume"],
+                      ["countVolume", "lab.audio.countVolume"],
+                      ["soundsVolume", "lab.audio.soundsVolume"],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <label key={key} className="flex items-center justify-between gap-3">
+                      {t(label)}
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        className="w-32 accent-primary"
+                        value={audio.settings[key]}
+                        onChange={(e) => audio.update({ [key]: Number(e.target.value) })}
+                      />
+                    </label>
+                  ))}
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="size-4 accent-primary"
+                      checked={audio.settings.countAlong}
+                      onChange={(e) => audio.update({ countAlong: e.target.checked })}
+                    />
+                    {t("lab.audio.countAlong")}
+                  </label>
+                </div>
+              </PopoverContent>
+            </Popover>
             {coachIsOn(state) && (
               <Popover>
                 <PopoverTrigger className="hidden h-9 items-center border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:flex">
@@ -1580,6 +1765,15 @@ export function LabScreen() {
             </aside>
           </div>
 
+          {audio.settings.on && (
+            <p
+              role="status"
+              aria-label={t("lab.audio.caption")}
+              className="min-h-10 border-t border-border bg-surface px-5 py-2.5 text-sm"
+            >
+              {audio.caption}
+            </p>
+          )}
           <StepStrip
             current={state.step}
             completed={state.completed}

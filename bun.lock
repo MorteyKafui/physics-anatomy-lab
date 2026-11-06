@@ -41,6 +41,7 @@
       "dependencies": {
         "@pa/analysis": "workspace:*",
         "@pa/apparatus": "workspace:*",
+        "@pa/audio": "workspace:*",
         "@pa/engine": "workspace:*",
         "@pa/experiments": "workspace:*",
         "@pa/i18n": "workspace:*",
@@ -101,6 +102,13 @@
       },
       "peerDependencies": {
         "react": "^19",
+      },
+    },
+    "packages/audio": {
+      "name": "@pa/audio",
+      "version": "0.0.0",
+      "devDependencies": {
+        "fast-check": "^4",
       },
     },
     "packages/engine": {
@@ -347,6 +355,8 @@
     "@pa/api-client": ["@pa/api-client@workspace:packages/api-client"],
 
     "@pa/apparatus": ["@pa/apparatus@workspace:packages/apparatus"],
+
+    "@pa/audio": ["@pa/audio@workspace:packages/audio"],
 
     "@pa/e2e": ["@pa/e2e@workspace:e2e"],
 

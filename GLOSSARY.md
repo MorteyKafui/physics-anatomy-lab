@@ -58,6 +58,10 @@ request that introduces it.
   joined by their mean, which carries one more decimal place than they do.
 - **Formula column (derived column).** A column worked out from the others by a formula the
   student writes in their columns' symbols, such as T = t / 20.
+- **Audio mode.** The coach read aloud (with captions for every line), the count-along and the
+  lab sounds. Off until the student turns it on. Nothing records the student's voice.
+- **Count-along.** A soft beat and the count, 0, 1, 2 … 20, said at each pass while the stopwatch
+  runs, so the student never loses count.
 - **Coach.** The guidance panel that explains each step and responds to mistakes, in text and,
   if voice is on, aloud.
 - **Finding.** What a check says about the student's work: the rule, how serious it is (error,
