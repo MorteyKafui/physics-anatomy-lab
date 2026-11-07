@@ -43,17 +43,19 @@ function remember(key: string, value: string) {
 /*
  * One store for the page's lifetime, and one opening per experiment. React may mount the screen
  * twice in development; sharing these means the second mount reuses the first's work instead of
- * closing the database under it or starting a second attempt.
+ * closing the database under it or starting a second attempt. Only which attempt to open is
+ * shared: its events are read afresh on every mount, so moving from the lab to the notebook or the
+ * report never shows the events as they were when the lab first opened.
  */
 let sharedStore: EventStore | undefined;
-const openings = new Map<string, Promise<{ attempt: Attempt; events: LabEvent[] }>>();
+const openings = new Map<string, Promise<Attempt>>();
 
 function store(): EventStore {
   sharedStore ??= createIndexedDbStore({ device: remembered("pa:device", newDeviceId)! });
   return sharedStore;
 }
 
-function openAttempt(experimentId: string) {
+async function openAttempt(experimentId: string) {
   let opening = openings.get(experimentId);
   if (!opening) {
     opening = (async () => {
@@ -64,11 +66,12 @@ function openAttempt(experimentId: string) {
         attempt = await store().createAttempt({ experimentId, mode: "guided", seed: newSeed() });
         remember(key, attempt.id);
       }
-      return { attempt, events: await store().events(attempt.id) };
+      return attempt;
     })();
     openings.set(experimentId, opening);
   }
-  return opening;
+  const attempt = await opening;
+  return { attempt, events: await store().events(attempt.id) };
 }
 
 /** Every run of an experiment on this device, oldest first, with its events. */

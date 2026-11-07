@@ -1794,7 +1794,21 @@ export function LabScreen() {
                       <h2 className="font-display text-2xl leading-tight font-bold">
                         {stepName(state.step)}
                       </h2>
-                      <p className="text-soft">{t("lab.steps.notBuilt")}</p>
+                      <p className="text-soft">
+                        {state.step === "conclude"
+                          ? t("report.concludeHint")
+                          : state.step === "report"
+                            ? t("report.openHint")
+                            : t("lab.steps.notBuilt")}
+                      </p>
+                      {state.step === "report" && (
+                        <Link
+                          href={`/lab/${E.id}/report`}
+                          className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                        >
+                          {t("report.open")}
+                        </Link>
+                      )}
                       {next && !state.completed.includes(state.step) && (
                         <Button className="self-start" onClick={() => void finishStep()}>
                           {t("lab.steps.continue", { step: stepName(next) })}

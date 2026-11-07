@@ -39,7 +39,8 @@ describe("the en-GB messages", () => {
 
   test("use sentence case, not capitalised words or all-caps labels (AGENTS.md rule 6)", () => {
     for (const [key, text] of entries) {
-      const shouting = /\b[A-Z]{4,}\b/.test(text);
+      // Exam boards' own names are written as they write them.
+      const shouting = /\b[A-Z]{4,}\b/.test(text.replace(/\b(WASSCE|WAEC)\b/g, ""));
       expect({ key, shouting }).toEqual({ key, shouting: false });
     }
   });
