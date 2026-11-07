@@ -106,6 +106,8 @@ export interface RunReview {
   units: { x: string; y: string };
   answers: AnswersState;
   expected: ReturnType<typeof expectedAnswers>;
+  /** Every finding as the attempt stands, step finished or not (an exam is marked from these). */
+  findings: { assembly: Finding[]; table: Finding[]; graph: Finding[]; analysis: Finding[] };
 }
 
 const levelOf = (state: CoachState, skill: Skill) =>
@@ -184,8 +186,10 @@ export function reviewRun(attempt: Attempt, events: readonly LabEvent[], g: numb
   const column = (id: string) => table.columns.find((c) => c.id === id);
   const data = pointsFor(shownTable, columns.x, columns.y);
   const view = graphView(graph, data, columns, levelOf(state, "graph") === "auto");
-  const graphFindings =
-    data.length >= 2 && state.completed.includes("plot")
+  // Every graph and analysis finding as things stand; the review counts them only once the step is
+  // finished, but an exam script is marked as it was handed in.
+  const allGraphFindings =
+    data.length >= 2
       ? runRules(GRAPH_RULES, {
           sheet: view.sheet,
           symbols: {
@@ -198,14 +202,13 @@ export function reviewRun(attempt: Attempt, events: readonly LabEvent[], g: numb
           triangle: view.triangle,
         })
       : [];
+  const graphFindings = state.completed.includes("plot") ? allGraphFindings : [];
   const answers = replay(answersProjection, attempt, events);
   const units = { x: column(columns.x)?.unit ?? "", y: column(columns.y)?.unit ?? "" };
   const expected = expectedAnswers(view.triangle, columns, units, answers);
   const analysisAuto = levelOf(state, "analysis") === "auto";
-  const analysisFindings =
-    analysisAuto || !state.completed.includes("analyse")
-      ? []
-      : runRules(ANALYSIS_RULES, { answers, expected });
+  const allAnalysisFindings = analysisAuto ? [] : runRules(ANALYSIS_RULES, { answers, expected });
+  const analysisFindings = state.completed.includes("analyse") ? allAnalysisFindings : [];
 
   // The timing mistakes are in the readings themselves.
   const fromOne = readings.filter((r) => r.countedFromOne);
@@ -324,6 +327,12 @@ export function reviewRun(attempt: Attempt, events: readonly LabEvent[], g: numb
     units,
     answers,
     expected,
+    findings: {
+      assembly: runRules(ASSEMBLY_RULES, { assembly }),
+      table: tableFindings.filter((f) => SEVERE.has(f.severity)),
+      graph: allGraphFindings.filter((f) => SEVERE.has(f.severity)),
+      analysis: allAnalysisFindings.filter((f) => SEVERE.has(f.severity)),
+    },
   };
 }
 

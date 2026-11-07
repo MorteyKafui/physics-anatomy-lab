@@ -67,3 +67,5 @@ export {
   reportProjection,
 } from "./report/report";
 export type { ReportCommand, ReportFormat, ReportState } from "./report/report";
+export { decideExam, EMPTY_EXAM, examProjection } from "./exam/exam";
+export type { ExamCommand, ExamState } from "./exam/exam";
