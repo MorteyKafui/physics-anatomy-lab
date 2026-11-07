@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Review, retry and compare</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+.rv-f:focus-visible{outline:2px solid #FF8A6E;outline-offset:2px}
+@keyframes rvUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rv-toast{animation:rvUp .25s ease}
+@media (prefers-reduced-motion:reduce){.rv-toast{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 1040px; background: #0A0A0A; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45; padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+  <!-- Header -->
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; background: #111110; border: 1px solid #1E1D1D; padding: 12px 16px">
+    <span style="width: 30px; height: 30px; background: #F2F0EA; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#0D0D0D" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg></span>
+    <span style="display: flex; align-items: center; gap: 8px; color: #A3A19B">Simple pendulum <span aria-hidden="true">›</span> <span style="color: #F2F0EA">Review</span></span>
+    <span style="font-size: 12px; color: #C9C6BF; border: 1px solid #2E2D2B; padding: 2px 8px">{{runCountText}}</span>
+    <span style="flex: 1"></span>
+    <a class="rv-f" href="Lab.dc.html" style="height: 32px; padding: 0 12px; display: flex; align-items: center; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 500 13px Geist, sans-serif; text-decoration: none">Back to the lab</a>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+    <!-- Review: the result and every mistake with what it did -->
+    <section aria-label="Review" style="flex: 999 1 620px; min-width: 0; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+      <div style="padding: 12px 16px; border-bottom: 1px solid #1E1D1D; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center">
+        <h2 style="margin: 0; font-size: 15px; font-weight: 500">Review</h2>
+        <span role="group" aria-label="Run to review" style="display: flex; border: 1px solid #2A2928">
+          <sc-for list="{{runTabs}}" as="r" hint-placeholder-count="2">
+            <button class="rv-f" type="button" aria-pressed="{{r.on}}" onClick="{{r.pick}}" style="{{r.st}}">{{r.name}}</button>
+          </sc-for>
+        </span>
+      </div>
+      <div style="padding: 16px; display: flex; flex-direction: column; gap: 16px">
+        <!-- Result -->
+        <div style="background: #0D0D0D; border: 1px solid #2A2928; padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: flex-end">
+          <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #A3A19B">Your g, from your slope</span><span style="font-family: 'Geist Mono', monospace; font-size: 26px; font-weight: 500">{{cur.g}} m s⁻²</span></span>
+          <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #A3A19B">Slope of T² against l</span><span style="font-family: 'Geist Mono', monospace; font-size: 16px">{{cur.slope}} s² m⁻¹</span></span>
+          <span style="flex: 1"></span>
+          <sc-if value="{{feedbackRead}}" hint-placeholder-val="{{false}}">
+            <span style="display: flex; flex-direction: column; gap: 2px; text-align: right"><span style="font-size: 12px; color: #A3A19B">Accepted value here</span><span style="font-family: 'Geist Mono', monospace; font-size: 16px">9.78 m s⁻² <span style="{{cur.offSt}}">{{cur.off}}</span></span></span>
+          </sc-if>
+          <sc-if value="{{notRead}}" hint-placeholder-val="{{true}}">
+            <span style="max-width: 240px; font-size: 12px; color: #A3A19B; text-align: right">The accepted value appears when you have read your feedback below.</span>
+          </sc-if>
+        </div>
+
+        <!-- Mistakes -->
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <h3 style="margin: 0; font-size: 14px; font-weight: 600">{{cur.heading}}</h3>
+          <sc-for list="{{cur.mistakes}}" as="m" hint-placeholder-count="2">
+            <div style="{{m.card}}">
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between">
+                <span style="font-size: 12px; color: #C9C6BF; border: 1px solid #2E2D2B; padding: 1px 7px">{{m.step}}</span>
+                <span style="{{m.chipSt}}">{{m.status}}</span>
+              </div>
+              <span style="font-weight: 600">{{m.title}}</span>
+              <span style="color: #C9C6BF">{{m.detail}}</span>
+              <span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 12px; color: #A3A19B; flex: 0 0 auto">What it did to g</span><span style="font-family: 'Geist Mono', monospace; font-size: 13px">{{m.effect}}</span></span>
+              <sc-if value="{{m.canRedo}}" hint-placeholder-val="{{true}}">
+                <button class="rv-f" type="button" onClick="{{m.redo}}" style="align-self: flex-start; height: 34px; padding: 0 12px; background: #F2F0EA; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">{{m.redoLabel}}</button>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{cur.clean}}" hint-placeholder-val="{{false}}">
+            <div style="display: flex; gap: 10px; align-items: center; border: 1px solid #2A2928; padding: 12px 14px">
+              <span style="width: 18px; height: 18px; border-radius: 50%; background: #6CC25A; flex: 0 0 auto; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+              <span>Nothing went wrong in this run. Every reading was timed from zero, with the thread in the cork.</span>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{notRead}}" hint-placeholder-val="{{true}}">
+          <button class="rv-f" type="button" onClick="{{markRead}}" style="align-self: flex-start; height: 38px; padding: 0 14px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 14px Geist, sans-serif; cursor: pointer">I have read my feedback</button>
+        </sc-if>
+      </div>
+    </section>
+
+    <!-- Compare -->
+    <aside aria-label="Compare" style="flex: 1 1 380px; max-width: 520px; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+      <div style="padding: 12px 16px; border-bottom: 1px solid #1E1D1D; display: flex; justify-content: space-between; align-items: center; gap: 8px">
+        <h2 style="margin: 0; font-size: 15px; font-weight: 500">Compare</h2>
+        <sc-if value="{{notRead}}" hint-placeholder-val="{{true}}"><span style="font-size: 12px; color: #A3A19B; display: flex; align-items: center; gap: 6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Locked</span></sc-if>
+      </div>
+      <sc-if value="{{notRead}}" hint-placeholder-val="{{true}}">
+        <div style="padding: 20px 16px; display: flex; flex-direction: column; gap: 12px">
+          <span>Compare opens when you have analysed your own data and read your feedback.</span>
+          <span style="display: flex; gap: 10px; align-items: center"><span style="width: 22px; height: 22px; border: 1.5px solid #6CC25A; color: #8FD18A; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-label="Done"><path d="m5 12 5 5 9-10"></path></svg></span><span style="color: #A3A19B">Analyse your own data</span></span>
+          <span style="display: flex; gap: 10px; align-items: center"><span style="width: 22px; height: 22px; border: 1.5px solid #F0482A; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">2</span><span>Read your feedback</span></span>
+        </div>
+      </sc-if>
+      <sc-if value="{{feedbackRead}}" hint-placeholder-val="{{false}}">
+        <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 14px">
+          <span role="group" aria-label="What to compare" style="display: flex; flex-wrap: wrap; border: 1px solid #2A2928; align-self: flex-start">
+            <sc-for list="{{modes}}" as="o" hint-placeholder-count="2">
+              <button class="rv-f" type="button" aria-pressed="{{o.on}}" onClick="{{o.pick}}" style="{{o.st}}">{{o.name}}</button>
+            </sc-for>
+          </span>
+          <div style="overflow-x: auto">
+            <table style="width: 100%; min-width: 360px; border-collapse: collapse; font-size: 13px">
+              <thead>
+                <tr><th scope="col" style="text-align: left; font-weight: 500; color: #A3A19B; padding: 6px 8px 6px 0; border-bottom: 1px solid #2A2928"></th><th scope="col" style="text-align: left; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid #2A2928">{{colA}}</th><th scope="col" style="text-align: left; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid #2A2928">{{colB}}</th></tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{rows}}" as="row" hint-placeholder-count="7">
+                  <tr><th scope="row" style="text-align: left; font-weight: 400; color: #A3A19B; padding: 7px 8px 7px 0; border-bottom: 1px solid #1E1D1D">{{row.label}}</th><td style="{{row.aSt}}">{{row.a}}</td><td style="{{row.bSt}}">{{row.b}}</td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <span style="font-size: 12px; color: #A3A19B">Cells marked with a bar are where the runs part. Every number comes from the readings each run took.</span>
+          <button class="rv-f" type="button" onClick="{{watch}}" style="align-self: flex-start; height: 38px; padding: 0 14px; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 500 14px Geist, sans-serif; cursor: pointer; display: flex; align-items: center; gap: 8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"></path></svg>Watch both at the first mistake</button>
+        </div>
+      </sc-if>
+    </aside>
+  </div>
+
+  <!-- Runs: what each run kept and redid -->
+  <section aria-label="Runs" style="background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+    <div style="padding: 12px 16px; border-bottom: 1px solid #1E1D1D; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px"><h2 style="margin: 0; font-size: 15px; font-weight: 500">Runs</h2><span style="font-size: 12px; color: #A3A19B">Redo from any step: your work before it comes with you, and every earlier run is kept.</span></div>
+    <div style="overflow-x: auto">
+      <div style="min-width: 980px; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{timeline}}" as="t" hint-placeholder-count="2">
+          <div style="display: flex; gap: 4px; align-items: stretch">
+            <span style="flex: 0 0 64px; font-size: 13px; font-weight: 600; display: flex; align-items: center">{{t.name}}</span>
+            <sc-for list="{{t.cells}}" as="c" hint-placeholder-count="10">
+              <span style="{{c.st}}"><span>{{c.step}}</span><span style="font-size: 11px; color: #8F8D88">{{c.note}}</span></span>
+            </sc-for>
+          </div>
+        </sc-for>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-top: 8px">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #A3A19B">Redo from
+            <select class="rv-f" value="{{redoStep}}" onChange="{{pickRedo}}" style="height: 34px; background: #161616; color: #F2F0EA; border: 1px solid #2A2928; padding: 0 10px; font: 500 13px Geist, sans-serif">
+              <sc-for list="{{stepOptions}}" as="s" hint-placeholder-count="10"><option value="{{s}}">{{s}}</option></sc-for>
+            </select>
+          </label>
+          <button class="rv-f" type="button" onClick="{{askRedo}}" style="height: 34px; padding: 0 12px; background: #F2F0EA; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">{{startLabel}}</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Confirm a redo -->
+  <sc-if value="{{confirmOn}}" hint-placeholder-val="{{false}}">
+    <div style="position: fixed; inset: 0; z-index: 30; background: rgba(10,10,10,0.72); display: flex; align-items: center; justify-content: center; padding: 16px">
+      <div role="dialog" aria-modal="true" aria-label="{{confirmTitle}}" style="width: 100%; max-width: 420px; background: #161616; border: 1px solid #2A2928; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 16px; font-weight: 600">{{confirmTitle}}</span>
+        <span style="color: #C9C6BF">{{confirmBody}}</span>
+        <span style="display: flex; gap: 8px; justify-content: flex-end">
+          <button class="rv-f" type="button" onClick="{{cancelRedo}}" style="height: 36px; padding: 0 12px; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 500 13px Geist, sans-serif; cursor: pointer">Cancel</button>
+          <button class="rv-f" type="button" onClick="{{doRedo}}" style="height: 36px; padding: 0 12px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">{{startLabel}}</button>
+        </span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+    <div class="rv-toast" role="status" style="position: fixed; z-index: 40; right: 28px; bottom: 28px; max-width: 380px; background: #F2F0EA; color: #0D0D0D; padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px">
+      <span style="width: 18px; height: 18px; border-radius: 50%; background: #6CC25A; flex: 0 0 auto; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+      <span style="flex: 1; font-size: 13px">{{toastText}}</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { run: 'r1', read: false, mode: 'runs', redoStep: 'Measure', confirm: false, toast: null, runs: 2 };
+  }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  toast(text) { clearTimeout(this.tt); this.setState({ toast: text }); this.tt = setTimeout(() => this.setState({ toast: null }), 6000); }
+  renderVals() {
+    const st = this.state;
+    const STEPS = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const seg = (on) => 'height: 32px; padding: 0 12px; border: 0; cursor: pointer; font: 500 13px Geist, sans-serif; ' + (on ? 'background: #F2F0EA; color: #0D0D0D' : 'background: transparent; color: #C9C6BF');
+    const chip = (kind) => 'font-size: 12px; padding: 1px 7px; border: 1px solid ' + (kind === 'warn' ? '#5C4415; background: #2B2112; color: #F5C46B' : '#2E5A2A; background: #14210F; color: #8FD18A');
+    const card = (kind) => 'display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border: 1px solid ' + (kind === 'warn' ? '#5C4415; background: #1A150C' : '#2A2928; background: #0D0D0D');
+    const redo = (step) => () => this.setState({ redoStep: step, confirm: true });
+    const RUNS = {
+      r1: {
+        g: '10.85', slope: '3.64', off: '+11%', offKind: 'warn', heading: 'What went wrong, and what it did to g',
+        mistakes: [
+          { step: 'Step 3 · Build', status: 'Put right', kind: 'ok', title: 'The thread was tied round the clamp', detail: 'Tied there, it slips, so the point it swings from moves and l is not the length you set. You moved it to the split cork before measuring.', effect: 'None: put right before any reading', canRedo: false },
+          { step: 'Step 5 · Measure', status: 'Still in your result', kind: 'warn', title: 'You counted from one', detail: 'The pass the stopwatch starts on is zero. Counting from one timed 19 swings in each reading, not 20, so every T came out short.', effect: 'Raised it by 11%: 10.85 instead of 9.78 m s⁻²', canRedo: true, redoStep: 'Measure' }
+        ]
+      },
+      r2: { g: '9.77', slope: '4.04', off: '−0.1%', offKind: 'ok', heading: 'What went wrong, and what it did to g', mistakes: [] }
+    };
+    const runNames = { r1: 'Run 1', r2: 'Run 2', r3: 'Run 3' };
+    const runIds = st.runs === 3 ? ['r1', 'r2', 'r3'] : ['r1', 'r2'];
+    const c = RUNS[st.run] || RUNS.r2;
+    const cur = {
+      g: c.g, slope: c.slope, off: c.off, heading: c.heading, clean: c.mistakes.length === 0,
+      offSt: 'margin-left: 6px; font-size: 13px; color: ' + (c.offKind === 'warn' ? '#F5C46B' : '#8FD18A'),
+      mistakes: c.mistakes.map((m) => ({
+        step: m.step, status: m.status, title: m.title, detail: m.detail, effect: m.effect, canRedo: m.canRedo,
+        redoLabel: 'Redo from ' + (m.redoStep || ''), redo: redo(m.redoStep), chipSt: chip(m.kind), card: card(m.kind)
+      }))
+    };
+    const part = 'padding: 7px 8px; border-bottom: 1px solid #1E1D1D; font-family: \'Geist Mono\', monospace; ';
+    const differ = part + 'box-shadow: inset 3px 0 0 #F5A524; color: #F5C46B';
+    const same = part + 'color: #F2F0EA';
+    const RIGHT = ['In the cork', 'From zero', '35.90 s', '1.795 s', '4.04 s² m⁻¹', '9.78 m s⁻²', '0%'];
+    const R1 = ['In the cork (moved there)', 'From one', '34.10 s', '1.705 s', '3.64 s² m⁻¹', '10.85 m s⁻²', '+11%'];
+    const R2 = ['In the cork', 'From zero', '35.88 s', '1.794 s', '4.04 s² m⁻¹', '9.77 m s⁻²', '−0.1%'];
+    const LABELS = ['Thread', 'Counting', 't, 20 swings at 0.800 m', 'T at 0.800 m', 'Slope of T² against l', 'g', 'Against the accepted value'];
+    const B = st.mode === 'runs' ? R2 : RIGHT;
+    const rows = LABELS.map((label, i) => {
+      const parts = i >= 1 && R1[i] !== B[i];
+      return { label, a: R1[i], b: B[i], aSt: parts ? differ : same, bSt: same };
+    });
+    const modes = [
+      { name: 'Run 1 and run 2', on: st.mode === 'runs', pick: () => this.setState({ mode: 'runs' }) },
+      { name: 'Run 1 and the right way', on: st.mode === 'right', pick: () => this.setState({ mode: 'right' }) }
+    ].map((o) => Object.assign({}, o, { st: seg(o.on) }));
+    const cell = (kind) => 'flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; font-size: 12px; border-top: 3px solid ' +
+      (kind === 'done' ? '#6CC25A; background: #0D0D0D; color: #F2F0EA' : kind === 'kept' ? '#3A3936; background: repeating-linear-gradient(135deg, #111110 0 6px, #161616 6px 12px); color: #C9C6BF' : kind === 'now' ? '#F0482A; background: #0D0D0D; color: #F2F0EA' : '#242322; background: transparent; color: #8F8D88');
+    const from = STEPS.indexOf(st.redoStep);
+    const line = (id) => {
+      const cells = STEPS.map((step, i) => {
+        if (id === 'r1') return { step, note: 'done', st: cell('done') };
+        if (id === 'r2') return i < 4 ? { step, note: 'from run 1', st: cell('kept') } : i < 8 ? { step, note: 'done', st: cell('done') } : { step, note: i === 8 ? 'next' : 'to do', st: cell(i === 8 ? 'now' : 'todo') };
+        return i < from ? { step, note: 'from run 2', st: cell('kept') } : { step, note: i === from ? 'next' : 'to do', st: cell(i === from ? 'now' : 'todo') };
+      });
+      return { name: runNames[id], cells };
+    };
+    const next = st.runs + 1;
+    const kept = from > 0 ? STEPS[0] + ' to ' + STEPS[from - 1] : 'Nothing';
+    return {
+      runCountText: st.runs + ' runs',
+      runTabs: runIds.map((id) => ({ name: runNames[id], on: st.run === id, st: seg(st.run === id), pick: () => this.setState({ run: id }) })),
+      cur, feedbackRead: st.read, notRead: !st.read,
+      markRead: () => { this.setState({ read: true }); this.toast('Compare is open, and the accepted value is shown.'); },
+      modes, rows, colA: 'Run 1', colB: st.mode === 'runs' ? 'Run 2' : 'The right way',
+      watch: () => this.toast('Playing both runs from the first pass: run 1 says one, run 2 says zero.'),
+      timeline: runIds.map(line),
+      stepOptions: STEPS, redoStep: st.redoStep,
+      pickRedo: (e) => this.setState({ redoStep: e.target.value }),
+      startLabel: 'Start run ' + next + ' from ' + st.redoStep,
+      askRedo: () => this.setState({ confirm: true }),
+      confirmOn: st.confirm,
+      confirmTitle: 'Start run ' + next + ' from ' + st.redoStep + '?',
+      confirmBody: kept + ' comes with you from run ' + st.runs + '. Run ' + st.runs + ' stays as it is, so you can compare them.',
+      cancelRedo: () => this.setState({ confirm: false }),
+      doRedo: () => { if (st.runs >= 3) { this.setState({ confirm: false }); this.toast('This board shows up to three runs.'); return; } this.setState({ confirm: false, runs: 3, run: 'r2' }); this.toast('Run 3 started at ' + st.redoStep + '. Run 2 is kept.'); },
+      toastOn: !!st.toast, toastText: st.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

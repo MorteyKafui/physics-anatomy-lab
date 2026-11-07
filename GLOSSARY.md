@@ -34,6 +34,12 @@ request that introduces it.
 
 - **Experiment.** One practical, such as the simple pendulum. Defined in `packages/experiments`.
 - **Attempt.** One student's run of one experiment, from Question to Report.
+- **Run.** What the student calls an attempt once they redo one: run 1, run 2. A redo is a new
+  attempt with the same seed that keeps the earlier run's work before the step it was redone
+  from; the earlier run is never changed. In code, `run.start` marks where a run came from.
+- **Review.** The page after Analyse listing every mistake in a run with what it did to the
+  result, with Compare (two runs, or a run and the right way, side by side) and redo from any step.
+- **The right way.** The same bench with every step done correctly, worked out from the physics.
 - **Step (stage).** One of the ten steps of an attempt: Question, Predict, Build, Check, Measure,
   Tabulate, Plot, Analyse, Conclude, Report.
 - **Bench.** The area where the apparatus is built and readings are taken.

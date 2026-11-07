@@ -1861,6 +1861,10 @@ export function LabScreen() {
             completed={state.completed}
             open={open}
             onGo={(step) => void handle.dispatch({ type: "go-to-step", step })}
+            review={{
+              href: `/lab/${E.id}/review`,
+              open: state.completed.includes("analyse"),
+            }}
           />
         </div>
       </div>

@@ -1,0 +1,135 @@
+{
+  "model": "review: timing errors and the right way (SciPy ellipk and linregress)",
+  "amplitudeDeg": 8,
+  "errors": [
+    {
+      "count": 10,
+      "countedFromOne": false,
+      "percent": 300.0
+    },
+    {
+      "count": 10,
+      "countedFromOne": true,
+      "percent": 393.82716049382725
+    },
+    {
+      "count": 15,
+      "countedFromOne": false,
+      "percent": 77.77777777777777
+    },
+    {
+      "count": 15,
+      "countedFromOne": true,
+      "percent": 104.08163265306123
+    },
+    {
+      "count": 19,
+      "countedFromOne": false,
+      "percent": 10.803324099722978
+    },
+    {
+      "count": 19,
+      "countedFromOne": true,
+      "percent": 23.456790123456805
+    },
+    {
+      "count": 20,
+      "countedFromOne": false,
+      "percent": 0.0
+    },
+    {
+      "count": 20,
+      "countedFromOne": true,
+      "percent": 10.803324099722978
+    }
+  ],
+  "runs": [
+    {
+      "roomG": 9.78,
+      "lengths": [
+        0.8
+      ],
+      "slope": 4.046502091106123,
+      "g": 9.75618366567207
+    },
+    {
+      "roomG": 9.78,
+      "lengths": [
+        0.8,
+        0.85
+      ],
+      "slope": 4.046502091106122,
+      "g": 9.756183665672072
+    },
+    {
+      "roomG": 9.78,
+      "lengths": [
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "slope": 4.046502091106122,
+      "g": 9.756183665672072
+    },
+    {
+      "roomG": 9.81,
+      "lengths": [
+        0.8
+      ],
+      "slope": 4.034127466974298,
+      "g": 9.786110609431805
+    },
+    {
+      "roomG": 9.81,
+      "lengths": [
+        0.8,
+        0.85
+      ],
+      "slope": 4.0341274669743,
+      "g": 9.7861106094318
+    },
+    {
+      "roomG": 9.81,
+      "lengths": [
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "slope": 4.0341274669743,
+      "g": 9.7861106094318
+    },
+    {
+      "roomG": 1.62,
+      "lengths": [
+        0.8
+      ],
+      "slope": 24.428882994455474,
+      "g": 1.6160549630254355
+    },
+    {
+      "roomG": 1.62,
+      "lengths": [
+        0.8,
+        0.85
+      ],
+      "slope": 24.428882994455595,
+      "g": 1.6160549630254275
+    },
+    {
+      "roomG": 1.62,
+      "lengths": [
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "slope": 24.428882994455478,
+      "g": 1.6160549630254353
+    }
+  ]
+}

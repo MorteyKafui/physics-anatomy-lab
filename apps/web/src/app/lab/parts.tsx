@@ -11,6 +11,8 @@ import {
   CircleHelpIcon,
   FlaskConicalIcon,
   HouseIcon,
+  ListChecksIcon,
+  LockIcon,
   SettingsIcon,
   type LucideIcon,
 } from "@pa/ui/icons";
@@ -93,11 +95,14 @@ export function StepStrip({
   completed,
   open,
   onGo,
+  review,
 }: {
   current: Step;
   completed: readonly Step[];
   open: (step: Step) => boolean;
   onGo: (step: Step) => void;
+  /** The review after the ten steps: where it is, and whether it has opened (after Analyse). */
+  review?: { href: string; open: boolean };
 }) {
   return (
     <nav
@@ -151,6 +156,33 @@ export function StepStrip({
           </button>
         );
       })}
+      {review &&
+        (review.open ? (
+          <Link
+            href={review.href}
+            className="flex shrink-0 items-center gap-2.5 border border-border px-3.5 py-2 text-muted-foreground hover:text-foreground pointer-coarse:min-h-11"
+          >
+            <ListChecksIcon className="size-5" aria-hidden />
+            <span>{t("lab.steps.review")}</span>
+          </Link>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  type="button"
+                  aria-disabled="true"
+                  aria-label={`${t("lab.steps.review")}. ${t("lab.steps.reviewLocked")}`}
+                  className="flex shrink-0 cursor-not-allowed items-center gap-2.5 border border-border px-3.5 py-2 text-muted-foreground pointer-coarse:min-h-11"
+                />
+              }
+            >
+              <LockIcon className="size-4" aria-hidden />
+              <span>{t("lab.steps.review")}</span>
+            </TooltipTrigger>
+            <TooltipContent side="top">{t("lab.steps.reviewLocked")}</TooltipContent>
+          </Tooltip>
+        ))}
     </nav>
   );
 }
