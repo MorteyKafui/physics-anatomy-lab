@@ -59,3 +59,11 @@ export type {
 } from "./snapshots/snapshots";
 export { eventsBeforeStep, redoEvents, runProjection } from "./runs/runs";
 export type { RunOrigin } from "./runs/runs";
+export {
+  decideReport,
+  EMPTY_REPORT,
+  MAX_SECTION,
+  REPORT_FORMATS,
+  reportProjection,
+} from "./report/report";
+export type { ReportCommand, ReportFormat, ReportState } from "./report/report";

@@ -9,8 +9,11 @@ import {
   runRules,
   TABLE_RULES,
   toTableView,
+  formatQuantity,
   type Finding,
+  type Quantity,
   type Skill,
+  type TableDesign,
 } from "@pa/analysis";
 import {
   answersProjection,
@@ -27,8 +30,10 @@ import {
   type CoachState,
   type Json,
   type LabEvent,
+  type AnswersState,
   type RunOrigin,
   type Step,
+  type TableState,
 } from "@pa/engine";
 import {
   ANALYSIS_RULES,
@@ -48,7 +53,7 @@ import {
   type RightWay,
 } from "@pa/experiments";
 
-import { graphColumnsFor, graphView } from "./graph-sheet";
+import { graphColumnsFor, graphView, type GraphView } from "./graph-sheet";
 
 /**
  * The review of one run (master plan, "Review, retry and compare"), worked out from its events:
@@ -93,6 +98,14 @@ export interface RunReview {
   canCompare: boolean;
   /** The same bench, every step done the right way, at this run's lengths. */
   right: RightWay;
+  /** The table and graph as the lab showed them, and what the analysis expects: for the report. */
+  table: TableState;
+  shownTable: TableDesign;
+  view: GraphView;
+  columns: { x: string; y: string };
+  units: { x: string; y: string };
+  answers: AnswersState;
+  expected: ReturnType<typeof expectedAnswers>;
 }
 
 const levelOf = (state: CoachState, skill: Skill) =>
@@ -280,8 +293,9 @@ export function reviewRun(attempt: Attempt, events: readonly LabEvent[], g: numb
     typedQuantity(answers.slope, expected.slope ?? { value: 0, dims: [-1, 0, 2, 0, 0] })?.value ??
     expected.slope?.value;
   const gValue = typedQuantity(answers.g, { value: 0, dims: G_DIMS })?.value ?? expected.g?.value;
-  // Worked out at Auto: three significant figures, as the lab shows them.
-  const sf3 = (v: number) => String(Number(v.toPrecision(3)));
+  // Worked out at Auto: three significant figures in the quantity's own units, as the lab shows.
+  const shown = (q: Quantity | undefined, v: number) =>
+    formatQuantity(q ?? { value: v, dims: G_DIMS }, 3);
 
   return {
     attempt,
@@ -292,14 +306,24 @@ export function reviewRun(attempt: Attempt, events: readonly LabEvent[], g: numb
     slope:
       slopeValue === undefined
         ? undefined
-        : { text: slopeText ?? `${sf3(slopeValue)} s² m⁻¹`, value: slopeValue },
-    g: gValue === undefined ? undefined : { text: gText ?? `${sf3(gValue)} m s⁻²`, value: gValue },
+        : { text: slopeText ?? shown(expected.slope, slopeValue), value: slopeValue },
+    g:
+      gValue === undefined
+        ? undefined
+        : { text: gText ?? shown(expected.g, gValue), value: gValue },
     mistakes,
     canCompare: state.completed.includes("analyse") && state.feedbackRead,
     right: rightWay(
       g,
       readings.map((r) => r.l),
     ),
+    table,
+    shownTable,
+    view,
+    columns,
+    units,
+    answers,
+    expected,
   };
 }
 

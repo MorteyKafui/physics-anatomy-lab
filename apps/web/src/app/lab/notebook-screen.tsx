@@ -36,6 +36,9 @@ import {
   type FigureScene,
 } from "./snapshot-figure";
 import { csvText, fileStem, pdfBytes, pngBytes, save, svgText, zipBytes } from "./snapshot-export";
+import { reportContent } from "./report/content";
+import { BenchDrawing, GraphFigure } from "./report/drawings";
+import { makeReportPdf } from "./report/make";
 import { useAttempt } from "./use-attempt";
 import { useSnapshots } from "./use-snapshots";
 
@@ -77,6 +80,8 @@ export function NotebookScreen() {
   const [toast, setToast] = useState<{ text: string; undo?: () => void }>();
   const [formats, setFormats] = useState(false);
   const exportCopies = useRef(new Map<string, SVGSVGElement>());
+  const reportBench = useRef<SVGSVGElement>(null);
+  const reportGraph = useRef<SVGSVGElement>(null);
   const options = useRef(new Map<string, HTMLButtonElement>());
 
   useEffect(() => {
@@ -87,6 +92,10 @@ export function NotebookScreen() {
 
   const events = handle?.events;
   const attempt = handle?.attempt;
+  const report = useMemo(
+    () => (attempt && events ? reportContent(attempt, events) : undefined),
+    [attempt, events],
+  );
   const scenes = useMemo(() => {
     if (!attempt || !events) return new Map<string, FigureScene>();
     return new Map(list.map((s, i) => [s.id, figureScene(attempt, events, s, i + 1)] as const));
@@ -174,6 +183,16 @@ export function NotebookScreen() {
         table.rows.map((r) => table.columns.map((c) => r.cells[c.id] ?? "")),
       );
     files["attempt.json"] = JSON.stringify(toAttemptFile(handle.attempt, handle.events), null, 2);
+    // The report as it stands, as the student would download it from step 10.
+    if (report) {
+      const pdf = await makeReportPdf(
+        report,
+        reportBench.current ?? undefined,
+        reportGraph.current ?? undefined,
+        { paper: "a4", captions: true, mark: true, notes: false },
+      );
+      files[`${E.id}-report.pdf`] = pdf.bytes;
+    }
     save(zipBytes(files), `${E.id}-notebook.zip`, "application/zip");
     setToast({ text: t("notebook.zipped", { count: list.length }) });
   };
@@ -422,7 +441,13 @@ export function NotebookScreen() {
       </section>
 
       {/* The copies the exports are made from: every figure, kept out of sight. */}
-      <div hidden>
+      <div hidden data-theme="site">
+        {report && (
+          <>
+            <BenchDrawing scene={report.bench} ref={reportBench} />
+            <GraphFigure scene={report.graph} mono={false} ref={reportGraph} />
+          </>
+        )}
         {list.map((s) => {
           const sc = scenes.get(s.id);
           return (

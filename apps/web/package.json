@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start --port 3000",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "bun test test"
   },
   "dependencies": {
     "@pa/analysis": "workspace:*",
@@ -20,6 +21,7 @@
     "@pa/instruments": "workspace:*",
     "@pa/physics": "workspace:*",
     "@pa/ui": "workspace:*",
+    "@pdf-lib/fontkit": "1.1.1",
     "fflate": "0.8.3",
     "next": "16.4.2",
     "pdf-lib": "1.17.1",

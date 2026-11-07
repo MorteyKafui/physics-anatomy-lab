@@ -148,7 +148,9 @@ test("a figure downloads as PNG, SVG and PDF, and everything as one ZIP", async 
   expect(pdf.name).toBe("fig-2-simple-pendulum-bench.pdf");
   expect(pdf.bytes.subarray(0, 5).toString("latin1")).toBe("%PDF-");
 
-  const zip = await get(() => page.getByRole("button", { name: "Download all (ZIP)" }).click());
+  const zip = await get(() =>
+    page.getByRole("button", { name: "Download all with the report (ZIP)" }).click(),
+  );
   expect(zip.name).toBe("simple-pendulum-notebook.zip");
   const names = zip.bytes.toString("latin1");
   for (const file of [
@@ -157,6 +159,7 @@ test("a figure downloads as PNG, SVG and PDF, and everything as one ZIP", async 
     "fig-1-simple-pendulum-bench.pdf",
     "fig-2-simple-pendulum-bench.pdf",
     "attempt.json",
+    "simple-pendulum-report.pdf",
   ])
     expect(names).toContain(file);
 });
