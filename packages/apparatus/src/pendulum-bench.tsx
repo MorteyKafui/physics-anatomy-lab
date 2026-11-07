@@ -39,6 +39,8 @@ export interface PendulumBenchProps {
    * labelled exports. Parts not on the bench are not lettered.
    */
   letters?: Partial<Record<PendulumPart, string>>;
+  /** Draw the letters as numbered pins (black discs), as a print sheet keys its parts. */
+  pins?: boolean;
 }
 
 // Geometry from the mockup's 420 × 460 drawing.
@@ -116,6 +118,7 @@ export function PendulumBench({
   label,
   className,
   letters,
+  pins = false,
 }: PendulumBenchProps) {
   const a = assembly;
   const has = (p: keyof Assembly) => a[p] !== undefined;
@@ -292,7 +295,21 @@ export function PendulumBench({
                 bob: { x: bob.x + 18, y: bob.y + 5 },
                 watch: { x: DIAL.x - 34, y: DIAL.y + 5 },
               }[part];
-              return (
+              return pins ? (
+                <g key={part} data-letter={part}>
+                  <circle cx={at.x + 4} cy={at.y - 5} r={10} fill={tone("ink")} />
+                  <text
+                    x={at.x + 4}
+                    y={at.y - 0.5}
+                    textAnchor="middle"
+                    fontSize={12}
+                    fontWeight={600}
+                    fill={tone("dial")}
+                  >
+                    {letter}
+                  </text>
+                </g>
+              ) : (
                 <text key={part} x={at.x} y={at.y} data-letter={part}>
                   {letter}
                 </text>

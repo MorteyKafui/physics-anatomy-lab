@@ -89,3 +89,29 @@ export const figureTone = {
   dialRim: "#1E1D1D",
   ink: "#141414",
 } as const;
+
+/**
+ * The same parts on paper (the Anatomy light theme): print sheets and the report. Light solids
+ * with dark edges, so the drawing reads on white and photocopies in black and white.
+ */
+export const figureTonePaper: Record<keyof typeof figureTone, string> = {
+  floor: "#FAFAF7",
+  floorLine: "#E6E4DB",
+  floorEdge: "#BDBAB1",
+  baseTop: "#F3F1E8",
+  baseEdge: "#77746E",
+  baseSide: "#E6E4DB",
+  baseSideDark: "#D6D3C9",
+  rod: "#A3A19B",
+  rodLight: "#E6E4DB",
+  clamp: "#C9C6BF",
+  clampEdge: "#77746E",
+  cork: "#D9B98F",
+  corkEdge: "#8A6440",
+  guide: "#BDBAB1",
+  thread: "#3D3B37",
+  bobLight: "#FFD0C2",
+  dial: "#FFFFFF",
+  dialRim: "#3D3B37",
+  ink: "#141414",
+};
