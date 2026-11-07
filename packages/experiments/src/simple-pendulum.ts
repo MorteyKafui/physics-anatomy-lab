@@ -9,6 +9,8 @@ import { gFromPeriod, periodExact, recordedPeriod } from "@pa/physics";
  */
 export const simplePendulum = {
   id: "simple-pendulum",
+  /** The content version, printed on every labelled export so a figure can be traced. */
+  version: 1,
   topic: "mechanics",
   /** Pivot to the centre of the bob, m. */
   length: 0.8,

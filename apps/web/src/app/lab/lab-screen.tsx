@@ -7,7 +7,6 @@ import {
   runRules,
   TABLE_RULES,
   GRAPH_RULES,
-  heading,
   pointsFor,
   toTableView,
   type Finding,
@@ -25,8 +24,10 @@ import {
   replay,
   writeAnswer,
   STEPS,
+  visibleSnapshots,
   type Advice,
   type HelpLevel,
+  type SnapshotKind,
   type Step,
 } from "@pa/engine";
 import type { Skill } from "@pa/analysis";
@@ -80,6 +81,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { TooltipProvider } from "@pa/ui/components/tooltip";
 import {
+  BookOpenIcon,
+  CameraIcon,
   ChevronLeftIcon,
   LayersIcon,
   MinusIcon,
@@ -111,11 +114,12 @@ import {
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
 import { AnalysePanel } from "./analyse";
 import { FormulaBox, Sym } from "./formula";
-import { GraphPanel, graphView, useGraph } from "./graph-sheet";
+import { GraphPanel, graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
 import { flagsFor, TableBuilder, useTable } from "./table-builder";
 import { useAttempt } from "./use-attempt";
 import { useAudio } from "./use-audio";
 import { useBenchClock } from "./use-bench-clock";
+import { newSnapshotId, useSnapshots } from "./use-snapshots";
 
 const E = simplePendulum;
 const msg = (key: string, params?: Record<string, string | number>) =>
@@ -142,6 +146,10 @@ const LIVE_TABLE_RULES = [
 ];
 const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
 
+/** What a snapshot shows at each step: the bench, then the table, then the graph. */
+export const snapshotKindFor = (step: Step): SnapshotKind =>
+  step === "tabulate" ? "table" : STEPS.indexOf(step) >= STEPS.indexOf("plot") ? "graph" : "bench";
+
 export function LabScreen() {
   const handle = useAttempt(E.id);
   const clock = useBenchClock();
@@ -151,6 +159,8 @@ export function LabScreen() {
   const g = DEFAULT_ENVIRONMENT.g;
   const results = useTable(handle);
   const plot = useGraph(handle);
+  const shots = useSnapshots(handle);
+  const [snapNote, setSnapNote] = useState<string>();
   const [checkedGraph, setCheckedGraph] = useState<string>();
   const [checkedAnalysis, setCheckedAnalysis] = useState<string>();
   const answers = useMemo(
@@ -195,6 +205,42 @@ export function LabScreen() {
   const period = useMemo(() => benchPeriod(g, length), [g, length]);
   const [checkedTable, setCheckedTable] = useState<string>();
   const running = timing !== undefined && timing.stoppedAt === undefined;
+
+  // Snapshots: the camera (or C) takes one of what the step shows; finishing a step takes one
+  // automatically. The bench keeps its clock and the stopwatch's reading, so the figure shows the
+  // bob where it was.
+  const runSnapshot = shots.run;
+  const snapshotsNow = shots.now;
+  const takeSnapshot = useCallback(
+    async (auto?: string) => {
+      if (!handle) return;
+      const step = handle.state.step;
+      const kind = snapshotKindFor(step);
+      const time = clock.now();
+      const stopwatch = !timing
+        ? 0
+        : timing.stoppedAt !== undefined
+          ? recordedTime(timing)!
+          : Math.max(0, time - timing.startedAt);
+      const taken = await runSnapshot({
+        type: "take",
+        id: newSnapshotId(),
+        kind,
+        step,
+        caption: auto ?? t(`lab.snapshot.yours.${kind}` as MessageKey),
+        auto: auto !== undefined,
+        ...(kind === "bench" ? { bench: { time, stopwatch } } : {}),
+      });
+      if (taken)
+        setSnapNote(t("lab.snapshot.taken", { n: visibleSnapshots(snapshotsNow()).length }));
+    },
+    [handle, clock, timing, runSnapshot, snapshotsNow],
+  );
+  useEffect(() => {
+    if (!snapNote) return;
+    const id = setTimeout(() => setSnapNote(undefined), 5000);
+    return () => clearTimeout(id);
+  }, [snapNote]);
 
   const consult = useCallback(
     async (findings: Finding[], moment: "live" | "step-exit" | "asked") => {
@@ -417,9 +463,13 @@ export function LabScreen() {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest("input, select, textarea, [contenteditable]")) return;
-      if ((e.key === "m" || e.key === "M") && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const plain = !e.ctrlKey && !e.metaKey && !e.altKey;
+      if ((e.key === "m" || e.key === "M") && plain) {
         e.preventDefault();
         setLens((l) => (l ? undefined : LENS_START));
+      } else if ((e.key === "c" || e.key === "C") && plain) {
+        e.preventDefault();
+        void takeSnapshot();
       } else if (e.key === "Escape" && held) {
         e.preventDefault();
         const part = held;
@@ -430,7 +480,7 @@ export function LabScreen() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [held]);
+  }, [held, takeSnapshot]);
 
   // Keyboard: S starts and stops the stopwatch, Space counts a pass (only while measuring).
   useEffect(() => {
@@ -623,6 +673,9 @@ export function LabScreen() {
 
   const next = STEPS[stepIndex + 1];
   const finishStep = async () => {
+    // The first time a step is finished, its snapshot goes in the notebook.
+    const auto = autoCaption(state.step);
+    if (auto && !state.completed.includes(state.step)) await takeSnapshot(auto);
     await handle.dispatch({ type: "complete-step" });
     if (next) await handle.dispatch({ type: "go-to-step", step: next });
     setAdvice([]);
@@ -646,16 +699,19 @@ export function LabScreen() {
 
   // The graph (step 7): T² against l by default, or any two columns the student picks.
   const numericColumns = table.columns.filter((c) => c.role !== "notes");
-  const has = (id: string) => numericColumns.some((c) => c.id === id);
-  const graphColumns = plot.graph.sheet
-    ? { x: plot.graph.sheet.x.column, y: plot.graph.sheet.y.column }
-    : has(PENDULUM_PLOT.x) && has(PENDULUM_PLOT.y)
-      ? { x: PENDULUM_PLOT.x, y: PENDULUM_PLOT.y }
-      : {
-          x: numericColumns[0]?.id ?? PENDULUM_PLOT.x,
-          y: numericColumns.at(-1)?.id ?? PENDULUM_PLOT.y,
-        };
+  const graphColumns = graphColumnsFor(plot.graph, table.columns, PENDULUM_PLOT);
   const columnFor = (id: string) => table.columns.find((c) => c.id === id);
+  function autoCaption(s: Step): string | undefined {
+    if (s === "build") return t("lab.snapshot.auto.build");
+    if (s === "measure") return t("lab.snapshot.auto.measure");
+    if (s === "tabulate") return t("lab.snapshot.auto.tabulate");
+    if (s === "plot")
+      return t("lab.snapshot.auto.plot", {
+        y: columnFor(graphColumns.y)?.symbol ?? graphColumns.y,
+        x: columnFor(graphColumns.x)?.symbol ?? graphColumns.x,
+      });
+    return undefined;
+  }
   const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
   const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist);
   const graphFindings =
@@ -886,7 +942,7 @@ export function LabScreen() {
   return (
     <TooltipProvider>
       <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
-        <Rail />
+        <Rail current="lab" />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {/* Header */}
           <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
@@ -1155,6 +1211,23 @@ export function LabScreen() {
                 </PopoverContent>
               </Popover>
             )}
+            <Button
+              aria-label={t("lab.snapshot.label")}
+              aria-keyshortcuts="C"
+              className="h-9 gap-2 px-3 font-semibold"
+              onClick={() => void takeSnapshot()}
+            >
+              <CameraIcon aria-hidden />
+              <span className="hidden md:inline">{t("lab.snapshot.take")}</span>
+            </Button>
+            {/* The rail holds the notebook on a wide screen; the phone has it here. */}
+            <Link
+              href={`/lab/${E.id}/notebook`}
+              aria-label={t("lab.rail.notebook")}
+              className="flex size-11 items-center justify-center border border-input bg-surface md:hidden"
+            >
+              <BookOpenIcon className="size-5" aria-hidden />
+            </Link>
           </header>
           <div className="h-[3px] bg-border md:hidden" aria-hidden>
             <div className="h-[3px] bg-primary" style={{ width: `${percent}%` }} />
@@ -1196,14 +1269,8 @@ export function LabScreen() {
                   view={graphShown}
                   data={graphData}
                   headings={{
-                    x: (() => {
-                      const c = columnFor(graphColumns.x);
-                      return c ? heading(c) : graphColumns.x;
-                    })(),
-                    y: (() => {
-                      const c = columnFor(graphColumns.y);
-                      return c ? heading(c) : graphColumns.y;
-                    })(),
+                    x: headingFor(table.columns, graphColumns.x),
+                    y: headingFor(table.columns, graphColumns.y),
                   }}
                   numericColumns={numericColumns}
                   flaggedRows={graphFlagged}
@@ -1765,6 +1832,19 @@ export function LabScreen() {
             </aside>
           </div>
 
+          {/* "Fig. n taken", for a few seconds after a snapshot. Clicks pass through it, so it
+              never gets in the way of the bench or the graph sheet. */}
+          <div
+            role="status"
+            className="pointer-events-none fixed right-4 bottom-24 z-40 md:right-7"
+          >
+            {snapNote && (
+              <div className="flex items-center gap-3 bg-foreground px-3.5 py-3 text-sm text-background">
+                <CameraIcon className="size-4" aria-hidden />
+                <span>{snapNote}</span>
+              </div>
+            )}
+          </div>
           {audio.settings.on && (
             <p
               role="status"

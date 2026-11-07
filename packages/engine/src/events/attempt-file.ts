@@ -18,11 +18,16 @@ export interface AttemptFile {
 export async function exportAttempt(store: EventStore, attemptId: string): Promise<AttemptFile> {
   const attempt = await store.getAttempt(attemptId);
   if (!attempt) throw new RangeError(`no attempt ${attemptId} on this device`);
+  return toAttemptFile(attempt, await store.events(attemptId));
+}
+
+/** The attempt file for an attempt and its events already in hand (the notebook's ZIP). */
+export function toAttemptFile(attempt: Attempt, events: readonly LabEvent[]): AttemptFile {
   return {
     format: ATTEMPT_FILE_FORMAT,
     version: ATTEMPT_FORMAT_VERSION,
     attempt,
-    events: await store.events(attemptId),
+    events: [...events],
   };
 }
 

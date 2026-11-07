@@ -20,7 +20,9 @@
     "@pa/instruments": "workspace:*",
     "@pa/physics": "workspace:*",
     "@pa/ui": "workspace:*",
+    "fflate": "0.8.3",
     "next": "16.4.2",
+    "pdf-lib": "1.17.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

@@ -108,6 +108,28 @@ export interface GraphView {
   drawn: { sheet: boolean; plotted: boolean; line: boolean; triangle: boolean };
 }
 
+/**
+ * The columns the graph plots: the ones the student set the axes to, else the experiment's own
+ * plot (T² against l) when the table has both, else the first and last numeric columns.
+ */
+export function graphColumnsFor(
+  state: GraphState,
+  columns: readonly DesignColumn[],
+  preferred: { x: string; y: string },
+): { x: string; y: string } {
+  if (state.sheet) return { x: state.sheet.x.column, y: state.sheet.y.column };
+  const numeric = columns.filter((c) => c.role !== "notes");
+  const has = (id: string) => numeric.some((c) => c.id === id);
+  if (has(preferred.x) && has(preferred.y)) return preferred;
+  return { x: numeric[0]?.id ?? preferred.x, y: numeric.at(-1)?.id ?? preferred.y };
+}
+
+/** An axis heading for a column, "T²/s²", or the column's id if it has gone. */
+export const headingFor = (columns: readonly DesignColumn[], id: string) => {
+  const c = columns.find((x) => x.id === id);
+  return c ? heading(c) : id;
+};
+
 /** The scales the app starts from: at Auto the careful choice, otherwise axes from zero. */
 export function startingSheet(
   data: readonly Point[],
@@ -178,6 +200,150 @@ function gridPath(step: number, skip: number | undefined) {
 const MINOR = gridPath(SHEET.squareMm, 10);
 const MEDIUM = gridPath(10, SHEET.divisionMm);
 const MAJOR = gridPath(SHEET.divisionMm, undefined);
+
+/**
+ * The sheet itself: ruling, scales, labels, the points, the line and the slope triangle. The Plot
+ * step draws it with its tools on top; snapshots and exports draw it on its own.
+ */
+export function GraphDrawing({
+  view,
+  headings,
+  mono,
+  flaggedRows = new Set(),
+  mark = true,
+}: {
+  view: GraphView;
+  headings: { x: string; y: string };
+  mono: boolean;
+  flaggedRows?: ReadonlySet<string>;
+  /** The sheet's own mark; a labelled figure carries the mark in its footer instead. */
+  mark?: boolean;
+}) {
+  const { sheet } = view;
+  const tone = (part: string) => `var(--pa-graph-${mono ? "mono-" : ""}${part})`;
+  const triangleC = view.triangle && { x: view.triangle.b.x, y: view.triangle.a.y };
+  const paperOf = (p: Point) => {
+    const q = onPaper(sheet, p);
+    return { x: q.x, y: svgY(q.y) };
+  };
+  return (
+    <>
+      <rect x={0} y={0} width={SHEET.widthMm} height={SHEET.heightMm} fill={tone("paper")} />
+      <path d={MINOR} stroke={tone("grid-minor")} strokeWidth={0.15} fill="none" />
+      <path d={MEDIUM} stroke={tone("grid-major")} strokeWidth={0.3} fill="none" />
+      <path d={MAJOR} stroke={tone("grid-major")} strokeWidth={0.55} fill="none" />
+      <rect
+        x={0}
+        y={0}
+        width={SHEET.widthMm}
+        height={SHEET.heightMm}
+        fill="none"
+        stroke={tone("frame")}
+        strokeWidth={0.6}
+      />
+
+      <g fontFamily="var(--font-mono)" fontSize={4.2} fill={tone("label")}>
+        {Array.from({ length: DIVISIONS.x + 1 }, (_, k) => (
+          <text key={`x${k}`} x={k * SHEET.divisionMm} y={SHEET.heightMm + 6} textAnchor="middle">
+            {fmt(sheet.x, sheet.x.start + k * sheet.x.per2cm)}
+          </text>
+        ))}
+        {Array.from({ length: DIVISIONS.y + 1 }, (_, k) => (
+          <text key={`y${k}`} x={-2} y={svgY(k * SHEET.divisionMm) + 1.5} textAnchor="end">
+            {fmt(sheet.y, sheet.y.start + k * sheet.y.per2cm)}
+          </text>
+        ))}
+        <text x={SHEET.widthMm / 2} y={SHEET.heightMm + 13} textAnchor="middle" fontSize={5}>
+          {headings.x}
+        </text>
+        <text x={-24} y={-4} fontSize={5}>
+          {headings.y}
+        </text>
+        {mark && (
+          <text
+            x={SHEET.widthMm}
+            y={SHEET.heightMm + 13}
+            textAnchor="end"
+            fontSize={3.6}
+            fill={tone("mark")}
+          >
+            {t("lab.graph.mark")}
+          </text>
+        )}
+      </g>
+
+      {view.line && (
+        <line
+          {...(() => {
+            const a = paperOf(view.line.from);
+            const b = paperOf(view.line.to);
+            return { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
+          })()}
+          stroke={tone("fit")}
+          strokeWidth={0.7}
+          strokeDasharray={view.drawn.line ? "3 1.5" : undefined}
+          data-graph="line"
+        />
+      )}
+      {view.triangle && triangleC && (
+        <g data-graph="triangle">
+          <polygon
+            points={[view.triangle.a, triangleC, view.triangle.b]
+              .map(paperOf)
+              .map((p) => `${p.x},${p.y}`)
+              .join(" ")}
+            fill={mono ? "none" : tone("triangle")}
+            fillOpacity={0.1}
+            stroke={tone("triangle")}
+            strokeWidth={0.5}
+            strokeDasharray="2 1.2"
+          />
+          <g fontFamily="var(--font-mono)" fontSize={5} fill={tone("triangle")}>
+            {(
+              [
+                ["A", view.triangle.a, -5, -2],
+                ["B", view.triangle.b, 2, -2],
+                ["C", triangleC, 2, 5],
+              ] as const
+            ).map(([name, p, dx, dy]) => {
+              const q = paperOf(p);
+              return (
+                <text key={name} x={q.x + dx} y={q.y + dy}>
+                  {name}
+                </text>
+              );
+            })}
+          </g>
+        </g>
+      )}
+      <g stroke={tone("point")} strokeWidth={0.6} data-graph="points">
+        {view.plotted.map((p) => {
+          const q = paperOf(p);
+          return (
+            <g key={p.row} data-row={p.row}>
+              <line x1={q.x - 1.5} y1={q.y - 1.5} x2={q.x + 1.5} y2={q.y + 1.5} />
+              <line x1={q.x - 1.5} y1={q.y + 1.5} x2={q.x + 1.5} y2={q.y - 1.5} />
+              {flaggedRows.has(p.row) && (
+                <circle
+                  cx={q.x}
+                  cy={q.y}
+                  r={3.2}
+                  fill="none"
+                  stroke={tone("label")}
+                  strokeDasharray="1 0.8"
+                  strokeWidth={0.4}
+                />
+              )}
+            </g>
+          );
+        })}
+      </g>
+    </>
+  );
+}
+
+/** The sheet's drawing area in its own units, mm with margins for the scales. */
+export const GRAPH_VIEWBOX = `${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}`;
 
 type Tool = "plot" | "line" | "triangle";
 
@@ -543,119 +709,7 @@ export function GraphPanel({
               }
             }}
           >
-            <rect x={0} y={0} width={SHEET.widthMm} height={SHEET.heightMm} fill={tone("paper")} />
-            <path d={MINOR} stroke={tone("grid-minor")} strokeWidth={0.15} fill="none" />
-            <path d={MEDIUM} stroke={tone("grid-major")} strokeWidth={0.3} fill="none" />
-            <path d={MAJOR} stroke={tone("grid-major")} strokeWidth={0.55} fill="none" />
-            <rect
-              x={0}
-              y={0}
-              width={SHEET.widthMm}
-              height={SHEET.heightMm}
-              fill="none"
-              stroke={tone("frame")}
-              strokeWidth={0.6}
-            />
-
-            <g fontFamily="var(--font-mono)" fontSize={4.2} fill={tone("label")}>
-              {Array.from({ length: DIVISIONS.x + 1 }, (_, k) => (
-                <text
-                  key={`x${k}`}
-                  x={k * SHEET.divisionMm}
-                  y={SHEET.heightMm + 6}
-                  textAnchor="middle"
-                >
-                  {fmt(sheet.x, sheet.x.start + k * sheet.x.per2cm)}
-                </text>
-              ))}
-              {Array.from({ length: DIVISIONS.y + 1 }, (_, k) => (
-                <text key={`y${k}`} x={-2} y={svgY(k * SHEET.divisionMm) + 1.5} textAnchor="end">
-                  {fmt(sheet.y, sheet.y.start + k * sheet.y.per2cm)}
-                </text>
-              ))}
-              <text x={SHEET.widthMm / 2} y={SHEET.heightMm + 13} textAnchor="middle" fontSize={5}>
-                {headings.x}
-              </text>
-              <text x={-24} y={-4} fontSize={5}>
-                {headings.y}
-              </text>
-              <text
-                x={SHEET.widthMm}
-                y={SHEET.heightMm + 13}
-                textAnchor="end"
-                fontSize={3.6}
-                fill={tone("mark")}
-              >
-                {t("lab.graph.mark")}
-              </text>
-            </g>
-
-            {view.line && (
-              <line
-                {...(() => {
-                  const a = paperOf(view.line.from);
-                  const b = paperOf(view.line.to);
-                  return { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
-                })()}
-                stroke={tone("fit")}
-                strokeWidth={0.7}
-                strokeDasharray={view.drawn.line ? "3 1.5" : undefined}
-                data-graph="line"
-              />
-            )}
-            {view.triangle && triangleC && (
-              <g data-graph="triangle">
-                <polygon
-                  points={[view.triangle.a, triangleC, view.triangle.b]
-                    .map(paperOf)
-                    .map((p) => `${p.x},${p.y}`)
-                    .join(" ")}
-                  fill={mono ? "none" : tone("triangle")}
-                  fillOpacity={0.1}
-                  stroke={tone("triangle")}
-                  strokeWidth={0.5}
-                  strokeDasharray="2 1.2"
-                />
-                <g fontFamily="var(--font-mono)" fontSize={5} fill={tone("triangle")}>
-                  {(
-                    [
-                      ["A", view.triangle.a, -5, -2],
-                      ["B", view.triangle.b, 2, -2],
-                      ["C", triangleC, 2, 5],
-                    ] as const
-                  ).map(([name, p, dx, dy]) => {
-                    const q = paperOf(p);
-                    return (
-                      <text key={name} x={q.x + dx} y={q.y + dy}>
-                        {name}
-                      </text>
-                    );
-                  })}
-                </g>
-              </g>
-            )}
-            <g stroke={tone("point")} strokeWidth={0.6} data-graph="points">
-              {view.plotted.map((p) => {
-                const q = paperOf(p);
-                return (
-                  <g key={p.row} data-row={p.row}>
-                    <line x1={q.x - 1.5} y1={q.y - 1.5} x2={q.x + 1.5} y2={q.y + 1.5} />
-                    <line x1={q.x - 1.5} y1={q.y + 1.5} x2={q.x + 1.5} y2={q.y - 1.5} />
-                    {flaggedRows.has(p.row) && (
-                      <circle
-                        cx={q.x}
-                        cy={q.y}
-                        r={3.2}
-                        fill="none"
-                        stroke={tone("label")}
-                        strokeDasharray="1 0.8"
-                        strokeWidth={0.4}
-                      />
-                    )}
-                  </g>
-                );
-              })}
-            </g>
+            <GraphDrawing view={view} headings={headings} mono={mono} flaggedRows={flaggedRows} />
             {pending && (
               <circle
                 {...(() => {
