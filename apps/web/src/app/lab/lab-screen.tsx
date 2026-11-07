@@ -1039,7 +1039,9 @@ export function LabScreen() {
             </div>
             <span className="hidden flex-1 md:block" />
             <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-              {t("lab.helpLevel.label")}
+              {/* On narrower screens the words give way so the header stays on one row; the select
+                  keeps its name. */}
+              <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
               <select
                 className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
                 value={state.helpLevel}

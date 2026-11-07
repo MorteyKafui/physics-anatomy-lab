@@ -189,3 +189,13 @@ test("no sideways scrolling at phone width in the notebook", async ({ page }, in
   );
   expect(sideways).toBe(0);
 });
+
+test("the lab header keeps the Snapshot button on one row at desktop width", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "Desktop header");
+  await page.goto(LAB);
+  const top = async (name: string) => (await page.getByRole("button", { name }).boundingBox())!.y;
+  // A second row would push the bench and the graph sheet down.
+  expect(Math.abs((await top("Take a snapshot")) - (await top("Sound")))).toBeLessThan(4);
+});
