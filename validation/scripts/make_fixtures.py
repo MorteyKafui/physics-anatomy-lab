@@ -8,6 +8,7 @@ fit.json       straight-line fits (SciPy linregress)       read by packages/anal
 sigfigs.json   significant figures (Python decimal)        read by packages/analysis
 student_t.json Student's t CDF and quantiles (SciPy)      read by packages/analysis
 outliers.json  Bonferroni outlier test (hat matrix)       read by packages/analysis
+review.json    the review's effects and the right way     read by packages/experiments
 """
 
 import itertools
@@ -21,6 +22,7 @@ from pa_validation.lens import image
 from pa_validation.mixtures import final_temperature, solid_specific_heat
 from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
 from pa_validation.pendulum import period_exact
+from pa_validation.review import reading_error_percent, right_way
 from pa_validation.sigfigs import format_sig_figs, parse_figure
 
 FIXTURES = Path(__file__).resolve().parent.parent / "fixtures"
@@ -301,6 +303,30 @@ def build_outliers() -> dict[str, object]:
     }
 
 
+def build_review() -> dict[str, object]:
+    """The bench swings through 8°; lengths are the ones a run might time."""
+    amplitude = math.radians(8)
+    errors = [
+        {
+            "count": count,
+            "countedFromOne": from_one,
+            "percent": reading_error_percent(count, from_one),
+        }
+        for count in [10, 15, 19, 20]
+        for from_one in [False, True]
+    ]
+    runs = []
+    for g in GRAVITY:
+        for lengths in [[0.8], [0.8, 0.85], [0.6, 0.7, 0.8, 0.9, 1.0]]:
+            runs.append({"roomG": g, "lengths": lengths, **right_way(g, amplitude, lengths)})
+    return {
+        "model": "review: timing errors and the right way (SciPy ellipk and linregress)",
+        "amplitudeDeg": 8,
+        "errors": errors,
+        "runs": runs,
+    }
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -319,3 +345,4 @@ if __name__ == "__main__":
     write("mixtures.json", build_mixtures())
     write("student_t.json", build_student_t())
     write("outliers.json", build_outliers())
+    write("review.json", build_review())

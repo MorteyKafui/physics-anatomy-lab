@@ -90,7 +90,14 @@ const levelFor = (state: CoachState, skill: Skill, floor = 0) =>
   ESCALATION[Math.min(ESCALATION.length - 1, Math.max(floor, state.seen[skill] ?? 0))]!;
 
 function hintEvent(finding: Finding, level: Escalation): NewEvent {
-  const data: Json = { hint: finding.key, rule: finding.rule, skill: finding.skill, level };
+  // The finding's params ride along, so the review can word the mistake as the coach did.
+  const data: Json = {
+    hint: finding.key,
+    rule: finding.rule,
+    skill: finding.skill,
+    level,
+    ...(finding.params ? { params: { ...finding.params } } : {}),
+  };
   return level === "watch" ? { kind: "coach.note", data } : { kind: "coach.hint", data };
 }
 

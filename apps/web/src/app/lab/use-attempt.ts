@@ -5,6 +5,7 @@ import {
   createIndexedDbStore,
   decide,
   newDeviceId,
+  redoEvents,
   replay,
   type Attempt,
   type CoachState,
@@ -13,6 +14,7 @@ import {
   type LabEvent,
   type NewEvent,
   type Refusal,
+  type Step,
 } from "@pa/engine";
 import { newSeed } from "@pa/instruments";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -67,6 +69,48 @@ function openAttempt(experimentId: string) {
     openings.set(experimentId, opening);
   }
   return opening;
+}
+
+/** Every run of an experiment on this device, oldest first, with its events. */
+export async function listRuns(experimentId: string) {
+  const attempts = await store().listAttempts({ experimentId });
+  const runs = await Promise.all(
+    [...attempts]
+      .sort((a, b) => a.createdAt - b.createdAt)
+      .map(async (attempt) => ({ attempt, events: await store().events(attempt.id) })),
+  );
+  return runs;
+}
+
+/** The run this device opens in the lab for an experiment. */
+export const currentRunId = (experimentId: string) => remembered(`pa:attempt:${experimentId}`);
+
+/** Save events in any run on this device (the review records "feedback read" in its own run). */
+export const appendTo = (attemptId: string, events: readonly NewEvent[]) =>
+  store().append(attemptId, events);
+
+/**
+ * Redo a run from a step: a new attempt with the same seed (the same apparatus) that keeps the
+ * earlier run's work before that step. The lab opens it from now on; the earlier run is kept.
+ */
+export async function startRun(source: Attempt, events: readonly LabEvent[], from: Step) {
+  const news = redoEvents(events, from, source.id);
+  if (!news) return undefined;
+  const attempt = await store().createAttempt({
+    experimentId: source.experimentId,
+    mode: source.mode,
+    seed: source.seed,
+  });
+  await store().append(attempt.id, news);
+  remember(`pa:attempt:${source.experimentId}`, attempt.id);
+  openings.delete(source.experimentId);
+  return attempt;
+}
+
+/** Open an earlier run in the lab instead of the latest. */
+export function openRun(experimentId: string, attemptId: string) {
+  remember(`pa:attempt:${experimentId}`, attemptId);
+  openings.delete(experimentId);
 }
 
 export interface AttemptHandle {

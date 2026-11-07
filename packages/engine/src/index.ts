@@ -57,3 +57,5 @@ export type {
   SnapshotPoint,
   SnapshotsState,
 } from "./snapshots/snapshots";
+export { eventsBeforeStep, redoEvents, runProjection } from "./runs/runs";
+export type { RunOrigin } from "./runs/runs";
