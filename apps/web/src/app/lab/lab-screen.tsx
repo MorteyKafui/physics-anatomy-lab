@@ -25,6 +25,9 @@ import {
   writeAnswer,
   STEPS,
   visibleSnapshots,
+  decideExam,
+  EMPTY_EXAM,
+  examProjection,
   type Advice,
   type HelpLevel,
   type SnapshotKind,
@@ -97,6 +100,7 @@ import {
   TriangleAlertIcon,
 } from "@pa/ui/icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -116,7 +120,8 @@ import { AnalysePanel } from "./analyse";
 import { FormulaBox, Sym } from "./formula";
 import { GraphPanel, graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
 import { flagsFor, TableBuilder, useTable } from "./table-builder";
-import { useAttempt } from "./use-attempt";
+import { backToPractice, useAttempt } from "./use-attempt";
+import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
 import { useBenchClock } from "./use-bench-clock";
 import { newSnapshotId, useSnapshots } from "./use-snapshots";
@@ -152,6 +157,22 @@ export const snapshotKindFor = (step: Step): SnapshotKind =>
 
 export function LabScreen() {
   const handle = useAttempt(E.id);
+  const router = useRouter();
+  // Exam mode: the clock, from the attempt's own events.
+  const exam = useMemo(
+    () => (handle ? replay(examProjection, handle.attempt, handle.events) : EMPTY_EXAM),
+    [handle],
+  );
+  const handIn = useCallback(
+    async (auto: boolean) => {
+      if (!handle) return;
+      const now = replay(examProjection, handle.attempt, handle.events);
+      const d = decideExam(handle.attempt.mode, now, { type: "hand-in", auto });
+      if (d.ok) await handle.record(d.events);
+      router.push(`/lab/${E.id}/exam`);
+    },
+    [handle, router],
+  );
   const clock = useBenchClock();
   const audio = useAudio();
   // The audio callbacks are stable, so effects can list them without running every frame.
@@ -1038,28 +1059,30 @@ export function LabScreen() {
               </Button>
             </div>
             <span className="hidden flex-1 md:block" />
-            <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-              {/* On narrower screens the words give way so the header stays on one row; the select
+            {/* In an exam the coach is off: no help level to choose. */}
+            {state.mode !== "exam" && (
+              <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
+                {/* On narrower screens the words give way so the header stays on one row; the select
                   keeps its name. */}
-              <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
-              <select
-                className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
-                value={state.helpLevel}
-                disabled={state.mode === "exam"}
-                onChange={(e) =>
-                  void handle.dispatch({
-                    type: "set-help-level",
-                    level: e.target.value as HelpLevel,
-                  })
-                }
-              >
-                {HELP_LEVELS.map((level) => (
-                  <option key={level} value={level}>
-                    {t(`lab.helpLevel.${level}` as MessageKey)}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
+                <select
+                  className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
+                  value={state.helpLevel}
+                  onChange={(e) =>
+                    void handle.dispatch({
+                      type: "set-help-level",
+                      level: e.target.value as HelpLevel,
+                    })
+                  }
+                >
+                  {HELP_LEVELS.map((level) => (
+                    <option key={level} value={level}>
+                      {t(`lab.helpLevel.${level}` as MessageKey)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <Popover>
               <PopoverTrigger
                 aria-label={t("lab.audio.label")}
@@ -1231,6 +1254,29 @@ export function LabScreen() {
               <BookOpenIcon className="size-5" aria-hidden />
             </Link>
           </header>
+          {handle.attempt.mode === "exam" &&
+            exam.startedAt !== undefined &&
+            exam.handedInAt === undefined && (
+              <ExamBar startedAt={exam.startedAt} onHandIn={(auto) => void handIn(auto)} />
+            )}
+          {handle.attempt.mode === "exam" && exam.handedInAt !== undefined && (
+            <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
+              <span>{exam.auto ? t("exam.timeUp") : t("exam.handedIn")}</span>
+              <Link
+                href={`/lab/${E.id}/exam`}
+                className="font-semibold underline underline-offset-2"
+              >
+                {t("exam.seeScript")}
+              </Link>
+              <button
+                type="button"
+                className="underline underline-offset-2"
+                onClick={() => void backToPractice(E.id).then(() => window.location.reload())}
+              >
+                {t("exam.backToPractice")}
+              </button>
+            </div>
+          )}
           <div className="h-[3px] bg-border md:hidden" aria-hidden>
             <div className="h-[3px] bg-primary" style={{ width: `${percent}%` }} />
           </div>
@@ -1839,6 +1885,14 @@ export function LabScreen() {
                   >
                     {t("sheets.link")}
                   </Link>
+                  {handle.attempt.mode !== "exam" && (
+                    <Link
+                      href={`/lab/${E.id}/exam`}
+                      className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                    >
+                      {t("exam.try")}
+                    </Link>
+                  )}
                 </TabsContent>
                 <TabsContent value="tips" className="flex flex-col gap-3 p-5">
                   <h2 className="font-display text-2xl leading-tight font-bold">

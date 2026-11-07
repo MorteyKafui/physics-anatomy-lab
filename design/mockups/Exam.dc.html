@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Exam mode</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+.ex-f:focus-visible{outline:2px solid #FF8A6E;outline-offset:2px}
+@keyframes exUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ex-toast{animation:exUp .25s ease}
+@media (prefers-reduced-motion:reduce){.ex-toast{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 1000px; background: #0A0A0A; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45; padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+  <!-- Header -->
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; background: #111110; border: 1px solid #1E1D1D; padding: 12px 16px">
+    <span style="width: 30px; height: 30px; background: #F2F0EA; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#0D0D0D" stroke-width="20"></path><circle cx="100" cy="68" r="13" fill="#F0482A"></circle></svg></span>
+    <span style="display: flex; align-items: center; gap: 8px; color: #A3A19B">Simple pendulum <span aria-hidden="true">›</span> <span style="color: #F2F0EA">Exam</span></span>
+    <span style="font-size: 12px; color: #C9C6BF; border: 1px solid #2E2D2B; padding: 2px 8px">Coach off</span>
+    <span style="flex: 1"></span>
+    <span role="group" aria-label="Screen" style="display: flex; border: 1px solid #2A2928">
+      <sc-for list="{{screens}}" as="s" hint-placeholder-count="3"><button class="ex-f" type="button" aria-pressed="{{s.on}}" onClick="{{s.pick}}" style="{{s.st}}">{{s.name}}</button></sc-for>
+    </span>
+  </div>
+
+  <!-- 1. Before the clock starts -->
+  <sc-if value="{{isStart}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+      <section aria-label="The question" style="flex: 999 1 620px; min-width: 0; background: #111110; border: 1px solid #1E1D1D; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px">
+        <span style="font-size: 12px; color: #A3A19B">Question 1 · Simple pendulum · 60 minutes</span>
+        <h1 style="margin: 0; font: 700 30px/1.15 'Bricolage Grotesque', Geist, sans-serif">You are provided with a retort stand, a split cork, a thread, a bob and a stopwatch.</h1>
+        <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: #C9C6BF">
+          <li>Set up the apparatus as shown, with the thread clamped in the split cork. Draw the set-up and label it.</li>
+          <li>Displace the bob through a small angle and time 20 oscillations for l = 0.600 m. Record the time t.</li>
+          <li>Repeat for l = 0.700, 0.800, 0.900 and 1.000 m. Find the period T and T² for each length. Tabulate your readings.</li>
+          <li>Plot a graph of T² on the vertical axis against l on the horizontal axis. Determine the slope s of the graph.</li>
+          <li>Calculate g from g = 4π² ⁄ s. State two precautions you took.</li>
+          <li>Part (b): answer the questions that follow the experiment.</li>
+        </ol>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-top: 4px">
+          <button class="ex-f" type="button" onClick="{{startClock}}" style="height: 40px; padding: 0 16px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 14px Geist, sans-serif; cursor: pointer">Start the clock</button>
+          <a class="ex-f" href="Lab.dc.html" style="height: 40px; padding: 0 14px; display: flex; align-items: center; border: 1px solid #2A2928; color: #F2F0EA; font: 500 14px Geist, sans-serif; text-decoration: none">Back to the lab</a>
+          <span style="font-size: 12px; color: #A3A19B">The clock runs until you hand in. Nothing you do is coached.</span>
+        </div>
+      </section>
+      <aside aria-label="How the hour is split" style="flex: 1 1 340px; max-width: 460px; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+        <div style="padding: 12px 16px; border-bottom: 1px solid #1E1D1D; display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 15px; font-weight: 500">How the hour is split</h2><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">60 min</span></div>
+        <ul style="list-style: none; margin: 0; padding: 8px 16px 14px; display: flex; flex-direction: column">
+          <sc-for list="{{split}}" as="p" hint-placeholder-count="8">
+            <li style="display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid #1E1D1D"><span style="{{p.bar}}"></span><span style="flex: 1">{{p.name}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #C9C6BF">{{p.min}} min</span></li>
+          </sc-for>
+        </ul>
+        <span style="padding: 0 16px 14px; font-size: 12px; color: #A3A19B">The guide's split. The clock shows where you should be; you may move on earlier.</span>
+      </aside>
+    </div>
+  </sc-if>
+
+  <!-- 2. The clock in the lab -->
+  <sc-if value="{{isRunning}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; flex-direction: column; gap: 0; border: 1px solid #1E1D1D">
+      <div role="timer" aria-label="Exam clock" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; background: #161616; padding: 12px 16px; border-bottom: 1px solid #1E1D1D">
+        <span style="display: flex; flex-direction: column"><span style="font-size: 12px; color: #A3A19B">Time left</span><span style="font-family: 'Geist Mono', monospace; font-size: 26px; font-weight: 500">{{left}}</span></span>
+        <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #A3A19B">Now</span><span>{{nowPart}} <span style="color: #A3A19B">· {{nowLeft}} left in this part</span></span></span>
+        <span style="flex: 1"></span>
+        <button class="ex-f" type="button" onClick="{{askHandIn}}" style="height: 38px; padding: 0 14px; background: #F2F0EA; border: 0; color: #0D0D0D; font: 600 14px Geist, sans-serif; cursor: pointer">Hand in</button>
+      </div>
+      <div aria-hidden="true" style="display: flex; gap: 3px; padding: 8px 16px; background: #111110; border-bottom: 1px solid #1E1D1D">
+        <sc-for list="{{track}}" as="p" hint-placeholder-count="8"><span style="{{p.st}}"><span>{{p.name}}</span></span></sc-for>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; min-height: 420px">
+        <div style="flex: 999 1 520px; background: #0D0D0D; display: flex; align-items: center; justify-content: center; padding: 24px">
+          <svg viewBox="0 0 420 460" style="width: 100%; max-width: 380px; height: auto" role="img" aria-label="The bench, as in the lab">
+            <polygon points="210,300 400,380 210,460 20,380" fill="#121211" stroke="#2A2928"></polygon>
+            <polygon points="170,330 250,362 230,372 150,340" fill="#3A3936" stroke="#55534F"></polygon>
+            <line x1="200" y1="346" x2="200" y2="60" stroke="#8F8C86" stroke-width="8"></line>
+            <line x1="200" y1="92" x2="312" y2="132" stroke="#5A5853" stroke-width="7"></line>
+            <rect x="306" y="124" width="14" height="16" fill="#B98B5E"></rect>
+            <line x1="313" y1="140" x2="330" y2="316" stroke="#E8E4DC" stroke-width="1.5"></line>
+            <circle cx="332" cy="326" r="12" fill="#F0482A"></circle>
+            <circle cx="96" cy="388" r="15" fill="#E8E4DC" stroke="#1E1D1D" stroke-width="3"></circle>
+          </svg>
+        </div>
+        <aside aria-label="Exam notes" style="flex: 1 1 320px; max-width: 420px; background: #111110; border-left: 1px solid #1E1D1D; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+          <h2 style="margin: 0; font: 700 22px 'Bricolage Grotesque', Geist, sans-serif">Performing</h2>
+          <span style="color: #C9C6BF">Time 20 oscillations at each length and record t. The coach is off for the whole hour: there are no hints, checks or help levels.</span>
+          <span style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: #A3A19B"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M5 5l14 14"></path></svg>Help level, hints and the calculator's checks are off</span>
+          <span style="font-size: 12px; color: #A3A19B">At 5 minutes left the clock turns amber; at the end your script is handed in for you.</span>
+        </aside>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- 3. The marked script -->
+  <sc-if value="{{isMarked}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+      <section aria-label="Your marked script" style="flex: 999 1 620px; min-width: 0; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+        <div style="padding: 16px 18px; border-bottom: 1px solid #1E1D1D; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: flex-end">
+          <span style="display: flex; flex-direction: column"><span style="font-size: 12px; color: #A3A19B">Your mark</span><span style="font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500">17 <span style="font-size: 18px; color: #A3A19B">/ 24</span></span></span>
+          <span style="display: flex; flex-direction: column"><span style="font-size: 12px; color: #A3A19B">Time used</span><span style="font-family: 'Geist Mono', monospace; font-size: 16px">52 min of 60</span></span>
+          <span style="flex: 1"></span>
+          <span style="font-size: 12px; color: #A3A19B; max-width: 260px; text-align: right">Marked by the rules the lab checks, the way a WAEC examiner awards them.</span>
+        </div>
+        <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 14px">
+          <sc-for list="{{sections}}" as="s" hint-placeholder-count="5">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #2A2928; padding-bottom: 4px"><h3 style="margin: 0; font-size: 14px; font-weight: 600">{{s.name}}</h3><span style="font-family: 'Geist Mono', monospace; font-size: 13px">{{s.got}} / {{s.of}}</span></div>
+              <sc-for list="{{s.items}}" as="c" hint-placeholder-count="3">
+                <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px">
+                  <span style="{{c.markSt}}">{{c.sign}}</span>
+                  <span style="flex: 1; display: flex; flex-direction: column"><span>{{c.what}}</span><span style="color: #A3A19B">{{c.why}}</span></span>
+                  <span style="font-family: 'Geist Mono', monospace; color: #C9C6BF">{{c.got}}/{{c.of}}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <aside aria-label="Likely follow-up questions" style="flex: 1 1 340px; max-width: 480px; background: #111110; border: 1px solid #1E1D1D; display: flex; flex-direction: column">
+        <div style="padding: 12px 16px; border-bottom: 1px solid #1E1D1D"><h2 style="margin: 0; font-size: 15px; font-weight: 500">Likely follow-up questions</h2></div>
+        <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px">
+          <sc-for list="{{followUps}}" as="q" hint-placeholder-count="3">
+            <div style="display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid #1E1D1D; padding-bottom: 10px">
+              <span>{{q.text}}</span>
+              <sc-if value="{{q.open}}" hint-placeholder-val="{{false}}"><span style="color: #C9C6BF; font-size: 13px">{{q.answer}}</span></sc-if>
+              <button class="ex-f" type="button" aria-expanded="{{q.open}}" onClick="{{q.toggle}}" style="align-self: flex-start; height: 30px; padding: 0 10px; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 500 13px Geist, sans-serif; cursor: pointer">{{q.label}}</button>
+            </div>
+          </sc-for>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px">
+            <button class="ex-f" type="button" onClick="{{download}}" style="height: 38px; padding: 0 14px; background: #F2F0EA; border: 0; color: #0D0D0D; font: 600 14px Geist, sans-serif; cursor: pointer">Download your script (PDF)</button>
+            <a class="ex-f" href="Review.dc.html" style="height: 38px; padding: 0 14px; display: flex; align-items: center; border: 1px solid #2A2928; color: #F2F0EA; font: 500 14px Geist, sans-serif; text-decoration: none">Review this run</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </sc-if>
+
+  <!-- Hand in -->
+  <sc-if value="{{confirmOn}}" hint-placeholder-val="{{false}}">
+    <div style="position: fixed; inset: 0; z-index: 30; background: rgba(10,10,10,0.72); display: flex; align-items: center; justify-content: center; padding: 16px">
+      <div role="dialog" aria-modal="true" aria-label="Hand in now?" style="width: 100%; max-width: 420px; background: #161616; border: 1px solid #2A2928; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 16px; font-weight: 600">Hand in now?</span>
+        <span style="color: #C9C6BF">You have {{left}} left. Your script is marked as it stands, and it can't be changed after.</span>
+        <span style="display: flex; gap: 8px; justify-content: flex-end">
+          <button class="ex-f" type="button" onClick="{{cancel}}" style="height: 36px; padding: 0 12px; background: transparent; border: 1px solid #2A2928; color: #F2F0EA; font: 500 13px Geist, sans-serif; cursor: pointer">Keep working</button>
+          <button class="ex-f" type="button" onClick="{{handIn}}" style="height: 36px; padding: 0 12px; background: #F0482A; border: 0; color: #0D0D0D; font: 600 13px Geist, sans-serif; cursor: pointer">Hand in</button>
+        </span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+    <div class="ex-toast" role="status" style="position: fixed; z-index: 40; right: 28px; bottom: 28px; max-width: 380px; background: #F2F0EA; color: #0D0D0D; padding: 12px 14px; font-size: 13px">{{toastText}}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { screen: 'start', confirm: false, open: {}, toast: null };
+  }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  toast(text) { clearTimeout(this.tt); this.setState({ toast: text }); this.tt = setTimeout(() => this.setState({ toast: null }), 5000); }
+  renderVals() {
+    const st = this.state;
+    const seg = (on) => 'height: 32px; padding: 0 12px; border: 0; cursor: pointer; font: 500 13px Geist, sans-serif; ' + (on ? 'background: #F2F0EA; color: #0D0D0D' : 'background: transparent; color: #C9C6BF');
+    const SCREENS = [['start', 'Before the clock'], ['running', 'In the lab'], ['marked', 'Marked script']];
+    const PARTS = [['Reading the question', 5], ['Diagram', 5], ['Setting up', 5], ['Performing', 15], ['Tabulation', 5], ['Graph', 10], ['Part (b)', 10], ['Calculations and precautions', 5]];
+    const now = 3; /* Performing, 18:48 in */
+    const track = PARTS.map(([name, min], i) => ({ name, st: 'flex: ' + min + ' 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 11px; padding: 4px 6px; border-top: 3px solid ' + (i < now ? '#6CC25A; color: #8F8D88' : i === now ? '#F0482A; color: #F2F0EA; background: #161616' : '#2A2928; color: #8F8D88') }));
+    const split = PARTS.map(([name, min], i) => ({ name, min, bar: 'width: ' + (min * 4) + 'px; height: 6px; flex: 0 0 auto; background: ' + (i === 3 ? '#F0482A' : '#3A3936') }));
+    const mark = (ok, part) => 'width: 18px; height: 18px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 1px solid ' + (ok ? '#2E5A2A; color: #8FD18A' : part ? '#5C4415; color: #F5C46B' : '#5A2320; color: #F27A6E');
+    const item = (what, why, got, of) => ({ what, why, got, of, sign: got === of ? '✓' : got > 0 ? '½' : '✗', markSt: mark(got === of, got > 0) });
+    const sections = [
+      { name: 'Diagram', got: 1, of: 2, items: [item('Set-up drawn with the thread in a split cork', '', 1, 1), item('Parts labelled', 'Two of the seven parts have no label.', 0, 1)] },
+      { name: 'Tabulation', got: 8, of: 10, items: [
+        item('Five sets of readings, l from 0.600 to 1.000 m', '', 2, 2),
+        item('Headings with quantity over unit', '', 2, 2),
+        item('t read to 0.01 s, the stopwatch’s least count', '', 2, 2),
+        item('T worked out as t ⁄ 20, to 3 significant figures', 'Rows 4 and 5 give T to 2 figures.', 1, 2),
+        item('T² worked out correctly', 'Row 3 squares the rounded T.', 1, 2) ] },
+      { name: 'Graph', got: 5, of: 8, items: [
+        item('Axes labelled with quantity and unit', '', 1, 1),
+        item('Scale using more than half of each axis', 'The l axis uses 40% of the sheet.', 0, 2),
+        item('Points plotted within half a small square', '', 2, 2),
+        item('Straight best-fit line', '', 1, 1),
+        item('Large slope triangle, read off the line', 'The triangle spans less than half the line.', 1, 2) ] },
+      { name: 'Calculations and precautions', got: 3, of: 4, items: [
+        item('Slope from the triangle, with its unit', '', 1, 1),
+        item('g from 4π² ⁄ slope, to 3 significant figures', '', 1, 1),
+        item('Two precautions, in the first person', 'One of two given.', 1, 2) ] }
+    ];
+    const Q = [
+      ['f1', 'Why must the angle of swing be kept small?', 'Below about 10° the period depends only on l and g. A wider swing lengthens the period, so T no longer follows T = 2π√(l ⁄ g).'],
+      ['f2', 'Calculate the length of a pendulum whose period is 2.00 s here.', 'l = gT² ⁄ 4π² = 9.81 × 2.00² ⁄ 39.48 = 0.994 m.'],
+      ['f3', 'What happens to the period if the bob’s mass is doubled?', 'Nothing: the period does not depend on the mass of the bob.']
+    ];
+    const followUps = Q.map(([id, text, answer]) => {
+      const open = !!st.open[id];
+      return { text, answer, open, label: open ? 'Hide the answer' : 'Show the answer', toggle: () => this.setState({ open: Object.assign({}, st.open, { [id]: !open }) }) };
+    });
+    return {
+      screens: SCREENS.map(([id, name]) => ({ name, on: st.screen === id, st: seg(st.screen === id), pick: () => this.setState({ screen: id }) })),
+      isStart: st.screen === 'start', isRunning: st.screen === 'running', isMarked: st.screen === 'marked',
+      split, track, left: '41:12', nowPart: 'Performing', nowLeft: '11:12',
+      startClock: () => this.setState({ screen: 'running' }),
+      askHandIn: () => this.setState({ confirm: true }), confirmOn: st.confirm,
+      cancel: () => this.setState({ confirm: false }),
+      handIn: () => this.setState({ confirm: false, screen: 'marked' }),
+      sections, followUps,
+      download: () => this.toast('Your marked script downloaded as PDF, 2 pages.'),
+      toastOn: !!st.toast, toastText: st.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

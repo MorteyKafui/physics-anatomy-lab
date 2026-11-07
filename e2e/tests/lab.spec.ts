@@ -875,7 +875,8 @@ test("the count-along says 0 at the start and counts each oscillation", async ({
   for (let ms = 0; ms < 3000 && (await caption(page).textContent()) !== "1"; ms += 100)
     await page.clock.runFor(100);
   await expect(caption(page)).toHaveText("1");
-  await page.clock.runFor(1800);
+  // One more period (1.80 s), plus a frame for the count to show, and well short of the next.
+  await page.clock.runFor(1900);
   await expect(caption(page)).toHaveText("2");
 });
 

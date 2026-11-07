@@ -4,6 +4,8 @@ import {
   coachProjection,
   createIndexedDbStore,
   decide,
+  decideExam,
+  EMPTY_EXAM,
   newDeviceId,
   redoEvents,
   replay,
@@ -37,6 +39,14 @@ function remember(key: string, value: string) {
     window.localStorage.setItem(key, value);
   } catch {
     // Storage blocked (private window): the attempt still works, it just is not reopened.
+  }
+}
+
+function forget(key: string) {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Storage blocked: nothing was remembered either.
   }
 }
 
@@ -108,6 +118,30 @@ export async function startRun(source: Attempt, events: readonly LabEvent[], fro
   remember(`pa:attempt:${source.experimentId}`, attempt.id);
   openings.delete(source.experimentId);
   return attempt;
+}
+
+/**
+ * Start an exam (master plan, "Exam mode"): a new attempt in mode "exam" with its own apparatus,
+ * the clock started. The lab opens it from now on; earlier runs are kept.
+ */
+export async function startExam(experimentId: string) {
+  const attempt = await store().createAttempt({ experimentId, mode: "exam", seed: newSeed() });
+  const d = decideExam(attempt.mode, EMPTY_EXAM, { type: "start" });
+  if (d.ok) await store().append(attempt.id, d.events);
+  remember(`pa:attempt:${experimentId}`, attempt.id);
+  openings.delete(experimentId);
+  return attempt;
+}
+
+/** Leave an exam for practice: the latest run that was not an exam, or a new one if none. */
+export async function backToPractice(experimentId: string) {
+  const attempts = await store().listAttempts({ experimentId });
+  const practice = [...attempts]
+    .filter((a) => a.mode !== "exam")
+    .sort((a, b) => b.createdAt - a.createdAt)[0];
+  if (practice) remember(`pa:attempt:${experimentId}`, practice.id);
+  else forget(`pa:attempt:${experimentId}`);
+  openings.delete(experimentId);
 }
 
 /** Open an earlier run in the lab instead of the latest. */

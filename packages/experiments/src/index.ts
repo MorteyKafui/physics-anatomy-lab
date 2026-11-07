@@ -77,3 +77,5 @@ export {
 export type { MistakeEffect, RightWay, TimedReading } from "./pendulum-review";
 export { PENDULUM_SHEET_NUMBER, pendulumSheet, SHEET_LENGTHS } from "./pendulum-sheets";
 export type { PendulumSheet } from "./pendulum-sheets";
+export { EXAM_MINUTES, EXAM_PARTS, examClock, followUps, markScript } from "./pendulum-exam";
+export type { ExamFacts, ExamPart, Mark, MarkedSection } from "./pendulum-exam";

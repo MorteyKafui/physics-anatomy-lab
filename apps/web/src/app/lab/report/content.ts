@@ -272,8 +272,9 @@ export function reportContent(
     graph: view.plotted.length ? t("report.gen.graph", { caption: graphCaption }) : "",
     calculation,
     discussion: "",
-    precautions,
-    sources,
+    // In an exam the precautions and sources of error are the candidate's own to write.
+    precautions: attempt.mode === "exam" ? "" : precautions,
+    sources: attempt.mode === "exam" ? "" : sources,
     conclusion,
     references: "",
     "part-b": "",
