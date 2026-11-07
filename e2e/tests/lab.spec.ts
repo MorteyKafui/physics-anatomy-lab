@@ -869,8 +869,11 @@ test("the count-along says 0 at the start and counts each oscillation", async ({
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 3000));
   await page.getByRole("button", { name: "Start", exact: true }).click();
   await expect(caption(page)).toHaveText("0");
-  // The bench's period at 0.800 m is about 1.80 s: a little over one period gives "1".
-  await page.clock.runFor(2100);
+  // "1" comes at the first pass in the counting direction after Start: between a quarter of a
+  // period and a period and a quarter later, depending on where the swing was (T ≈ 1.80 s at
+  // 0.800 m). Step until it comes, then one more period gives "2".
+  for (let ms = 0; ms < 3000 && (await caption(page).textContent()) !== "1"; ms += 100)
+    await page.clock.runFor(100);
   await expect(caption(page)).toHaveText("1");
   await page.clock.runFor(1800);
   await expect(caption(page)).toHaveText("2");
