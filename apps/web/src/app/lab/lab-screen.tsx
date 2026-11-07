@@ -1833,6 +1833,12 @@ export function LabScreen() {
                   />
                   <p className="text-soft">{t("experiments.simple-pendulum.explanation.graph")}</p>
                   <FormulaBox card={PENDULUM_FORMULAS.find((f) => f.id === "graph")!} g={g} />
+                  <Link
+                    href={`/lab/${E.id}/sheets`}
+                    className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                  >
+                    {t("sheets.link")}
+                  </Link>
                 </TabsContent>
                 <TabsContent value="tips" className="flex flex-col gap-3 p-5">
                   <h2 className="font-display text-2xl leading-tight font-bold">

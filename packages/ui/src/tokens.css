@@ -101,6 +101,29 @@
   --pa-duration: 250ms;
 }
 
+/* Apparatus figure tones on paper (the Anatomy light theme): print sheets and the report */
+[data-figure="paper"] {
+  --pa-figure-floor: #fafaf7;
+  --pa-figure-floor-line: #e6e4db;
+  --pa-figure-floor-edge: #bdbab1;
+  --pa-figure-base-top: #f3f1e8;
+  --pa-figure-base-edge: #77746e;
+  --pa-figure-base-side: #e6e4db;
+  --pa-figure-base-side-dark: #d6d3c9;
+  --pa-figure-rod: #a3a19b;
+  --pa-figure-rod-light: #e6e4db;
+  --pa-figure-clamp: #c9c6bf;
+  --pa-figure-clamp-edge: #77746e;
+  --pa-figure-cork: #d9b98f;
+  --pa-figure-cork-edge: #8a6440;
+  --pa-figure-guide: #bdbab1;
+  --pa-figure-thread: #3d3b37;
+  --pa-figure-bob-light: #ffd0c2;
+  --pa-figure-dial: #ffffff;
+  --pa-figure-dial-rim: #3d3b37;
+  --pa-figure-ink: #141414;
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --pa-duration: 0ms;

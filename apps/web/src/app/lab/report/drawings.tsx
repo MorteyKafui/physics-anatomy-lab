@@ -8,7 +8,7 @@ import type { FigureScene } from "../snapshot-figure";
 
 /**
  * The report's two figures as plain drawings, without the snapshot sheet around them: the report
- * gives each its own number and caption. One SVG each, so the screen shows them and the PDF and
+ * gives each its own number and caption. The bench is in its paper tones, as a report prints it. One SVG each, so the screen shows them and the PDF and
  * Word files are made from them.
  */
 
@@ -33,6 +33,7 @@ export function BenchDrawing({
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
+      data-figure="paper"
       viewBox={`0 0 ${BENCH_SIZE.width} ${BENCH_SIZE.height}`}
       width={BENCH_SIZE.width}
       height={BENCH_SIZE.height}
@@ -41,7 +42,7 @@ export function BenchDrawing({
       aria-hidden={label ? undefined : true}
       className="block h-auto max-w-full"
     >
-      <rect width={BENCH_SIZE.width} height={BENCH_SIZE.height} fill="var(--pa-ink-950)" />
+      <rect width={BENCH_SIZE.width} height={BENCH_SIZE.height} fill="var(--pa-graph-paper)" />
       <svg x={0} y={0} width={BENCH_SIZE.width} height={BENCH_SIZE.height}>
         <PendulumBench
           angle={d.angle}
