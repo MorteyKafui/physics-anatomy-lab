@@ -1,7 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import fc from "fast-check";
 
-import { assertJson, compareEvents, exportAttempt, importAttempt, replay, resume } from "../src";
+import {
+  assertJson,
+  compareEvents,
+  exportAttempt,
+  importAttempt,
+  replay,
+  resume,
+  toAttemptFile,
+} from "../src";
 import { benchProjection, freshDbName, newEventArb, STORE_KINDS } from "./helpers";
 
 for (const kind of STORE_KINDS) {
@@ -217,6 +225,10 @@ for (const kind of STORE_KINDS) {
         { kind: "go-to-step", data: { step: "plot" } },
       ]);
       const file = JSON.parse(JSON.stringify(await exportAttempt(a, attempt.id)));
+      // The notebook's ZIP makes the same file from the events it already holds.
+      expect(toAttemptFile((await a.getAttempt(attempt.id))!, await a.events(attempt.id))).toEqual(
+        await exportAttempt(a, attempt.id),
+      );
 
       const b = kind.open("phone-b", db);
       expect((await importAttempt(b, file)).added).toBe(3);

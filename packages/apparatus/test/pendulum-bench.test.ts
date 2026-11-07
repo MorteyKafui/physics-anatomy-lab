@@ -110,3 +110,15 @@ describe("the length of the thread", () => {
     expect((long.y - 148) / (short.y - 148)).toBeCloseTo(1.25, 9);
   });
 });
+
+describe("letters for a labelled figure", () => {
+  test("key the parts on the bench, and only those", () => {
+    const svg = draw(0, {
+      assembly: { base: "bench", rod: "base-socket" },
+      letters: { rod: "A", base: "B", bob: "C" },
+    });
+    expect(svg).toContain('data-letter="rod"');
+    expect(svg).toContain('data-letter="base"');
+    expect(svg).not.toContain('data-letter="bob"');
+  });
+});

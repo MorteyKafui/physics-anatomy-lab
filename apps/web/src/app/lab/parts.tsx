@@ -51,7 +51,9 @@ function NotBuilt({ icon: Icon, name }: { icon: LucideIcon; name: string }) {
 }
 
 /** The app rail (desktop): logo, sections, help and settings. Sections not built yet say so. */
-export function Rail() {
+export function Rail({ current }: { current: "lab" | "notebook" }) {
+  const here = (on: boolean) =>
+    cn(railItem, on && "border-l-2 border-primary bg-raised text-foreground");
   return (
     <nav
       aria-label={t("lab.rail.label")}
@@ -63,13 +65,20 @@ export function Rail() {
       </Link>
       <Link
         href="/lab/simple-pendulum"
-        aria-current="page"
+        aria-current={current === "lab" ? "page" : undefined}
         aria-label={t("lab.rail.experiments")}
-        className={cn(railItem, "border-l-2 border-primary bg-raised text-foreground")}
+        className={here(current === "lab")}
       >
         <FlaskConicalIcon className="size-5" aria-hidden />
       </Link>
-      <NotBuilt icon={BookOpenIcon} name={t("lab.rail.notebook")} />
+      <Link
+        href="/lab/simple-pendulum/notebook"
+        aria-current={current === "notebook" ? "page" : undefined}
+        aria-label={t("lab.rail.notebook")}
+        className={here(current === "notebook")}
+      >
+        <BookOpenIcon className="size-5" aria-hidden />
+      </Link>
       <NotBuilt icon={BookIcon} name={t("lab.rail.reference")} />
       <span className="flex-1" />
       <NotBuilt icon={CircleHelpIcon} name={t("lab.rail.help")} />

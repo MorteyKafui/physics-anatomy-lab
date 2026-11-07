@@ -9,7 +9,12 @@ export { createIndexedDbStore } from "./events/indexeddb-store";
 export type { IndexedDbStoreOptions } from "./events/indexeddb-store";
 export { replay, resume } from "./events/replay";
 export type { Projection, Resumed } from "./events/replay";
-export { ATTEMPT_FILE_FORMAT, exportAttempt, importAttempt } from "./events/attempt-file";
+export {
+  ATTEMPT_FILE_FORMAT,
+  exportAttempt,
+  importAttempt,
+  toAttemptFile,
+} from "./events/attempt-file";
 export type { AttemptFile } from "./events/attempt-file";
 export {
   coachIsOn,
@@ -35,3 +40,20 @@ export { decideGraph, EMPTY_GRAPH, graphProjection } from "./graph/graph";
 export type { GraphCommand, GraphDecision, GraphRefusal, GraphState } from "./graph/graph";
 export { answersProjection, EMPTY_ANSWERS, writeAnswer } from "./answers/answers";
 export type { AnswersState, WrittenAnswer } from "./answers/answers";
+export {
+  decideSnapshot,
+  EMPTY_SNAPSHOTS,
+  eventsBefore,
+  figureNumber,
+  MAX_CAPTION,
+  SNAPSHOT_KINDS,
+  snapshotsProjection,
+  visibleSnapshots,
+} from "./snapshots/snapshots";
+export type {
+  Snapshot,
+  SnapshotCommand,
+  SnapshotKind,
+  SnapshotPoint,
+  SnapshotsState,
+} from "./snapshots/snapshots";

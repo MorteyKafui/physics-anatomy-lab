@@ -1,4 +1,9 @@
-import { CORRECT_ASSEMBLY, type Assembly, type PendulumSlot } from "@pa/experiments";
+import {
+  CORRECT_ASSEMBLY,
+  type Assembly,
+  type PendulumPart,
+  type PendulumSlot,
+} from "@pa/experiments";
 
 /**
  * The simple pendulum on a retort stand, as drawn in the approved lab mockup (Fig. 1): an
@@ -29,6 +34,11 @@ export interface PendulumBenchProps {
   /** Accessible description of what the figure shows. Omit for a decorative copy. */
   label?: string;
   className?: string;
+  /**
+   * Letters to key parts by, as the WASSCE guide asks of a diagram ("A: retort stand"), for
+   * labelled exports. Parts not on the bench are not lettered.
+   */
+  letters?: Partial<Record<PendulumPart, string>>;
 }
 
 // Geometry from the mockup's 420 × 460 drawing.
@@ -105,6 +115,7 @@ export function PendulumBench({
   viewBox = `0 0 ${BENCH_VIEWBOX.width} ${BENCH_VIEWBOX.height}`,
   label,
   className,
+  letters,
 }: PendulumBenchProps) {
   const a = assembly;
   const has = (p: keyof Assembly) => a[p] !== undefined;
@@ -264,6 +275,29 @@ export function PendulumBench({
             stroke="var(--pa-accent-fill)"
             strokeWidth={1.5}
           />
+        </g>
+      )}
+      {/* Letters keying the parts, beside each one */}
+      {letters && (
+        <g fontFamily="var(--font-mono)" fontSize={15} fill={tone("thread")}>
+          {(Object.entries(letters) as [PendulumPart, string][])
+            .filter(([part]) => a[part] !== undefined)
+            .map(([part, letter]) => {
+              const at = {
+                base: { x: 268, y: 392 },
+                rod: { x: 216, y: 230 },
+                clamp: { x: 186, y: 92 },
+                cork: { x: 314, y: 132 },
+                thread: { x: pivot.x + 8, y: pivot.y + thread * 0.45 },
+                bob: { x: bob.x + 18, y: bob.y + 5 },
+                watch: { x: DIAL.x - 34, y: DIAL.y + 5 },
+              }[part];
+              return (
+                <text key={part} x={at.x} y={at.y} data-letter={part}>
+                  {letter}
+                </text>
+              );
+            })}
         </g>
       )}
       {/* Where the part being placed can go */}
