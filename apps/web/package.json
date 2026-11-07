@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "next build",
+    "build": "next build && bun scripts/build-sw.ts",
     "start": "next start --port 3000",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p pwa",
     "test": "bun test test"
   },
   "dependencies": {
@@ -26,9 +26,11 @@
     "next": "16.4.2",
     "pdf-lib": "1.17.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "serwist": "9.5.13"
   },
   "devDependencies": {
+    "@serwist/build": "9.5.13",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",

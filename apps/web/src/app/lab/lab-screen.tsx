@@ -123,7 +123,7 @@ import { flagsFor, TableBuilder, useTable } from "./table-builder";
 import { backToPractice, useAttempt } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
-import { useBenchClock } from "./use-bench-clock";
+import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
 import { newSnapshotId, useSnapshots } from "./use-snapshots";
 
 const E = simplePendulum;
@@ -561,28 +561,7 @@ export function LabScreen() {
     if (buildStatus) speak(buildStatus, "status");
   }, [buildStatus, speak]);
 
-  // The count-along: a beat and the count at each pass in the counting direction, and the
-  // bob's swish at every pass through the mark, while the stopwatch runs.
-  const counted = useRef({ count: 0, half: 0 });
   const runningSince = timing && timing.stoppedAt === undefined ? timing.startedAt : undefined;
-  useEffect(() => {
-    counted.current = { count: 0, half: 0 };
-  }, [runningSince]);
-  useEffect(() => {
-    if (runningSince === undefined) return;
-    const now = clock.time;
-    const first = passTimes(runningSince + period / 4, 1, period)[0]!;
-    const n = now >= first ? Math.floor((now - first) / period) + 1 : 0;
-    if (n > counted.current.count) {
-      counted.current.count = n;
-      countAloud(n === E.swings ? t("lab.audio.lastCount", { n }) : String(n));
-    }
-    const half = Math.floor((now - runningSince) / (period / 2));
-    if (half > counted.current.half) {
-      counted.current.half = half;
-      playSound("swish");
-    }
-  }, [clock.time, runningSince, period, countAloud, playSound]);
 
   if (!handle || !state) {
     return (
@@ -673,16 +652,19 @@ export function LabScreen() {
   const stepIndex = STEPS.indexOf(state.step);
   const percent = Math.round((state.completed.length / STEPS.length) * 100);
   const open = (s: Step) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state));
-  const elapsed = timing ? (timing.stoppedAt ?? clock.time) - timing.startedAt : 0;
-  const shownTime = timing?.stoppedAt !== undefined ? recordedTime(timing)! : Math.max(0, elapsed);
+  // What the stopwatch shows at a bench time: the recorded reading once stopped.
+  const shownTimeAt = (time: number) =>
+    timing?.stoppedAt !== undefined
+      ? recordedTime(timing)!
+      : Math.max(0, timing ? time - timing.startedAt : 0);
 
   // The coach's demonstration: count 0, 1, 2 beside the mark on the next three passes.
-  let markLabel: string | undefined;
-  if (demoFrom !== undefined) {
+  const markLabelAt = (time: number) => {
+    if (demoFrom === undefined) return undefined;
     const passes = passTimes(demoFrom, 3, period);
-    const k = passes.findIndex((p) => clock.time >= p && clock.time < p + 0.45 * period);
-    if (k >= 0) markLabel = t("experiments.simple-pendulum.demo.count", { n: k });
-  }
+    const k = passes.findIndex((p) => time >= p && time < p + 0.45 * period);
+    return k >= 0 ? t("experiments.simple-pendulum.demo.count", { n: k }) : undefined;
+  };
 
   const subStep = (n: 1 | 2 | 3 | 4): "done" | "current" | "todo" => {
     const readings = state.readings.length;
@@ -962,6 +944,13 @@ export function LabScreen() {
 
   return (
     <TooltipProvider>
+      <CountAlong
+        clock={clock}
+        runningSince={runningSince}
+        period={period}
+        countAloud={countAloud}
+        playSound={playSound}
+      />
       <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
         <Rail current="lab" />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -1372,26 +1361,32 @@ export function LabScreen() {
                     {t("experiments.simple-pendulum.callout.cork")}
                   </div>
                 )}
-                <BenchStage
-                  box={benchBox}
-                  bench={{
-                    angle: swinging ? bobAngle(clock.time, period) : 0,
-                    stopwatchSeconds: shownTime,
-                    length,
-                    assembly,
-                    lit,
-                    markLabel,
-                    label: builtYet
-                      ? t("experiments.simple-pendulum.figureAlt")
-                      : benchDescription(assembly),
-                  }}
-                  slots={held ? slotsFor(assembly, held) : []}
-                  held={held}
-                  onPlace={(slot) => held && void place(held, slot)}
-                  magnifier={lens}
-                  onMagnifier={setLens}
-                  className={building ? "max-w-[min(600px,calc((100dvh-470px)*0.913))]" : undefined}
-                />
+                <Clocked clock={clock}>
+                  {(time) => (
+                    <BenchStage
+                      box={benchBox}
+                      bench={{
+                        angle: swinging ? bobAngle(time, period) : 0,
+                        stopwatchSeconds: shownTimeAt(time),
+                        length,
+                        assembly,
+                        lit,
+                        markLabel: markLabelAt(time),
+                        label: builtYet
+                          ? t("experiments.simple-pendulum.figureAlt")
+                          : benchDescription(assembly),
+                      }}
+                      slots={held ? slotsFor(assembly, held) : []}
+                      held={held}
+                      onPlace={(slot) => held && void place(held, slot)}
+                      magnifier={lens}
+                      onMagnifier={setLens}
+                      className={
+                        building ? "max-w-[min(600px,calc((100dvh-470px)*0.913))]" : undefined
+                      }
+                    />
+                  )}
+                </Clocked>
                 {lens && (
                   <p className="sr-only" role="status">
                     {t("lab.magnifier.on")}
@@ -1422,7 +1417,7 @@ export function LabScreen() {
                           className="font-mono text-[34px] leading-tight font-medium"
                           aria-live="off"
                         >
-                          {shownTime.toFixed(2)}{" "}
+                          <Clocked clock={clock}>{(time) => shownTimeAt(time).toFixed(2)}</Clocked>{" "}
                           <span className="text-base text-muted-foreground">s</span>
                         </span>
                       </div>
@@ -1944,4 +1939,44 @@ export function LabScreen() {
       </div>
     </TooltipProvider>
   );
+}
+
+/**
+ * The count-along: a beat and the count at each pass in the counting direction, and the bob's
+ * swish at every pass through the mark, while the stopwatch runs. It follows the bench clock
+ * itself, so the rest of the lab is not drawn again at every frame.
+ */
+function CountAlong({
+  clock,
+  runningSince,
+  period,
+  countAloud,
+  playSound,
+}: {
+  clock: BenchClock;
+  runningSince: number | undefined;
+  period: number;
+  countAloud: (text: string) => void;
+  playSound: (name: "swish") => void;
+}) {
+  const time = useClockTime(clock);
+  const counted = useRef({ count: 0, half: 0 });
+  useEffect(() => {
+    counted.current = { count: 0, half: 0 };
+  }, [runningSince]);
+  useEffect(() => {
+    if (runningSince === undefined) return;
+    const first = passTimes(runningSince + period / 4, 1, period)[0]!;
+    const n = time >= first ? Math.floor((time - first) / period) + 1 : 0;
+    if (n > counted.current.count) {
+      counted.current.count = n;
+      countAloud(n === E.swings ? t("lab.audio.lastCount", { n }) : String(n));
+    }
+    const half = Math.floor((time - runningSince) / (period / 2));
+    if (half > counted.current.half) {
+      counted.current.half = half;
+      playSound("swish");
+    }
+  }, [time, runningSince, period, countAloud, playSound]);
+  return null;
 }

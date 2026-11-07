@@ -4,6 +4,7 @@
  * Copy follows AGENTS.md rule 6: plain, active, sentence case, British spelling.
  */
 export const enGB = {
+  "app.offline": "Offline. Your work is saved on this device.",
   "lab.loading": "Opening your attempt…",
   "lab.rail.label": "App",
   "lab.rail.home": "Home",

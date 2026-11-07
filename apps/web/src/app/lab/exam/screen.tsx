@@ -19,13 +19,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { loadFonts } from "../report/pdf";
 import { reportContent } from "../report/content";
 import { save } from "../snapshot-export";
 import { startExam, useAttempt } from "../use-attempt";
 import { mmss } from "./bar";
 import { examFacts } from "./facts";
-import { scriptPdf } from "./pdf";
 
 const E = simplePendulum;
 const G = DEFAULT_ENVIRONMENT.g;
@@ -98,6 +96,10 @@ export function ExamScreen() {
 
   const download = async () => {
     if (!marked) return;
+    const [{ scriptPdf }, { loadFonts }] = await Promise.all([
+      import("./pdf"),
+      import("../report/pdf"),
+    ]);
     const pdf = await scriptPdf(
       {
         title: `${t("experiments.simple-pendulum.title")}: ${t("exam.script").toLowerCase()}`,

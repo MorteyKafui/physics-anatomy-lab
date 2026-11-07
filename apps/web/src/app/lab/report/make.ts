@@ -3,7 +3,7 @@
 import { pngBytes, svgText } from "../snapshot-export";
 import type { ReportContent } from "./content";
 import { BENCH_SIZE, GRAPH_SIZE } from "./drawings";
-import { loadFonts, reportPdf, type ReportImages, type ReportOptions } from "./pdf";
+import type { ReportImages, ReportOptions } from "./pdf";
 
 /** Print resolution for the figures: 3 × CSS px, about 290 dpi at the size they print. */
 const SCALE = 3;
@@ -25,6 +25,8 @@ export async function makeReportPdf(
   graph: SVGSVGElement | undefined,
   options: ReportOptions,
 ) {
+  // pdf-lib and fontkit load only when a PDF is made, never when a page opens.
+  const { loadFonts, reportPdf } = await import("./pdf");
   const [images, fonts] = await Promise.all([reportImages(bench, graph), loadFonts()]);
   return reportPdf(content, images, fonts, options);
 }
