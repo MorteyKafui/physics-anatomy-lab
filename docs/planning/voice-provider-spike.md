@@ -5,9 +5,11 @@ scripted lines, generated at build time and cached so it plays offline, with the
 speech engine as the fallback for dynamic text. This spike chooses the provider, judged on voice
 quality for Ghanaian English, cost, and a path to Twi, Ga and Ewe.
 
-**Status: planned, not run.** It needs accounts with outside services, and running it sends our
-scripted text to them. Nothing is signed up for or called until Mortey approves (AGENTS.md;
-downloads and new services need explicit permission).
+**Status: paused (November 2026).** The harness is ready in
+[`scripts/voice-spike/`](../../scripts/voice-spike/README.md): it generates the script with Azure,
+Google and GhanaNLP Khaya from keys in a git-ignored `.env`, and writes a blind listening page.
+Running it needs accounts with those services, which only Mortey can create, and sends our scripted
+text to them; Mortey chose to wait. The lab speaks with the browser's own voice meanwhile.
 
 ## What ships today
 
