@@ -12,3 +12,13 @@ nested dependency without also replacing the minimatch 3 that ESLint needs. mini
 ESLint, a development tool, on glob patterns from our own config, so no attacker can supply a
 pattern, and nothing ships to users. Remove this entry once typescript-eslint moves to minimatch 11.
 """
+
+[[IgnoredVulns]]
+id = "GHSA-3g3m-2fjr-6pw4" # glob 9 to 14.0.1: a cancelled walk keeps running
+ignoreUntil = 2026-12-07T00:00:00Z
+reason = """
+Only @serwist/build 9.5.13 (the latest) pulls in glob, and it pins 13.0.6 exactly. The fix is in
+glob 14.0.2 only, a new major version. The bug needs a walk cancelled through an AbortSignal;
+@serwist/build calls globSync with no signal, at build time, over our own .next/static, and
+nothing of glob ships to users. Remove this entry once @serwist/build moves to glob 14.0.2.
+"""

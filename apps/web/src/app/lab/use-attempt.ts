@@ -19,7 +19,7 @@ import {
   type Step,
 } from "@pa/engine";
 import { newSeed } from "@pa/instruments";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /** Per-device conveniences only (AGENTS.md): which attempt to reopen, and this device's id. */
 function remembered(key: string, make?: () => string): string | undefined {
@@ -191,19 +191,21 @@ export function useAttempt(experimentId: string): AttemptHandle | undefined {
     [loaded],
   );
 
-  if (!loaded) return undefined;
-  const state = replay(coachProjection, loaded.attempt, loaded.events);
-
-  return {
-    attempt: loaded.attempt,
-    state,
-    events: loaded.events,
-    async dispatch(command) {
-      const decision = decide(replay(coachProjection, loaded.attempt, latest.current), command);
-      if (!decision.ok) return decision.reason;
-      await save(decision.events);
-      return undefined;
-    },
-    record: save,
-  };
+  // One handle per change of events, so the lab's views of the attempt (the table, the graph,
+  // the assembly) are rebuilt only when the attempt changes, never on an animation frame.
+  return useMemo(() => {
+    if (!loaded) return undefined;
+    return {
+      attempt: loaded.attempt,
+      state: replay(coachProjection, loaded.attempt, loaded.events),
+      events: loaded.events,
+      async dispatch(command: Command) {
+        const decision = decide(replay(coachProjection, loaded.attempt, latest.current), command);
+        if (!decision.ok) return decision.reason;
+        await save(decision.events);
+        return undefined;
+      },
+      record: save,
+    } satisfies AttemptHandle;
+  }, [loaded, save]);
 }

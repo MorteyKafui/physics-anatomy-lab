@@ -35,7 +35,7 @@ import {
   SnapshotSheet,
   type FigureScene,
 } from "./snapshot-figure";
-import { csvText, fileStem, pdfBytes, pngBytes, save, svgText, zipBytes } from "./snapshot-export";
+import { csvText, fileStem, pngBytes, save, svgText, zipBytes } from "./snapshot-export";
 import { reportContent } from "./report/content";
 import { BenchDrawing, GraphFigure } from "./report/drawings";
 import { makeReportPdf } from "./report/make";
@@ -57,6 +57,7 @@ async function figureFiles(svg: SVGSVGElement, scene: FigureScene) {
   const { width, height } = sheetSize(scene);
   const text = svgText(svg);
   const png = await pngBytes(text, width, height);
+  const { pdfBytes } = await import("./snapshot-pdf");
   const pdf = await pdfBytes(
     png,
     width,

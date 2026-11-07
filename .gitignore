@@ -47,3 +47,7 @@ desktop.ini
 # TLC (TLA+ model checker) working files
 states/
 *.tlacov
+
+# The service worker is built from pwa/sw.ts after next build
+apps/web/public/sw.js
+apps/web/pwa/.sw.bundled.js

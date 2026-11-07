@@ -1,7 +1,6 @@
 "use client";
 
 import { zipSync } from "fflate";
-import { PDFDocument } from "pdf-lib";
 
 /**
  * Labelled exports of a snapshot's figure: SVG (sharp at any size), PNG (for a document or a
@@ -71,28 +70,6 @@ export async function pngBytes(svg: string, width: number, height: number, scale
   } finally {
     URL.revokeObjectURL(url);
   }
-}
-
-/** A4 portrait, in points. */
-const A4 = { width: 595.28, height: 841.89 };
-const MARGIN = 42;
-
-/** The figure on an A4 page, at the top, as wide as the margins allow. */
-export async function pdfBytes(png: Uint8Array, width: number, height: number, title: string) {
-  const doc = await PDFDocument.create();
-  doc.setTitle(title);
-  doc.setCreator("Physics Anatomy");
-  doc.setProducer("Physics Anatomy");
-  const page = doc.addPage([A4.width, A4.height]);
-  const image = await doc.embedPng(png);
-  const fit = Math.min((A4.width - 2 * MARGIN) / width, (A4.height - 2 * MARGIN) / height);
-  page.drawImage(image, {
-    x: MARGIN,
-    y: A4.height - MARGIN - height * fit,
-    width: width * fit,
-    height: height * fit,
-  });
-  return doc.save();
 }
 
 const text = (s: string) => new TextEncoder().encode(s);

@@ -9,10 +9,10 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { pngBytes, save, svgText } from "../snapshot-export";
-import { loadFonts, type Paper } from "../report/pdf";
+import type { Paper } from "../report/pdf";
 import { SHEET_KINDS, sheetContent, type SheetKind } from "./content";
 import { SHEET_BENCH, SHEET_GRAPH, SHEET_STEPS, SheetBench, SheetGraph } from "./figures";
-import { sheetPdf, type Picture } from "./pdf";
+import type { Picture } from "./pdf";
 
 const E = simplePendulum;
 /** Print resolution for the figures: about 300 dpi at the size they print. */
@@ -65,6 +65,10 @@ export function SheetsScreen() {
           ),
         ),
       };
+      const [{ sheetPdf }, { loadFonts }] = await Promise.all([
+        import("./pdf"),
+        import("../report/pdf"),
+      ]);
       const pdf = await sheetPdf(kind, content, images, await loadFonts(), paper);
       if (cancelled) return;
       url = URL.createObjectURL(new Blob([new Uint8Array(pdf.bytes)], { type: "application/pdf" }));
