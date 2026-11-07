@@ -14,6 +14,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Report and labelled export    | `Report.dc.html`   | `screens/Report.jpg`   | `apps/web` step 10            |
 | Snapshot notebook             | `Notebook.dc.html` | `screens/Notebook.jpg` | `apps/web` notebook           |
 | Review, retry and compare     | `Review.dc.html`   | on the canvas only     | `apps/web` review             |
+| Exam mode                     | `Exam.dc.html`     | on the canvas only     | `apps/web` exam               |
 | First-run tour                | `Tour.dc.html`     | `screens/Tour.jpg`     | `apps/web` onboarding         |
 | Teacher live class            | `Teacher.dc.html`  | `screens/Teacher.jpg`  | `apps/web` teacher dashboard  |
 | Admin portal                  | `Admin.dc.html`    | `screens/Admin.jpg`    | `apps/admin`                  |
