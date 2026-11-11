@@ -79,3 +79,37 @@ export { PENDULUM_SHEET_NUMBER, pendulumSheet, SHEET_LENGTHS } from "./pendulum-
 export type { PendulumSheet } from "./pendulum-sheets";
 export { EXAM_MINUTES, EXAM_PARTS, examClock, followUps, markScript } from "./pendulum-exam";
 export type { ExamFacts, ExamPart, Mark, MarkedSection } from "./pendulum-exam";
+export {
+  benchNetwork,
+  correctBench,
+  jockeySlid,
+  keyLeftClosed,
+  meterReadings,
+  ohmsLaw,
+  ohmsLawWorld,
+  PROCEDURE_RULES,
+  recorded,
+  trueReadings,
+  unsafeToClose,
+  wireResistanceTo,
+} from "./ohms-law";
+export type {
+  BenchState,
+  KeyInterval,
+  OhmsLawWorld,
+  ProcedureContext,
+  TrueReadings,
+  Unsafe,
+} from "./ohms-law";
+export {
+  classifyWiring,
+  CORRECT_LEADS,
+  netsOf,
+  TERMINALS,
+  wiredRight,
+  wiring,
+  WIRING_MISTAKES,
+  WIRING_RULES,
+  wrongTerminals,
+} from "./ohms-law-wiring";
+export type { Lead, Terminal, WiringMistake } from "./ohms-law-wiring";

@@ -152,3 +152,35 @@ describe("hand timing", () => {
     expect(sd(perPeriod) / (sd(errors) / 20)).toBeLessThan(1.05);
   });
 });
+
+describe("a meter's needle and its stops", () => {
+  test("a reading within the scale is the truth plus the zero error, square-on and still", async () => {
+    const { AMMETER } = await import("../src");
+    const spec = { ...AMMETER, noise: 0, zeroError: 0.02 };
+    expect(takeReading(spec, 0.5, { rng: createRng(1) })).toEqual({ truth: 0.5, shown: 0.52 });
+  });
+
+  test("a meter pushed backwards pins at zero, and one beyond full scale pins at the top", async () => {
+    const { AMMETER, VOLTMETER } = await import("../src");
+    expect(takeReading(AMMETER, -0.4, { rng: createRng(1) })).toEqual({
+      truth: -0.4,
+      shown: 0,
+      pinned: "low",
+    });
+    expect(takeReading(VOLTMETER, 3.4, { rng: createRng(1) })).toEqual({
+      truth: 3.4,
+      shown: 3,
+      pinned: "high",
+    });
+  });
+
+  test("a needle at rest does not flicker, and jitter never carries it past a stop", async () => {
+    const { AMMETER } = await import("../src");
+    expect(takeReading(AMMETER, 0, { rng: createRng(1) })).toEqual({ truth: 0, shown: 0 });
+    for (let seed = 1; seed <= 200; seed++) {
+      const r = takeReading(AMMETER, 0.999, { rng: createRng(seed) });
+      expect(r.shown).toBeLessThanOrEqual(1);
+      expect(r.pinned).toBeUndefined();
+    }
+  });
+});
