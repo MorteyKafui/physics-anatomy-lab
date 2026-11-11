@@ -802,7 +802,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 - [x] Report in WASSCE and 15-section formats, as PDF and DOCX; print sheets from the Anatomy pipeline
 - [x] Exam mode for the pendulum
 - [ ] Offline PWA; run on the benchmark phone
-- [ ] 3D bench spike: Anatomy 3D against React Three Fiber
+- [x] 3D bench spike: Anatomy 3D against React Three Fiber
 - [ ] Five people who know no physics complete the pendulum unaided
 
 ### Phase 2: Three more flagships
