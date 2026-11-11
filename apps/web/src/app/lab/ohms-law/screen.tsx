@@ -449,8 +449,13 @@ export function OhmsLawScreen() {
     voltage: volts.toFixed(2),
   });
 
+  // A finding about a row says which one, by its number in the table as the student sees it.
+  const rowOf = (f: { rows?: readonly string[] }) => {
+    const i = results.table.rows.findIndex((r) => r.id === f.rows?.[0]);
+    return i >= 0 ? i + 1 : "";
+  };
   const findingCard = (
-    f: { key: string; params?: Record<string, string | number> },
+    f: { key: string; params?: Record<string, string | number>; rows?: readonly string[] },
     demonstrate = true,
   ) => (
     <div
@@ -460,9 +465,9 @@ export function OhmsLawScreen() {
     >
       <span className="flex items-center gap-2 font-semibold text-warn">
         <TriangleAlertIcon className="size-4" aria-hidden />
-        {msg(`${f.key}.title`, f.params)}
+        {msg(`${f.key}.title`, { ...f.params, row: rowOf(f) })}
       </span>
-      <span className="text-soft">{msg(`${f.key}.detail`, f.params)}</span>
+      <span className="text-soft">{msg(`${f.key}.detail`, { ...f.params, row: rowOf(f) })}</span>
       {demonstrate && hasMessage(`${f.key}.demonstrate`) && (
         <span className="text-muted-foreground">{msg(`${f.key}.demonstrate`)}</span>
       )}
@@ -1075,6 +1080,12 @@ export function OhmsLawScreen() {
                   </div>
                 </div>
                 <p className="text-soft">{t(`${P}.explain.graph`)}</p>
+                <Link
+                  href={`/lab/${E.id}/sheets`}
+                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("sheets.link")}
+                </Link>
               </TabsContent>
 
               <TabsContent value="tips" className="flex flex-col gap-3 p-5">

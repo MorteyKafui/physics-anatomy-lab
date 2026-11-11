@@ -907,7 +907,7 @@ export const enGB = {
     "The longest is only {ratio} times the shortest. Spread your lengths wider so the graph shows the trend clearly.",
   "table.outlier.title": "Row {row} looks out of line with the others",
   "table.outlier.detail":
-    "It sits far from the line the other points follow. Time that length again before you plot it.",
+    "It sits far from the line the other points follow. Take that reading again before you plot it.",
   "graph.scaleSmall.title": "The {symbol} axis uses only {percent}% of the sheet",
   "graph.scaleSmall.detail":
     "Choose a scale that uses at least half of each axis. A bigger graph is read more precisely, and it earns the scale mark.",

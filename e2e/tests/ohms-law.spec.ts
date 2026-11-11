@@ -29,6 +29,20 @@ const serious = async (page: Page) => {
     .map((v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(" ")).join(", ")})`);
 };
 
+/**
+ * Finish a step. The apparatus differs a little in every attempt, so on some the coach flags a
+ * reading on the way out (an outlier, say); the student reads it and finishes again to carry on.
+ */
+async function finish(page: Page, button: string, next: string) {
+  const step = page.getByText(next);
+  await page.getByRole("button", { name: button }).click();
+  // No advice: the next step opens. Advice: it stays, and finishing again carries on.
+  await step
+    .waitFor({ timeout: 3000 })
+    .catch(() => page.getByRole("button", { name: button }).click());
+  await expect(step).toBeVisible();
+}
+
 const terminal = (page: Page, t: string) => page.locator(`[data-terminal-button="${t}"]`);
 
 /** Through the question and the prediction to the bench. */
@@ -167,28 +181,35 @@ test("at Auto the whole experiment runs: two sets of readings, the table, I agai
   await page.getByRole("button", { name: "Close the key" }).click();
   const take = page.getByRole("button", { name: "Take this reading" });
   await take.click();
-  for (const cm of [40, 50, 60, 70, 80, 80, 70, 60, 50, 40]) {
+  const positions = [40, 50, 60, 70, 80, 80, 70, 60, 50, 40];
+  for (const cm of positions) {
     await page.getByRole("slider").fill(String(cm));
     await page.getByRole("button", { name: "Press the jockey" }).click();
+    // Take the reading only once the press has landed, as a student would: a reading taken
+    // before it is a reading with the jockey still off the wire.
+    await expect(page.getByRole("button", { name: "Lift the jockey" })).toBeVisible();
     await take.click();
     await page.getByRole("button", { name: "Lift the jockey" }).click();
+    await expect(page.getByRole("button", { name: "Press the jockey" })).toBeVisible();
   }
   await take.click();
   await page.getByRole("button", { name: "Open the key" }).click();
-  await expect(page.locator("aside ol li")).toHaveCount(12);
+  // Every reading where it was meant to be: off the wire first and last, then each position.
+  const readings = page.locator("aside ol li");
+  await expect(readings).toHaveCount(12);
+  const where = (await readings.allTextContents()).map((r) => r.split(":")[0]!.trim());
+  expect(where).toEqual(["No contact", ...positions.map((cm) => `${cm}.0 cm`), "No contact"]);
   await page.getByRole("button", { name: "Finish measuring" }).click();
 
   await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
   await page.getByRole("button", { name: "Standard" }).click();
   await page.getByRole("button", { name: "Fill in my readings" }).click();
-  await page.getByRole("button", { name: "Finish tabulating" }).click();
+  await finish(page, "Finish tabulating", "Step 7 of 10 · Plot");
 
-  await expect(page.getByText("Step 7 of 10 · Plot")).toBeVisible();
   await expect(page.getByText(/A graph of I against V/)).toBeVisible();
-  await page.getByRole("button", { name: "Finish plotting" }).click();
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
 
   // The worked answers come from the graph: E near the cells' 3.0 V and r near their 1.5 Ω.
-  await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
   const e = Number((await page.locator('[data-answer="E"]').textContent())!.split(" ")[0]);
   const r = Number((await page.locator('[data-answer="r"]').textContent())!.split(" ")[0]);
   expect(e).toBeGreaterThan(2.8);
