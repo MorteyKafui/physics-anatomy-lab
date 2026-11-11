@@ -156,7 +156,32 @@ test("at Auto the whole lab runs: five readings, the table, 1/v against 1/u, and
   await expect(page.getByText(`The focal length of the lens is ${f.toFixed(1)} cm.`)).toBeVisible();
   await page.getByRole("button", { name: "Continue to Report" }).click();
   await expect(page.getByText("Step 10 of 10 · Report")).toBeVisible();
-  await expect(page.getByText(/The report, the print sheets and the exam/)).toBeVisible();
+
+  // Step 10: the report, written from this run.
+  await page.getByRole("link", { name: "Open your report" }).click();
+  await expect(page).toHaveURL(/\/lab\/converging-lens\/report$/);
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText("The converging lens: the focal length of a converging lens"),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^Fig\. 1 The ray box R, the lens L and the screen S/),
+  ).toBeVisible();
+  await expect(paper.getByRole("img", { name: /the optical bench/ })).toBeVisible();
+  await expect(paper.getByRole("table")).toContainText("40.0");
+  await expect(
+    paper.getByText(
+      new RegExp(
+        `^f = 2 ⁄ \\(m₁ \\+ m₂\\) = 2 ⁄ \\([\\d.]+ cm⁻¹ \\+ [\\d.]+ cm⁻¹\\) = ${f.toFixed(1)} cm$`,
+      ),
+    ),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^I made sure the wire gauze and the lens were on one axis\./),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^A real lens bends the light through its edge a little more/),
+  ).toBeVisible();
 });
 
 test("plotting v against u is caught, and the analysis asks for 1/v against 1/u", async ({
