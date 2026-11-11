@@ -15,6 +15,11 @@ export interface TableContext {
   table: ParsedTable;
   /** The columns the theory plots (x against y), for the range and outlier checks. */
   plot?: { x: string; y: string };
+  /**
+   * The column whose values the student chooses, for the range check: plot.x unless given. In
+   * Ohm's law the graph's x is V, which follows from the PJ the student sets, so it is PJ.
+   */
+  spread?: string;
 }
 
 export type TableRule = Rule<TableContext>;
@@ -281,10 +286,11 @@ export const derivedArithmetic: TableRule = {
 export const narrowRange: TableRule = {
   id: "table-narrow-range",
   skill: "measurement",
-  check: ({ table, plot }) => {
-    if (!plot) return [];
+  check: ({ table, plot, spread }) => {
+    const column = spread ?? plot?.x;
+    if (!column) return [];
     const xs = table.completeRows
-      .map((r) => r.cells[plot.x]?.si)
+      .map((r) => r.cells[column]?.si)
       .filter((v): v is number => v !== undefined);
     if (xs.length < 3) return [];
     const min = Math.min(...xs);

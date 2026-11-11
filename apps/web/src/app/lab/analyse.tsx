@@ -21,7 +21,7 @@ import { useState, type ReactNode } from "react";
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 
 /** One answer the student writes: its value and unit, each with its own box, then the marks. */
-function AnswerLine({
+export function AnswerLine({
   id,
   lead,
   written,
@@ -30,8 +30,11 @@ function AnswerLine({
   marks,
   flagged,
   onWrite,
+  unit,
 }: {
-  id: PendulumAnswer;
+  id: string;
+  /** The unit to show a worked-out answer in, when SI base units would read badly ("A V⁻¹"). */
+  unit?: string;
   lead: string;
   written: WrittenAnswer | undefined;
   expected: Quantity | undefined;
@@ -64,7 +67,7 @@ function AnswerLine({
       <span>{lead}</span>
       {assist ? (
         <span className="font-semibold" data-answer={id}>
-          {expected ? formatQuantity(expected) : "…"}
+          {expected ? formatQuantity(expected, 3, unit) : "…"}
         </span>
       ) : (
         <>
@@ -123,7 +126,7 @@ function AnswerLine({
 }
 
 /** A calculator line with units: type a calculation, see the answer and how many figures it can carry. */
-function Calculator() {
+export function Calculator() {
   const [text, setText] = useState("");
   const [shown, setShown] = useState<string>();
   const result = shown === undefined ? undefined : calculate(shown);

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { emphasis, enGB, hasMessage, t } from "../src";
+import { enGBOhmsLaw } from "../src/ohms-law";
 
 describe("t", () => {
   test("fills placeholders", () => {
@@ -30,7 +31,15 @@ describe("emphasis", () => {
 });
 
 describe("the en-GB messages", () => {
-  const entries = Object.entries(enGB);
+  const entries = [...Object.entries(enGB), ...Object.entries(enGBOhmsLaw)];
+
+  test("an experiment's own file repeats no shared key", () => {
+    expect(Object.keys(enGBOhmsLaw).filter((k) => k in enGB)).toEqual([]);
+  });
+
+  test("an experiment's messages are found once its file is registered", () => {
+    expect(hasMessage("experiments.ohms-law.title")).toBe(true);
+  });
 
   test("are all non-empty and trimmed", () => {
     for (const [key, text] of entries)

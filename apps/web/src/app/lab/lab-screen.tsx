@@ -54,7 +54,10 @@ import {
   PENDULUM_PARTS,
   passTimes,
   PENDULUM_FORMULAS,
+  PENDULUM_INSTRUMENTS,
   PENDULUM_PLOT,
+  PENDULUM_STANDARD_TABLE,
+  PENDULUM_TEMPLATES,
   readingsIntoTable,
   readySlots,
   recordedTime,
@@ -116,10 +119,10 @@ import {
   useDragPart,
 } from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
-import { AnalysePanel } from "./analyse";
 import { FormulaBox, Sym } from "./formula";
-import { GraphPanel, graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
-import { flagsFor, TableBuilder, useTable } from "./table-builder";
+import { graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
+import { AnalysePanel, GraphPanel, TableBuilder } from "./lazy-panels";
+import { flagsFor, useTable } from "./table-builder";
 import { backToPractice, useAttempt } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
@@ -1330,7 +1333,15 @@ export function LabScreen() {
                   assist={tableAssist}
                   marks={tableMarks}
                   flags={tableFlags}
-                  readings={readings}
+                  spec={{
+                    standard: PENDULUM_STANDARD_TABLE,
+                    templates: PENDULUM_TEMPLATES,
+                    defaultTemplate: "two-repeats",
+                    instruments: PENDULUM_INSTRUMENTS,
+                    defaultKind: "time",
+                    rowsNeeded: new Set(readings.map((r) => r.l)).size,
+                    readingsSummary: readings.length ? byLength(readings) : undefined,
+                  }}
                   onRun={results.run}
                   onFillReadings={tableAssist ? fillReadings : undefined}
                   onCommit={tableCommitted}

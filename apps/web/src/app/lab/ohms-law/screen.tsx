@@ -1,10 +1,51 @@
 "use client";
 
 import { CIRCUIT_VIEWBOX, CircuitBench, terminalPoint, TERMINAL_POINTS } from "@pa/apparatus";
-import { runRules } from "@pa/analysis";
-import { coach, replay, STEPS, type Advice, type Step } from "@pa/engine";
 import {
+  fillDerived,
+  formatQuantity,
+  formulaUnitFindings,
+  GRAPH_RULES,
+  parseTable,
+  pointsFor,
+  referenceLine,
+  runRules,
+  TABLE_RULES,
+  toTableView,
+  type Finding,
+  type Skill,
+} from "@pa/analysis";
+import {
+  answersProjection,
+  coach,
+  coachIsOn,
+  frontier,
+  HELP_LEVELS,
+  helpLevelFor,
+  replay,
+  STEPS,
+  writeAnswer,
+  type Advice,
+  type HelpLevel,
+  type Step,
+} from "@pa/engine";
+import {
+  asOhmsLawReading,
   benchProjection,
+  OHMS_LAW_ANALYSIS_RULES,
+  OHMS_LAW_INSTRUMENTS,
+  OHMS_LAW_PLOT,
+  OHMS_LAW_ROWS,
+  OHMS_LAW_STANDARD_TABLE,
+  OHMS_LAW_TEMPLATES,
+  ohmsLawExpected,
+  ohmsLawReadingsIntoTable,
+  plotsIAgainstV,
+  readingData,
+  slopeOf,
+  typedQuantity,
+  vInterceptOf,
+  type OhmsLawReading,
   CORRECT_LEADS,
   decideBench,
   keyIntervalsAt,
@@ -23,6 +64,8 @@ import {
 } from "@pa/experiments";
 import { createRng } from "@pa/instruments";
 import { hasMessage, t, type MessageKey } from "@pa/i18n";
+// The Ohm's law copy is kept apart from the shared messages; this lab registers it.
+import "@pa/i18n/ohms-law";
 import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
@@ -36,7 +79,10 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
+import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
 import { CheckItem, Rail, StepStrip } from "../parts";
+import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
+import { flagsFor, useTable } from "../table-builder";
 import { useAttempt } from "../use-attempt";
 
 const E = ohmsLaw;
@@ -49,8 +95,9 @@ const leadKey = (l: Lead) => `${l[0]}~${l[1]}`;
 
 /**
  * The Ohm's law lab (the approved board "Ohm's law: wiring and measuring"): the same lab as the
- * pendulum's, with the circuit bench. Steps 1 to 5 are built here; tabulating, plotting, the
- * analysis and the report come in the next pull request.
+ * pendulum's, with the circuit bench, the shared table builder and graph sheet, and the
+ * experiment's own analysis (E where the line meets the V axis, r from the slope). The report,
+ * print sheets and exam come in the next pull request.
  */
 export function OhmsLawScreen() {
   const handle = useAttempt(E.id);
@@ -74,6 +121,13 @@ export function OhmsLawScreen() {
     const choice = (e?.data as { choice?: string } | null)?.choice;
     return choice === "rise" || choice === "fall" || choice === "same" ? choice : undefined;
   }, [handle]);
+
+  const results = useTable(handle);
+  const plot = useGraph(handle);
+  const answers = useMemo(
+    () => (handle ? replay(answersProjection, handle.attempt, handle.events) : {}),
+    [handle],
+  );
 
   // While the key is closed the bench changes with time: the cell polarises and the timer runs.
   const keyClosed = bench?.keyClosed ?? false;
@@ -182,11 +236,11 @@ export function OhmsLawScreen() {
   // With the key open nothing ticks: the bench is as it was at its last change.
   const at = keyClosed ? Math.max(now, bench.lastAt) : bench.lastAt;
   const live = { ...bench, polarisation: polarisationAt(bench, at) };
-  const readings = meterReadings(world, live, {
+  const meters = meterReadings(world, live, {
     rng: createRng((handle.attempt.seed ^ Math.floor(at / 500)) >>> 0),
   });
-  const amps = readings ? recorded(readings.ammeter, world.ammeter) : 0;
-  const volts = readings ? recorded(readings.voltmeter, world.voltmeter) : 0;
+  const amps = meters ? recorded(meters.ammeter, world.ammeter) : 0;
+  const volts = meters ? recorded(meters.voltmeter, world.voltmeter) : 0;
   const net = netsOf(bench.leads);
   const done = (l: Lead) => net(l[0]) === net(l[1]);
   const wrong = state.step === "check" ? wrongTerminals(bench.leads) : [];
@@ -215,6 +269,174 @@ export function OhmsLawScreen() {
     }
     await finishStep();
   };
+
+  // Help levels per skill, as in the pendulum lab (master plan, "Assist levels").
+  const levelFor = (skill: Skill): HelpLevel =>
+    coachIsOn(state) ? helpLevelFor(state, skill) : "on-my-own";
+  const tableAssist = levelFor("tabulation") === "auto";
+  const tableMarks = levelFor("tabulation") !== "on-my-own";
+  const graphAssist = levelFor("graph") === "auto";
+  const graphMarks = levelFor("graph") !== "on-my-own";
+  const analysisAssist = levelFor("analysis") === "auto";
+  const analysisMarks = levelFor("analysis") !== "on-my-own";
+
+  const readings = state.readings
+    .map(asOhmsLawReading)
+    .filter((r): r is OhmsLawReading => r !== undefined);
+  const readingText = (r: OhmsLawReading) =>
+    t(`${P}.measure.reading`, {
+      position: r.pj === 0 ? t(`${P}.measure.noContact`) : `${(r.pj * 100).toFixed(1)} cm`,
+      current: r.current.toFixed(2),
+      voltage: r.voltage.toFixed(2),
+    });
+
+  // The table (step 6).
+  const table = results.table;
+  const shownTable = tableAssist ? fillDerived(table) : table;
+  const tableFindings = table.layout
+    ? [
+        ...runRules(TABLE_RULES, {
+          table: parseTable(toTableView(shownTable)),
+          plot: OHMS_LAW_PLOT,
+          // The range the student chooses is PJ's, which the question sets; V follows from it.
+          spread: "PJ",
+        }),
+        ...formulaUnitFindings(table),
+      ]
+    : [];
+  const tableFlags = flagsFor(
+    tableMarks
+      ? tableFindings.filter((f) => f.severity !== "good")
+      : advice.map((a) => a.finding).filter((f) => f.skill === "tabulation"),
+  );
+  const fillReadings = () => {
+    const current = results.now();
+    const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
+    const cells = ohmsLawReadingsIntoTable(current, readings, newRowId);
+    const newRows = [...new Set(cells.map((c) => c.row))].filter(
+      (id) => !current.rows.some((r) => r.id === id),
+    );
+    void results.run([
+      ...newRows.map((id) => ({ type: "add-row" as const, id })),
+      ...cells.map((c) => ({ type: "set-cell" as const, ...c })),
+    ]);
+  };
+  const keepWorkedCells = () =>
+    results.run(
+      shownTable.rows.flatMap((row) => {
+        const typed = table.rows.find((r) => r.id === row.id)?.cells ?? {};
+        return table.columns
+          .filter((c) => c.role === "mean" || c.role === "derived")
+          .filter((c) => (row.cells[c.id] ?? "") !== (typed[c.id] ?? ""))
+          .map((c) => ({
+            type: "set-cell" as const,
+            row: row.id,
+            column: c.id,
+            value: row.cells[c.id] ?? "",
+          }));
+      }),
+    );
+
+  // The graph (step 7): I against V by default, or any two columns the student picks.
+  const numericColumns = table.columns.filter((c) => c.role !== "notes");
+  const graphColumns = graphColumnsFor(plot.graph, table.columns, OHMS_LAW_PLOT);
+  const columnFor = (id: string) => table.columns.find((c) => c.id === id);
+  const symbols = {
+    x: columnFor(graphColumns.x)?.symbol ?? graphColumns.x,
+    y: columnFor(graphColumns.y)?.symbol ?? graphColumns.y,
+  };
+  const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
+  const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist, true);
+  // Where the line meets the V axis: the student's line, or the best fit before they draw one.
+  const reachLine = graphShown.line ?? referenceLine(graphData)?.line;
+  const intercept = reachLine && plotsIAgainstV(graphColumns) ? vInterceptOf(reachLine) : undefined;
+  const graphFindings =
+    graphData.length >= 2
+      ? runRules(GRAPH_RULES, {
+          sheet: graphShown.sheet,
+          symbols,
+          data: graphData,
+          plotted: graphShown.plotted,
+          line: graphShown.line,
+          triangle: graphShown.triangle,
+          // Both axes start from zero, and the line runs on to meet the V axis at E.
+          reach: { x: [0, ...(intercept === undefined ? [] : [intercept])], y: [0] },
+        })
+      : [];
+  const graphPart = (rule: string) =>
+    rule === "graph-scale-small" || rule === "graph-off-sheet"
+      ? "scale"
+      : rule.startsWith("graph-line")
+        ? "line"
+        : rule.startsWith("graph-triangle")
+          ? "triangle"
+          : "points";
+  const partFindings = { scale: [], points: [], line: [], triangle: [] } as Record<
+    "scale" | "points" | "line" | "triangle",
+    Finding[]
+  >;
+  for (const f of graphFindings) partFindings[graphPart(f.rule)].push(f);
+  const graphFlagged = new Set(
+    (graphMarks ? graphFindings : advice.map((a) => a.finding).filter((f) => f.skill === "graph"))
+      .filter((f) => f.rule === "graph-misplotted" || f.rule === "graph-off-sheet")
+      .flatMap((f) => f.rows ?? []),
+  );
+
+  // The analysis (step 8): the slope from the triangle, E where the line meets the V axis, and r.
+  const graphUnits = {
+    x: columnFor(graphColumns.x)?.unit ?? "",
+    y: columnFor(graphColumns.y)?.unit ?? "",
+  };
+  const expected = ohmsLawExpected(
+    graphShown.triangle,
+    graphShown.line,
+    graphColumns,
+    graphUnits,
+    answers,
+  );
+  const analysisFindings = runRules(OHMS_LAW_ANALYSIS_RULES, { answers, expected });
+  const slope = graphShown.triangle && slopeOf(graphShown.triangle, graphUnits);
+  const slopeUsed = slope && (typedQuantity(answers.slope, slope.slope) ?? slope.slope);
+  const analysisFlags = (id: string) =>
+    analysisMarks ? analysisFindings.filter((f) => f.column === id) : [];
+  const write = (id: string) => (a: { value: string; unit: string }) => {
+    const e = writeAnswer(answers, id, a);
+    if (e) void handle.record([e]);
+  };
+
+  /** Finish a step, first letting the coach act once on what the step's checks found. */
+  const finishChecked = async (findings: readonly Finding[], signature: string) => {
+    const real = findings.filter((f) => f.severity !== "good");
+    if (real.length && checked !== signature) {
+      setChecked(signature);
+      const out = coach(handle.state, real, "step-exit");
+      await handle.record(out.events);
+      setAdvice(out.advice);
+      if (out.advice.length) return false;
+    }
+    await finishStep();
+    return true;
+  };
+  const finishPanelStep = async () => {
+    if (state.step === "tabulate") {
+      // At Auto the worked-out cells were filled in for the student; finishing writes them in.
+      if (tableAssist) await keepWorkedCells();
+      await finishChecked(tableFindings, `table:${JSON.stringify(shownTable)}`);
+    } else if (state.step === "plot") {
+      await finishChecked(graphFindings, `graph:${JSON.stringify(plot.graph)}`);
+    } else {
+      await finishChecked(analysisFindings, `analysis:${JSON.stringify(answers)}`);
+    }
+  };
+  const takeReading = async () => {
+    // Recorded at Measure with a fresh id, so the step machine has no reason to refuse it.
+    await handle.dispatch({
+      type: "record-reading",
+      id: `reading-${globalThis.crypto.randomUUID().slice(0, 8)}`,
+      data: readingData(bench.jockey, amps, volts),
+    });
+  };
+  const panel = state.step === "tabulate" || state.step === "plot" || state.step === "analyse";
 
   const description = t(`${P}.bench`, {
     state: t(`${P}.benchWired`, { count: bench.leads.length }),
@@ -246,6 +468,9 @@ export function OhmsLawScreen() {
       )}
     </div>
   );
+
+  // After findingCard, which it calls.
+  const adviceCards = advice.map((a) => findingCard(a.finding, a.level === "demonstrate"));
 
   return (
     <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
@@ -279,126 +504,280 @@ export function OhmsLawScreen() {
               <div className="h-1 bg-primary" style={{ width: `${percent}%` }} />
             </div>
           </div>
+          <span className="hidden flex-1 md:block" />
+          <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
+            <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
+            <select
+              className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
+              value={state.helpLevel}
+              onChange={(e) =>
+                void handle.dispatch({ type: "set-help-level", level: e.target.value as HelpLevel })
+              }
+            >
+              {HELP_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {t(`lab.helpLevel.${level}` as MessageKey)}
+                </option>
+              ))}
+            </select>
+          </label>
           <span className="border border-border px-2.5 py-1 text-xs text-muted-foreground">
             {t(`${P}.inDevelopment`)}
           </span>
         </header>
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          <div className="relative flex min-w-0 flex-1 items-center justify-center px-6 pt-16 pb-28">
-            <div className="absolute top-5 left-6 hidden flex-col gap-0.5 md:flex">
-              <span className="text-sm text-muted-foreground">{t(`${P}.figure`)}</span>
-              <span className="font-semibold">
-                {measuring ? t(`${P}.measure.title`) : t(`${P}.build.title`)}
-              </span>
-            </div>
-            <div
-              ref={stage}
-              className="relative w-full max-w-[760px]"
-              style={{ aspectRatio: `${CIRCUIT_VIEWBOX.width} / ${CIRCUIT_VIEWBOX.height}` }}
-            >
-              <CircuitBench
-                className="absolute inset-0 size-full"
-                label={description}
-                leads={bench.leads}
-                keyClosed={keyClosed}
-                jockey={jockey}
-                wireLength={world.wireLength}
-                ammeter={readings ? readings.ammeter.shown / world.ammeter.scale![1] : 0}
-                voltmeter={readings ? readings.voltmeter.shown / world.voltmeter.scale![1] : 0}
-                lit={lit}
-                {...(from
-                  ? {
-                      pending: {
-                        from,
-                        to: pointer ?? terminalPoint(from, jockey, world.wireLength),
-                      },
-                    }
-                  : {})}
-                {...(bench.jockey !== undefined
-                  ? { pjLabel: `${(bench.jockey * 100).toFixed(1)} cm` }
-                  : {})}
-              />
-              {/* Each terminal is a real button over the drawing: tap, click or Enter to choose it. */}
-              {building &&
-                TERMINALS.map((x) => {
-                  const p =
-                    x === "jockey"
-                      ? terminalPoint(x, jockey, world.wireLength)
-                      : TERMINAL_POINTS[x];
-                  return (
-                    <button
-                      key={x}
-                      type="button"
-                      data-terminal-button={x}
-                      aria-label={terminalName(x)}
-                      aria-pressed={from === x}
-                      onPointerDown={(e) => startDrag(x, e)}
-                      onClick={() => choose(x)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") setFrom(undefined);
-                      }}
-                      className="absolute aspect-square -translate-x-1/2 -translate-y-1/2 touch-none rounded-full focus-visible:outline-2 focus-visible:outline-ring"
-                      style={{
-                        left: `${(p.x / CIRCUIT_VIEWBOX.width) * 100}%`,
-                        top: `${(p.y / CIRCUIT_VIEWBOX.height) * 100}%`,
-                        // As large as the bench allows: 44 px on a laptop, never under 24 px, and
-                        // never overlapping the next terminal's button.
-                        width: "clamp(24px, 7%, 44px)",
-                      }}
-                    />
-                  );
-                })}
-            </div>
-            <div role="status" aria-live="polite" className="sr-only">
-              {from ? t(`${P}.build.from`, { terminal: terminalName(from) }) : ""}
-            </div>
-            {refusal && (
-              <div
-                role="alert"
-                className="absolute bottom-6 left-1/2 max-w-[520px] -translate-x-1/2 border border-primary bg-accent-wash px-4 py-3.5"
-              >
-                {refusal}
-              </div>
-            )}
-            {measuring && !refusal && (
-              <div className="absolute bottom-5 left-6 flex items-end gap-6 border border-border bg-surface px-4 py-3">
-                {readings &&
-                  (["ammeter", "voltmeter"] as const).map((m) => (
-                    <div key={m} className="flex flex-col">
-                      <span className="text-xs text-muted-foreground">
-                        {t(`${P}.measure.${m}`)}
-                      </span>
-                      <span className="font-mono text-[34px] leading-tight font-medium">
-                        {(m === "ammeter" ? amps : volts).toFixed(2)}{" "}
-                        <span className="text-base text-muted-foreground">
-                          {m === "ammeter" ? "A" : "V"}
-                        </span>
-                      </span>
-                      {readings[m].pinned && (
-                        <span className="text-xs text-warn">
-                          {t(
-                            readings[m].pinned === "low"
-                              ? `${P}.measure.pinnedLow`
-                              : `${P}.measure.pinnedHigh`,
-                          )}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                {keyClosed && (
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground">
-                      {t(`${P}.measure.keyClosedFor`)}
-                    </span>
-                    <span className="font-mono text-[34px] leading-tight font-medium text-warn">
-                      {keySeconds} <span className="text-base text-muted-foreground">s</span>
-                    </span>
+          {panel ? (
+            <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+              {state.step === "tabulate" && (
+                <TableBuilder
+                  table={table}
+                  shown={shownTable}
+                  assist={tableAssist}
+                  marks={tableMarks}
+                  flags={tableFlags}
+                  spec={{
+                    standard: OHMS_LAW_STANDARD_TABLE,
+                    templates: OHMS_LAW_TEMPLATES,
+                    defaultTemplate: "two-repeats",
+                    instruments: OHMS_LAW_INSTRUMENTS,
+                    defaultKind: "current",
+                    rowsNeeded: Math.max(OHMS_LAW_ROWS, new Set(readings.map((r) => r.pj)).size),
+                    readingsSummary: readings.length
+                      ? readings.map(readingText).join(" · ")
+                      : undefined,
+                  }}
+                  onRun={results.run}
+                  onFillReadings={tableAssist ? fillReadings : undefined}
+                  onCommit={() => undefined}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+                    ) : null
+                  }
+                />
+              )}
+              {state.step === "plot" && (
+                <GraphPanel
+                  state={plot.graph}
+                  view={graphShown}
+                  data={graphData}
+                  headings={{
+                    x: headingFor(table.columns, graphColumns.x),
+                    y: headingFor(table.columns, graphColumns.y),
+                  }}
+                  numericColumns={numericColumns}
+                  flaggedRows={graphFlagged}
+                  partFindings={partFindings}
+                  showChecks={graphMarks && !graphAssist}
+                  onRun={plot.run}
+                  latest={plot.now}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3">{adviceCards}</div>
+                    ) : null
+                  }
+                />
+              )}
+              {state.step === "analyse" && (
+                <section
+                  aria-label={t("lab.analyse.label")}
+                  className="flex w-full min-w-0 flex-col gap-4"
+                >
+                  <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+                    {!graphShown.triangle || !slope ? (
+                      <div className="flex flex-col items-start gap-3">
+                        <p className="text-soft">{t("lab.analyse.needTriangle")}</p>
+                        <Button
+                          variant="outline"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
+                        >
+                          {t("lab.analyse.backToPlot")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+                        <AnswerLine
+                          id="slope"
+                          unit={`${graphUnits.y} ${graphUnits.x}⁻¹`}
+                          lead={t(`${P}.analyse.slopeLead`, {
+                            rise: slope.rise.toFixed(2),
+                            run: slope.run.toFixed(2),
+                            yu: graphUnits.y,
+                            xu: graphUnits.x,
+                          })}
+                          written={answers.slope}
+                          expected={expected.slope}
+                          assist={analysisAssist}
+                          marks={analysisMarks && !analysisAssist}
+                          flagged={analysisFlags("slope")}
+                          onWrite={write("slope")}
+                        />
+                        {plotsIAgainstV(graphColumns) ? (
+                          <>
+                            <AnswerLine
+                              id="E"
+                              unit={graphUnits.x}
+                              lead={t(`${P}.analyse.eLead`)}
+                              written={answers.E}
+                              expected={expected.E}
+                              assist={analysisAssist}
+                              marks={analysisMarks && !analysisAssist}
+                              flagged={analysisFlags("E")}
+                              onWrite={write("E")}
+                            />
+                            <AnswerLine
+                              id="r"
+                              unit="Ω"
+                              lead={t(`${P}.analyse.rLead`, {
+                                slope: slopeUsed ? slopeUsed.value.toPrecision(3) : "slope",
+                              })}
+                              written={answers.r}
+                              expected={expected.r}
+                              assist={analysisAssist}
+                              marks={analysisMarks && !analysisAssist}
+                              flagged={analysisFlags("r")}
+                              onWrite={write("r")}
+                            />
+                          </>
+                        ) : (
+                          <p className="font-sans text-sm text-soft">
+                            {t(`${P}.analyse.otherGraph`, symbols)}
+                          </p>
+                        )}
+                        {analysisAssist && (
+                          <span className="font-sans text-xs text-muted-foreground">
+                            {t("lab.analyse.workedOut")}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+                    <Calculator />
+                  </div>
+                  {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
+                </section>
+              )}
+            </section>
+          ) : (
+            <div className="relative flex min-w-0 flex-1 items-center justify-center px-6 pt-16 pb-28">
+              <div className="absolute top-5 left-6 hidden flex-col gap-0.5 md:flex">
+                <span className="text-sm text-muted-foreground">{t(`${P}.figure`)}</span>
+                <span className="font-semibold">
+                  {measuring ? t(`${P}.measure.title`) : t(`${P}.build.title`)}
+                </span>
               </div>
-            )}
-          </div>
+              <div
+                ref={stage}
+                className="relative w-full max-w-[760px]"
+                style={{ aspectRatio: `${CIRCUIT_VIEWBOX.width} / ${CIRCUIT_VIEWBOX.height}` }}
+              >
+                <CircuitBench
+                  className="absolute inset-0 size-full"
+                  label={description}
+                  leads={bench.leads}
+                  keyClosed={keyClosed}
+                  jockey={jockey}
+                  wireLength={world.wireLength}
+                  ammeter={meters ? meters.ammeter.shown / world.ammeter.scale![1] : 0}
+                  voltmeter={meters ? meters.voltmeter.shown / world.voltmeter.scale![1] : 0}
+                  lit={lit}
+                  {...(from
+                    ? {
+                        pending: {
+                          from,
+                          to: pointer ?? terminalPoint(from, jockey, world.wireLength),
+                        },
+                      }
+                    : {})}
+                  {...(bench.jockey !== undefined
+                    ? { pjLabel: `${(bench.jockey * 100).toFixed(1)} cm` }
+                    : {})}
+                />
+                {/* Each terminal is a real button over the drawing: tap, click or Enter to choose it. */}
+                {building &&
+                  TERMINALS.map((x) => {
+                    const p =
+                      x === "jockey"
+                        ? terminalPoint(x, jockey, world.wireLength)
+                        : TERMINAL_POINTS[x];
+                    return (
+                      <button
+                        key={x}
+                        type="button"
+                        data-terminal-button={x}
+                        aria-label={terminalName(x)}
+                        aria-pressed={from === x}
+                        onPointerDown={(e) => startDrag(x, e)}
+                        onClick={() => choose(x)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") setFrom(undefined);
+                        }}
+                        className="absolute aspect-square -translate-x-1/2 -translate-y-1/2 touch-none rounded-full focus-visible:outline-2 focus-visible:outline-ring"
+                        style={{
+                          left: `${(p.x / CIRCUIT_VIEWBOX.width) * 100}%`,
+                          top: `${(p.y / CIRCUIT_VIEWBOX.height) * 100}%`,
+                          // As large as the bench allows: 44 px on a laptop, never under 24 px, and
+                          // never overlapping the next terminal's button.
+                          width: "clamp(24px, 7%, 44px)",
+                        }}
+                      />
+                    );
+                  })}
+              </div>
+              <div role="status" aria-live="polite" className="sr-only">
+                {from ? t(`${P}.build.from`, { terminal: terminalName(from) }) : ""}
+              </div>
+              {refusal && (
+                <div
+                  role="alert"
+                  className="absolute bottom-6 left-1/2 max-w-[520px] -translate-x-1/2 border border-primary bg-accent-wash px-4 py-3.5"
+                >
+                  {refusal}
+                </div>
+              )}
+              {measuring && !refusal && (
+                <div className="absolute bottom-5 left-6 flex items-end gap-6 border border-border bg-surface px-4 py-3">
+                  {meters &&
+                    (["ammeter", "voltmeter"] as const).map((m) => (
+                      <div key={m} className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">
+                          {t(`${P}.measure.${m}`)}
+                        </span>
+                        <span className="font-mono text-[34px] leading-tight font-medium">
+                          {(m === "ammeter" ? amps : volts).toFixed(2)}{" "}
+                          <span className="text-base text-muted-foreground">
+                            {m === "ammeter" ? "A" : "V"}
+                          </span>
+                        </span>
+                        {meters[m].pinned && (
+                          <span className="text-xs text-warn">
+                            {t(
+                              meters[m].pinned === "low"
+                                ? `${P}.measure.pinnedLow`
+                                : `${P}.measure.pinnedHigh`,
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  {keyClosed && (
+                    <div className="flex flex-col">
+                      <span className="text-xs text-muted-foreground">
+                        {t(`${P}.measure.keyClosedFor`)}
+                      </span>
+                      <span className="font-mono text-[34px] leading-tight font-medium text-warn">
+                        {keySeconds} <span className="text-base text-muted-foreground">s</span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           <aside
             aria-label={t("lab.coach.label")}
@@ -581,10 +960,78 @@ export function OhmsLawScreen() {
                         ? t(`${P}.measure.lift`)
                         : t(`${P}.measure.press`)}
                     </Button>
+                    <Button
+                      variant="outline"
+                      disabled={!keyClosed}
+                      onClick={() => void takeReading()}
+                    >
+                      {t(`${P}.measure.take`)}
+                    </Button>
                     {procedure.map((f) => findingCard(f))}
-                    <p className="text-sm text-muted-foreground">{t(`${P}.measure.recordNext`)}</p>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm text-muted-foreground">
+                        {t(`${P}.measure.readings`)}
+                      </span>
+                      {readings.length ? (
+                        <ol className="flex flex-col gap-0.5 font-mono text-sm">
+                          {readings.map((r) => (
+                            <li key={r.id}>{readingText(r)}</li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <span className="text-sm text-soft">{t(`${P}.measure.none`)}</span>
+                      )}
+                    </div>
+                    <Button disabled={!readings.length} onClick={() => void finishStep()}>
+                      {t("lab.steps.finishMeasuring")}
+                    </Button>
                   </>
                 )}
+                {panel && (
+                  <>
+                    <h2 className="font-display text-2xl leading-tight font-bold">
+                      {t(`${P}.${state.step}.title` as MessageKey)}
+                    </h2>
+                    <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
+                    <Button onClick={() => void finishPanelStep()}>
+                      {state.step === "tabulate"
+                        ? t("lab.steps.finishTabulating")
+                        : state.step === "plot"
+                          ? t("lab.steps.finishPlotting")
+                          : t("lab.steps.finishAnalysing")}
+                    </Button>
+                  </>
+                )}
+                {(state.step === "conclude" || state.step === "report") && (
+                  <>
+                    <h2 className="font-display text-2xl leading-tight font-bold">
+                      {stepName(state.step)}
+                    </h2>
+                    <p className="text-soft">
+                      {state.step === "conclude"
+                        ? t(`${P}.conclude.text`, {
+                            // What the student wrote, or the worked-out value at Auto.
+                            E: answers.E?.value
+                              ? `${answers.E.value} ${answers.E.unit}`
+                              : expected.E
+                                ? formatQuantity(expected.E, 3, graphUnits.x)
+                                : "E",
+                            r: answers.r?.value
+                              ? `${answers.r.value} ${answers.r.unit}`
+                              : expected.r
+                                ? formatQuantity(expected.r, 3, "Ω")
+                                : "r",
+                          })
+                        : t(`${P}.report.next`)}
+                    </p>
+                    {state.step === "conclude" && next && (
+                      <Button className="self-start" onClick={() => void finishStep()}>
+                        {t("lab.steps.continue", { step: stepName(next) })}
+                      </Button>
+                    )}
+                  </>
+                )}
+
                 {(state.step === "question" ||
                   state.step === "predict" ||
                   state.step === "check") &&
@@ -639,14 +1086,7 @@ export function OhmsLawScreen() {
         <StepStrip
           current={state.step}
           completed={state.completed}
-          // Steps 6 to 10 come with the next pull request; until then the lab stops at Measure.
-          open={(s) =>
-            STEPS.indexOf(s) <=
-            Math.min(
-              STEPS.indexOf("measure"),
-              STEPS.indexOf(state.step) + (state.completed.includes(state.step) ? 1 : 0),
-            )
-          }
+          open={(s) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state))}
           onGo={(s) => void handle.dispatch({ type: "go-to-step", step: s })}
         />
       </div>

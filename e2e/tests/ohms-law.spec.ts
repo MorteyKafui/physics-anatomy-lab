@@ -151,3 +151,57 @@ test("no sideways scrolling at phone width in the Ohm's law lab", async ({ page 
     ),
   ).toBe(0);
 });
+
+test("at Auto the whole experiment runs: two sets of readings, the table, I against V, and E and r from the graph", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(120_000);
+  await toBuild(page);
+  await page.getByLabel("Help level").selectOption("auto");
+  await wire(page, DIAGRAM);
+  await page.getByRole("button", { name: "Finish building" }).click();
+  await page.getByRole("button", { name: "Continue to Measure" }).click();
+
+  // PJ increasing, then decreasing, as the book takes them: twelve readings.
+  await page.getByRole("button", { name: "Close the key" }).click();
+  const take = page.getByRole("button", { name: "Take this reading" });
+  await take.click();
+  for (const cm of [40, 50, 60, 70, 80, 80, 70, 60, 50, 40]) {
+    await page.getByRole("slider").fill(String(cm));
+    await page.getByRole("button", { name: "Press the jockey" }).click();
+    await take.click();
+    await page.getByRole("button", { name: "Lift the jockey" }).click();
+  }
+  await take.click();
+  await page.getByRole("button", { name: "Open the key" }).click();
+  await expect(page.locator("aside ol li")).toHaveCount(12);
+  await page.getByRole("button", { name: "Finish measuring" }).click();
+
+  await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
+  await page.getByRole("button", { name: "Standard" }).click();
+  await page.getByRole("button", { name: "Fill in my readings" }).click();
+  await page.getByRole("button", { name: "Finish tabulating" }).click();
+
+  await expect(page.getByText("Step 7 of 10 · Plot")).toBeVisible();
+  await expect(page.getByText(/A graph of I against V/)).toBeVisible();
+  await page.getByRole("button", { name: "Finish plotting" }).click();
+
+  // The worked answers come from the graph: E near the cells' 3.0 V and r near their 1.5 Ω.
+  await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
+  const e = Number((await page.locator('[data-answer="E"]').textContent())!.split(" ")[0]);
+  const r = Number((await page.locator('[data-answer="r"]').textContent())!.split(" ")[0]);
+  expect(e).toBeGreaterThan(2.8);
+  expect(e).toBeLessThan(3.2);
+  expect(r).toBeGreaterThan(1.2);
+  expect(r).toBeLessThan(1.8);
+  await expect(page.locator('[data-answer="slope"]')).toContainText("A V⁻¹");
+  await page.getByRole("button", { name: "Finish analysing" }).click();
+
+  await expect(page.getByText("Step 9 of 10 · Conclude")).toBeVisible();
+  await expect(page.getByText(`the cell's emf E is ${e.toFixed(2)} V`)).toBeVisible();
+  await page.getByRole("button", { name: "Continue to Report" }).click();
+  await expect(
+    page.getByText("The report for this experiment comes with its next part."),
+  ).toBeVisible();
+});

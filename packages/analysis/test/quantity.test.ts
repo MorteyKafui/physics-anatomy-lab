@@ -55,6 +55,15 @@ describe("the calculator", () => {
     expect(formatQuantity(slope.quantity)).toBe("4.03 s² m⁻¹");
     const g = ok("4π² / (4.03 s² m⁻¹)");
     expect(formatQuantity(g.quantity)).toBe("9.80 m s⁻²");
+    // In a unit of the same kind when asked; SI base units otherwise.
+    const volts = parseUnit("V")!;
+    expect(formatQuantity({ value: 2.98, dims: volts.dims }, 3, "V")).toBe("2.98 V");
+    expect(formatQuantity({ value: -0.6667, dims: parseUnit("A V⁻¹")!.dims }, 3, "A V⁻¹")).toBe(
+      "−0.667 A V⁻¹".replace("−", "-"),
+    );
+    expect(formatQuantity({ value: 2.98, dims: volts.dims }, 3, "Ω")).toBe(
+      formatQuantity({ value: 2.98, dims: volts.dims }),
+    );
     // 4 and π are exact; 4.03 s² m⁻¹ was measured to 3 figures, so g carries 3.
     expect(g.sigFigs).toBe(3);
   });

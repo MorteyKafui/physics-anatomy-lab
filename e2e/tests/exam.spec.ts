@@ -35,6 +35,11 @@ test("the exam starts with the question and the guide's split of the hour, and r
   page,
 }) => {
   await page.clock.install();
+  await page.goto(EXAM);
+  await expect(page.getByRole("complementary", { name: "How the hour is split" })).toBeVisible();
+  // Stop the clock before the exam starts, so the seconds a slow machine takes to open the lab
+  // do not count: the only time that passes is the time fast-forwarded below.
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 1000);
   await startExam(page);
   await expect(clock(page)).toContainText(/Time left\s*60:00/);
   await expect(clock(page)).toContainText("Reading the question");

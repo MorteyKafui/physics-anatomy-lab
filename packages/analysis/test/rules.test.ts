@@ -256,4 +256,17 @@ describe("table rules on a pendulum table", () => {
     );
     expect(rulesFired({ columns, rows })).toContain("table-narrow-range");
   });
+
+  test("the range check follows the column the student chooses, when that is not the graph's x", () => {
+    // The timings are bunched (35 to 40 s) and the lengths are spread wide. With the graph's x on
+    // the timings the check fires; told the student chose the lengths, it does not.
+    const fired = (spread?: string) =>
+      runRules(TABLE_RULES, {
+        table: parseTable(good),
+        plot: { x: "t1", y: "T2" },
+        ...(spread ? { spread } : {}),
+      }).map((f) => f.rule);
+    expect(fired()).toContain("table-narrow-range");
+    expect(fired("l")).not.toContain("table-narrow-range");
+  });
 });
