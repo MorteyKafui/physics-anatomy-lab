@@ -112,6 +112,24 @@ the V axis at 2.999 V. That is E less the millivolt the voltmeter's own current 
    3. exam mode, with the part (b) questions and the rubric drafted here for the physics reviewer.
 6. **Usability test** with students at the target level.
 
+## The exam rubric (item 5, for the physics reviewer)
+
+`packages/experiments/src/ohms-law-exam.ts`, 25 marks in the pendulum's four sections, so the
+marked script and its PDF are shared:
+
+| Section      | Marks | For                                                                                                                                                                          |
+| ------------ | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Diagram      | 2     | The circuit as the diagram has it (1); the voltmeter across the cells (1)                                                                                                    |
+| Tabulation   | 10    | Five jockey positions (2, or 1 for three); a reading off the wire (1); headings (2); readings to the least counts (2); means of I and V (2); key opened between readings (1) |
+| Graph        | 8     | I against V (1); scale (2); points (2); the line (1); the slope triangle (2)                                                                                                 |
+| Calculations | 5     | The slope (1), E (1) and r (1), each with its unit; two precautions (2)                                                                                                      |
+
+Part (b), every number from the circuit solver on the approved bench:
+
+1. The lost volts at PJ = 80 cm, E − V, and r = lost volts ⁄ I.
+2. Why the voltmeter reads below E even with the jockey off the wire.
+3. Why the potentiometer wire is constantan, not copper.
+
 ## For the physics reviewer to decide
 
 1. Is the circuit read right? Specifically, the jockey's lead from P cuts PJ out, and the

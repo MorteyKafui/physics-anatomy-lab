@@ -554,11 +554,6 @@ export function OhmsLawScreen() {
               </select>
             </label>
           )}
-          {state.mode === "exam" && (
-            <span className="border border-border px-2.5 py-1 text-xs text-muted-foreground">
-              {t("exam.coachOff")}
-            </span>
-          )}
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&
@@ -566,7 +561,7 @@ export function OhmsLawScreen() {
             <ExamBar startedAt={exam.startedAt} onHandIn={(auto) => void handIn(auto)} />
           )}
         {handle.attempt.mode === "exam" && exam.handedInAt !== undefined && (
-          <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
+          <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
             <span>{exam.auto ? t("exam.timeUp") : t("exam.handedIn")}</span>
             <Link href={`/lab/${E.id}/exam`} className="font-semibold underline underline-offset-2">
               {t("exam.seeScript")}
@@ -718,7 +713,7 @@ export function OhmsLawScreen() {
               )}
             </section>
           ) : (
-            <div className="relative flex min-w-0 flex-1 items-center justify-center px-6 pt-16 pb-28">
+            <div className="relative flex min-w-0 flex-1 items-center justify-center px-6 pt-16 pb-28 md:[container-type:size]">
               <div className="absolute top-5 left-6 hidden flex-col gap-0.5 md:flex">
                 <span className="text-sm text-muted-foreground">{t(`${P}.figure`)}</span>
                 <span className="font-semibold">
@@ -727,7 +722,9 @@ export function OhmsLawScreen() {
               </div>
               <div
                 ref={stage}
-                className="relative w-full max-w-[760px]"
+                // As wide as the space allows and, on a wide screen, no taller than it, keeping the
+                // drawing's shape, so the bench never spills over the header when the window is short.
+                className="relative w-full max-w-[760px] md:w-[min(100cqw,760px,calc(100cqh*600/420))]"
                 style={{ aspectRatio: `${CIRCUIT_VIEWBOX.width} / ${CIRCUIT_VIEWBOX.height}` }}
               >
                 <CircuitBench
