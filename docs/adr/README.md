@@ -41,3 +41,4 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0034](./0034-type-geist-and-bricolage.md)            | Type: Geist, Geist Mono and Bricolage Grotesque                      | 2026-11-06 |
 | [0035](./0035-digital-stopwatch.md)                   | The stopwatch is digital and reads to 0.01 s                         | 2026-11-06 |
 | [0036](./0036-3d-bench-anatomy.md)                    | The turnable 3D bench uses Anatomy 3D                                | 2026-11-11 |
+| [0037](./0037-public-repository.md)                   | The repository is public (supersedes 0009)                           | 2026-11-11 |
