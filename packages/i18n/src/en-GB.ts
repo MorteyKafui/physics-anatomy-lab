@@ -875,7 +875,7 @@ export const enGB = {
     "More than the five the guide asks for, which makes your graph more reliable.",
   "table.tooFewRows.title": "{n} of {min} sets of readings so far",
   "table.tooFewRows.detail":
-    "The guide asks for at least {min}. Go back to Measure and time more lengths.",
+    "The guide asks for at least {min}. Go back to Measure and take more readings.",
   "table.headingUnit.title": "Add the unit to {symbol}: {heading}",
   "table.headingUnit.detail":
     "A heading is the quantity over its unit. Without the unit the column cannot be marked.",
@@ -1054,7 +1054,7 @@ export const enGB = {
   "experiments.ohms-law.check.fix": "Back to wiring",
   "experiments.ohms-law.measure.title": "Read I and V",
   "experiments.ohms-law.measure.why":
-    "Close the key, press the jockey at the length, and read both meters with your eye square-on. Then open the key straight away, so the cell does not run down.",
+    "Close the key, press the jockey at the length, and read both meters with your eye square-on. Then open the key straight away, so the cell does not run down. Take a reading with the jockey lifted, then at PJ = 40, 50, 60, 70 and 80 cm; then take them all again with PJ decreasing, for the second set.",
   "experiments.ohms-law.measure.closeKey": "Close the key",
   "experiments.ohms-law.measure.openKey": "Open the key",
   "experiments.ohms-law.measure.position": "Jockey position, PJ",
@@ -1065,8 +1065,31 @@ export const enGB = {
   "experiments.ohms-law.measure.keyClosedFor": "Key closed for",
   "experiments.ohms-law.measure.pinnedLow": "The needle is hard against the stop below zero",
   "experiments.ohms-law.measure.pinnedHigh": "The needle is hard against full scale",
-  "experiments.ohms-law.measure.recordNext":
-    "Recording these readings in a table comes with the next part of this experiment.",
+  "experiments.ohms-law.measure.take": "Take this reading",
+  "experiments.ohms-law.measure.readings": "Readings so far",
+  "experiments.ohms-law.measure.none":
+    "None yet. Close the key and take the first with the jockey lifted.",
+  "experiments.ohms-law.measure.reading": "{position}: {current} A, {voltage} V",
+  "experiments.ohms-law.measure.noContact": "No contact",
+  "experiments.ohms-law.tabulate.title": "Tabulate your readings",
+  "experiments.ohms-law.tabulate.why":
+    "Record PJ, I and V for each position, with the units in the headings and each reading to the ammeter's or voltmeter's least count.",
+  "experiments.ohms-law.plot.title": "Plot I against V",
+  "experiments.ohms-law.plot.why":
+    "Put I on the vertical axis and V on the horizontal, both starting from zero, so the line can be carried on to meet the V axis. Then draw the best straight line and a large slope triangle.",
+  "experiments.ohms-law.analyse.title": "Find E and r",
+  "experiments.ohms-law.analyse.why":
+    "The slope of your line is −1 ⁄ r, and the line meets the V axis at E, where no current flows.",
+  "experiments.ohms-law.analyse.slopeLead": "slope = CB ⁄ AC = {rise} {yu} ⁄ {run} {xu} =",
+  "experiments.ohms-law.analyse.eLead": "E = V where I = 0, read from your line =",
+  "experiments.ohms-law.analyse.rLead": "r = −1 ⁄ slope = −1 ⁄ ({slope}) =",
+  "experiments.ohms-law.analyse.otherGraph":
+    "Your graph is {y} against {x}. E and r come from a graph of I against V.",
+  "experiments.ohms-law.conclude.text":
+    "From your graph, the cell's emf E is {E} and its internal resistance r is {r}. The voltmeter reads less than E whenever current flows, because part of E drives the current through the cell itself.",
+  "experiments.ohms-law.report.next": "The report for this experiment comes with its next part.",
+  "lab.analyse.name.E": "E",
+  "lab.analyse.name.r": "r",
   "experiments.ohms-law.bench":
     "{state}. The key is {key}. {jockey}. The ammeter reads {current} A and the voltmeter {voltage} V.",
   "experiments.ohms-law.benchWired": "The circuit has {count} leads",
@@ -1074,7 +1097,7 @@ export const enGB = {
   "experiments.ohms-law.keyClosed": "closed",
   "experiments.ohms-law.jockeyLifted": "The jockey is lifted",
   "experiments.ohms-law.jockeyPressed": "The jockey is pressed at PJ = {pj} cm",
-  "experiments.ohms-law.inDevelopment": "Being built: steps 6 to 10 come next",
+  "experiments.ohms-law.inDevelopment": "Being built: the report comes next",
   "experiments.ohms-law.explain.title": "Why the voltmeter reading falls",
   "experiments.ohms-law.explain.text":
     "The cell's emf E drives the current round the circuit and through the cell itself. The cell has its own resistance r, which uses up part of E as the current passes, so the p.d. across its terminals is less.",

@@ -155,8 +155,13 @@ export function graphView(
   data: readonly PlottedPoint[],
   columns: { x: string; y: string },
   assist: boolean,
+  /**
+   * The graph is read where its line meets an axis (Ohm's law: E where I = 0), so even the worked
+   * sheet at Auto starts both axes from zero, as the question asks.
+   */
+  fromOrigin = false,
 ): GraphView {
-  const sheet = state.sheet ?? startingSheet(data, columns, assist);
+  const sheet = state.sheet ?? startingSheet(data, columns, assist && !fromOrigin);
   if (!assist)
     return {
       sheet,

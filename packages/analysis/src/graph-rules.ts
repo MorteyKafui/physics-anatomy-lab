@@ -32,6 +32,11 @@ export interface GraphContext {
   plotted: PlottedPoint[];
   line?: DrawnLine | undefined;
   triangle?: SlopeTriangle | undefined;
+  /**
+   * Values the graph must show besides its points, for the scale check: the origin and where the
+   * line is read off an axis (Ohm's law: V = 0 to E, where I = 0).
+   */
+  reach?: { x?: readonly number[]; y?: readonly number[] };
 }
 
 export type GraphRule = Rule<GraphContext>;
@@ -44,10 +49,10 @@ export const PLOT_TOLERANCE_MM = 1;
 export const scaleTooSmall: GraphRule = {
   id: "graph-scale-small",
   skill: "graph",
-  check: ({ sheet, symbols, data }) => {
+  check: ({ sheet, symbols, data, reach }) => {
     if (data.length < 2) return [];
     return (["x", "y"] as const).flatMap((axis) => {
-      const values = data.map((p) => p[axis]);
+      const values = [...data.map((p) => p[axis]), ...(reach?.[axis] ?? [])];
       const used =
         (Math.max(...values) - Math.min(...values)) / (DIVISIONS[axis] * sheet[axis].per2cm);
       // Exactly half is enough; the tolerance keeps 0.85 − 0.80 from falling just short.

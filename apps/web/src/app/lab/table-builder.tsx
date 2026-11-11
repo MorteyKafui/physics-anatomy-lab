@@ -25,14 +25,7 @@ import {
   type TableLayout,
   type TableState,
 } from "@pa/engine";
-import {
-  PENDULUM_INSTRUMENTS,
-  PENDULUM_STANDARD_TABLE,
-  PENDULUM_TEMPLATES,
-  STARTING_ROWS,
-  type PendulumReading,
-  type PendulumTemplate,
-} from "@pa/experiments";
+import { STARTING_ROWS } from "@pa/experiments";
 import { t, type MessageKey } from "@pa/i18n";
 import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
@@ -88,22 +81,39 @@ export function useTable(handle: AttemptHandle | undefined) {
 
 const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
 
+/**
+ * What an experiment gives the table builder: its standard table, the templates the student
+ * can start from, the instrument each kind of quantity is read with, and its readings so far.
+ */
+export interface TableSpec {
+  standard: readonly DesignColumn[];
+  templates: Readonly<Record<string, readonly DesignColumn[]>>;
+  defaultTemplate: string;
+  instruments: Partial<Record<QuantityKind, NonNullable<DesignColumn["leastCount"]>>>;
+  /** The kind a new column starts as. */
+  defaultKind: QuantityKind;
+  /** How many rows the readings so far need. */
+  rowsNeeded: number;
+  /** The readings so far, as one line under the table's toolbar; undefined when there are none. */
+  readingsSummary: string | undefined;
+}
+
 /** Commands that start a table and give it its first rows. */
 export function startTable(
   current: TableState,
   layout: TableLayout,
-  template: PendulumTemplate | undefined,
-  lengthsMeasured: number,
+  template: string | undefined,
+  spec: TableSpec,
 ): TableCommand[] {
   const columns =
     layout === "standard"
-      ? [...PENDULUM_STANDARD_TABLE]
+      ? [...spec.standard]
       : layout === "template"
-        ? [...PENDULUM_TEMPLATES[template ?? "two-repeats"]]
+        ? [...(spec.templates[template ?? spec.defaultTemplate] ?? spec.standard)]
         : current.layout === undefined
           ? []
           : current.columns;
-  const rows = Math.max(STARTING_ROWS, lengthsMeasured) - current.rows.length;
+  const rows = Math.max(STARTING_ROWS, spec.rowsNeeded) - current.rows.length;
   return [
     { type: "start-table", layout, ...(template ? { template } : {}), columns },
     ...Array.from({ length: Math.max(0, rows) }, () => ({
@@ -171,8 +181,12 @@ function ColumnEditor({
   onCancel,
   onDelete,
   onMove,
+  instruments,
+  defaultKind,
 }: {
   design: TableDesign;
+  instruments: TableSpec["instruments"];
+  defaultKind: QuantityKind;
   editing: DesignColumn | undefined;
   startAs: ColumnRole;
   onSave: (c: DesignColumn) => void;
@@ -182,7 +196,7 @@ function ColumnEditor({
 }) {
   const [symbol, setSymbol] = useState(editing?.symbol ?? "");
   const [kind, setKind] = useState<QuantityKind>(
-    editing?.kind ?? (startAs === "notes" ? "count" : "time"),
+    editing?.kind ?? (startAs === "notes" ? "count" : defaultKind),
   );
   const [unit, setUnit] = useState(editing?.unit ?? UNITS[editing?.kind ?? "time"][0]!.symbol);
   const [role, setRole] = useState<ColumnRole>(editing?.role ?? startAs);
@@ -197,8 +211,8 @@ function ColumnEditor({
     role,
     ...(editing?.group ? { group: editing.group } : {}),
     ...(role === "derived" ? { formula: formula.trim() } : {}),
-    ...((role === "given" || role === "measured" || role === "repeat") && PENDULUM_INSTRUMENTS[kind]
-      ? { leastCount: PENDULUM_INSTRUMENTS[kind]! }
+    ...((role === "given" || role === "measured" || role === "repeat") && instruments[kind]
+      ? { leastCount: instruments[kind]! }
       : {}),
   };
   const others = design.columns.filter((c) => c.id !== editing?.id);
@@ -356,7 +370,7 @@ export function TableBuilder({
   assist,
   marks,
   flags,
-  readings,
+  spec,
   onRun,
   onFillReadings,
   onCommit,
@@ -370,20 +384,17 @@ export function TableBuilder({
   /** Whether to tick and flag cells as the student goes (Auto and Check my work). */
   marks: boolean;
   flags: Flags;
-  readings: readonly PendulumReading[];
+  spec: TableSpec;
   onRun: (commands: TableCommand[]) => Promise<void>;
   onFillReadings: (() => void) | undefined;
   onCommit: () => void;
   below: ReactNode;
 }) {
-  const [template, setTemplate] = useState<PendulumTemplate>(
-    (table.template as PendulumTemplate | undefined) ?? "two-repeats",
-  );
+  const [template, setTemplate] = useState<string>(table.template ?? spec.defaultTemplate);
   const [editor, setEditor] = useState<{ id?: string; role: ColumnRole }>();
   const [selected, setSelected] = useState<string>();
   const [drafts, setDrafts] = useState<Record<string, string>>({});
 
-  const lengths = new Set(readings.map((r) => r.l)).size;
   const editing = table.columns.find((c) => c.id === editor?.id);
   const selectedColumn = table.columns.find((c) => c.id === selected);
   const canRepeat = selectedColumn?.role === "measured" || selectedColumn?.role === "repeat";
@@ -444,7 +455,7 @@ export function TableBuilder({
               className={cn(segment(table.layout === layout), i > 0 && "border-l border-border")}
               onClick={() =>
                 void onRun(
-                  startTable(table, layout, layout === "template" ? template : undefined, lengths),
+                  startTable(table, layout, layout === "template" ? template : undefined, spec),
                 )
               }
             >
@@ -459,12 +470,12 @@ export function TableBuilder({
               className="h-9 border border-input bg-background px-2.5 text-sm text-foreground"
               value={template}
               onChange={(e) => {
-                const next = e.target.value as PendulumTemplate;
+                const next = e.target.value;
                 setTemplate(next);
-                void onRun(startTable(table, "template", next, lengths));
+                void onRun(startTable(table, "template", next, spec));
               }}
             >
-              {(Object.keys(PENDULUM_TEMPLATES) as PendulumTemplate[]).map((k) => (
+              {Object.keys(spec.templates).map((k) => (
                 <option key={k} value={k}>
                   {msg(`lab.table.template.${k}`)}
                 </option>
@@ -504,6 +515,8 @@ export function TableBuilder({
         <ColumnEditor
           key={editor.id ?? `new-${editor.role}`}
           design={table}
+          instruments={spec.instruments}
+          defaultKind={spec.defaultKind}
           editing={editing}
           startAs={editor.role}
           onSave={save}
@@ -523,21 +536,9 @@ export function TableBuilder({
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-border px-3 py-2 text-sm">
         <span className="text-muted-foreground">{t("lab.table.yourReadings")}</span>
         <span className="font-mono text-xs">
-          {readings.length
-            ? [...new Set(readings.map((r) => r.l))]
-                .map((l) =>
-                  t("lab.readout.atLength", {
-                    length: l.toFixed(3),
-                    list: readings
-                      .filter((r) => r.l === l)
-                      .map((r) => `${r.t.toFixed(2)} s`)
-                      .join(", "),
-                  }),
-                )
-                .join(" · ")
-            : t("lab.table.noReadings")}
+          {spec.readingsSummary ?? t("lab.table.noReadings")}
         </span>
-        {onFillReadings && readings.length > 0 && table.columns.length > 0 && (
+        {onFillReadings && spec.readingsSummary !== undefined && table.columns.length > 0 && (
           <Button variant="link" size="sm" className="px-0" onClick={onFillReadings}>
             {t("lab.table.fillReadings")}
           </Button>

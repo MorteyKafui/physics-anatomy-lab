@@ -121,3 +121,26 @@ export {
   polarisationAt,
 } from "./ohms-law-bench";
 export type { BenchCommand, BenchDecision, BenchRefusal, CircuitBench } from "./ohms-law-bench";
+export {
+  asOhmsLawReading,
+  OHMS_LAW_ANALYSIS_RULES,
+  OHMS_LAW_ANSWERS,
+  OHMS_LAW_INSTRUMENTS,
+  OHMS_LAW_PLOT,
+  OHMS_LAW_ROWS,
+  OHMS_LAW_STANDARD_TABLE,
+  OHMS_LAW_TEMPLATES,
+  ohmsLawAnswerRules,
+  ohmsLawExpected,
+  ohmsLawReadingsIntoTable,
+  plotsIAgainstV,
+  readingData,
+  rFromSlope,
+  vInterceptOf,
+} from "./ohms-law-table";
+export type {
+  OhmsLawAnalysisContext,
+  OhmsLawAnswer,
+  OhmsLawReading,
+  OhmsLawTemplate,
+} from "./ohms-law-table";

@@ -211,8 +211,15 @@ export function formatDims(dims: Dims): string {
 }
 
 /** A quantity as an answer: its value to n significant figures in SI, and its unit. */
-export const formatQuantity = (q: Quantity, sigFigs = 3) =>
-  `${formatSigFigs(q.value, sigFigs)}${dimensionless(q.dims) ? "" : ` ${formatDims(q.dims)}`}`;
+/**
+ * A quantity to `sigFigs` significant figures. In `unit` when that unit is of the same kind (so a
+ * slope of I against V reads −0.667 A V⁻¹, not in SI base units); otherwise in SI base units.
+ */
+export const formatQuantity = (q: Quantity, sigFigs = 3, unit?: string) => {
+  const u = unit ? parseUnit(unit) : undefined;
+  if (u && sameDims(u.dims, q.dims)) return `${formatSigFigs(q.value / u.value, sigFigs)} ${unit}`;
+  return `${formatSigFigs(q.value, sigFigs)}${dimensionless(q.dims) ? "" : ` ${formatDims(q.dims)}`}`;
+};
 
 /** How a typed answer compares with the expected one, each part on its own. */
 export interface AnswerCheck {

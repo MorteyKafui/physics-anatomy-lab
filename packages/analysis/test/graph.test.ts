@@ -110,6 +110,13 @@ describe("the graph checks", () => {
     expect(fired({ ...good, sheet: wide })).toContain("graph-scale-small");
   });
 
+  test("values the graph must reach count towards the scale: a line read off an axis", () => {
+    const wide = { ...sheet, y: { column: "T2", start: 0, per2cm: 1 } };
+    // The same squeezed points, but the graph must also show 0 to 20 on the y axis.
+    const ys = { ...good, sheet: wide, reach: { y: [0, 20] } };
+    expect(fired(ys)).not.toContain("graph-scale-small");
+  });
+
   test("a scale too small for the points puts some off the sheet", () => {
     const tight = { ...sheet, y: { column: "T2", start: 2.4, per2cm: 0.1 } };
     expect(fired({ ...good, sheet: tight })).toContain("graph-off-sheet");
