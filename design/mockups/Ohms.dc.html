@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lab: Ohm's law, wiring and measuring</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+.oh-f:focus-visible{outline:2px solid #FF8A6E;outline-offset:2px}
+@keyframes ohDash{to{stroke-dashoffset:-14}}
+.oh-drag{animation:ohDash .8s linear infinite}
+@keyframes ohUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.oh-toast{animation:ohUp .25s ease}
+@media (prefers-reduced-motion:reduce){.oh-drag,.oh-toast{animation:none}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; background: #0D0D0D; color: #F0F0F0; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="App" style="flex: 0 0 64px; background: #111110; border-right: 1px solid #242322; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0">
+    <svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true" style="margin-bottom: 14px"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F0F0F0" stroke-width="18"/><line x1="84" y1="26" x2="98" y2="60" stroke="#F0F0F0" stroke-width="5"/><circle cx="100" cy="68" r="12" fill="#F0482A"/></svg>
+    <a href="#home" aria-label="Home" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="#experiments" aria-label="Experiments" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #F0F0F0; background: #1E1D1D; border-left: 2px solid #F0482A"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></a>
+    <a href="#notebook" aria-label="Notebook" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></a>
+    <a href="#reference" aria-label="Reference" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></a>
+    <span style="flex: 1"></span>
+    <a href="#help" aria-label="Help" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></a>
+    <a href="#settings" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></a>
+  </nav>
+
+  <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 20px; border-bottom: 1px solid #242322">
+      <div style="display: flex; align-items: center; gap: 12px; background: #161616; border: 1px solid #2A2928; padding: 8px 14px">
+        <span style="width: 10px; height: 10px; background: #F5A524" aria-hidden="true"></span>
+        <div style="display: flex; flex-direction: column">
+          <span style="font-weight: 600">Ohm's law and the potentiometer</span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">{{stepLabel}}</span>
+        </div>
+        <div style="width: 120px; height: 4px; background: #2A2928" aria-label="{{progressLabel}}"><div style="{{progressBar}}"></div></div>
+      </div>
+      <div role="group" aria-label="Board state (mockup only)" style="display: flex; gap: 2px; background: #161616; border: 1px solid #2A2928; padding: 3px">
+        <button type="button" class="oh-f" onClick="{{showWiring}}" aria-pressed="{{isWiring}}" style="{{wiringBtn}}">Wiring</button>
+        <button type="button" class="oh-f" onClick="{{showMeasuring}}" aria-pressed="{{isMeasuring}}" style="{{measuringBtn}}">Measuring</button>
+        <button type="button" class="oh-f" onClick="{{showBlocked}}" aria-pressed="{{isBlocked}}" style="{{blockedBtn}}">Short circuit</button>
+      </div>
+      <span style="flex: 1"></span>
+      <label for="assist" style="display: flex; align-items: center; gap: 8px; color: #A3A19B; font-size: 13px">Help level
+        <select id="assist" style="background: #161616; color: #F0F0F0; border: 1px solid #2A2928; padding: 8px 10px; font: 500 13px Geist, sans-serif"><option>Auto</option><option selected="selected">Check my work</option><option>On my own</option></select>
+      </label>
+      <button type="button" style="height: 38px; padding: 0 14px; background: #F0482A; border: 0; color: #141414; display: flex; align-items: center; gap: 8px; font: 600 13px Geist, sans-serif"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>Snapshot</button>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+      <div style="flex: 999 1 560px; min-width: 0; position: relative; background: #0D0D0D; display: flex; align-items: center; justify-content: center; padding: 64px 24px 96px">
+        <svg viewBox="0 0 600 420" style="width: 100%; max-width: 760px; height: auto; display: block" role="img" aria-label="{{benchLabel}}">
+          <!-- Bench top -->
+          <polygon points="40,120 560,120 600,400 0,400" fill="#121211" stroke="#2A2928"/>
+          <g stroke="#1F1E1D"><line x1="10" y1="330" x2="590" y2="330"/><line x1="25" y1="225" x2="575" y2="225"/></g>
+
+          <!-- Potentiometer board with the wire PQ and a metre rule -->
+          <polygon points="60,300 540,300 556,350 44,350" fill="#3A3936" stroke="#55534F"/>
+          <polygon points="44,350 556,350 556,360 44,360" fill="#262524"/>
+          <g stroke="#77746E" stroke-width="1">
+            <line x1="80" y1="336" x2="520" y2="336"/>
+            <sc-for list="{{ticks}}" as="k" hint-placeholder-count="11"><line x1="{{k.x}}" y1="336" x2="{{k.x}}" y2="{{k.y2}}"/></sc-for>
+          </g>
+          <sc-for list="{{tickLabels}}" as="k" hint-placeholder-count="6"><text x="{{k.x}}" y="348" fill="#A3A19B" font-family="Geist Mono, monospace" font-size="8" text-anchor="middle">{{k.label}}</text></sc-for>
+          <line x1="80" y1="318" x2="520" y2="318" stroke="#C9C6BF" stroke-width="1.6"/>
+          <!-- Terminals P and Q on the board -->
+          <circle cx="70" cy="318" r="7" fill="#5A5853" stroke="#C9C6BF"/><text x="70" y="296" fill="#F0F0F0" font-size="12" font-weight="600" text-anchor="middle">P</text>
+          <circle cx="530" cy="318" r="7" fill="{{qFill}}" stroke="{{qStroke}}" stroke-width="{{qWidth}}"/><text x="530" y="296" fill="#F0F0F0" font-size="12" font-weight="600" text-anchor="middle">Q</text>
+
+          <!-- Cells: two 1.5 V dry cells in a holder -->
+          <rect x="70" y="150" width="96" height="40" fill="#262524" stroke="#55534F"/>
+          <rect x="78" y="158" width="38" height="24" fill="#3A3936"/><rect x="118" y="158" width="38" height="24" fill="#3A3936"/>
+          <circle cx="66" cy="170" r="6" fill="#141414" stroke="#C9C6BF"/><text x="54" y="174" fill="#A3A19B" font-size="11" text-anchor="end">−</text>
+          <circle cx="170" cy="170" r="6" fill="#B8352A" stroke="#E8E4DC"/><text x="184" y="174" fill="#A3A19B" font-size="11">+</text>
+          <text x="118" y="206" fill="#A3A19B" font-size="11" text-anchor="middle">Cells, E</text>
+
+          <!-- Plug key K -->
+          <rect x="72" y="238" width="54" height="26" fill="#3A3936" stroke="#55534F"/>
+          <rect x="93" y="{{plugY}}" width="12" height="{{plugH}}" fill="#B98B5E" stroke="#8A6440"/>
+          <circle cx="80" cy="251" r="5" fill="#5A5853" stroke="#C9C6BF"/><circle cx="118" cy="251" r="5" fill="#5A5853" stroke="#C9C6BF"/>
+          <text x="99" y="280" fill="#A3A19B" font-size="11" text-anchor="middle">Key K, {{keyState}}</text>
+
+          <!-- Resistor R -->
+          <rect x="250" y="160" width="70" height="20" fill="#3A3936" stroke="#55534F"/>
+          <rect x="268" y="163" width="34" height="14" fill="#8F8C86"/>
+          <circle cx="244" cy="170" r="5" fill="#5A5853" stroke="#C9C6BF"/><circle cx="326" cy="170" r="5" fill="#5A5853" stroke="#C9C6BF"/>
+          <text x="285" y="198" fill="#A3A19B" font-size="11" text-anchor="middle">R</text>
+
+          <!-- Ammeter -->
+          <rect x="400" y="140" width="84" height="74" fill="#1E1D1D" stroke="#55534F"/>
+          <path d="M412,196 A30,30 0 0,1 472,196" fill="#E8E4DC"/>
+          <line x1="442" y1="196" x2="{{aNeedleX}}" y2="{{aNeedleY}}" stroke="#141414" stroke-width="1.6"/>
+          <text x="442" y="208" fill="#A3A19B" font-size="10" text-anchor="middle">A</text>
+          <circle cx="410" cy="224" r="5" fill="#B8352A" stroke="#E8E4DC"/><text x="410" y="240" fill="#A3A19B" font-size="10" text-anchor="middle">+</text>
+          <circle cx="474" cy="224" r="5" fill="#141414" stroke="#C9C6BF"/><text x="474" y="240" fill="#A3A19B" font-size="10" text-anchor="middle">−</text>
+
+          <!-- Voltmeter across the cells -->
+          <rect x="190" y="230" width="84" height="74" fill="#1E1D1D" stroke="#55534F"/>
+          <path d="M202,286 A30,30 0 0,1 262,286" fill="#E8E4DC"/>
+          <line x1="232" y1="286" x2="{{vNeedleX}}" y2="{{vNeedleY}}" stroke="#141414" stroke-width="1.6"/>
+          <text x="232" y="298" fill="#A3A19B" font-size="10" text-anchor="middle">V</text>
+
+          <!-- Leads joined so far -->
+          <g fill="none" stroke-width="2.2" stroke-linecap="round">
+            <path d="M170,170 C200,140 220,140 244,170" stroke="#B8352A"/>
+            <path d="M326,170 C360,150 380,180 410,224" stroke="#C9C6BF"/>
+            <sc-if value="{{aToQ}}" hint-placeholder-val="{{ true }}"><path d="M474,224 C520,240 540,280 530,318" stroke="#141414" stroke-opacity="0.9" style="stroke: #77746E"/></sc-if>
+            <path d="M66,170 C50,200 60,230 80,251" stroke="#77746E"/>
+            <path d="M118,251 C110,290 80,300 70,318" stroke="#77746E"/>
+            <path d="M170,170 C200,200 200,240 205,270" stroke="#B8352A"/>
+            <path d="M66,170 C120,215 240,215 259,270" stroke="#77746E"/>
+            <!-- The jockey and its lead from P -->
+            <path d="M70,318 C110,380 {{jockeyLeadX}},390 {{jockeyX}},300" stroke="#77746E"/>
+          </g>
+          <!-- Lead being drawn (wiring) -->
+          <sc-if value="{{isWiring}}" hint-placeholder-val="{{ true }}">
+            <path class="oh-drag" d="M474,224 C520,240 540,280 530,318" fill="none" stroke="#FF8A6E" stroke-width="2.2" stroke-dasharray="6 8"/>
+            <circle cx="530" cy="318" r="13" fill="none" stroke="#FF8A6E" stroke-opacity="0.55"/>
+          </sc-if>
+          <!-- Jockey -->
+          <polygon points="{{jockeyPoly}}" fill="#8F8C86" stroke="#C9C6BF"/>
+          <sc-if value="{{isMeasuring}}" hint-placeholder-val="{{ false }}">
+            <circle cx="{{jockeyX}}" cy="318" r="4" fill="#F5A524"/>
+            <line x1="80" y1="309" x2="{{jockeyX}}" y2="309" stroke="#F5A524" stroke-width="1.2"/>
+            <text x="{{pjLabelX}}" y="304" fill="#F5C46B" font-family="Geist Mono, monospace" font-size="10" text-anchor="middle">PJ = 60.0 cm</text>
+          </sc-if>
+          <!-- Short-circuit lead (blocked state) -->
+          <sc-if value="{{isBlocked}}" hint-placeholder-val="{{ false }}">
+            <path d="M170,170 C150,210 110,230 118,251" fill="none" stroke="#F0482A" stroke-width="2.4"/>
+            <circle cx="170" cy="170" r="11" fill="none" stroke="#F0482A"/><circle cx="118" cy="251" r="11" fill="none" stroke="#F0482A"/>
+          </sc-if>
+        </svg>
+
+        <div style="position: absolute; left: 24px; top: 20px; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 13px; color: #A3A19B">Fig. 1</span>
+          <span style="font-weight: 600">{{figTitle}}</span>
+        </div>
+        <div style="position: absolute; right: 24px; top: 20px; background: #161616; border: 1px solid #2A2928; padding: 8px 12px; font-size: 13px; display: flex; align-items: center; gap: 8px">
+          <span style="width: 8px; height: 8px; background: #B8352A" aria-hidden="true"></span>Red terminals are +. Current goes into a meter at its +.
+        </div>
+
+        <sc-if value="{{isMeasuring}}" hint-placeholder-val="{{ false }}">
+        <div style="position: absolute; left: 24px; bottom: 20px; background: #161616; border: 1px solid #2A2928; padding: 12px 16px; display: flex; gap: 24px; align-items: flex-end">
+          <div style="display: flex; flex-direction: column">
+            <span style="font-size: 12px; color: #A3A19B">Ammeter, reads to 0.02 A</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500; line-height: 1.1">0.72 <span style="font-size: 16px; color: #A3A19B">A</span></span>
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <span style="font-size: 12px; color: #A3A19B">Voltmeter, reads to 0.05 V</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500; line-height: 1.1">1.90 <span style="font-size: 16px; color: #A3A19B">V</span></span>
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <span style="font-size: 12px; color: #A3A19B">Key closed for</span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500; line-height: 1.1; color: #F5C46B">4 <span style="font-size: 16px; color: #A3A19B">s</span></span>
+          </div>
+        </div>
+        <div aria-label="Magnifier on the ammeter" style="position: absolute; right: 24px; bottom: 20px; width: 168px; background: #161616; border: 1px solid #2A2928; padding: 10px; display: flex; flex-direction: column; gap: 6px">
+          <svg viewBox="0 0 150 90" role="img" aria-label="Ammeter scale under the magnifier: the needle on 0.72 A" style="width: 100%; display: block">
+            <rect x="0" y="0" width="150" height="90" fill="#E8E4DC"/>
+            <g stroke="#141414" stroke-width="1">
+              <line x1="15" y1="70" x2="15" y2="52"/><line x1="40" y1="70" x2="40" y2="60"/><line x1="65" y1="70" x2="65" y2="60"/><line x1="90" y1="70" x2="90" y2="60"/><line x1="115" y1="70" x2="115" y2="60"/><line x1="140" y1="70" x2="140" y2="52"/>
+            </g>
+            <text x="15" y="45" fill="#141414" font-family="Geist Mono, monospace" font-size="10" text-anchor="middle">0.7</text>
+            <text x="140" y="45" fill="#141414" font-family="Geist Mono, monospace" font-size="10" text-anchor="middle">0.8</text>
+            <line x1="65" y1="88" x2="68" y2="20" stroke="#141414" stroke-width="1.6"/>
+            <rect x="0" y="74" width="150" height="6" fill="#C9C6BF"/>
+          </svg>
+          <span style="font-size: 12px; color: #A3A19B">Mirror strip: the needle hides its reflection when your eye is square-on.</span>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isBlocked}}" hint-placeholder-val="{{ false }}">
+        <div role="alert" class="oh-toast" style="position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); max-width: 520px; background: #2A1914; border: 1px solid #F0482A; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-weight: 600; display: flex; align-items: center; gap: 8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FF8A6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M4.9 4.9l14.2 14.2"/></svg>The key will not close</span>
+          <span style="color: #E8E4DC">A lead joins the cell's terminals directly, which would short-circuit it. Take off the lit lead.</span>
+          <div style="display: flex; gap: 8px"><button type="button" class="oh-f" style="padding: 9px 14px; background: #F0F0F0; color: #141414; border: 0; font: 600 13px Geist, sans-serif">Take the lead off</button></div>
+        </div>
+        </sc-if>
+      </div>
+
+      <aside aria-label="Coach" style="flex: 1 1 380px; min-width: 0; background: #161616; border-left: 1px solid #242322; display: flex; flex-direction: column">
+        <div role="tablist" aria-label="Coach" style="display: flex; gap: 22px; padding: 0 20px; border-bottom: 1px solid #2A2928">
+          <button type="button" role="tab" aria-selected="true" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #F0F0F0; border-bottom: 2px solid #F0482A">Instructions</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Explanation</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Tips</button>
+        </div>
+
+        <sc-if value="{{notMeasuring}}" hint-placeholder-val="{{ true }}">
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">Wire the circuit</span>
+          <span style="color: #C9C6BF">Drag from one terminal to another to join them with a lead. Follow the diagram; the order you join them in does not matter.</span>
+          <div style="background: #0D0D0D; border: 1px solid #2A2928; padding: 14px">
+            <svg viewBox="0 0 300 150" role="img" aria-label="Circuit diagram: the cells E, the key K, the resistor R and the ammeter A in series with the potentiometer wire PQ; the jockey J on the wire is joined to P; the voltmeter V is across the cells" style="width: 100%; display: block">
+              <g stroke="#E8E4DC" stroke-width="1.5" fill="none">
+                <path d="M30,30 H110"/><path d="M124,30 H180"/><rect x="180" y="22" width="36" height="16"/><path d="M216,30 H236"/><circle cx="250" cy="30" r="14"/><path d="M264,30 H280 V120 H262"/>
+                <path d="M30,30 V120 H40"/><path d="M262,120 H40"/>
+                <path d="M110,18 V42"/><path d="M118,24 V36"/>
+                <path d="M60,30 V70"/><circle cx="60" cy="80" r="10"/><path d="M60,90 V100"/>
+                <path d="M30,96 H48"/><path d="M52,90 L60,96"/>
+                <path d="M40,120 C70,140 150,140 170,126"/>
+              </g>
+              <polygon points="170,120 165,130 175,130" fill="#E8E4DC"/>
+              <g fill="#E8E4DC" font-family="Geist, sans-serif" font-size="11">
+                <text x="112" y="14" text-anchor="middle">E</text><text x="198" y="16" text-anchor="middle">R</text><text x="250" y="34" text-anchor="middle">A</text>
+                <text x="60" y="84" text-anchor="middle">V</text><text x="38" y="112">P</text><text x="286" y="124">Q</text><text x="172" y="146" text-anchor="middle">J</text><text x="22" y="100">K</text>
+              </g>
+            </svg>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <sc-for list="{{leads}}" as="l" hint-placeholder-count="8">
+              <div style="{{l.style}}"><span style="{{l.markStyle}}">{{l.mark}}</span><span>{{l.text}}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isMeasuring}}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">Read I and V at PJ = 60 cm</span>
+          <span style="color: #C9C6BF">Close the key, press the jockey at the mark, and read both meters with your eye square-on. Then open the key straight away.</span>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; align-items: center; gap: 10px; color: #8F8D88; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #6CC25A; color: #6CC25A; display: flex; align-items: center; justify-content: center" aria-label="Done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span><span>No contact, PJ = 40 cm and 50 cm recorded</span></div>
+            <div style="display: flex; align-items: center; gap: 10px; background: #2A1914; border: 1px solid #F0482A; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #F0482A; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">2</span><span>Lift the jockey, set it over 60.0 cm, and press it down</span></div>
+            <div style="display: flex; align-items: center; gap: 10px; color: #A3A19B; padding: 8px 10px"><span style="width: 22px; height: 22px; border: 1.5px solid #55534F; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">3</span><span>Record I and V, then open the key</span></div>
+          </div>
+          <div role="status" style="background: #2B2112; border: 1px solid #F5A524; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #F5C46B"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Lift the jockey to move it</span>
+            <span style="color: #E8E4DC">Sliding it along the wire scrapes it thinner, so that stretch has more resistance and the wire is no longer uniform.</span>
+          </div>
+        </div>
+        </sc-if>
+      </aside>
+    </div>
+
+    <nav aria-label="Stages" style="border-top: 1px solid #242322; background: #111110; padding: 10px 20px; display: flex; gap: 8px; overflow-x: auto">
+      <sc-for list="{{stages}}" as="s" hint-placeholder-count="10">
+        <a href="#stage" style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #8F8D88">{{s.n}}</span><span>{{s.name}}</span></span></a>
+      </sc-for>
+    </nav>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mode: 'wiring' }; }
+  renderVals() {
+    const mode = this.state.mode;
+    const wiring = mode === 'wiring', measuring = mode === 'measuring', blocked = mode === 'blocked';
+    const btn = (on) => 'height: 32px; padding: 0 12px; border: 0; font: 500 13px Geist, sans-serif; cursor: pointer; background: ' + (on ? '#F0F0F0' : 'transparent') + '; color: ' + (on ? '#141414' : '#C9C6BF');
+    const current = measuring ? 4 : 2;
+    const names = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const stages = names.map((name, i) => {
+      const done = i < current, cur = i === current;
+      return {
+        name, n: String(i + 1).padStart(2, '0'),
+        mark: done ? '✓' : cur ? '●' : '',
+        style: 'flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 8px 14px; text-decoration: none; color: ' + (cur ? '#F0F0F0' : done ? '#C9C6BF' : '#8F8D88') + '; background: ' + (cur ? '#1E1D1D' : 'transparent') + '; border: 1px solid ' + (cur ? '#F0482A' : '#242322'),
+        markStyle: 'width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (done ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (done ? '#6CC25A' : cur ? '#F0482A' : '#55534F')
+      };
+    });
+    const leadText = ["Cells + to R", "R to the ammeter's +", "Ammeter − to Q", "Jockey's lead to P", "P to the key", "Key to the cells' −", "Voltmeter + to the cells' +", "Voltmeter − to the cells' −"];
+    const joined = blocked ? 8 : 7;
+    const leads = leadText.map((text, i) => {
+      const done = i !== 2 || blocked, cur = i === 2 && wiring;
+      return {
+        text,
+        mark: done ? '✓' : String(i + 1),
+        style: 'display: flex; align-items: center; gap: 10px; padding: 6px 10px; font-size: 13px; color: ' + (done ? '#8F8D88' : '#F0F0F0') + '; background: ' + (cur ? '#2A1914' : 'transparent') + '; border: 1px solid ' + (cur ? '#F0482A' : 'transparent'),
+        markStyle: 'width: 20px; height: 20px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-family: Geist Mono, monospace; font-size: 11px; color: ' + (done ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (done ? '#6CC25A' : '#F0482A')
+      };
+    });
+    void joined;
+    const ticks = Array.from({ length: 11 }, (_, i) => ({ x: 80 + i * 44, y2: i % 5 === 0 ? 330 : 333 }));
+    const tickLabels = [0, 20, 40, 60, 80, 100].map((cm) => ({ x: 80 + cm * 4.4, label: String(cm) }));
+    // Jockey: lifted near P while wiring, pressed at 60.0 cm while measuring.
+    const jx = measuring ? 80 + 60 * 4.4 : 150;
+    const jy = measuring ? 0 : -14;
+    const jockeyPoly = (jx - 5) + ',' + (300 + jy) + ' ' + (jx + 5) + ',' + (300 + jy) + ' ' + jx + ',' + (316 + jy);
+    // Needles: angle from the meters' left stop, as the model's readings (0.72 A of 1 A, 1.90 V of 3 V).
+    const needle = (cx, cy, frac) => { const a = Math.PI * (1 - frac); return { x: (cx + 26 * Math.cos(a)).toFixed(1), y: (cy - 26 * Math.sin(a)).toFixed(1) }; };
+    const an = needle(442, 196, measuring ? 0.72 : 0);
+    const vn = needle(232, 286, measuring ? 1.90 / 3 : 0);
+    return {
+      isWiring: wiring, isMeasuring: measuring, isBlocked: blocked, notMeasuring: !measuring,
+      wiringBtn: btn(wiring), measuringBtn: btn(measuring), blockedBtn: btn(blocked),
+      showWiring: () => this.setState({ mode: 'wiring' }), showMeasuring: () => this.setState({ mode: 'measuring' }), showBlocked: () => this.setState({ mode: 'blocked' }),
+      stepLabel: measuring ? 'Step 5 of 10 · Measure' : 'Step 3 of 10 · Build',
+      progressLabel: measuring ? '40% complete' : '20% complete',
+      progressBar: 'height: 4px; background: #F0482A; width: ' + (measuring ? '40%' : '20%'),
+      figTitle: measuring ? "Terminal p.d.: reading I and V" : 'Wiring the circuit',
+      benchLabel: measuring
+        ? 'The circuit wired: cells, key, resistor and ammeter in series with the potentiometer wire; the jockey pressed at 60.0 cm; the ammeter reads 0.72 A and the voltmeter 1.90 V'
+        : blocked
+          ? 'A lead joins the cells’ + terminal to the key, across the cells: a short circuit, so the key will not close'
+          : 'Wiring the circuit: seven leads joined; a lead being drawn from the ammeter’s − to Q',
+      leads, ticks, tickLabels,
+      aToQ: !wiring,
+      qFill: wiring ? '#2A1914' : '#5A5853', qStroke: wiring ? '#FF8A6E' : '#C9C6BF', qWidth: wiring ? 2 : 1,
+      keyState: measuring ? 'closed' : 'open',
+      plugY: measuring ? 240 : 226, plugH: measuring ? 22 : 14,
+      jockeyX: jx, jockeyLeadX: (70 + jx) / 2, pjLabelX: (80 + jx) / 2, jockeyPoly,
+      aNeedleX: an.x, aNeedleY: an.y, vNeedleX: vn.x, vNeedleY: vn.y,
+      stages
+    };
+  }
+}
+</script>
+</body>
+</html>

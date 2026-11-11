@@ -15,6 +15,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Snapshot notebook             | `Notebook.dc.html` | `screens/Notebook.jpg` | `apps/web` notebook           |
 | Review, retry and compare     | `Review.dc.html`   | on the canvas only     | `apps/web` review             |
 | Exam mode                     | `Exam.dc.html`     | on the canvas only     | `apps/web` exam               |
+| Ohm's law: wiring, measuring  | `Ohms.dc.html`     | on the canvas only     | `apps/web` `/lab/ohms-law`    |
 | First-run tour                | `Tour.dc.html`     | `screens/Tour.jpg`     | `apps/web` onboarding         |
 | Teacher live class            | `Teacher.dc.html`  | `screens/Teacher.jpg`  | `apps/web` teacher dashboard  |
 | Admin portal                  | `Admin.dc.html`    | `screens/Admin.jpg`    | `apps/admin`                  |
