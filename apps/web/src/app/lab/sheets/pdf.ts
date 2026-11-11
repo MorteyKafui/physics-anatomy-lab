@@ -182,7 +182,7 @@ export async function sheetPdf(
     const c = newPage();
     text(c, t("sheet.drawingKicker"), M, M - 8, { size: 7, color: MUTED });
     text(c, t("sheet.drawingLabel"), W - M, M - 8, { size: 7, color: MUTED, align: "right" });
-    text(c, t("sheet.drawingTitle"), M, M + 6, { size: 17, bold: true, width: W - 2 * M - 90 });
+    text(c, s.drawingTitle, M, M + 6, { size: 17, bold: true, width: W - 2 * M - 90 });
     text(c, s.number, W - M, M + 6, { size: 17, bold: true, align: "right" });
     rule(c, M + 40, M, W - M, 0.9);
     const figW = (W - 2 * M) * 0.58;

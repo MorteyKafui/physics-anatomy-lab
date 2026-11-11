@@ -18,8 +18,11 @@ import { SHEET_STEPS } from "./figures";
 export const SHEET_KINDS = ["poster", "drawing", "explainer"] as const;
 export type SheetKind = (typeof SHEET_KINDS)[number];
 
+/** What every experiment's print sheets say. */
 export interface SheetContent {
   name: string;
+  /** The explained drawing's title. */
+  drawingTitle: string;
   number: string;
   kicker: string;
   style: string;
@@ -31,13 +34,17 @@ export interface SheetContent {
   steps: { title: string; text: string }[];
   why: { title: string; text: string };
   motto: string;
+}
+
+/** The pendulum's sheets, with the model its graph is drawn from. */
+export interface PendulumSheetContent extends SheetContent {
   model: PendulumSheet;
 }
 
 const P = "experiments.simple-pendulum";
 const sf3 = (v: number) => v.toPrecision(3);
 
-export function sheetContent(g = DEFAULT_ENVIRONMENT.g): SheetContent {
+export function sheetContent(g = DEFAULT_ENVIRONMENT.g): PendulumSheetContent {
   const m = pendulumSheet(g);
   const length = m.length.toFixed(3);
   const timed = m.swings - 1;
@@ -48,6 +55,7 @@ export function sheetContent(g = DEFAULT_ENVIRONMENT.g): SheetContent {
   });
   return {
     name: t(`${P}.title`),
+    drawingTitle: t("sheet.drawingTitle"),
     number: PENDULUM_SHEET_NUMBER,
     kicker: t("sheet.kicker"),
     style: t("sheet.style"),

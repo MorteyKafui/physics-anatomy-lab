@@ -144,3 +144,5 @@ export type {
   OhmsLawReading,
   OhmsLawTemplate,
 } from "./ohms-law-table";
+export { OHMS_LAW_SHEET_NUMBER, ohmsLawSheet } from "./ohms-law-sheets";
+export type { OhmsLawSheet } from "./ohms-law-sheets";

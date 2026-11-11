@@ -1,20 +1,28 @@
 "use client";
 
-import { simplePendulum } from "@pa/experiments";
 import { t, type MessageKey } from "@pa/i18n";
 import { cn, Logo } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import { CheckIcon } from "@pa/ui/icons";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentType, type Ref } from "react";
 
 import { pngBytes, save, svgText } from "../snapshot-export";
 import type { Paper } from "../report/pdf";
-import { SHEET_KINDS, sheetContent, type SheetKind } from "./content";
-import { SHEET_BENCH, SHEET_GRAPH, SHEET_STEPS, SheetBench, SheetGraph } from "./figures";
+import { SHEET_KINDS, type SheetContent, type SheetKind } from "./content";
 import type { Picture } from "./pdf";
 
-const E = simplePendulum;
+/** A figure a sheet is made from: its size, and the component that draws it as one SVG. */
+export interface SheetFigure {
+  size: { width: number; height: number };
+  Figure: ComponentType<{ ref?: Ref<SVGSVGElement> }>;
+}
+
+/** The figures: the main one, keyed to the parts list, and one still per step. */
+export interface SheetFigures {
+  main: SheetFigure;
+  steps: readonly SheetFigure[];
+}
 /** Print resolution for the figures: about 300 dpi at the size they print. */
 const SCALE = 3;
 
@@ -23,8 +31,16 @@ const SCALE = 3;
  * pipeline, D7): the poster, the explained drawing and the explainer, made on this device from the
  * lab's own bench and numbers worked out from the physics.
  */
-export function SheetsScreen() {
-  const content = useMemo(() => sheetContent(), []);
+export function SheetsScreen({
+  experiment: E,
+  content,
+  figures,
+}: {
+  experiment: { id: string; title: string };
+  /** The sheets' words and numbers; made once, so it must keep its identity across renders. */
+  content: SheetContent;
+  figures: SheetFigures;
+}) {
   const [kind, setKind] = useState<SheetKind>("poster");
   const [paper, setPaper] = useState<Paper>("a4");
   // The sheet drawn last, and which sheet and paper it was drawn for: a choice the student has
@@ -58,11 +74,9 @@ export function SheetsScreen() {
           ...size,
         }) satisfies Picture;
       const images = {
-        main: await draw(main.current, SHEET_BENCH),
+        main: await draw(main.current, figures.main.size),
         steps: await Promise.all(
-          SHEET_STEPS.map((s, i) =>
-            draw(stills.current[i] ?? null, s.id === "plot" ? SHEET_GRAPH : SHEET_BENCH),
-          ),
+          figures.steps.map((f, i) => draw(stills.current[i] ?? null, f.size)),
         ),
       };
       const [{ sheetPdf }, { loadFonts }] = await Promise.all([
@@ -78,7 +92,7 @@ export function SheetsScreen() {
       cancelled = true;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [kind, paper, content]);
+  }, [kind, paper, content, figures]);
 
   const name = t(`sheets.format.${kind}` as MessageKey);
   const download = () => {
@@ -106,7 +120,7 @@ export function SheetsScreen() {
           className="flex items-center gap-2 text-muted-foreground"
         >
           <Link href={`/lab/${E.id}`} className="hover:text-foreground">
-            {t("experiments.simple-pendulum.title")}
+            {E.title}
           </Link>
           <span aria-hidden>›</span>
           <h1 className="text-foreground" aria-current="page">
@@ -188,28 +202,15 @@ export function SheetsScreen() {
 
       {/* The figures the sheets are made from, kept out of sight. */}
       <div hidden>
-        <SheetBench pins ref={main} />
-        {SHEET_STEPS.map((s, i) =>
-          s.id === "plot" ? (
-            <SheetGraph
-              key={s.id}
-              sheet={content.model}
-              ref={(el) => {
-                stills.current[i] = el;
-              }}
-            />
-          ) : (
-            <SheetBench
-              key={s.id}
-              assembly={s.assembly}
-              focus={s.focus}
-              angle={s.angle}
-              ref={(el) => {
-                stills.current[i] = el;
-              }}
-            />
-          ),
-        )}
+        <figures.main.Figure ref={main} />
+        {figures.steps.map(({ Figure }, i) => (
+          <Figure
+            key={i}
+            ref={(el) => {
+              stills.current[i] = el;
+            }}
+          />
+        ))}
       </div>
 
       <div
