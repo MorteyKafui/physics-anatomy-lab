@@ -180,6 +180,56 @@ export const enGBConvergingLens = {
   "lab.analyse.name.m1": "m₁",
   "lab.analyse.name.m2": "m₂",
   "lab.analyse.name.f": "f",
+  "experiments.converging-lens.sheet.drawingTitle": "The converging lens: how the graph gives f",
+  "experiments.converging-lens.sheet.style": "Find f from two intercepts",
+  "experiments.converging-lens.sheet.question":
+    "Where does a lens put the image, and how far is its focal point?",
+  "experiments.converging-lens.sheet.lead":
+    "A converging lens brings the light from each point of an object together again at one place behind it. Find that place for five object distances, plot 1/v against 1/u, and one straight line gives the focal length twice over.",
+  "experiments.converging-lens.sheet.n.f": "focal length, 2 ⁄ (m₁ + m₂)",
+  "experiments.converging-lens.sheet.n.m1": "m₁, where the line meets the 1/v axis",
+  "experiments.converging-lens.sheet.n.m2": "m₂, where the line meets the 1/u axis",
+  "experiments.converging-lens.sheet.n.v": "sharpest image at u = {u} cm",
+  "experiments.converging-lens.sheet.n.shift":
+    "nearer the lens than 1/u + 1/v = 1/f gives, at u = {u} cm",
+  "experiments.converging-lens.sheet.part.R":
+    "A lamp behind a wire gauze. The gauze is the object; its centre sits on the lens's axis.",
+  "experiments.converging-lens.sheet.part.L":
+    "Biconvex glass, {d} cm across, f = {f} cm. It brings the light from the gauze together again behind it.",
+  "experiments.converging-lens.sheet.part.S":
+    "A white screen. Move it until the image of the gauze is sharp, then read v from its centre mark.",
+  "experiments.converging-lens.sheet.spec.lens": "Lens L",
+  "experiments.converging-lens.sheet.spec.lensValue":
+    "Biconvex glass, n = {n}, {d} cm across, f = {f} cm",
+  "experiments.converging-lens.sheet.spec.distances": "Object distances",
+  "experiments.converging-lens.sheet.spec.distancesValue": "u = {list} cm",
+  "experiments.converging-lens.sheet.spec.rule": "Optical bench",
+  "experiments.converging-lens.sheet.spec.ruleValue": "1 m rule, reads to {rule} cm",
+  "experiments.converging-lens.sheet.spec.sharp": "Sharp image",
+  "experiments.converging-lens.sheet.spec.sharpValue":
+    "Over about {range} cm of the screen's travel at u = {u} cm",
+  "experiments.converging-lens.sheet.spec.result": "From the line",
+  "experiments.converging-lens.sheet.spec.resultValue":
+    "m₁ = {m1} cm⁻¹, m₂ = {m2} cm⁻¹, f = {fGraph} cm",
+  "experiments.converging-lens.sheet.step.setUp.title": "Set the gauze on the lens's axis",
+  "experiments.converging-lens.sheet.step.setUp.text":
+    "Raise or lower the gauze until its centre is level with the centre of the lens, so the image falls in the middle of the screen.",
+  "experiments.converging-lens.sheet.step.distance.title": "Set u = {u} cm",
+  "experiments.converging-lens.sheet.step.distance.text":
+    "Put the lens {u} cm from the ray box, read between the holders' centre marks. With the screen short of the image, the image is a blurred patch.",
+  "experiments.converging-lens.sheet.step.sharp.title": "Move the screen until the image is sharp",
+  "experiments.converging-lens.sheet.step.sharp.text":
+    "Bring the screen in from each side until the image of the gauze is sharp: here at v = {v} cm. It looks sharp over about {range} cm, so judge the middle.",
+  "experiments.converging-lens.sheet.step.repeat.title": "Repeat at {count} object distances",
+  "experiments.converging-lens.sheet.step.repeat.text":
+    "Find v for u = {list} cm. As the object moves away from the lens, the sharp image moves closer to it.",
+  "experiments.converging-lens.sheet.step.plot.title": "Plot 1/v against 1/u",
+  "experiments.converging-lens.sheet.step.plot.text":
+    "The line has slope −1 and meets the axes at m₁ = {m1} cm⁻¹ and m₂ = {m2} cm⁻¹. So f = 2 ⁄ (m₁ + m₂) = {fGraph} cm.",
+  "experiments.converging-lens.sheet.why.title": "Why is f from the graph a little short?",
+  "experiments.converging-lens.sheet.why.text":
+    "A real lens bends the light through its edge a little more than through its centre, so the sharpest image forms a little nearer the lens than the thin-lens formula gives: {shift} cm nearer at u = {u} cm. That carries through the graph, and this lens's f comes out {short}% short of {f} cm.",
+  "experiments.converging-lens.sheet.motto": "Sharp from both sides, read from the centre",
   "findings.lens.readFromEdge.title": "Readings taken from the edge of a holder",
   "findings.lens.readFromEdge.detail":
     "{count} of your distances were read from a holder's edge, which puts each about {cm} cm out. Read u and v from the centre mark of each holder.",
