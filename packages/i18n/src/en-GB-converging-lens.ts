@@ -103,9 +103,80 @@ export const enGBConvergingLens = {
     "Your graph is {y} against {x}. The question asks for 1/v against 1/u: only that line meets both axes at 1/f. Go back to Plot to change the axes.",
   "experiments.converging-lens.conclude.text":
     "The focal length of the lens is {f}. As the object moved away from the lens, the sharp image moved closer to it.",
-  "experiments.converging-lens.next":
-    "The report, the print sheets and the exam for the lens come with the next part of this lab. Your work is kept.",
-  "experiments.converging-lens.inDevelopment": "Being built: the report comes next",
+  "experiments.converging-lens.report.title": "{experiment}: the focal length of a converging lens",
+  "experiments.converging-lens.report.aim":
+    "To determine the focal length f of a converging lens by finding the image of an illuminated object on a screen.",
+  "experiments.converging-lens.report.apparatus.rayBox":
+    "A ray box with an illuminated wire gauze (R)",
+  "experiments.converging-lens.report.apparatus.lens":
+    "A converging lens {d} cm across, in a holder (L)",
+  "experiments.converging-lens.report.apparatus.screen": "A white screen in a holder (S)",
+  "experiments.converging-lens.report.apparatus.bench": "An optical bench with a {length} cm rule",
+  "experiments.converging-lens.report.benchCaption":
+    "The ray box R, the lens L and the screen S on the optical bench, with a sharp image of the gauze on the screen.",
+  "experiments.converging-lens.report.benchCaptionAsLeft":
+    "The ray box R, the lens L and the screen S on the optical bench, as they were left.",
+  "experiments.converging-lens.report.benchAlt": "{caption}: the optical bench",
+  "experiments.converging-lens.report.legend.R": "ray box with wire gauze",
+  "experiments.converging-lens.report.legend.L": "converging lens",
+  "experiments.converging-lens.report.legend.S": "screen",
+  "experiments.converging-lens.report.values.bench": "u = {u} cm, screen {s} cm from the lens",
+  "experiments.converging-lens.report.theory":
+    "A thin converging lens of focal length f forms a real image of an object a distance u from it at a distance v on the other side, with 1/u + 1/v = 1/f. So 1/v = −1/u + 1/f: a graph of 1/v against 1/u is a straight line of slope −1, which meets both axes at 1/f. The vertical intercept m₁ and the horizontal intercept m₂ are each 1/f, so f = 2 ⁄ (m₁ + m₂), the reciprocal of their mean.",
+  "experiments.converging-lens.report.method.setUp":
+    "I set the lens and the gauze on one axis, so the image fell in the middle of the screen.",
+  "experiments.converging-lens.report.method.readings":
+    "For each object distance from u = {min} cm to {max} cm, I moved the screen towards the lens and away from it until the image of the gauze was sharp, and read v from the centre marks of the holders.",
+  "experiments.converging-lens.report.method.repeat":
+    "At some object distances I found the sharp image twice, bringing the screen in from each side, and used the mean of v.",
+  "experiments.converging-lens.report.method.analyse":
+    "I plotted 1/v against 1/u, drew the best straight line, and read where it meets each axis.",
+  "experiments.converging-lens.report.method.analyseOther":
+    "I plotted {y} against {x} and drew the best straight line.",
+  "experiments.converging-lens.report.observations.readings":
+    "I took {n} readings. The rule read to {cm} cm.",
+  "experiments.converging-lens.report.observations.one":
+    "I took one reading. The rule read to {cm} cm.",
+  "experiments.converging-lens.report.observations.trend":
+    "As u increased from {umin} cm to {umax} cm, v decreased from {vmax} cm to {vmin} cm.",
+  "experiments.converging-lens.report.observations.image":
+    "Each image was real and upside down, and sharp at one place only.",
+  "experiments.converging-lens.report.observations.noImage":
+    "With the lens {u} cm from the ray box, no image formed on the screen.",
+  "experiments.converging-lens.report.table":
+    "Table 1 The object and image distances, and their reciprocals.",
+  "experiments.converging-lens.report.graph":
+    "Fig. 2 {caption} m₁ and m₂ are read where the line meets the 1/v and 1/u axes.",
+  "experiments.converging-lens.report.calcM1": "m₁ = 1/v where the line meets the 1/v axis: {m1}",
+  "experiments.converging-lens.report.calcM2": "m₂ = 1/u where the line meets the 1/u axis: {m2}",
+  "experiments.converging-lens.report.calcF": "f = 2 ⁄ (m₁ + m₂) = 2 ⁄ ({m1} + {m2}) = {f}",
+  "experiments.converging-lens.report.precaution.coaxial":
+    "I made sure the wire gauze and the lens were on one axis.",
+  "experiments.converging-lens.report.precaution.sharp":
+    "I located only sharp images, moving the screen both ways each time.",
+  "experiments.converging-lens.report.precaution.centre":
+    "I read u and v from the centre mark of each holder.",
+  "experiments.converging-lens.report.precaution.parallax":
+    "I read the rule with my eye directly above the mark, to avoid parallax.",
+  "experiments.converging-lens.report.precaution.clean":
+    "I cleaned the lens with a soft cloth to get a sharp image.",
+  "experiments.converging-lens.report.precaution.repeat":
+    "I found the sharp image from each side and used the mean of v.",
+  "experiments.converging-lens.report.source.notCoaxial":
+    "The gauze was off the lens's axis, so the image was off the centre of the screen and harder to judge.",
+  "experiments.converging-lens.report.source.blurred":
+    "A blurred image was taken as sharp, so some readings of v were off the sharpest place.",
+  "experiments.converging-lens.report.source.fromEdge":
+    "Some readings were taken from the edge of a holder, not its centre mark, so they are out by about {cm} cm.",
+  "experiments.converging-lens.report.source.atAngle":
+    "The rule was read at an angle, so some readings were shifted by parallax.",
+  "experiments.converging-lens.report.source.leastCount": "The rule reads only to {cm} cm.",
+  "experiments.converging-lens.report.source.sharpRange":
+    "The image looks sharp over about {range} cm of the screen's travel at u = {u} cm, so the sharpest place has to be judged.",
+  "experiments.converging-lens.report.source.aberration":
+    "A real lens bends the light through its edge a little more than through its centre, so the sharpest image is a little nearer the lens than the thin-lens formula gives.",
+  "experiments.converging-lens.report.conclusion":
+    "The focal length of the lens was found to be {f}.",
   "lab.analyse.name.m1": "m₁",
   "lab.analyse.name.m2": "m₂",
   "lab.analyse.name.f": "f",

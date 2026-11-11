@@ -485,9 +485,6 @@ export function ConvergingLensScreen() {
               ))}
             </select>
           </label>
-          <span className="border border-border px-2.5 py-1 text-xs text-muted-foreground">
-            {t(`${P}.inDevelopment`)}
-          </span>
         </header>
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
@@ -930,8 +927,16 @@ export function ConvergingLensScreen() {
                     <p className="text-soft">
                       {state.step === "conclude"
                         ? t(`${P}.conclude.text`, { f: shownAnswer("f", fUnit, "f") })
-                        : t(`${P}.next`)}
+                        : t("report.openHint")}
                     </p>
+                    {state.step === "report" && (
+                      <Link
+                        href={`/lab/${E.id}/report`}
+                        className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                      >
+                        {t("report.open")}
+                      </Link>
+                    )}
                     {state.step === "conclude" && next && (
                       <Button className="self-start" onClick={() => void finishStep()}>
                         {t("lab.steps.continue", { step: stepName(next) })}
