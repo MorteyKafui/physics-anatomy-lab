@@ -1,4 +1,5 @@
 import { t } from "@pa/i18n";
+import "@pa/i18n/ohms-law";
 import type { Metadata } from "next";
 
 import { OhmsLawScreen } from "./screen";

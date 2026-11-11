@@ -1,9 +1,23 @@
 // @pa/i18n: message files for on-screen text and spoken lines. English first; Twi, Ga and Ewe
 // later (decision D10).
-import { enGB, type MessageKey } from "./en-GB";
+import { enGB, type MessageKey as SharedKey } from "./en-GB";
+import type { enGBOhmsLaw } from "./en-GB-ohms-law";
 
 export { enGB };
-export type { MessageKey };
+
+/**
+ * Every message key, the shared ones and each experiment's own. An experiment's messages are in
+ * their own file, registered by importing its entry ("@pa/i18n/ohms-law") in that lab only, so
+ * the other labs and the app shell do not download them.
+ */
+export type MessageKey = SharedKey | keyof typeof enGBOhmsLaw;
+
+const messages: Record<string, string> = { ...enGB };
+
+/** Register an experiment's messages. Called by its entry module, once. */
+export function addMessages(more: Readonly<Record<string, string>>) {
+  Object.assign(messages, more);
+}
 
 export type Params = Readonly<Record<string, string | number>>;
 
@@ -12,14 +26,15 @@ export type Params = Readonly<Record<string, string | number>>;
  * {name}, so a gap shows up in testing rather than as an empty space.
  */
 export function t(key: MessageKey, params: Params = {}): string {
-  return enGB[key].replace(/\{(\w+)\}/g, (whole, name: string) =>
+  // An experiment's message whose file is not registered shows as its key, so it is seen.
+  return (messages[key] ?? key).replace(/\{(\w+)\}/g, (whole, name: string) =>
     name in params ? String(params[name]) : whole,
   );
 }
 
 /** A finding or refusal key, which may or may not have a message yet. */
 export function hasMessage(key: string): key is MessageKey {
-  return key in enGB;
+  return key in messages;
 }
 
 /** Split a message into plain and **emphasised** runs, for rendering. */

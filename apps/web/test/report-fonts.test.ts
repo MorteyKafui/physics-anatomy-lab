@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 import fontkit from "@pdf-lib/fontkit";
 import { enGB } from "@pa/i18n";
+import { enGBOhmsLaw } from "@pa/i18n/ohms-law";
 
 /**
  * The report's PDF is set in Noto Sans, embedded. Every string the report can print must have
@@ -15,7 +16,7 @@ const font = (name: string) =>
     readFileSync(new URL(`../public/fonts/noto-sans/${name}`, import.meta.url)),
   ) as unknown as { hasGlyphForCodePoint(c: number): boolean };
 
-const printed = Object.entries(enGB).filter(
+const printed = [...Object.entries(enGB), ...Object.entries(enGBOhmsLaw)].filter(
   ([key]) =>
     key.startsWith("report.") ||
     key.startsWith("experiments.simple-pendulum.tips.") ||

@@ -64,6 +64,8 @@ import {
 } from "@pa/experiments";
 import { createRng } from "@pa/instruments";
 import { hasMessage, t, type MessageKey } from "@pa/i18n";
+// The Ohm's law copy is kept apart from the shared messages; this lab registers it.
+import "@pa/i18n/ohms-law";
 import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
@@ -77,10 +79,10 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
-import { AnswerLine, Calculator } from "../analyse";
-import { GraphPanel, graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
+import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
 import { CheckItem, Rail, StepStrip } from "../parts";
-import { flagsFor, TableBuilder, useTable } from "../table-builder";
+import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
+import { flagsFor, useTable } from "../table-builder";
 import { useAttempt } from "../use-attempt";
 
 const E = ohmsLaw;

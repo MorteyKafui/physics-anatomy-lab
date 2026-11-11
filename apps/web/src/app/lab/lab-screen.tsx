@@ -119,10 +119,10 @@ import {
   useDragPart,
 } from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
-import { AnalysePanel } from "./analyse";
 import { FormulaBox, Sym } from "./formula";
-import { GraphPanel, graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
-import { flagsFor, TableBuilder, useTable } from "./table-builder";
+import { graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
+import { AnalysePanel, GraphPanel, TableBuilder } from "./lazy-panels";
+import { flagsFor, useTable } from "./table-builder";
 import { backToPractice, useAttempt } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
