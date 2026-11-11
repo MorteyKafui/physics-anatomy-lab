@@ -3,3 +3,13 @@ export { BENCH_VIEWBOX, PendulumBench, slotPoint, snapSlot, SNAP_RADIUS } from "
 export type { PendulumBenchProps } from "./pendulum-bench";
 export { lensViewBox, Magnifier } from "./magnifier";
 export type { MagnifierProps } from "./magnifier";
+export {
+  CIRCUIT_VIEWBOX,
+  CircuitBench,
+  jockeyPoint,
+  TERMINAL_POINTS,
+  terminalPoint,
+  WIRE,
+  wireX,
+} from "./circuit-bench";
+export type { CircuitBenchProps } from "./circuit-bench";

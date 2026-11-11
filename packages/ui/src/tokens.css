@@ -86,6 +86,10 @@
   --pa-figure-dial: #e8e4dc;
   --pa-figure-dial-rim: #1e1d1d;
   --pa-figure-ink: #141414;
+  --pa-figure-terminal-plus: #b8352a;
+  --pa-figure-terminal-minus: #141414;
+  --pa-figure-lead: #77746e;
+  --pa-figure-lead-plus: #b8352a;
 
   /* Lyra: square corners everywhere. Round things use --pa-round. */
   --pa-radius: 0;
@@ -122,6 +126,10 @@
   --pa-figure-dial: #ffffff;
   --pa-figure-dial-rim: #3d3b37;
   --pa-figure-ink: #141414;
+  --pa-figure-terminal-plus: #b8352a;
+  --pa-figure-terminal-minus: #141414;
+  --pa-figure-lead: #5a5853;
+  --pa-figure-lead-plus: #b8352a;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -113,3 +113,11 @@ export {
   wrongTerminals,
 } from "./ohms-law-wiring";
 export type { Lead, Terminal, WiringMistake } from "./ohms-law-wiring";
+export {
+  benchProjection,
+  decideBench,
+  initialBench,
+  keyIntervalsAt,
+  polarisationAt,
+} from "./ohms-law-bench";
+export type { BenchCommand, BenchDecision, BenchRefusal, CircuitBench } from "./ohms-law-bench";

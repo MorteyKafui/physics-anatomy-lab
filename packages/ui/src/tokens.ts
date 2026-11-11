@@ -88,6 +88,12 @@ export const figureTone = {
   dial: "#E8E4DC",
   dialRim: "#1E1D1D",
   ink: "#141414",
+  // Circuits: a meter's + terminal is red and its − black, as on school apparatus; leads are grey,
+  // and the ones from a + terminal red.
+  terminalPlus: "#B8352A",
+  terminalMinus: "#141414",
+  lead: "#77746E",
+  leadPlus: "#B8352A",
 } as const;
 
 /**
@@ -114,4 +120,8 @@ export const figureTonePaper: Record<keyof typeof figureTone, string> = {
   dial: "#FFFFFF",
   dialRim: "#3D3B37",
   ink: "#141414",
+  terminalPlus: "#B8352A",
+  terminalMinus: "#141414",
+  lead: "#5A5853",
+  leadPlus: "#B8352A",
 };
