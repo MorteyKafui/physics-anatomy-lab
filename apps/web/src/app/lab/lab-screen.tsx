@@ -566,6 +566,19 @@ export function LabScreen() {
 
   const runningSince = timing && timing.stoppedAt === undefined ? timing.startedAt : undefined;
 
+  // The step strip's props stay the same until a step changes, so a tap on Start, Count a pass
+  // or Stop does not draw the strip again (master plan, "Performance budgets").
+  const stepOpen = useCallback(
+    (s: Step) => state !== undefined && STEPS.indexOf(s) <= STEPS.indexOf(frontier(state)),
+    [state],
+  );
+  const goToStep = useCallback(
+    (step: Step) => void handle?.dispatch({ type: "go-to-step", step }),
+    [handle],
+  );
+  const reviewOpen = state?.completed.includes("analyse") ?? false;
+  const review = useMemo(() => ({ href: `/lab/${E.id}/review`, open: reviewOpen }), [reviewOpen]);
+
   if (!handle || !state) {
     return (
       <main
@@ -654,7 +667,6 @@ export function LabScreen() {
 
   const stepIndex = STEPS.indexOf(state.step);
   const percent = Math.round((state.completed.length / STEPS.length) * 100);
-  const open = (s: Step) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state));
   // What the stopwatch shows at a bench time: the recorded reading once stopped.
   const shownTimeAt = (time: number) =>
     timing?.stoppedAt !== undefined
@@ -1939,12 +1951,9 @@ export function LabScreen() {
           <StepStrip
             current={state.step}
             completed={state.completed}
-            open={open}
-            onGo={(step) => void handle.dispatch({ type: "go-to-step", step })}
-            review={{
-              href: `/lab/${E.id}/review`,
-              open: state.completed.includes("analyse"),
-            }}
+            open={stepOpen}
+            onGo={goToStep}
+            review={review}
           />
         </div>
       </div>
