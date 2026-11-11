@@ -4,6 +4,7 @@ import {
   decimalsForResolution,
   DIVISIONS,
   heading,
+  lineToXAxis,
   onPaper,
   readingDecimals,
   referenceLine,
@@ -152,7 +153,9 @@ export function graphView(
       drawn: { sheet: false, plotted: false, line: false, triangle: false },
     };
   const plotted = state.plotted.length ? state.plotted : [...data];
-  const line = state.line ?? referenceLine(data)?.line;
+  const fitted = referenceLine(data)?.line;
+  // Read where it meets the V axis: the worked line is carried on to the axis, as on paper.
+  const line = state.line ?? (fitted && fromOrigin ? lineToXAxis(fitted) : fitted);
   const triangle =
     state.triangle ?? (line && data.length >= 2 ? suggestTriangle(sheet, line, data) : undefined);
   return {

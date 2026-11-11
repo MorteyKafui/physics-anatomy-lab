@@ -136,7 +136,7 @@ function atTheEnd(
   };
 }
 
-function statusOf(id: string, text: string): SectionStatus {
+export function statusOf(id: string, text: string): SectionStatus {
   if (id === "precautions") {
     const n = text.split("\n").filter((l) => l.trim() !== "").length;
     return n >= PRECAUTIONS_NEEDED ? { kind: "done" } : { kind: "count", n };

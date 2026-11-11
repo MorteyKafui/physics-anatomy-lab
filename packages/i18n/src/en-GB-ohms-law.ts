@@ -124,7 +124,79 @@ export const enGBOhmsLaw = {
     "Your graph is {y} against {x}. E and r come from a graph of I against V.",
   "experiments.ohms-law.conclude.text":
     "From your graph, the cell's emf E is {E} and its internal resistance r is {r}. The voltmeter reads less than E whenever current flows, because part of E drives the current through the cell itself.",
-  "experiments.ohms-law.report.next": "The report for this experiment comes with its next part.",
+  "experiments.ohms-law.report.title": "{experiment}: the emf and internal resistance of a cell",
+  "experiments.ohms-law.report.aim":
+    "To determine the emf E and the internal resistance r of a cell, using a potentiometer wire, an ammeter and a voltmeter.",
+  "experiments.ohms-law.report.apparatus.cells": "Two {emf} V dry cells in series, in a holder (E)",
+  "experiments.ohms-law.report.apparatus.resistor": "A {r} Ω resistor (R)",
+  "experiments.ohms-law.report.apparatus.ammeter": "An ammeter reading 0 to {max} A (A)",
+  "experiments.ohms-law.report.apparatus.voltmeter": "A voltmeter reading 0 to {max} V (V)",
+  "experiments.ohms-law.report.apparatus.wire":
+    "A potentiometer wire {length} m long, on a metre rule (PQ)",
+  "experiments.ohms-law.report.apparatus.jockey": "A jockey (J)",
+  "experiments.ohms-law.report.apparatus.key": "A plug key (K)",
+  "experiments.ohms-law.report.apparatus.leads": "Connecting leads",
+  "experiments.ohms-law.report.benchCaption":
+    "The circuit. The cells E, the key K, the resistor R, the ammeter A and the wire PQ in series, the voltmeter V across the cells, and the jockey J on a lead from P.",
+  "experiments.ohms-law.report.benchCaptionAsWired": "The circuit as it was wired.",
+  "experiments.ohms-law.report.benchAlt": "{caption}: the circuit on the bench",
+  "experiments.ohms-law.report.legend.E": "two dry cells",
+  "experiments.ohms-law.report.legend.K": "plug key",
+  "experiments.ohms-law.report.legend.R": "resistor",
+  "experiments.ohms-law.report.legend.A": "ammeter",
+  "experiments.ohms-law.report.legend.V": "voltmeter",
+  "experiments.ohms-law.report.legend.PQ": "potentiometer wire",
+  "experiments.ohms-law.report.legend.J": "jockey",
+  "experiments.ohms-law.report.values.leads": "{count} leads",
+  "experiments.ohms-law.report.theory":
+    "A cell of emf E and internal resistance r that drives a current I has a terminal potential difference V = E − Ir. So I = (E − V) ⁄ r: a graph of I against V is a straight line of slope −1 ⁄ r, which meets the V axis, where I = 0, at V = E. Pressing the jockey on the wire at J cuts the length PJ out of the circuit, so the current rises and V falls.",
+  "experiments.ohms-law.report.method.wire":
+    "I connected the circuit as in Fig. 1, with the voltmeter across the cells.",
+  "experiments.ohms-law.report.method.wireAsIs": "I connected the circuit as in Fig. 1.",
+  "experiments.ohms-law.report.method.readings":
+    "With the key closed, I read I and V with the jockey off the wire, then with it pressed on the wire at each position from PJ = {min} cm to {max} cm. I opened the key after each reading.",
+  "experiments.ohms-law.report.method.repeat":
+    "I took a second set of readings with PJ decreasing.",
+  "experiments.ohms-law.report.method.analyse":
+    "I plotted I against V, drew the best straight line, and found its slope and where it meets the V axis.",
+  "experiments.ohms-law.report.method.analyseOther":
+    "I plotted {y} against {x} and drew the best straight line.",
+  "experiments.ohms-law.report.observations.meters":
+    "The ammeter read to {amps} A and the voltmeter to {volts} V. I took {n} readings.",
+  "experiments.ohms-law.report.observations.positions":
+    "The jockey was pressed at {positions} positions, from PJ = {min} cm to {max} cm.",
+  "experiments.ohms-law.report.observations.one":
+    "The jockey was pressed at one position, PJ = {min} cm.",
+  "experiments.ohms-law.report.observations.noContact":
+    "One set was taken with the jockey off the wire.",
+  "experiments.ohms-law.report.table":
+    "Table 1 The ammeter and voltmeter readings at each position of the jockey.",
+  "experiments.ohms-law.report.graph":
+    "Fig. 2 {caption} The slope is found from triangle ABC, and E where the line meets the V axis.",
+  "experiments.ohms-law.report.calcE": "E = V where I = 0, read from the line: {E}",
+  "experiments.ohms-law.report.calcR": "r = −1 ⁄ slope = −1 ⁄ ({slope}) = {r}",
+  "experiments.ohms-law.report.precaution.key":
+    "I opened the key as soon as each reading was taken, so the cells did not run down.",
+  "experiments.ohms-law.report.precaution.jockey":
+    "I pressed the jockey on the wire and lifted it off, and did not slide it along the wire.",
+  "experiments.ohms-law.report.precaution.parallax":
+    "I read each scale with my eye directly above the pointer, to avoid parallax.",
+  "experiments.ohms-law.report.precaution.connections":
+    "I made sure every connection was clean and tight.",
+  "experiments.ohms-law.report.precaution.repeat":
+    "I took a second set of readings with PJ decreasing and used the mean of each pair.",
+  "experiments.ohms-law.report.source.keyLeftClosed":
+    "The key was left closed between readings, so the cells ran down and some readings of V were low.",
+  "experiments.ohms-law.report.source.jockeySlid":
+    "The jockey was slid along the wire, which scrapes it, so its resistance is no longer the same all along.",
+  "experiments.ohms-law.report.source.leastCount":
+    "The meters read only to {amps} A and {volts} V.",
+  "experiments.ohms-law.report.source.voltmeter":
+    "The voltmeter takes a small current of its own, so the line meets the V axis a little below E.",
+  "experiments.ohms-law.report.source.contact":
+    "The contact between the jockey and the wire has a small resistance of its own.",
+  "experiments.ohms-law.report.conclusion":
+    "The emf of the cells was found to be {E}, and their internal resistance {r}.",
   "experiments.ohms-law.bench":
     "{state}. The key is {key}. {jockey}. The ammeter reads {current} A and the voltmeter {voltage} V.",
   "experiments.ohms-law.benchWired": "The circuit has {count} leads",
@@ -132,7 +204,7 @@ export const enGBOhmsLaw = {
   "experiments.ohms-law.keyClosed": "closed",
   "experiments.ohms-law.jockeyLifted": "The jockey is lifted",
   "experiments.ohms-law.jockeyPressed": "The jockey is pressed at PJ = {pj} cm",
-  "experiments.ohms-law.inDevelopment": "Being built: the report comes next",
+  "experiments.ohms-law.inDevelopment": "Being built: print sheets and the exam come next",
   "experiments.ohms-law.explain.title": "Why the voltmeter reading falls",
   "experiments.ohms-law.explain.text":
     "The cell's emf E drives the current round the circuit and through the cell itself. The cell has its own resistance r, which uses up part of E as the current passes, so the p.d. across its terminals is less.",

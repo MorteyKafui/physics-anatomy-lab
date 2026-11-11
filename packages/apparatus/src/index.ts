@@ -4,6 +4,7 @@ export type { PendulumBenchProps } from "./pendulum-bench";
 export { lensViewBox, Magnifier } from "./magnifier";
 export type { MagnifierProps } from "./magnifier";
 export {
+  CIRCUIT_FIGURE,
   CIRCUIT_VIEWBOX,
   CircuitBench,
   jockeyPoint,

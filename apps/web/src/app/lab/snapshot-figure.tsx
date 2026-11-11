@@ -1,7 +1,7 @@
 "use client";
 
 import { decimalsForResolution, fillDerived, heading, pointsFor } from "@pa/analysis";
-import { BENCH_VIEWBOX, CIRCUIT_VIEWBOX, CircuitBench, PendulumBench } from "@pa/apparatus";
+import { BENCH_VIEWBOX, CIRCUIT_FIGURE, CircuitBench, PendulumBench } from "@pa/apparatus";
 import {
   coachIsOn,
   coachProjection,
@@ -324,10 +324,10 @@ export function SnapshotSheet({
       )}
       {d.kind === "circuit" && (
         <svg
-          x={PAD + (boxW - (380 * CIRCUIT_VIEWBOX.width) / CIRCUIT_VIEWBOX.height) / 2}
-          y={TOP + 10}
-          width={(380 * CIRCUIT_VIEWBOX.width) / CIRCUIT_VIEWBOX.height}
-          height={380}
+          x={PAD + 20}
+          y={TOP + (boxH - ((boxW - 40) * CIRCUIT_FIGURE.height) / CIRCUIT_FIGURE.width) / 2}
+          width={boxW - 40}
+          height={((boxW - 40) * CIRCUIT_FIGURE.height) / CIRCUIT_FIGURE.width}
         >
           <CircuitBench
             leads={d.leads}
@@ -336,6 +336,7 @@ export function SnapshotSheet({
             wireLength={d.wireLength}
             ammeter={0}
             voltmeter={0}
+            figure
           />
         </svg>
       )}

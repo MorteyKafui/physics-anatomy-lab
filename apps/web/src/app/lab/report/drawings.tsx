@@ -1,6 +1,6 @@
 "use client";
 
-import { BENCH_VIEWBOX, CIRCUIT_VIEWBOX, CircuitBench, PendulumBench } from "@pa/apparatus";
+import { BENCH_VIEWBOX, CIRCUIT_FIGURE, CircuitBench, PendulumBench } from "@pa/apparatus";
 import type { Ref } from "react";
 
 import { GRAPH_VIEWBOX, GraphDrawing } from "../graph-sheet";
@@ -18,7 +18,7 @@ export const BENCH_SIZE = {
 };
 export const CIRCUIT_SIZE = {
   width: 440,
-  height: (440 * CIRCUIT_VIEWBOX.height) / CIRCUIT_VIEWBOX.width,
+  height: (440 * CIRCUIT_FIGURE.height) / CIRCUIT_FIGURE.width,
 };
 export const GRAPH_SIZE = { width: 400, height: (400 * 276) / 234 };
 
@@ -65,6 +65,7 @@ export function BenchDrawing({
             wireLength={d.wireLength}
             ammeter={0}
             voltmeter={0}
+            figure
           />
         )}
       </svg>

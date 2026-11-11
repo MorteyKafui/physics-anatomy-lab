@@ -12,6 +12,11 @@ import type { Lead, Terminal } from "@pa/experiments";
 
 /** The drawing's own units. */
 export const CIRCUIT_VIEWBOX = { width: 600, height: 420 };
+/**
+ * The frame for a figure (a report, a snapshot): the bench top only, without the room above it
+ * that the lab keeps for its readouts.
+ */
+export const CIRCUIT_FIGURE = { x: 0, y: 110, width: 600, height: 300 };
 
 /** Where the wire runs on the board: P to Q, in drawing units. */
 export const WIRE = { x0: 80, x1: 520, y: 318 };
@@ -76,6 +81,8 @@ export interface CircuitBenchProps {
   /** Accessible description; omit for a decorative copy. */
   label?: string;
   className?: string;
+  /** Drawn as a figure: framed to the bench top (CIRCUIT_FIGURE). */
+  figure?: boolean;
 }
 
 const same = (l: Lead, m: Lead) =>
@@ -94,6 +101,7 @@ export function CircuitBench({
   pjLabel,
   label,
   className,
+  figure = false,
 }: CircuitBenchProps) {
   const at = (t: Terminal) => terminalPoint(t, jockey, wireLength);
   const jx = wireX(jockey.at, wireLength);
@@ -138,7 +146,11 @@ export function CircuitBench({
 
   return (
     <svg
-      viewBox={`0 0 ${CIRCUIT_VIEWBOX.width} ${CIRCUIT_VIEWBOX.height}`}
+      viewBox={
+        figure
+          ? `${CIRCUIT_FIGURE.x} ${CIRCUIT_FIGURE.y} ${CIRCUIT_FIGURE.width} ${CIRCUIT_FIGURE.height}`
+          : `0 0 ${CIRCUIT_VIEWBOX.width} ${CIRCUIT_VIEWBOX.height}`
+      }
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}

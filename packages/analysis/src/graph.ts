@@ -97,6 +97,19 @@ export const onPaper = (sheet: Sheet, p: Point): Point => ({
   y: toMm(sheet.y, p.y),
 });
 
+/**
+ * The same straight line carried on to the x axis (y = 0), as a student extends a line on paper to
+ * read where it meets the axis (Ohm's law: E, where I = 0). The end nearer the axis moves there;
+ * the slope does not change. A line that never meets the axis is returned as it is.
+ */
+export function lineToXAxis(line: DrawnLine): DrawnLine {
+  const { from, to } = line;
+  const dy = to.y - from.y;
+  if (dy === 0) return line;
+  const end = { x: from.x - (from.y * (to.x - from.x)) / dy, y: 0 };
+  return Math.abs(from.y) < Math.abs(to.y) ? { from: end, to } : { from, to: end };
+}
+
 /** The value at the end of each axis. */
 export const axisEnd = (axis: Axis, divisions: number) => axis.start + divisions * axis.per2cm;
 

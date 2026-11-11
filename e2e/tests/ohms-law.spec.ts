@@ -201,7 +201,36 @@ test("at Auto the whole experiment runs: two sets of readings, the table, I agai
   await expect(page.getByText("Step 9 of 10 · Conclude")).toBeVisible();
   await expect(page.getByText(`the cell's emf E is ${e.toFixed(2)} V`)).toBeVisible();
   await page.getByRole("button", { name: "Continue to Report" }).click();
+
+  // Step 10: the report, written from this run.
+  await page.getByRole("link", { name: "Open your report" }).click();
+  await expect(page).toHaveURL(/\/lab\/ohms-law\/report$/);
+  const paper = page.getByRole("region", { name: "Report preview" });
   await expect(
-    page.getByText("The report for this experiment comes with its next part."),
+    paper.getByText("Ohm's law and the potentiometer: the emf and internal resistance of a cell"),
   ).toBeVisible();
+  await expect(paper.getByText(/^Fig\. 1 The circuit\. The cells E, the key K/)).toBeVisible();
+  await expect(paper.getByRole("img", { name: /the circuit on the bench/ })).toBeVisible();
+  await expect(paper.getByRole("table")).toContainText("80.0");
+  await expect(
+    paper.getByText(`E = V where I = 0, read from the line: ${e.toFixed(2)} V`),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^r = −1 ⁄ slope = −1 ⁄ \(−[\d.]+ A V⁻¹\) = [\d.]+ Ω$/),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^I opened the key as soon as each reading was taken/),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(
+      "I took a second set of readings with PJ decreasing and used the mean of each pair.",
+    ),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "University", exact: true }).click();
+  await expect(paper.getByText(/^A cell of emf E and internal resistance r/)).toBeVisible();
+  await expect(
+    paper.getByText(`The emf of the cells was found to be ${e.toFixed(2)} V`, { exact: false }),
+  ).toBeVisible();
+  expect(await serious(page)).toEqual([]);
 });
