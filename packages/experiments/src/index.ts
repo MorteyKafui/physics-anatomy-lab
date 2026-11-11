@@ -148,3 +148,26 @@ export { OHMS_LAW_SHEET_NUMBER, ohmsLawSheet } from "./ohms-law-sheets";
 export type { OhmsLawSheet } from "./ohms-law-sheets";
 export { markOhmsLawScript, ohmsLawFollowUps } from "./ohms-law-exam";
 export type { OhmsLawExamFacts } from "./ohms-law-exam";
+export {
+  blurredImage,
+  convergingLens,
+  correctLensBench,
+  insideFocalLength,
+  LENS_PROCEDURE_RULES,
+  lensWorld,
+  notCoaxial,
+  readFromEdge,
+  readPosition,
+  recordedPosition,
+  scaleAtAngle,
+  screenImage,
+  sharpScreenRange,
+} from "./converging-lens";
+export type {
+  LensBench,
+  LensProcedureContext,
+  LensReading,
+  LensWorld,
+  ReadFrom,
+  ScreenImage,
+} from "./converging-lens";

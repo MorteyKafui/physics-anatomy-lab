@@ -1,6 +1,7 @@
 // @pa/i18n: message files for on-screen text and spoken lines. English first; Twi, Ga and Ewe
 // later (decision D10).
 import { enGB, type MessageKey as SharedKey } from "./en-GB";
+import type { enGBConvergingLens } from "./en-GB-converging-lens";
 import type { enGBOhmsLaw } from "./en-GB-ohms-law";
 
 export { enGB };
@@ -10,7 +11,7 @@ export { enGB };
  * their own file, registered by importing its entry ("@pa/i18n/ohms-law") in that lab only, so
  * the other labs and the app shell do not download them.
  */
-export type MessageKey = SharedKey | keyof typeof enGBOhmsLaw;
+export type MessageKey = SharedKey | keyof typeof enGBOhmsLaw | keyof typeof enGBConvergingLens;
 
 const messages: Record<string, string> = { ...enGB };
 
