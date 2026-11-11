@@ -104,7 +104,17 @@ import {
 } from "@pa/ui/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 import {
   benchDescription,
@@ -123,7 +133,7 @@ import { FormulaBox, Sym } from "./formula";
 import { graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
 import { AnalysePanel, GraphPanel, TableBuilder } from "./lazy-panels";
 import { flagsFor, useTable } from "./table-builder";
-import { backToPractice, useAttempt } from "./use-attempt";
+import { backToPractice, useAttempt, type AttemptHandle } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
 import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
@@ -579,6 +589,18 @@ export function LabScreen() {
   const reviewOpen = state?.completed.includes("analyse") ?? false;
   const review = useMemo(() => ({ href: `/lab/${E.id}/review`, open: reviewOpen }), [reviewOpen]);
 
+  // The header's two actions, the same function from render to render: each does what the lab
+  // would do at the moment of the press.
+  const actions = useRef({ building, resetBench, tryAgain, takeSnapshot });
+  useLayoutEffect(() => {
+    actions.current = { building, resetBench, tryAgain, takeSnapshot };
+  });
+  const onReset = useCallback(() => {
+    const a = actions.current;
+    void (a.building ? a.resetBench() : a.tryAgain());
+  }, []);
+  const onSnapshot = useCallback(() => void actions.current.takeSnapshot(), []);
+
   if (!handle || !state) {
     return (
       <main
@@ -970,294 +992,23 @@ export function LabScreen() {
         <Rail current="lab" />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {/* Header */}
-          <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
-            <Link
-              href="/"
-              aria-label={t("lab.header.back")}
-              className="flex size-11 items-center justify-center md:hidden"
-            >
-              <ChevronLeftIcon className="size-5" aria-hidden />
-            </Link>
-            <div className="flex items-center gap-3 md:border md:border-border md:bg-surface md:px-3.5 md:py-2">
-              <span aria-hidden className="hidden size-2.5 bg-topic-mechanics md:block" />
-              <div className="flex flex-col">
-                <h1 className="font-semibold">{t("experiments.simple-pendulum.title")}</h1>
-                <span className="font-mono text-xs text-muted-foreground">
-                  {t("lab.header.stepOf", {
-                    n: stepIndex + 1,
-                    total: STEPS.length,
-                    step: stepName(state.step),
-                  })}
-                </span>
-              </div>
-              <div
-                className="hidden h-1 w-30 bg-border md:block"
-                role="img"
-                aria-label={t("lab.header.progress", { percent })}
-              >
-                <div className="h-1 bg-primary" style={{ width: `${percent}%` }} />
-              </div>
-            </div>
-            <div
-              role="toolbar"
-              aria-label={t("lab.playback.label")}
-              className="hidden items-center gap-0.5 border border-border bg-surface p-[3px] md:flex"
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("lab.playback.reset")}
-                onClick={() => void (building ? resetBench() : tryAgain())}
-              >
-                <RotateCcwIcon />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("lab.playback.labels")}
-                aria-pressed={labels}
-                onClick={() => setLabels((v) => !v)}
-              >
-                <LayersIcon />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("lab.magnifier.label")}
-                aria-pressed={lens !== undefined}
-                aria-keyshortcuts="M"
-                onClick={() => setLens((l) => (l ? undefined : LENS_START))}
-              >
-                <SearchIcon />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("lab.playback.stepBack")}
-                disabled={stepIndex === 0}
-                onClick={() =>
-                  void handle.dispatch({ type: "go-to-step", step: STEPS[stepIndex - 1]! })
-                }
-              >
-                <SkipBackIcon />
-              </Button>
-              <Button
-                size="icon"
-                aria-label={clock.playing ? t("lab.playback.pause") : t("lab.playback.play")}
-                className="bg-foreground text-background hover:bg-soft"
-                onClick={() => clock.setPlaying((p) => !p)}
-              >
-                {clock.playing ? (
-                  <PauseIcon fill="currentColor" />
-                ) : (
-                  <PlayIcon fill="currentColor" />
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                aria-label={t("lab.playback.speed", { speed: clock.speed })}
-                className="font-mono"
-                onClick={clock.nextSpeed}
-              >
-                {clock.speed}×
-              </Button>
-            </div>
-            <span className="hidden flex-1 md:block" />
-            {/* In an exam the coach is off: no help level to choose. */}
-            {state.mode !== "exam" && (
-              <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-                {/* On narrower screens the words give way so the header stays on one row; the select
-                  keeps its name. */}
-                <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
-                <select
-                  className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
-                  value={state.helpLevel}
-                  onChange={(e) =>
-                    void handle.dispatch({
-                      type: "set-help-level",
-                      level: e.target.value as HelpLevel,
-                    })
-                  }
-                >
-                  {HELP_LEVELS.map((level) => (
-                    <option key={level} value={level}>
-                      {t(`lab.helpLevel.${level}` as MessageKey)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-            <Popover>
-              <PopoverTrigger
-                aria-label={t("lab.audio.label")}
-                className="ml-auto flex h-9 items-center gap-1.5 border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:ml-0"
-              >
-                {audio.settings.on ? (
-                  <Volume2Icon className="size-4" aria-hidden />
-                ) : (
-                  <VolumeXIcon className="size-4" aria-hidden />
-                )}
-                <span className="hidden md:inline">{t("lab.audio.label")}</span>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-80">
-                <PopoverTitle>{t("lab.audio.title")}</PopoverTitle>
-                <PopoverDescription>
-                  {audio.canSpeak ? t("lab.audio.hint") : t("lab.audio.noSpeech")}
-                </PopoverDescription>
-                <div className="flex flex-col gap-3 text-sm">
-                  <label className="flex items-center gap-2 font-medium">
-                    <input
-                      type="checkbox"
-                      className="size-4 accent-primary"
-                      checked={audio.settings.on}
-                      onChange={(e) => audio.update({ on: e.target.checked })}
-                    />
-                    {t("lab.audio.on")}
-                  </label>
-                  <label className="flex items-center justify-between gap-3">
-                    {t("lab.audio.verbosity")}
-                    <select
-                      className="h-9 border border-input bg-background px-2 text-sm text-foreground"
-                      value={audio.settings.verbosity}
-                      onChange={(e) =>
-                        audio.update({
-                          verbosity: e.target.value as (typeof VERBOSITY)[number],
-                        })
-                      }
-                    >
-                      {VERBOSITY.map((v) => (
-                        <option key={v} value={v}>
-                          {t(`lab.audio.verbosity.${v}` as MessageKey)}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="flex items-center justify-between gap-3">
-                    {t("lab.audio.rate")}
-                    <select
-                      className="h-9 border border-input bg-background px-2 font-mono text-sm text-foreground"
-                      value={audio.settings.rate}
-                      onChange={(e) =>
-                        audio.update({ rate: Number(e.target.value) as (typeof RATES)[number] })
-                      }
-                    >
-                      {RATES.map((r) => (
-                        <option key={r} value={r}>
-                          {r}×
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {audio.voices.length > 0 && (
-                    <label className="flex items-center justify-between gap-3">
-                      {t("lab.audio.voice")}
-                      <select
-                        className="h-9 max-w-40 border border-input bg-background px-2 text-sm text-foreground"
-                        value={audio.settings.voice ?? ""}
-                        onChange={(e) => audio.update({ voice: e.target.value || undefined })}
-                      >
-                        <option value="">{t("lab.audio.voiceAuto")}</option>
-                        {audio.voices.map((v) => (
-                          <option key={v.id} value={v.id}>
-                            {v.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  )}
-                  {(
-                    [
-                      ["voiceVolume", "lab.audio.voiceVolume"],
-                      ["countVolume", "lab.audio.countVolume"],
-                      ["soundsVolume", "lab.audio.soundsVolume"],
-                    ] as const
-                  ).map(([key, label]) => (
-                    <label key={key} className="flex items-center justify-between gap-3">
-                      {t(label)}
-                      <input
-                        type="range"
-                        min={0}
-                        max={1}
-                        step={0.1}
-                        className="w-32 accent-primary"
-                        value={audio.settings[key]}
-                        onChange={(e) => audio.update({ [key]: Number(e.target.value) })}
-                      />
-                    </label>
-                  ))}
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="size-4 accent-primary"
-                      checked={audio.settings.countAlong}
-                      onChange={(e) => audio.update({ countAlong: e.target.checked })}
-                    />
-                    {t("lab.audio.countAlong")}
-                  </label>
-                </div>
-              </PopoverContent>
-            </Popover>
-            {coachIsOn(state) && (
-              <Popover>
-                <PopoverTrigger className="hidden h-9 items-center border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:flex">
-                  {t("lab.assist.perSkill")}
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-80">
-                  <PopoverTitle>{t("lab.assist.title")}</PopoverTitle>
-                  <PopoverDescription>{t("lab.assist.hint")}</PopoverDescription>
-                  <div className="flex flex-col gap-2">
-                    {(["apparatus", "measurement", "tabulation", "graph", "analysis"] as const).map(
-                      (skill) => (
-                        <label
-                          key={skill}
-                          className="flex items-center justify-between gap-3 text-sm"
-                        >
-                          {t(`lab.assist.skill.${skill}` as MessageKey)}
-                          <select
-                            className="h-9 border border-input bg-background px-2 text-sm text-foreground"
-                            value={state.skillLevels[skill] ?? ""}
-                            onChange={(e) => {
-                              const level = (e.target.value || undefined) as HelpLevel | undefined;
-                              const ev = setSkillLevel(handle.state, skill, level);
-                              if (ev) void handle.record([ev]);
-                            }}
-                          >
-                            <option value="">
-                              {t("lab.assist.same", {
-                                level: t(`lab.helpLevel.${state.helpLevel}` as MessageKey),
-                              })}
-                            </option>
-                            {HELP_LEVELS.map((level) => (
-                              <option key={level} value={level}>
-                                {t(`lab.helpLevel.${level}` as MessageKey)}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                      ),
-                    )}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
-            <Button
-              aria-label={t("lab.snapshot.label")}
-              aria-keyshortcuts="C"
-              className="h-9 gap-2 px-3 font-semibold"
-              onClick={() => void takeSnapshot()}
-            >
-              <CameraIcon aria-hidden />
-              <span className="hidden md:inline">{t("lab.snapshot.take")}</span>
-            </Button>
-            {/* The rail holds the notebook on a wide screen; the phone has it here. */}
-            <Link
-              href={`/lab/${E.id}/notebook`}
-              aria-label={t("lab.rail.notebook")}
-              className="flex size-11 items-center justify-center border border-input bg-surface md:hidden"
-            >
-              <BookOpenIcon className="size-5" aria-hidden />
-            </Link>
-          </header>
+          <LabHeader
+            handle={handle}
+            labels={labels}
+            setLabels={setLabels}
+            lens={lens}
+            setLens={setLens}
+            playing={clock.playing}
+            setPlaying={clock.setPlaying}
+            speed={clock.speed}
+            nextSpeed={clock.nextSpeed}
+            audioSettings={audio.settings}
+            updateAudio={audio.update}
+            canSpeak={audio.canSpeak}
+            voices={audio.voices}
+            onReset={onReset}
+            onSnapshot={onSnapshot}
+          />
           {handle.attempt.mode === "exam" &&
             exam.startedAt !== undefined &&
             exam.handedInAt === undefined && (
@@ -1960,6 +1711,327 @@ export function LabScreen() {
     </TooltipProvider>
   );
 }
+
+type Audio = ReturnType<typeof useAudio>;
+
+/**
+ * The lab's header: the experiment and its step, the playback bar, the help level, sound and the
+ * camera. It is drawn again only when one of its own settings or the attempt changes, so a tap on
+ * Start or Count a pass does not draw it again (master plan, "Performance budgets").
+ */
+const LabHeader = memo(function LabHeader({
+  handle,
+  labels,
+  setLabels,
+  lens,
+  setLens,
+  playing,
+  setPlaying,
+  speed,
+  nextSpeed,
+  audioSettings,
+  updateAudio,
+  canSpeak,
+  voices,
+  onReset,
+  onSnapshot,
+}: {
+  handle: AttemptHandle;
+  labels: boolean;
+  setLabels: Dispatch<SetStateAction<boolean>>;
+  lens: { x: number; y: number } | undefined;
+  setLens: Dispatch<SetStateAction<{ x: number; y: number } | undefined>>;
+  playing: BenchClock["playing"];
+  setPlaying: BenchClock["setPlaying"];
+  speed: BenchClock["speed"];
+  nextSpeed: BenchClock["nextSpeed"];
+  audioSettings: Audio["settings"];
+  updateAudio: Audio["update"];
+  canSpeak: Audio["canSpeak"];
+  voices: Audio["voices"];
+  onReset: () => void;
+  onSnapshot: () => void;
+}) {
+  const state = handle.state;
+  const stepIndex = STEPS.indexOf(state.step);
+  const percent = Math.round((state.completed.length / STEPS.length) * 100);
+  return (
+    <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
+      <Link
+        href="/"
+        aria-label={t("lab.header.back")}
+        className="flex size-11 items-center justify-center md:hidden"
+      >
+        <ChevronLeftIcon className="size-5" aria-hidden />
+      </Link>
+      <div className="flex items-center gap-3 md:border md:border-border md:bg-surface md:px-3.5 md:py-2">
+        <span aria-hidden className="hidden size-2.5 bg-topic-mechanics md:block" />
+        <div className="flex flex-col">
+          <h1 className="font-semibold">{t("experiments.simple-pendulum.title")}</h1>
+          <span className="font-mono text-xs text-muted-foreground">
+            {t("lab.header.stepOf", {
+              n: stepIndex + 1,
+              total: STEPS.length,
+              step: stepName(state.step),
+            })}
+          </span>
+        </div>
+        <div
+          className="hidden h-1 w-30 bg-border md:block"
+          role="img"
+          aria-label={t("lab.header.progress", { percent })}
+        >
+          <div className="h-1 bg-primary" style={{ width: `${percent}%` }} />
+        </div>
+      </div>
+      <div
+        role="toolbar"
+        aria-label={t("lab.playback.label")}
+        className="hidden items-center gap-0.5 border border-border bg-surface p-[3px] md:flex"
+      >
+        <Button variant="ghost" size="icon" aria-label={t("lab.playback.reset")} onClick={onReset}>
+          <RotateCcwIcon />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("lab.playback.labels")}
+          aria-pressed={labels}
+          onClick={() => setLabels((v) => !v)}
+        >
+          <LayersIcon />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("lab.magnifier.label")}
+          aria-pressed={lens !== undefined}
+          aria-keyshortcuts="M"
+          onClick={() => setLens((l) => (l ? undefined : LENS_START))}
+        >
+          <SearchIcon />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("lab.playback.stepBack")}
+          disabled={stepIndex === 0}
+          onClick={() => void handle.dispatch({ type: "go-to-step", step: STEPS[stepIndex - 1]! })}
+        >
+          <SkipBackIcon />
+        </Button>
+        <Button
+          size="icon"
+          aria-label={playing ? t("lab.playback.pause") : t("lab.playback.play")}
+          className="bg-foreground text-background hover:bg-soft"
+          onClick={() => setPlaying((p) => !p)}
+        >
+          {playing ? <PauseIcon fill="currentColor" /> : <PlayIcon fill="currentColor" />}
+        </Button>
+        <Button
+          variant="ghost"
+          aria-label={t("lab.playback.speed", { speed: speed })}
+          className="font-mono"
+          onClick={nextSpeed}
+        >
+          {speed}×
+        </Button>
+      </div>
+      <span className="hidden flex-1 md:block" />
+      {/* In an exam the coach is off: no help level to choose. */}
+      {state.mode !== "exam" && (
+        <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
+          {/* On narrower screens the words give way so the header stays on one row; the select
+            keeps its name. */}
+          <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
+          <select
+            className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
+            value={state.helpLevel}
+            onChange={(e) =>
+              void handle.dispatch({
+                type: "set-help-level",
+                level: e.target.value as HelpLevel,
+              })
+            }
+          >
+            {HELP_LEVELS.map((level) => (
+              <option key={level} value={level}>
+                {t(`lab.helpLevel.${level}` as MessageKey)}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <Popover>
+        <PopoverTrigger
+          aria-label={t("lab.audio.label")}
+          className="ml-auto flex h-9 items-center gap-1.5 border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:ml-0"
+        >
+          {audioSettings.on ? (
+            <Volume2Icon className="size-4" aria-hidden />
+          ) : (
+            <VolumeXIcon className="size-4" aria-hidden />
+          )}
+          <span className="hidden md:inline">{t("lab.audio.label")}</span>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-80">
+          <PopoverTitle>{t("lab.audio.title")}</PopoverTitle>
+          <PopoverDescription>
+            {canSpeak ? t("lab.audio.hint") : t("lab.audio.noSpeech")}
+          </PopoverDescription>
+          <div className="flex flex-col gap-3 text-sm">
+            <label className="flex items-center gap-2 font-medium">
+              <input
+                type="checkbox"
+                className="size-4 accent-primary"
+                checked={audioSettings.on}
+                onChange={(e) => updateAudio({ on: e.target.checked })}
+              />
+              {t("lab.audio.on")}
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              {t("lab.audio.verbosity")}
+              <select
+                className="h-9 border border-input bg-background px-2 text-sm text-foreground"
+                value={audioSettings.verbosity}
+                onChange={(e) =>
+                  updateAudio({
+                    verbosity: e.target.value as (typeof VERBOSITY)[number],
+                  })
+                }
+              >
+                {VERBOSITY.map((v) => (
+                  <option key={v} value={v}>
+                    {t(`lab.audio.verbosity.${v}` as MessageKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center justify-between gap-3">
+              {t("lab.audio.rate")}
+              <select
+                className="h-9 border border-input bg-background px-2 font-mono text-sm text-foreground"
+                value={audioSettings.rate}
+                onChange={(e) =>
+                  updateAudio({ rate: Number(e.target.value) as (typeof RATES)[number] })
+                }
+              >
+                {RATES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}×
+                  </option>
+                ))}
+              </select>
+            </label>
+            {voices.length > 0 && (
+              <label className="flex items-center justify-between gap-3">
+                {t("lab.audio.voice")}
+                <select
+                  className="h-9 max-w-40 border border-input bg-background px-2 text-sm text-foreground"
+                  value={audioSettings.voice ?? ""}
+                  onChange={(e) => updateAudio({ voice: e.target.value || undefined })}
+                >
+                  <option value="">{t("lab.audio.voiceAuto")}</option>
+                  {voices.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {(
+              [
+                ["voiceVolume", "lab.audio.voiceVolume"],
+                ["countVolume", "lab.audio.countVolume"],
+                ["soundsVolume", "lab.audio.soundsVolume"],
+              ] as const
+            ).map(([key, label]) => (
+              <label key={key} className="flex items-center justify-between gap-3">
+                {t(label)}
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  className="w-32 accent-primary"
+                  value={audioSettings[key]}
+                  onChange={(e) => updateAudio({ [key]: Number(e.target.value) })}
+                />
+              </label>
+            ))}
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                className="size-4 accent-primary"
+                checked={audioSettings.countAlong}
+                onChange={(e) => updateAudio({ countAlong: e.target.checked })}
+              />
+              {t("lab.audio.countAlong")}
+            </label>
+          </div>
+        </PopoverContent>
+      </Popover>
+      {coachIsOn(state) && (
+        <Popover>
+          <PopoverTrigger className="hidden h-9 items-center border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:flex">
+            {t("lab.assist.perSkill")}
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-80">
+            <PopoverTitle>{t("lab.assist.title")}</PopoverTitle>
+            <PopoverDescription>{t("lab.assist.hint")}</PopoverDescription>
+            <div className="flex flex-col gap-2">
+              {(["apparatus", "measurement", "tabulation", "graph", "analysis"] as const).map(
+                (skill) => (
+                  <label key={skill} className="flex items-center justify-between gap-3 text-sm">
+                    {t(`lab.assist.skill.${skill}` as MessageKey)}
+                    <select
+                      className="h-9 border border-input bg-background px-2 text-sm text-foreground"
+                      value={state.skillLevels[skill] ?? ""}
+                      onChange={(e) => {
+                        const level = (e.target.value || undefined) as HelpLevel | undefined;
+                        const ev = setSkillLevel(handle.state, skill, level);
+                        if (ev) void handle.record([ev]);
+                      }}
+                    >
+                      <option value="">
+                        {t("lab.assist.same", {
+                          level: t(`lab.helpLevel.${state.helpLevel}` as MessageKey),
+                        })}
+                      </option>
+                      {HELP_LEVELS.map((level) => (
+                        <option key={level} value={level}>
+                          {t(`lab.helpLevel.${level}` as MessageKey)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ),
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+      <Button
+        aria-label={t("lab.snapshot.label")}
+        aria-keyshortcuts="C"
+        className="h-9 gap-2 px-3 font-semibold"
+        onClick={onSnapshot}
+      >
+        <CameraIcon aria-hidden />
+        <span className="hidden md:inline">{t("lab.snapshot.take")}</span>
+      </Button>
+      {/* The rail holds the notebook on a wide screen; the phone has it here. */}
+      <Link
+        href={`/lab/${E.id}/notebook`}
+        aria-label={t("lab.rail.notebook")}
+        className="flex size-11 items-center justify-center border border-input bg-surface md:hidden"
+      >
+        <BookOpenIcon className="size-5" aria-hidden />
+      </Link>
+    </header>
+  );
+});
 
 /**
  * The count-along: a beat and the count at each pass in the counting direction, and the bob's
