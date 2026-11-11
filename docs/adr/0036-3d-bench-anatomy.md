@@ -1,6 +1,6 @@
 # 0036. The turnable 3D bench uses Anatomy 3D
 
-- Status: proposed
+- Status: accepted (Mortey, 2026-11-11, on merging PR #26)
 - Date: 2026-11-11
 - Decision log entry: D36 in `docs/planning/00-decisions.md`
 
