@@ -40,3 +40,4 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0033](./0033-phase-0-mockups-complete.md)            | Phase 0 mockup set complete                                          | 2026-11-06 |
 | [0034](./0034-type-geist-and-bricolage.md)            | Type: Geist, Geist Mono and Bricolage Grotesque                      | 2026-11-06 |
 | [0035](./0035-digital-stopwatch.md)                   | The stopwatch is digital and reads to 0.01 s                         | 2026-11-06 |
+| [0036](./0036-3d-bench-anatomy.md)                    | The turnable 3D bench uses Anatomy 3D (proposed)                     | 2026-11-11 |
