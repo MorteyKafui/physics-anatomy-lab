@@ -116,6 +116,15 @@ def balance_length(
     return float(x) * driver["wireLength"]
 
 
+def _clean(x: float) -> float:
+    """Round values that are zero but for rounding (|x| < 1e-12) to exactly 0.0.
+
+    Solved on different machines, such values come out as different tiny numbers (one BLAS gives
+    -4e-15 where another gives 0), and the committed fixtures must rebuild the same everywhere.
+    """
+    return 0.0 if abs(x) < 1e-12 else x
+
+
 def terminal_pd_readings(
     emf: float,
     internal: float,
@@ -153,7 +162,7 @@ def terminal_pd_readings(
     # An ideal ammeter is a 0 V source from node 3 (−) to 4 (+); its current from 3 to 4 is the
     # opposite of MNA's source current.
     current = -i[ammeter_source] if ammeter == 0 else (v[3] - v[4]) / ammeter
-    return {"current": float(current), "voltage": float(v[2] - v[0])}
+    return {"current": _clean(float(current)), "voltage": _clean(float(v[2] - v[0]))}
 
 
 def random_network(rng: np.random.Generator) -> dict[str, object]:
@@ -239,6 +248,6 @@ def random_network(rng: np.random.Generator) -> dict[str, object]:
             e["ohms"] = None  # JSON has no infinity: null is an open lead
     return {
         "elements": elements,
-        "potentials": {f"n{k}": float(v[k] - v[0]) for k in range(nodes)},
-        "currents": currents,
+        "potentials": {f"n{k}": _clean(float(v[k] - v[0])) for k in range(nodes)},
+        "currents": {k: _clean(c) for k, c in currents.items()},
     }

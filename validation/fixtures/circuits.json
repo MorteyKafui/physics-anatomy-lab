@@ -2026,7 +2026,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2052,7 +2052,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2078,7 +2078,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2104,7 +2104,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 2.220446049250312e-16,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2130,7 +2130,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2156,7 +2156,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2234,7 +2234,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4998500149985015
     },
     {
@@ -2338,7 +2338,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125932
     },
     {
@@ -2364,7 +2364,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125932
     },
     {
@@ -2390,7 +2390,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125934
     },
     {
@@ -2416,7 +2416,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125932
     },
     {
@@ -2468,7 +2468,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125934
     },
     {
@@ -2494,7 +2494,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2520,7 +2520,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2546,7 +2546,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2572,7 +2572,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2598,7 +2598,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2624,7 +2624,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2754,7 +2754,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": 4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.499850014998501
     },
     {
@@ -2806,7 +2806,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125932
     },
     {
@@ -2832,7 +2832,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125932
     },
     {
@@ -2858,7 +2858,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.499250374812593
     },
     {
@@ -2884,7 +2884,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125932
     },
     {
@@ -2910,7 +2910,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125934
     },
     {
@@ -2936,7 +2936,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125934
     },
     {
@@ -2962,7 +2962,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -2988,7 +2988,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3014,7 +3014,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3040,7 +3040,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.6653345369377346e-16,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3066,7 +3066,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3092,7 +3092,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3170,7 +3170,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4998500149985008
     },
     {
@@ -3248,7 +3248,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4998500149984997
     },
     {
@@ -3274,7 +3274,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.499250374812594
     },
     {
@@ -3300,7 +3300,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.499250374812594
     },
     {
@@ -3326,7 +3326,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.499250374812594
     },
     {
@@ -3352,7 +3352,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.499250374812594
     },
     {
@@ -3378,7 +3378,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125943
     },
     {
@@ -3404,7 +3404,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.499250374812594
     },
     {
@@ -3430,7 +3430,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3456,7 +3456,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3482,7 +3482,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3508,7 +3508,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 8.326672684688673e-17,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3534,7 +3534,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3560,7 +3560,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -3638,7 +3638,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4998500149984988
     },
     {
@@ -3716,7 +3716,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4998500149984997
     },
     {
@@ -3820,7 +3820,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125943
     },
     {
@@ -3846,7 +3846,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4992503748125943
     },
     {
@@ -3872,7 +3872,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.499250374812594
     },
     {
@@ -3898,7 +3898,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -3924,7 +3924,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -3950,7 +3950,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -3976,7 +3976,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.665334536937735e-16,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -4002,7 +4002,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000007
     },
     {
@@ -4028,7 +4028,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -4106,7 +4106,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4995501349595113
     },
     {
@@ -4132,7 +4132,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4995501349595075
     },
     {
@@ -4262,7 +4262,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4977533699450831
     },
     {
@@ -4288,7 +4288,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4977533699450825
     },
     {
@@ -4366,7 +4366,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -4392,7 +4392,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -4418,7 +4418,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -4444,7 +4444,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 8.326672684688675e-17,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -4470,7 +4470,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000007
     },
     {
@@ -4496,7 +4496,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000004
     },
     {
@@ -4600,7 +4600,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -4.440892098500626e-15,
+      "current": 0.0,
       "voltage": 1.4995501349595075
     },
     {
@@ -4678,7 +4678,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4977533699450825
     },
     {
@@ -4704,7 +4704,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4977533699450825
     },
     {
@@ -4756,7 +4756,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4977533699450825
     },
     {
@@ -4834,7 +4834,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -4860,7 +4860,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -4886,7 +4886,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -4912,7 +4912,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.665334536937734e-16,
+      "current": 0.0,
       "voltage": 1.5
     },
     {
@@ -4938,7 +4938,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -4964,7 +4964,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -5250,7 +5250,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.497753369945084
     },
     {
@@ -5302,7 +5302,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -5328,7 +5328,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -5354,7 +5354,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -5380,7 +5380,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 8.326672684688673e-17,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -5406,7 +5406,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -5432,7 +5432,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 1.5000000000000002
     },
     {
@@ -5666,7 +5666,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 1.1102230246251565e-15,
+      "current": 0.0,
       "voltage": 1.4977533699450822
     },
     {
@@ -5770,7 +5770,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -5796,7 +5796,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -5822,7 +5822,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -5848,7 +5848,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 4.440892098500624e-16,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -5874,7 +5874,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -5900,7 +5900,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -5978,7 +5978,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.999700029997003
     },
     {
@@ -6082,7 +6082,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251863
     },
     {
@@ -6108,7 +6108,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251863
     },
     {
@@ -6134,7 +6134,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251868
     },
     {
@@ -6160,7 +6160,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251863
     },
     {
@@ -6212,7 +6212,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251868
     },
     {
@@ -6238,7 +6238,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6264,7 +6264,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6290,7 +6290,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6316,7 +6316,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6342,7 +6342,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6368,7 +6368,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6498,7 +6498,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": 8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.999700029997002
     },
     {
@@ -6550,7 +6550,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251863
     },
     {
@@ -6576,7 +6576,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251863
     },
     {
@@ -6602,7 +6602,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.998500749625186
     },
     {
@@ -6628,7 +6628,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251863
     },
     {
@@ -6654,7 +6654,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251868
     },
     {
@@ -6680,7 +6680,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251868
     },
     {
@@ -6706,7 +6706,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6732,7 +6732,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6758,7 +6758,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6784,7 +6784,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 3.330669073875469e-16,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6810,7 +6810,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6836,7 +6836,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -6914,7 +6914,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.9997000299970016
     },
     {
@@ -6992,7 +6992,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.9997000299969994
     },
     {
@@ -7018,7 +7018,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.998500749625188
     },
     {
@@ -7044,7 +7044,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.998500749625188
     },
     {
@@ -7070,7 +7070,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.998500749625188
     },
     {
@@ -7096,7 +7096,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.998500749625188
     },
     {
@@ -7122,7 +7122,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251885
     },
     {
@@ -7148,7 +7148,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.998500749625188
     },
     {
@@ -7174,7 +7174,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -7200,7 +7200,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -7226,7 +7226,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -7252,7 +7252,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.6653345369377346e-16,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -7278,7 +7278,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -7304,7 +7304,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -7382,7 +7382,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.9997000299969976
     },
     {
@@ -7460,7 +7460,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": 8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.9997000299969994
     },
     {
@@ -7564,7 +7564,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251885
     },
     {
@@ -7590,7 +7590,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9985007496251885
     },
     {
@@ -7616,7 +7616,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.998500749625188
     },
     {
@@ -7642,7 +7642,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -7668,7 +7668,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -7694,7 +7694,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -7720,7 +7720,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 3.33066907387547e-16,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -7746,7 +7746,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000013
     },
     {
@@ -7772,7 +7772,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -7850,7 +7850,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.9991002699190226
     },
     {
@@ -7876,7 +7876,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.999100269919015
     },
     {
@@ -8006,7 +8006,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9955067398901662
     },
     {
@@ -8032,7 +8032,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.995506739890165
     },
     {
@@ -8110,7 +8110,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -8136,7 +8136,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -8162,7 +8162,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -8188,7 +8188,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.665334536937735e-16,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -8214,7 +8214,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000013
     },
     {
@@ -8240,7 +8240,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.000000000000001
     },
     {
@@ -8344,7 +8344,7 @@
       "voltmeterResistance": 5000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -8.881784197001252e-15,
+      "current": 0.0,
       "voltage": 2.999100269919015
     },
     {
@@ -8422,7 +8422,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": null,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.995506739890165
     },
     {
@@ -8448,7 +8448,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.995506739890165
     },
     {
@@ -8500,7 +8500,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.995506739890165
     },
     {
@@ -8578,7 +8578,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -8604,7 +8604,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -8630,7 +8630,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -8656,7 +8656,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 3.330669073875468e-16,
+      "current": 0.0,
       "voltage": 3.0
     },
     {
@@ -8682,7 +8682,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -8708,7 +8708,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -8994,7 +8994,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.995506739890168
     },
     {
@@ -9046,7 +9046,7 @@
       "voltmeterResistance": null,
       "jockey": null,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -9072,7 +9072,7 @@
       "voltmeterResistance": null,
       "jockey": 0.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -9098,7 +9098,7 @@
       "voltmeterResistance": null,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -9124,7 +9124,7 @@
       "voltmeterResistance": null,
       "jockey": 0.6,
       "keyClosed": false,
-      "current": 1.6653345369377346e-16,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -9150,7 +9150,7 @@
       "voltmeterResistance": null,
       "jockey": 0.8,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -9176,7 +9176,7 @@
       "voltmeterResistance": null,
       "jockey": 1.0,
       "keyClosed": false,
-      "current": -0.0,
+      "current": 0.0,
       "voltage": 3.0000000000000004
     },
     {
@@ -9410,7 +9410,7 @@
       "voltmeterResistance": 1000.0,
       "jockey": 0.4,
       "keyClosed": false,
-      "current": 2.220446049250313e-15,
+      "current": 0.0,
       "voltage": 2.9955067398901645
     },
     {
@@ -9578,7 +9578,7 @@
         "n0": 0.0,
         "n1": 0.9037651249666387,
         "n2": -0.6637237181280303,
-        "n3": -0.0,
+        "n3": 0.0,
         "n4": 0.9037651249666387,
         "n5": 0.0,
         "n6": 0.0,
@@ -9589,7 +9589,7 @@
         "e1": 0.028088435593781567,
         "e2": 0.0,
         "e3": 0.0,
-        "e4": -0.0,
+        "e4": 0.0,
         "e5": 0.0,
         "e6": 0.0,
         "e7": 0.0,
@@ -9676,7 +9676,7 @@
         "n0": 0.0,
         "n1": 0.0,
         "n2": 0.6148516048877726,
-        "n3": -0.0,
+        "n3": 0.0,
         "n4": 0.0,
         "n5": 1.1228988219254676,
         "n6": 1.1228988219254676
@@ -9782,7 +9782,7 @@
         "e1": 0.0,
         "e2": -0.0003540963504541955,
         "e3": -0.008779088575024473,
-        "e4": -1.3871390832171154e-20,
+        "e4": 0.0,
         "e5": 0.009133184925478712,
         "e6": 0.0003540963504541955,
         "e7": 0.2298812026871186,
@@ -10121,7 +10121,7 @@
       "potentials": {
         "n0": 0.0,
         "n1": 0.0,
-        "n2": -0.0,
+        "n2": 0.0,
         "n3": 1.189086050133469,
         "n4": 0.05248242316772918,
         "n5": 0.0,
@@ -10200,7 +10200,7 @@
       "potentials": {
         "n0": 0.0,
         "n1": -2.7253665970141117,
-        "n2": -0.0,
+        "n2": 0.0,
         "n3": -1.0638598271955255
       },
       "currents": {
@@ -10492,7 +10492,7 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": -0.0,
+        "n1": 0.0,
         "n2": 0.7208300222708761,
         "n3": 0.2928504294971756
       },
@@ -10502,7 +10502,7 @@
         "e2": -0.010111374202787318,
         "e3": 0.0,
         "e4": 0.0,
-        "e7": 3.2959746043559335e-17,
+        "e7": 0.0,
         "e5": -0.04389108864268715,
         "e6": 0.010111374202787314
       }
@@ -10600,7 +10600,7 @@
         "e5": 0.0,
         "e6": 0.0,
         "e7": 0.0,
-        "e9": -0.0,
+        "e9": 0.0,
         "e8": 0.08242494992519396
       }
     },
@@ -10675,17 +10675,17 @@
       "potentials": {
         "n0": 0.0,
         "n1": 0.0,
-        "n2": -8.881784197001252e-16,
+        "n2": 0.0,
         "n3": 0.5266340410191859,
-        "n4": -8.881784197001252e-16,
-        "n5": -8.366515625721056e-16
+        "n4": 0.0,
+        "n5": 0.0
       },
       "currents": {
         "e0": 0.0,
-        "e1": 2.7421157773823852e-17,
+        "e1": 0.0,
         "e2": -0.05051038550511318,
         "e3": 0.4005603703915784,
-        "e4": -1.175200501285533e-18,
+        "e4": 0.0,
         "e5": 0.0,
         "e8": -0.1831524783080479,
         "e6": 0.21740789208353092,
@@ -10768,14 +10768,14 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": -0.0,
+        "n1": 0.0,
         "n2": 1.7847895942874168,
         "n3": 1.7847895942874166
       },
       "currents": {
         "e0": 0.0,
         "e1": -0.04014589177510691,
-        "e2": 5.041480781021187e-18,
+        "e2": 0.0,
         "e3": 0.0,
         "e4": -0.005051477136271207,
         "e5": 0.0,
@@ -10886,7 +10886,7 @@
         "e1": 0.019073086331609753,
         "e2": 0.0007105542037141083,
         "e3": 0.0022128432641321115,
-        "e4": 3.232173157329963e-19,
+        "e4": 0.0,
         "e5": 0.0009031102981263559,
         "e6": 6.794482429811491e-05,
         "e7": -0.0007105542037141084,
@@ -10967,7 +10967,7 @@
       "potentials": {
         "n0": 0.0,
         "n1": 1.5745073706852444,
-        "n2": -0.0,
+        "n2": 0.0,
         "n3": 1.5745073706852444,
         "n4": -2.356806805789244,
         "n5": -2.356806805789244
@@ -11085,7 +11085,7 @@
         "e0": 0.014616397466762526,
         "e1": -0.014616397466762548,
         "e2": 0.0,
-        "e3": -3.1676451060603326e-18,
+        "e3": 0.0,
         "e4": 0.01298715347081042,
         "e5": -0.0016292439959521023,
         "e6": 0.0,
@@ -11180,20 +11180,20 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": 5.39676228962736e-16,
+        "n1": 0.0,
         "n2": 0.0,
         "n3": 0.4282678474028232,
         "n4": 0.4282678474028232,
         "n5": 0.4282678474028232
       },
       "currents": {
-        "e0": -1.860308421764435e-16,
+        "e0": 0.0,
         "e1": 0.0,
         "e2": -0.03343730297635222,
         "e3": -0.014220753134979674,
         "e4": 0.0,
         "e5": 0.0,
-        "e6": 7.913502703442142e-19,
+        "e6": 0.0,
         "e7": 0.0,
         "e10": -0.9021663019610874,
         "e8": -0.9163870550960669,
@@ -11361,7 +11361,7 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": -0.0,
+        "n1": 0.0,
         "n2": 0.0,
         "n3": 0.0,
         "n4": 0.13302284422926192,
@@ -11371,15 +11371,15 @@
       },
       "currents": {
         "e0": 0.0,
-        "e1": -0.0,
-        "e2": -0.0,
+        "e1": 0.0,
+        "e2": 0.0,
         "e3": -0.019891331407033565,
         "e4": -0.019891331407033565,
         "e5": -0.019891331407033575,
-        "e6": -2.6596077019629524e-18,
+        "e6": 0.0,
         "e7": 0.0,
         "e8": 0.0,
-        "e10": -0.0,
+        "e10": 0.0,
         "e9": 0.01989133140703355
       }
     },
@@ -11578,7 +11578,7 @@
         "n1": 0.0,
         "n2": -1.9976025185917794,
         "n3": 0.0,
-        "n4": -0.0,
+        "n4": 0.0,
         "n5": 0.0,
         "n6": 0.0,
         "n7": 0.0
@@ -11588,13 +11588,13 @@
         "e1": 0.16772319730564136,
         "e2": 0.0,
         "e3": 0.0,
-        "e4": -0.0,
+        "e4": 0.0,
         "e5": 0.0,
         "e6": 0.0,
         "e7": 0.0,
         "e8": 0.0,
         "e9": 0.0,
-        "e11": -0.0,
+        "e11": 0.0,
         "e10": 0.16772319730564136
       }
     },
@@ -11749,7 +11749,7 @@
       "potentials": {
         "n0": 0.0,
         "n1": -0.36742787509358993,
-        "n2": -0.0,
+        "n2": 0.0,
         "n3": -0.4364164999992003,
         "n4": -0.43641649999920024
       },
@@ -11757,7 +11757,7 @@
         "e0": 0.007848258554799545,
         "e1": 0.0,
         "e2": 0.007848258554799538,
-        "e3": -1.13695949625479e-18,
+        "e3": 0.0,
         "e4": 0.0,
         "e6": 0.0,
         "e5": 0.007848258554799545
@@ -11856,7 +11856,7 @@
         "n1": 0.13238689472788776,
         "n2": 0.34946710564104577,
         "n3": 0.0,
-        "n4": -0.0,
+        "n4": 0.0,
         "n5": 0.9464863984184139
       },
       "currents": {
@@ -11989,10 +11989,10 @@
       "currents": {
         "e0": -0.0020807883738764446,
         "e1": 0.0,
-        "e2": 1.1638137481420126e-18,
+        "e2": 0.0,
         "e3": 0.019358578650708218,
         "e4": 0.0,
-        "e5": -4.0684133469069884e-19,
+        "e5": 0.0,
         "e6": 0.021554350955632448,
         "e7": 0.00016254061829627003,
         "e8": -4.755668724848668e-05,
@@ -12120,7 +12120,7 @@
         "n3": -0.3120969517150066,
         "n4": -2.3001976412874434,
         "n5": -0.3035181168875205,
-        "n6": -0.0,
+        "n6": 0.0,
         "n7": -2.300197641287443
       },
       "currents": {
@@ -12130,7 +12130,7 @@
         "e3": 0.06599820154990098,
         "e4": 0.0011656781212869458,
         "e5": -0.06100227066322901,
-        "e6": -1.2934859947275002e-17,
+        "e6": 0.0,
         "e7": 0.0,
         "e8": 0.005467547516775081,
         "e9": 0.0,
@@ -12329,7 +12329,7 @@
       "currents": {
         "e0": 0.0,
         "e1": -0.027267122229192624,
-        "e2": -3.241764842927913e-18,
+        "e2": 0.0,
         "e3": -0.03884114755451863,
         "e4": 0.011574025325326021,
         "e5": 0.011574025325326021,
@@ -12424,21 +12424,21 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": 3.584290005123121e-16,
-        "n2": 8.582683888199869e-16,
-        "n3": 3.722962763794422e-16,
-        "n4": 3.9132043052033935e-16,
+        "n1": 0.0,
+        "n2": 0.0,
+        "n3": 0.0,
+        "n4": 0.0,
         "n5": 0.9076383293672963,
-        "n6": 8.582683888199869e-16
+        "n6": 0.0
       },
       "currents": {
-        "e0": -1.3140027457268761e-17,
-        "e1": -1.251740239736086e-17,
-        "e2": -6.226250599079068e-19,
-        "e3": -6.226250599079063e-19,
+        "e0": 0.0,
+        "e1": 0.0,
+        "e2": 0.0,
+        "e3": 0.0,
         "e4": -0.2039355201219649,
         "e5": 0.029621815094471815,
-        "e6": 6.226250599079053e-19,
+        "e6": 0.0,
         "e7": 0.0,
         "e8": 0.0,
         "e10": -0.20393552012196492,
@@ -12764,21 +12764,21 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": -0.0,
+        "n1": 0.0,
         "n2": 0.0,
         "n3": -2.869679403826335,
         "n4": 0.0
       },
       "currents": {
         "e0": 0.0,
-        "e1": -0.0,
+        "e1": 0.0,
         "e2": 0.061702805968713144,
         "e3": 0.0,
         "e4": 0.0,
         "e5": 0.0,
         "e6": 0.0,
         "e7": 0.0,
-        "e9": -0.0,
+        "e9": 0.0,
         "e8": 0.061702805968713144
       }
     },
@@ -12923,7 +12923,7 @@
       "currents": {
         "e0": 0.0,
         "e1": 0.0018006328505303607,
-        "e2": 4.622809471388032e-18,
+        "e2": 0.0,
         "e3": 0.04407756626358536,
         "e4": -0.001800632850530367,
         "e6": 0.04407756626358537,
@@ -13114,17 +13114,17 @@
         "n1": 0.012113971761423722,
         "n2": 0.012113971761423734,
         "n3": 0.012113971761423722,
-        "n4": -0.0,
+        "n4": 0.0,
         "n5": 0.6312405543166906,
         "n6": 0.012113971761423748
       },
       "currents": {
         "e0": -0.000694131300185476,
-        "e1": -3.8025681391088404e-19,
+        "e1": 0.0,
         "e2": 0.0,
         "e3": 0.0004169036243945066,
         "e4": -0.016843323658102885,
-        "e5": -3.567015195796021e-19,
+        "e5": 0.0,
         "e6": 0.0011110349245799821,
         "e8": 0.017537454958288255,
         "e7": 0.017954358582682687
@@ -13506,7 +13506,7 @@
         "e4": 0.0,
         "e5": 0.0,
         "e6": 0.0018427584340130689,
-        "e9": -0.0,
+        "e9": 0.0,
         "e7": -0.1739433639490939,
         "e8": -0.14469946394703487
       }
@@ -13568,7 +13568,7 @@
       "potentials": {
         "n0": 0.0,
         "n1": 0.395698832850449,
-        "n2": -0.0,
+        "n2": 0.0,
         "n3": 0.6727843926076906
       },
       "currents": {
@@ -13703,17 +13703,17 @@
       },
       "currents": {
         "e0": -0.05447424217779366,
-        "e1": 1.3820287960935442e-17,
-        "e2": 2.881004061573512e-17,
+        "e1": 0.0,
+        "e2": 0.0,
         "e3": 0.0,
-        "e4": -5.911958893212034e-17,
+        "e4": 0.0,
         "e5": -0.006021255528602912,
-        "e6": 3.7085554364938783e-17,
-        "e7": -5.526753836765823e-19,
+        "e6": 0.0,
+        "e7": 0.0,
         "e8": 0.0,
-        "e9": 1.8403636494000075e-18,
+        "e9": 0.0,
         "e10": 0.0,
-        "e11": 1.1733157767881667e-18,
+        "e11": 0.0,
         "e14": 0.060495497706396534,
         "e12": 0.006021255528602918,
         "e13": 0.054474242177793446
@@ -13784,7 +13784,7 @@
         "e2": -0.0306605928542391,
         "e3": 0.0,
         "e4": 0.0,
-        "e6": -0.0,
+        "e6": 0.0,
         "e5": 0.030660592854239093
       }
     },
@@ -13879,23 +13879,23 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": 1.049256263646262e-17,
-        "n2": 4.878561631749164e-16,
+        "n1": 0.0,
+        "n2": 0.0,
         "n3": -1.5093050770101992,
         "n4": -1.5093050770101992,
         "n5": -1.549309910805826,
         "n6": -1.549309910805826
       },
       "currents": {
-        "e0": -7.181205332577638e-19,
-        "e1": -1.6961702800646832e-17,
+        "e0": 0.0,
+        "e1": 0.0,
         "e2": 0.05316459883761831,
         "e3": 0.03415003140888698,
         "e4": 0.0017122242805064135,
         "e5": 0.0,
         "e6": 0.0,
         "e7": 0.0,
-        "e8": -7.181205332577638e-19,
+        "e8": 0.0,
         "e11": -0.05145237455711188,
         "e9": -0.08560240596599894,
         "e10": 0.0873146302465053
@@ -13979,7 +13979,7 @@
         "n0": 0.0,
         "n1": 0.0,
         "n2": -0.023199188534884486,
-        "n3": -0.0,
+        "n3": 0.0,
         "n4": -0.21091143595811435,
         "n5": 0.0,
         "n6": 0.08068566596656344,
@@ -14087,7 +14087,7 @@
         "e2": 0.0,
         "e3": -0.0404286811088558,
         "e4": 0.0,
-        "e5": 2.423848620774347e-17,
+        "e5": 0.0,
         "e6": 0.0,
         "e7": 0.0,
         "e9": -0.16952293540123833,
@@ -14291,7 +14291,7 @@
       },
       "currents": {
         "e0": -0.00657306774130911,
-        "e1": 1.7873338596082244e-18,
+        "e1": 0.0,
         "e2": -0.01589773240165835,
         "e3": 0.009324664660349235,
         "e4": 0.06564515274060237,
@@ -14351,7 +14351,7 @@
       "potentials": {
         "n0": 0.0,
         "n1": 0.0,
-        "n2": -0.0,
+        "n2": 0.0,
         "n3": 0.31718849610024175
       },
       "currents": {
@@ -14563,7 +14563,7 @@
         "e3": 0.0,
         "e4": 0.8553341814916336,
         "e5": 0.0,
-        "e6": 3.2526637801158105e-18,
+        "e6": 0.0,
         "e7": 0.0,
         "e8": 0.0,
         "e10": 0.0,
@@ -14680,7 +14680,7 @@
         "e0": -0.00011782776981061357,
         "e1": 0.0,
         "e2": -0.0033770968665205467,
-        "e3": -1.216439578749227e-19,
+        "e3": 0.0,
         "e4": 0.0,
         "e5": -0.07477908426798963,
         "e6": 0.003494924636331116,
@@ -14985,27 +14985,27 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": 4.440892098500626e-16,
+        "n1": 0.0,
         "n2": 0.508398704800514,
-        "n3": 4.823515134226032e-16,
-        "n4": 4.037240684193187e-16,
-        "n5": 4.371388337256378e-16,
-        "n6": 5.18127400405734e-16,
-        "n7": -0.0
+        "n3": 0.0,
+        "n4": 0.0,
+        "n5": 0.0,
+        "n6": 0.0,
+        "n7": 0.0
       },
       "currents": {
-        "e0": -9.027211536280971e-18,
+        "e0": 0.0,
         "e1": -0.010637703599600668,
-        "e2": -5.421494619102191e-18,
-        "e3": 8.67205647723588e-19,
-        "e4": 1.043181194707175e-18,
-        "e5": -1.4873074132947876e-18,
-        "e6": 3.024861278982542e-17,
+        "e2": 0.0,
+        "e3": 0.0,
+        "e4": 0.0,
+        "e5": 0.0,
+        "e6": 0.0,
         "e7": 0.0,
         "e8": 0.0,
         "e9": 0.0,
         "e10": 0.0,
-        "e12": 3.122502256758253e-17,
+        "e12": 0.0,
         "e11": 0.010637703599600656
       }
     },
@@ -15118,7 +15118,7 @@
         "e7": 0.0,
         "e8": 0.0,
         "e9": 0.00678496931360688,
-        "e11": 2.775557561562892e-17,
+        "e11": 0.0,
         "e10": -0.04915070678109352
       }
     },
@@ -15276,7 +15276,7 @@
       ],
       "potentials": {
         "n0": 0.0,
-        "n1": -0.0,
+        "n1": 0.0,
         "n2": 1.5815773970258478,
         "n3": 1.4882658425472326
       },
@@ -15373,7 +15373,7 @@
         "n2": -2.411815218513542,
         "n3": -0.15987111067720217,
         "n4": -0.8524672113598553,
-        "n5": -0.0,
+        "n5": 0.0,
         "n6": -2.4118152185135426
       },
       "currents": {
@@ -15382,7 +15382,7 @@
         "e2": 0.0,
         "e3": 0.059176973363144286,
         "e4": 0.0,
-        "e5": 3.7013895020595406e-17,
+        "e5": 0.0,
         "e6": 0.0,
         "e9": 0.09399089271781247,
         "e7": -0.05917697336314431,
