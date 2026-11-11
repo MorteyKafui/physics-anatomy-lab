@@ -78,12 +78,14 @@ again, never edited only in this copy.
 may begin where another stopped mid-task, and neither remembers the other's chat. Before
 anything else, find where the work stands, from the repository and GitHub, not from memory:
 
-1. `git status`, the current branch and `git log -5`: unfinished edits and the last commits.
+1. `git fetch origin`, then `git status`, the current branch and `git log -5 origin/main`:
+   unfinished edits, and what the other account has merged since.
 2. Open pull requests on GitHub and their CI: a pull request waiting for approval or a fix comes
    first.
 3. The first unticked item in Phase 1 (or the current phase) of `docs/planning/master-plan.md`.
-4. On the main account only: tick in the doc any item the repository has ticked but the doc has
-   not.
+4. On the main account only: compare the ticks in `docs/planning/master-plan.md` on
+   `origin/main` with the doc, and tick in the doc any item the repository has ticked but the
+   doc has not.
 
 Then say in one or two lines where things stand and what comes next, and carry on.
 
