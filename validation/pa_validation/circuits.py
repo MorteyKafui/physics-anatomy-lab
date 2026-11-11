@@ -114,3 +114,140 @@ def balance_length(
         return None
     x = brentq(_galvanometer_current, 1e-9, 1 - 1e-9, args=args, xtol=1e-15, rtol=1e-15)
     return float(x) * driver["wireLength"]
+
+
+def _clean(x: float) -> float:
+    """Round values that are zero but for rounding (|x| < 1e-12) to exactly 0.0.
+
+    Solved on different machines, such values come out as different tiny numbers (one BLAS gives
+    -4e-15 where another gives 0), and the committed fixtures must rebuild the same everywhere.
+    """
+    return 0.0 if abs(x) < 1e-12 else x
+
+
+def terminal_pd_readings(
+    emf: float,
+    internal: float,
+    resistor: float,
+    wire: float,
+    length: float,
+    ammeter: float,
+    voltmeter: float,
+    jockey: float | None,
+    key_closed: bool,
+) -> dict[str, float]:
+    """WASSCE's potentiometer, ammeter and voltmeter practical, by MNA.
+
+    Cell (+) → R → ammeter → Q; the wire QP is split at the jockey J; a lead joins J to P when the
+    jockey touches; the key joins P to the cell (−); the voltmeter is across the cell.
+    """
+    # 0 cell −, 1 ideal emf +, 2 cell +, 3 between R and the ammeter, 4 Q, 5 J, 6 P.
+    x = 0.0 if jockey is None else jockey
+    per_metre = wire / length
+    net = Network()
+    net.source(0, 1, emf)
+    net.resistor(1, 2, internal)
+    net.resistor(2, 3, resistor)
+    ammeter_source = len(net.sources)  # used only when the ammeter is ideal (0 Ω)
+    net.resistor(3, 4, ammeter)
+    net.resistor(4, 5, per_metre * (length - x))
+    net.resistor(5, 6, per_metre * x)
+    # The jockey's lead joins J to P; at PJ = 0 they are already joined by a wire of no length,
+    # and MNA cannot hold two 0 V sources side by side, so the lead is the same circuit left out.
+    if jockey is not None and x > 0:
+        net.resistor(5, 6, 0.0)
+    net.resistor(6, 0, 0.0 if key_closed else math.inf)
+    net.resistor(2, 0, voltmeter)
+    v, i = net.solve()
+    # An ideal ammeter is a 0 V source from node 3 (−) to 4 (+); its current from 3 to 4 is the
+    # opposite of MNA's source current.
+    current = -i[ammeter_source] if ammeter == 0 else (v[3] - v[4]) / ammeter
+    return {"current": _clean(float(current)), "voltage": _clean(float(v[2] - v[0]))}
+
+
+def random_network(rng: np.random.Generator) -> dict[str, object]:
+    """A random connected network of cells, resistors, open and ideal leads, solved by MNA.
+
+    Returns the elements in the TypeScript solver's shape, every node's potential relative to
+    node "n0", and every element's current (a → b for resistors, out of + for cells).
+    """
+    nodes = int(rng.integers(4, 9))
+    elements: list[dict[str, object]] = []
+    # A spanning tree of resistors keeps it connected; then extra branches.
+    for k in range(1, nodes):
+        j = int(rng.integers(0, k))
+        elements.append(
+            {"kind": "resistor", "a": f"n{j}", "b": f"n{k}", "ohms": float(rng.uniform(0.5, 50))}
+        )
+    for _ in range(int(rng.integers(1, 6))):
+        a, b = rng.choice(nodes, 2, replace=False)
+        elements.append(
+            {
+                "kind": "resistor",
+                "a": f"n{a}",
+                "b": f"n{b}",
+                "ohms": float(rng.choice([rng.uniform(0.1, 1000), math.inf])),
+            }
+        )
+    for _ in range(int(rng.integers(1, 3))):
+        a, b = rng.choice(nodes, 2, replace=False)
+        elements.append(
+            {
+                "kind": "cell",
+                "minus": f"n{a}",
+                "plus": f"n{b}",
+                "emf": float(rng.uniform(-3, 3)),
+                "internalResistance": float(rng.uniform(0.05, 5)),
+            }
+        )
+    # One ideal lead, between nodes that no cell spans, so nothing is shorted.
+    for _ in range(20):
+        a, b = (int(i) for i in rng.choice(nodes, 2, replace=False))
+        spans = any(
+            e["kind"] == "cell" and {e["minus"], e["plus"]} == {f"n{a}", f"n{b}"} for e in elements
+        )
+        if not spans:
+            elements.append({"kind": "resistor", "a": f"n{a}", "b": f"n{b}", "ohms": 0.0})
+            break
+    for i, e in enumerate(elements):
+        e["id"] = f"e{i}"
+
+    # Solve: node index = number in the name; each cell gets an internal node for its ideal emf.
+    net = Network()
+    extra = nodes
+    leads: list[tuple[str, int]] = []  # (element id, source index)
+    cells: list[tuple[str, int, int, float]] = []  # (id, ideal-plus node, plus node, r)
+    for e in elements:
+        if e["kind"] == "resistor":
+            a, b = int(str(e["a"])[1:]), int(str(e["b"])[1:])
+            if e["ohms"] == 0:
+                leads.append((str(e["id"]), len(net.sources)))
+            net.resistor(a, b, float(e["ohms"]))  # type: ignore[arg-type]
+        else:
+            minus, plus = int(str(e["minus"])[1:]), int(str(e["plus"])[1:])
+            net.source(minus, extra, float(e["emf"]))  # type: ignore[arg-type]
+            net.resistor(extra, plus, float(e["internalResistance"]))  # type: ignore[arg-type]
+            cells.append((str(e["id"]), extra, plus, float(e["internalResistance"])))  # type: ignore[arg-type]
+            extra += 1
+    v, i = net.solve()
+    currents: dict[str, float] = {}
+    for e in elements:
+        if e["kind"] == "resistor" and e["ohms"] not in (0.0, math.inf):
+            a, b = int(str(e["a"])[1:]), int(str(e["b"])[1:])
+            currents[str(e["id"])] = float((v[a] - v[b]) / float(e["ohms"]))  # type: ignore[arg-type]
+        elif e["kind"] == "resistor" and e["ohms"] == math.inf:
+            currents[str(e["id"])] = 0.0
+    for eid, k in leads:
+        # MNA's source current enters the source at its + node from the circuit; a lead from a
+        # (its − node) to b (its + node) carries the opposite through itself, from a to b.
+        currents[eid] = float(-i[k])
+    for eid, ideal, plus, r in cells:
+        currents[eid] = float((v[ideal] - v[plus]) / r)
+    for e in elements:
+        if e["ohms"] == math.inf if e["kind"] == "resistor" else False:
+            e["ohms"] = None  # JSON has no infinity: null is an open lead
+    return {
+        "elements": elements,
+        "potentials": {f"n{k}": _clean(float(v[k] - v[0])) for k in range(nodes)},
+        "currents": {k: _clean(c) for k, c in currents.items()},
+    }
