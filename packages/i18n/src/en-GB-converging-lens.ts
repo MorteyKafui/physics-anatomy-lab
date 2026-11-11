@@ -230,6 +230,56 @@ export const enGBConvergingLens = {
   "experiments.converging-lens.sheet.why.text":
     "A real lens bends the light through its edge a little more than through its centre, so the sharpest image forms a little nearer the lens than the thin-lens formula gives: {shift} cm nearer at u = {u} cm. That carries through the graph, and this lens's f comes out {short}% short of {f} cm.",
   "experiments.converging-lens.sheet.motto": "Sharp from both sides, read from the centre",
+  "experiments.converging-lens.exam.question.meta":
+    "Question 1 · The converging lens · {minutes} minutes",
+  "experiments.converging-lens.exam.question.lead": "Find the focal length of the converging lens.",
+  "experiments.converging-lens.exam.question.1":
+    "Mount the lens L in its holder, and set the wire gauze of the ray box R on the lens's axis.",
+  "experiments.converging-lens.exam.question.2":
+    "Set the ray box at a distance u = {first} cm from the lens. Move the screen S until a sharp image of the gauze is formed on it, and measure its distance v from the lens.",
+  "experiments.converging-lens.exam.question.3":
+    "Repeat for u = {list} cm. Read u and v from the centre marks of the holders.",
+  "experiments.converging-lens.exam.question.4":
+    "Tabulate your readings, with 1/u and 1/v. Plot a graph of 1/v on the vertical axis against 1/u on the horizontal axis.",
+  "experiments.converging-lens.exam.question.5":
+    "Determine the vertical and horizontal intercepts m₁ and m₂, and evaluate f = 2 ⁄ (m₁ + m₂). State two precautions you took.",
+  "experiments.converging-lens.exam.question.6":
+    "Part (b): answer the questions that follow the experiment.",
+  "experiments.converging-lens.exam.item.coaxial": "Gauze and lens set on one axis",
+  "experiments.converging-lens.exam.item.centreMarks":
+    "u and v read from the holders' centre marks",
+  "experiments.converging-lens.exam.item.distances": "Readings at five object distances",
+  "experiments.converging-lens.exam.item.sharp": "Each v taken at a sharp image",
+  "experiments.converging-lens.exam.item.decimals": "u and v to the rule's least count",
+  "experiments.converging-lens.exam.item.reciprocals": "1/u and 1/v worked out correctly",
+  "experiments.converging-lens.exam.item.axes": "1/v plotted against 1/u, axes labelled",
+  "experiments.converging-lens.exam.item.intercepts": "The line carried on to meet both axes",
+  "experiments.converging-lens.exam.item.m1": "m₁ where the line meets the 1/v axis, with its unit",
+  "experiments.converging-lens.exam.item.m2": "m₂ where the line meets the 1/u axis, with its unit",
+  "experiments.converging-lens.exam.item.f": "f from 2 ⁄ (m₁ + m₂), with its unit",
+  "experiments.converging-lens.exam.lost.coaxial":
+    "Readings were taken with the gauze off the lens's axis.",
+  "experiments.converging-lens.exam.lost.centreMarks":
+    "Readings were taken from the edge of a holder.",
+  "experiments.converging-lens.exam.lost.distances": "Object distances read: {n} of 5.",
+  "experiments.converging-lens.exam.lost.blurred":
+    "Readings taken with the image still blurred: {n}.",
+  "experiments.converging-lens.exam.lost.ruleDecimals": "Readings off the rule's least count: {n}.",
+  "experiments.converging-lens.exam.lost.noReciprocals": "No columns for 1/u and 1/v.",
+  "experiments.converging-lens.exam.lost.axesLens": "The graph is not 1/v against 1/u.",
+  "experiments.converging-lens.exam.lost.intercepts": "Intercepts on the sheet: {n} of 2.",
+  "experiments.converging-lens.exam.q.one-reading":
+    "A student finds a sharp image {v} cm from the lens with the object {u} cm from it. Find the focal length of the lens.",
+  "experiments.converging-lens.exam.a.one-reading":
+    "1/f = 1/u + 1/v = 1/{u} + 1/{v}, so f = {f} cm.",
+  "experiments.converging-lens.exam.q.magnification":
+    "Show that the magnification of the image is m = v ⁄ f − 1, and find m when u = {u} cm, given f = {f} cm.",
+  "experiments.converging-lens.exam.a.magnification":
+    "m = v ⁄ u. From 1/u + 1/v = 1/f, multiplying by v gives v ⁄ u + 1 = v ⁄ f, so m = v ⁄ f − 1. At u = {u} cm, v = {v} cm, so m = {v} ⁄ {f} − 1 = {m}.",
+  "experiments.converging-lens.exam.q.no-image":
+    "Why can no image be found on the screen when the object is nearer the lens than {f} cm?",
+  "experiments.converging-lens.exam.a.no-image":
+    "Inside the focal length the light leaves the lens still spreading, so it never meets again. The image is virtual, on the same side as the object, and cannot be caught on a screen.",
   "findings.lens.readFromEdge.title": "Readings taken from the edge of a holder",
   "findings.lens.readFromEdge.detail":
     "{count} of your distances were read from a holder's edge, which puts each about {cm} cm out. Read u and v from the centre mark of each holder.",
