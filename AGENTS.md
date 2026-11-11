@@ -49,3 +49,28 @@ cd validation; uv sync; uv run pytest                   # independent physics mo
   Never skip it with `--no-verify`.
 - Conventional Commits. Pull requests are squash-merged and use the template
   (problem, change, proof, risk). A human always presses merge.
+
+## The plan, and working from more than one Claude account
+
+The master plan and the design canvas are Claude artifacts owned by Mortey's main account. A
+session signed in to another account (for example Claude Code in VS Code) cannot open or edit
+them, so the repository carries everything a session needs to carry on exactly as planned:
+
+- `docs/planning/master-plan.md` (and `master-plan-gap-fixes.md`): the master plan, exported
+  from the Claude Doc. Work from it. Its roadmap is the to-do list: Phase 1 items are built in
+  order, one pull request each.
+- `design/mockups/`: the approved boards, exported from the design canvas. A new screen needs a
+  board approved first; a session without the canvas drafts the board as a `.dc.html` in a pull
+  request for Mortey to approve, and the main account adds it to the canvas.
+- `docs/adr/` and `docs/planning/00-decisions.md`: the decisions.
+
+The working loop for each plan item: build it on a branch, commit, push, open the pull request
+(problem, change, proof, risk), wait for CI and for Mortey's approval in chat, squash-merge,
+update `main`, then tick the item and offer the next one.
+
+**Ticking an item.** Tick its box in `docs/planning/master-plan.md` in the pull request that
+finishes it. A session that can reach the Claude Doc ticks it there too; one that cannot says so
+in the pull request, and the main account ticks the doc after the merge, so both copies agree.
+The doc stays the master for the plan's wording: rewording is done in the doc and exported here
+again, never edited only in this copy. For the main account, the doc is `DNiNxasKLhQYdB6jMJ5fuN`,
+its plan tab is node `e229a1f4-51c2`, and the Phase 1 checklist is list `mar1qxf07ng.68587`.

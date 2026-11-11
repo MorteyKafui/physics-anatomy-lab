@@ -11,3 +11,7 @@ validation/fixtures/
 
 # The Anatomy kit, vendored unchanged for the 3D bench spike (ADR 0036)
 apps/admin/src/spikes/anatomy-kit/
+
+# Exported from the master plan Claude Doc; re-export rather than reformat.
+docs/planning/master-plan.md
+docs/planning/master-plan-gap-fixes.md
