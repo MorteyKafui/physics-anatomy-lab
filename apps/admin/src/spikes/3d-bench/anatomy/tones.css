@@ -1,0 +1,24 @@
+/*
+ * The kit's tones mapped onto the apparatus figure tokens in packages/ui, so the turning figure
+ * is drawn in the lab's own colours (AGENTS.md rule 3). The bob is the one lit part.
+ */
+.pa-turn.iso {
+  --anatomy-page: var(--pa-figure-floor);
+  --anatomy-card: var(--pa-figure-floor);
+  --anatomy-paper: var(--pa-figure-base-side-dark);
+  --anatomy-face: var(--pa-figure-base-side);
+  --anatomy-top: var(--pa-figure-base-top);
+  --anatomy-shade-0: var(--pa-figure-floor);
+  --anatomy-shade-1: var(--pa-figure-base-side-dark);
+  --anatomy-shade-2: var(--pa-figure-base-side);
+  --anatomy-shade-3: var(--pa-figure-clamp);
+  --anatomy-lit-top: var(--pa-figure-bob-light);
+  --anatomy-lit-shade: var(--pa-accent);
+  --anatomy-hi: var(--pa-figure-rod-light);
+  --anatomy-mid: var(--pa-figure-rod);
+  --anatomy-lo: var(--pa-figure-clamp-edge);
+  --anatomy-faint: var(--pa-figure-floor-edge);
+  --anatomy-lit: var(--pa-figure-bob-light);
+  --anatomy-halo: var(--pa-figure-ink);
+  --anatomy-dot: var(--pa-figure-rod-light);
+}

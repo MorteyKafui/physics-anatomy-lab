@@ -12,6 +12,12 @@
       "runtimeExecutable": "bun",
       "runtimeArgs": ["run", "--cwd", "apps/admin", "dev"],
       "port": 3001
+    },
+    {
+      "name": "admin-build",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "--cwd", "apps/admin", "start"],
+      "port": 3001
     }
   ]
 }

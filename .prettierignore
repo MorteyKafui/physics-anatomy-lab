@@ -8,3 +8,6 @@ coverage/
 design/mockups/
 # Written by validation/scripts/make_fixtures.py; regenerate rather than reformat.
 validation/fixtures/
+
+# The Anatomy kit, vendored unchanged for the 3D bench spike (ADR 0036)
+apps/admin/src/spikes/anatomy-kit/
