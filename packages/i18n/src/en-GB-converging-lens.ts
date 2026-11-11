@@ -85,9 +85,30 @@ export const enGBConvergingLens = {
     "I read the rule with my eye directly above the mark, to avoid parallax.",
   "experiments.converging-lens.tips.5":
     "I cleaned the lens with a soft cloth to get a sharp image.",
+  "experiments.converging-lens.tabulate.title": "Tabulate your readings",
+  "experiments.converging-lens.tabulate.why":
+    "Record u and v for each object distance as you read them on the rule, and work out 1/u and 1/v in cm⁻¹.",
+  "experiments.converging-lens.plot.title": "Plot 1/v against 1/u",
+  "experiments.converging-lens.plot.why":
+    "Start both axes from zero. Draw the best straight line through your points and carry it on until it meets both axes: f is read from where it meets them.",
+  "experiments.converging-lens.analyse.title": "Find f from the two intercepts",
+  "experiments.converging-lens.analyse.why":
+    "Read m₁, where your line meets the 1/v axis, and m₂, where it meets the 1/u axis. Both are 1/f, so f = 2 ⁄ (m₁ + m₂), the reciprocal of their mean.",
+  "experiments.converging-lens.analyse.m1Lead": "m₁, where your line meets the 1/v axis =",
+  "experiments.converging-lens.analyse.m2Lead": "m₂, where your line meets the 1/u axis =",
+  "experiments.converging-lens.analyse.fLead": "f = 2 ⁄ (m₁ + m₂) = 2 ⁄ ({m1} + {m2}) =",
+  "experiments.converging-lens.analyse.needLine":
+    "Draw your line on the graph first: m₁ and m₂ are read where it meets the axes.",
+  "experiments.converging-lens.analyse.otherGraph":
+    "Your graph is {y} against {x}. The question asks for 1/v against 1/u: only that line meets both axes at 1/f. Go back to Plot to change the axes.",
+  "experiments.converging-lens.conclude.text":
+    "The focal length of the lens is {f}. As the object moved away from the lens, the sharp image moved closer to it.",
   "experiments.converging-lens.next":
-    "Tabulating, plotting and the analysis come with the next part of this lab. Your readings are kept.",
-  "experiments.converging-lens.inDevelopment": "Being built: the table and graph come next",
+    "The report, the print sheets and the exam for the lens come with the next part of this lab. Your work is kept.",
+  "experiments.converging-lens.inDevelopment": "Being built: the report comes next",
+  "lab.analyse.name.m1": "m₁",
+  "lab.analyse.name.m2": "m₂",
+  "lab.analyse.name.f": "f",
   "findings.lens.readFromEdge.title": "Readings taken from the edge of a holder",
   "findings.lens.readFromEdge.detail":
     "{count} of your distances were read from a holder's edge, which puts each about {cm} cm out. Read u and v from the centre mark of each holder.",
@@ -113,4 +134,8 @@ export const enGBConvergingLens = {
     "You read the rule about {angle}° off square-on, which shifts each reading by about {mm} mm. Read it with your eye directly above the mark.",
   "findings.lens.scaleAtAngle.demonstrate":
     "Bend down until your eye is level with the holder's mark and directly over the rule, then read it.",
+  "findings.lens.wrongGraph.title": "Plot 1/v against 1/u",
+  "findings.lens.wrongGraph.detail":
+    "Your graph is {y} against {x}. v against u is a curve. 1/v against 1/u is a straight line of slope −1 that meets both axes at 1/f, which is how the question finds f.",
+  "findings.lens.wrongGraph.demonstrate": "Choose u⁻¹ for the x axis and v⁻¹ for the y axis.",
 } as const;

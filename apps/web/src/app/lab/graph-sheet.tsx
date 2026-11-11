@@ -132,6 +132,17 @@ export function startingSheet(
       };
 }
 
+/** A line carried on to meet both axes, from where it crosses x = 0 to where it crosses y = 0. */
+export function lineAcrossAxes(line: DrawnLine): DrawnLine | undefined {
+  const { from, to } = line;
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  if (dx === 0 || dy === 0) return undefined;
+  const y0 = from.y - (from.x * dy) / dx;
+  const x0 = from.x - (from.y * dx) / dy;
+  return { from: { x: 0, y: y0 }, to: { x: x0, y: 0 } };
+}
+
 export function graphView(
   state: GraphState,
   data: readonly PlottedPoint[],
@@ -139,11 +150,21 @@ export function graphView(
   assist: boolean,
   /**
    * The graph is read where its line meets an axis (Ohm's law: E where I = 0), so even the worked
-   * sheet at Auto starts both axes from zero, as the question asks.
+   * sheet at Auto starts both axes from zero, as the question asks. "both-axes": it is read where
+   * the line meets each axis (the lens's two intercepts), so the worked line runs from one axis
+   * to the other and the worked sheet reaches both.
    */
-  fromOrigin = false,
+  fromOrigin: boolean | "both-axes" = false,
 ): GraphView {
-  const sheet = state.sheet ?? startingSheet(data, columns, assist && !fromOrigin);
+  const fitted = referenceLine(data)?.line;
+  const across = fromOrigin === "both-axes" && fitted ? lineAcrossAxes(fitted) : undefined;
+  const sheet =
+    state.sheet ??
+    startingSheet(
+      across && assist ? [...data, across.from, across.to] : data,
+      columns,
+      assist && !fromOrigin,
+    );
   if (!assist)
     return {
       sheet,
@@ -153,11 +174,14 @@ export function graphView(
       drawn: { sheet: false, plotted: false, line: false, triangle: false },
     };
   const plotted = state.plotted.length ? state.plotted : [...data];
-  const fitted = referenceLine(data)?.line;
   // Read where it meets the V axis: the worked line is carried on to the axis, as on paper.
-  const line = state.line ?? (fitted && fromOrigin ? lineToXAxis(fitted) : fitted);
+  const line = state.line ?? across ?? (fitted && fromOrigin ? lineToXAxis(fitted) : fitted);
+  // Read at both axes, the graph's slope is not asked for, so no triangle is drawn for it.
   const triangle =
-    state.triangle ?? (line && data.length >= 2 ? suggestTriangle(sheet, line, data) : undefined);
+    state.triangle ??
+    (line && data.length >= 2 && fromOrigin !== "both-axes"
+      ? suggestTriangle(sheet, line, data)
+      : undefined);
   return {
     sheet,
     plotted,

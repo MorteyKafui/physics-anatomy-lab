@@ -189,59 +189,70 @@ export interface OhmsLawAnalysisContext {
   expected: Partial<Record<OhmsLawAnswer, Quantity>>;
 }
 
+/**
+ * Each typed answer, checked for value, unit and significant figures, as for the pendulum. Shared
+ * by the experiments whose analysis is a few typed answers (Ohm's law, the converging lens).
+ */
+export function typedAnswerFindings<Id extends string>(
+  ids: readonly Id[],
+  answers: Partial<Record<Id, TypedAnswer>>,
+  expected: Partial<Record<Id, Quantity>>,
+): Finding[] {
+  return ids.flatMap((id): Finding[] => {
+    const typed = answers[id];
+    const want = expected[id];
+    if (!typed || !want || (typed.value.trim() === "" && typed.unit.trim() === "")) return [];
+    const c = checkAnswer(typed, want);
+    const base = { skill: "analysis" as const, column: id, params: { name: id } };
+    const out: Finding[] = [];
+    if (c.value === "unreadable")
+      out.push({
+        ...base,
+        rule: "analysis-unreadable",
+        severity: "error",
+        key: "analysis.unreadable",
+        params: { ...base.params, typed: typed.value },
+      });
+    else if (c.value === "wrong")
+      out.push({
+        ...base,
+        rule: "analysis-value",
+        severity: "error",
+        key: "analysis.valueWrong",
+        params: { ...base.params, typed: typed.value },
+      });
+    if (c.unit === "missing")
+      out.push({
+        ...base,
+        rule: "analysis-unit",
+        severity: "error",
+        key: "analysis.unitMissing",
+      });
+    else if (c.unit === "wrong" || c.unit === "unreadable")
+      out.push({
+        ...base,
+        rule: "analysis-unit",
+        severity: "error",
+        key: "analysis.unitWrong",
+        params: { ...base.params, typed: typed.unit },
+      });
+    if (c.sigFigs === "too-few" || c.sigFigs === "too-many")
+      out.push({
+        ...base,
+        rule: "analysis-sig-figs",
+        severity: "warning",
+        key: "analysis.sigFigs",
+        params: { ...base.params, written: c.written ?? 0 },
+      });
+    return out;
+  });
+}
+
 /** Each typed answer, checked for value, unit and significant figures, as for the pendulum. */
 export const ohmsLawAnswerRules: Rule<OhmsLawAnalysisContext> = {
   id: "analysis-answers",
   skill: "analysis",
-  check: ({ answers, expected }) =>
-    OHMS_LAW_ANSWERS.flatMap((id): Finding[] => {
-      const typed = answers[id];
-      const want = expected[id];
-      if (!typed || !want || (typed.value.trim() === "" && typed.unit.trim() === "")) return [];
-      const c = checkAnswer(typed, want);
-      const base = { skill: "analysis" as const, column: id, params: { name: id } };
-      const out: Finding[] = [];
-      if (c.value === "unreadable")
-        out.push({
-          ...base,
-          rule: "analysis-unreadable",
-          severity: "error",
-          key: "analysis.unreadable",
-          params: { ...base.params, typed: typed.value },
-        });
-      else if (c.value === "wrong")
-        out.push({
-          ...base,
-          rule: "analysis-value",
-          severity: "error",
-          key: "analysis.valueWrong",
-          params: { ...base.params, typed: typed.value },
-        });
-      if (c.unit === "missing")
-        out.push({
-          ...base,
-          rule: "analysis-unit",
-          severity: "error",
-          key: "analysis.unitMissing",
-        });
-      else if (c.unit === "wrong" || c.unit === "unreadable")
-        out.push({
-          ...base,
-          rule: "analysis-unit",
-          severity: "error",
-          key: "analysis.unitWrong",
-          params: { ...base.params, typed: typed.unit },
-        });
-      if (c.sigFigs === "too-few" || c.sigFigs === "too-many")
-        out.push({
-          ...base,
-          rule: "analysis-sig-figs",
-          severity: "warning",
-          key: "analysis.sigFigs",
-          params: { ...base.params, written: c.written ?? 0 },
-        });
-      return out;
-    }),
+  check: ({ answers, expected }) => typedAnswerFindings(OHMS_LAW_ANSWERS, answers, expected),
 };
 
 export const OHMS_LAW_ANALYSIS_RULES: Rule<OhmsLawAnalysisContext>[] = [ohmsLawAnswerRules];

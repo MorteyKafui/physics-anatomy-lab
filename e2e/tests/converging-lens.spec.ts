@@ -34,9 +34,11 @@ async function toBuild(page: Page) {
 /** Lower the gauze onto the lens's axis: it starts 6 mm above. */
 async function centreGauze(page: Page) {
   await expect(page.getByText("6 mm above the axis")).toBeVisible();
-  for (let i = 0; i < 6; i += 1)
+  // Each press is waited for, as a student sees the gauze move before pressing again.
+  for (let mm = 5; mm >= 0; mm -= 1) {
     await page.getByRole("button", { name: "Lower the gauze" }).click();
-  await expect(page.getByText("On the axis")).toBeVisible();
+    await expect(page.getByText(mm ? `${mm} mm above the axis` : "On the axis")).toBeVisible();
+  }
 }
 
 /** Move the screen out from the lens until the image looks sharp. */
@@ -75,7 +77,126 @@ test("the student sets up the bench, the check passes, and the screen finds the 
   await expect(page.locator("aside ol li").first()).toContainText("u = 20.0 cm");
   await page.getByRole("button", { name: "Finish measuring" }).click();
   await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
-  await expect(page.getByText(/come with the next part of this lab/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tabulate your readings" })).toBeVisible();
+});
+
+/**
+ * Finish a step. The apparatus differs a little in every attempt, so on some the coach flags
+ * something on the way out; the student reads it and finishes again to carry on.
+ */
+async function finish(page: Page, button: string, next: string) {
+  const step = page.getByText(next);
+  await page.getByRole("button", { name: button }).click();
+  await step
+    .waitFor({ timeout: 3000 })
+    .catch(() => page.getByRole("button", { name: button }).click());
+  await expect(step).toBeVisible();
+}
+
+/**
+ * Where to look for the sharp image at each u, cm from the lens: around every lens the seed can
+ * build (f = 15.0 cm ± 2%), sharpest short of the thin-lens v. Each sharp window is at least
+ * 0.5 cm wide, so a 0.4 cm scan cannot miss it.
+ */
+const LOOK: Record<number, [number, number]> = {
+  20: [52.5, 62.5],
+  25: [34, 39],
+  30: [27.5, 31.5],
+  35: [24.2, 27.4],
+  40: [22.2, 25],
+};
+
+test("at Auto the whole lab runs: five readings, the table, 1/v against 1/u, and f from the intercepts", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(180_000);
+  await toBuild(page);
+  await page.getByLabel("Help level").selectOption("auto");
+  await centreGauze(page);
+  await page.getByRole("button", { name: "Finish building" }).click();
+  await page.getByRole("button", { name: "Continue to Measure" }).click();
+
+  // The ray box stays at 10.0 cm; the lens is set for each u, then the screen finds the image.
+  for (const u of [20, 25, 30, 35, 40]) {
+    await slide(page, "Lens position", 10 + u);
+    const [from, to] = LOOK[u]!;
+    let found = false;
+    for (let v = from; v <= to + 1e-9 && !found; v += 0.4) {
+      await slide(page, "Screen position", Number((10 + u + v).toFixed(1)));
+      found = (await chip(page).textContent()) === "Sharp";
+    }
+    expect(found, `a sharp image at u = ${u} cm`).toBe(true);
+    await page.getByRole("button", { name: "Take this reading" }).click();
+    await expect(page.locator("aside ol li").last()).toContainText(`u = ${u}.0 cm`);
+  }
+  await expect(page.locator("aside ol li")).toHaveCount(5);
+  await finish(page, "Finish measuring", "Step 6 of 10 · Tabulate");
+
+  await page.getByRole("button", { name: "Standard" }).click();
+  await page.getByRole("button", { name: "Fill in my readings" }).click();
+  await finish(page, "Finish tabulating", "Step 7 of 10 · Plot");
+
+  await expect(page.getByText(/A graph of v⁻¹ against u⁻¹/)).toBeVisible();
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
+
+  // Both intercepts are 1/f, and f from them is the lens's own, a little short (brief, decision 7).
+  const read = async (id: string) =>
+    Number((await page.locator(`[data-answer="${id}"]`).textContent())!.split(" ")[0]);
+  const [m1, m2, f] = [await read("m1"), await read("m2"), await read("f")];
+  expect(m1).toBeGreaterThan(0.064);
+  expect(m1).toBeLessThan(0.07);
+  expect(m2).toBeGreaterThan(0.064);
+  expect(m2).toBeLessThan(0.07);
+  expect(f).toBeGreaterThan(14.4);
+  expect(f).toBeLessThan(15.4);
+  await expect(page.locator('[data-answer="f"]')).toContainText("cm");
+  await finish(page, "Finish analysing", "Step 9 of 10 · Conclude");
+
+  await expect(page.getByText(`The focal length of the lens is ${f.toFixed(1)} cm.`)).toBeVisible();
+  await page.getByRole("button", { name: "Continue to Report" }).click();
+  await expect(page.getByText("Step 10 of 10 · Report")).toBeVisible();
+  await expect(page.getByText(/The report, the print sheets and the exam/)).toBeVisible();
+});
+
+test("plotting v against u is caught, and the analysis asks for 1/v against 1/u", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(120_000);
+  await toBuild(page);
+  await page.getByLabel("Help level").selectOption("auto");
+  await centreGauze(page);
+  await page.getByRole("button", { name: "Finish building" }).click();
+  await page.getByRole("button", { name: "Continue to Measure" }).click();
+  for (const u of [20, 30]) {
+    await slide(page, "Lens position", 10 + u);
+    const [from, to] = LOOK[u]!;
+    for (let v = from; v <= to + 1e-9; v += 0.4) {
+      await slide(page, "Screen position", Number((10 + u + v).toFixed(1)));
+      if ((await chip(page).textContent()) === "Sharp") break;
+    }
+    await page.getByRole("button", { name: "Take this reading" }).click();
+  }
+  await finish(page, "Finish measuring", "Step 6 of 10 · Tabulate");
+  await page.getByRole("button", { name: "Standard" }).click();
+  await page.getByRole("button", { name: "Fill in my readings" }).click();
+  await finish(page, "Finish tabulating", "Step 7 of 10 · Plot");
+
+  const column = (axis: string) =>
+    page
+      .getByRole("region", { name: "Graph sheet" })
+      .getByRole("group", { name: axis })
+      .getByLabel("Plot");
+  await column("Across (x)").selectOption({ label: "u/cm" });
+  await column("Up (y)").selectOption({ label: "v/cm" });
+  await expect(
+    page.getByRole("status").filter({ hasText: "Plot 1/v against 1/u" }).first(),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Finish plotting" }).click();
+  await page.getByRole("button", { name: "Finish plotting" }).click();
+  await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
+  await expect(page.getByText(/Your graph is v against u/)).toBeVisible();
 });
 
 test("with the object inside the focal length there is no image, and the coach says why", async ({

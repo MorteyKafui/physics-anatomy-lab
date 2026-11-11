@@ -134,6 +134,7 @@ export {
   ohmsLawExpected,
   ohmsLawReadingsIntoTable,
   plotsIAgainstV,
+  typedAnswerFindings,
   readingData,
   rFromSlope,
   vInterceptOf,
@@ -189,3 +190,27 @@ export type {
   LensBenchState,
   LensPart,
 } from "./converging-lens-bench";
+export {
+  focalLengthFrom,
+  LENS_ANALYSIS_RULES,
+  LENS_ANSWERS,
+  LENS_GRAPH_RULES,
+  LENS_INSTRUMENTS,
+  LENS_PLOT,
+  LENS_ROWS,
+  LENS_STANDARD_TABLE,
+  LENS_TEMPLATES,
+  lensAnswerRules,
+  lensExpected,
+  lensReadingsIntoTable,
+  plotsInverseVAgainstInverseU,
+  wrongLensGraph,
+  xInterceptOf,
+  yInterceptOf,
+} from "./converging-lens-table";
+export type {
+  LensAnalysisContext,
+  LensAnswer,
+  LensGraphContext,
+  LensTemplate,
+} from "./converging-lens-table";
