@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 from pa_validation.circuits import balance_length, ohms_law_readings
 from pa_validation.lens import image
 from pa_validation.mixtures import final_temperature, solid_specific_heat
-from scripts.make_fixtures import build_circuits, build_lens, build_mixtures
+from scripts.make_fixtures import build_circuits, build_lens, build_lens_exact, build_mixtures
 
 FIXTURES = Path(__file__).resolve().parent.parent / "fixtures"
 DRIVER = {
@@ -82,6 +82,7 @@ def test_mixture_conserves_energy_and_recovers_c() -> None:
     [
         ("circuits.json", build_circuits),
         ("lens.json", build_lens),
+        ("lens-exact.json", build_lens_exact),
         ("mixtures.json", build_mixtures),
     ],
 )

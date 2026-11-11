@@ -1,0 +1,368 @@
+{
+  "model": "biconvex spherical lens, 3-D vector Snell's law; best focus by least RMS spread",
+  "units": {
+    "distance": "cm"
+  },
+  "lens": {
+    "focalLength": 15.0,
+    "index": 1.52,
+    "aperture": 4.0,
+    "edge": 0.1,
+    "radius": 15.538434437541117,
+    "thickness": 0.35850131482598113
+  },
+  "rays": [
+    {
+      "objectDistance": 20.0,
+      "height": 0.25,
+      "crossing": 60.53309207657283
+    },
+    {
+      "objectDistance": 20.0,
+      "height": 0.5,
+      "crossing": 60.28757807074195
+    },
+    {
+      "objectDistance": 20.0,
+      "height": 1.0,
+      "crossing": 59.32192400985066
+    },
+    {
+      "objectDistance": 20.0,
+      "height": 1.5,
+      "crossing": 57.76843955672395
+    },
+    {
+      "objectDistance": 20.0,
+      "height": 1.9,
+      "crossing": 56.15281098673572
+    },
+    {
+      "objectDistance": 25.0,
+      "height": 0.25,
+      "crossing": 37.66988233808423
+    },
+    {
+      "objectDistance": 25.0,
+      "height": 0.5,
+      "crossing": 37.583822286583555
+    },
+    {
+      "objectDistance": 25.0,
+      "height": 1.0,
+      "crossing": 37.24177411076562
+    },
+    {
+      "objectDistance": 25.0,
+      "height": 1.5,
+      "crossing": 36.67931611012039
+    },
+    {
+      "objectDistance": 25.0,
+      "height": 1.9,
+      "crossing": 36.07781938322576
+    },
+    {
+      "objectDistance": 30.0,
+      "height": 0.25,
+      "crossing": 30.10401741124447
+    },
+    {
+      "objectDistance": 30.0,
+      "height": 0.5,
+      "crossing": 30.050233880135714
+    },
+    {
+      "objectDistance": 30.0,
+      "height": 1.0,
+      "crossing": 29.835693422826104
+    },
+    {
+      "objectDistance": 30.0,
+      "height": 1.5,
+      "crossing": 29.480188057339447
+    },
+    {
+      "objectDistance": 30.0,
+      "height": 1.9,
+      "crossing": 29.096220120392378
+    },
+    {
+      "objectDistance": 35.0,
+      "height": 0.25,
+      "crossing": 26.331353245579777
+    },
+    {
+      "objectDistance": 35.0,
+      "height": 0.5,
+      "crossing": 26.28985011078424
+    },
+    {
+      "objectDistance": 35.0,
+      "height": 1.0,
+      "crossing": 26.12398378508045
+    },
+    {
+      "objectDistance": 35.0,
+      "height": 1.5,
+      "crossing": 25.848032007183757
+    },
+    {
+      "objectDistance": 35.0,
+      "height": 1.9,
+      "crossing": 25.548433880138877
+    },
+    {
+      "objectDistance": 40.0,
+      "height": 0.25,
+      "crossing": 24.071030450729975
+    },
+    {
+      "objectDistance": 40.0,
+      "height": 0.5,
+      "crossing": 24.03566910608168
+    },
+    {
+      "objectDistance": 40.0,
+      "height": 1.0,
+      "crossing": 23.89418318181296
+    },
+    {
+      "objectDistance": 40.0,
+      "height": 1.5,
+      "crossing": 23.658206696197123
+    },
+    {
+      "objectDistance": 40.0,
+      "height": 1.9,
+      "crossing": 23.401177696684485
+    },
+    {
+      "objectDistance": 60.0,
+      "height": 0.25,
+      "crossing": 20.05873177428469
+    },
+    {
+      "objectDistance": 60.0,
+      "height": 0.5,
+      "crossing": 20.032030972782334
+    },
+    {
+      "objectDistance": 60.0,
+      "height": 1.0,
+      "crossing": 19.924962473613277
+    },
+    {
+      "objectDistance": 60.0,
+      "height": 1.5,
+      "crossing": 19.74555012018168
+    },
+    {
+      "objectDistance": 60.0,
+      "height": 1.9,
+      "crossing": 19.54893091735786
+    }
+  ],
+  "images": [
+    {
+      "objectDistance": 20.0,
+      "paraxial": 60.61530165420559,
+      "bestFocus": 57.250958411507895
+    },
+    {
+      "objectDistance": 25.0,
+      "paraxial": 37.6986182320259,
+      "bestFocus": 36.488277460628225
+    },
+    {
+      "objectDistance": 30.0,
+      "paraxial": 30.121958587243288,
+      "bestFocus": 29.35864496903584
+    },
+    {
+      "objectDistance": 35.0,
+      "paraxial": 26.34519095181001,
+      "bestFocus": 25.753383055331707
+    },
+    {
+      "objectDistance": 40.0,
+      "paraxial": 24.082816727890513,
+      "bestFocus": 23.577062247358903
+    },
+    {
+      "objectDistance": 60.0,
+      "paraxial": 20.067626206504798,
+      "bestFocus": 19.683465706412786
+    }
+  ],
+  "blur": [
+    {
+      "objectDistance": 10.0,
+      "focalLength": 15.0,
+      "screenDistance": 20.0,
+      "aperture": 4.0,
+      "diameter": 6.666666666666668
+    },
+    {
+      "objectDistance": 10.0,
+      "focalLength": 15.0,
+      "screenDistance": 24.0,
+      "aperture": 4.0,
+      "diameter": 7.2
+    },
+    {
+      "objectDistance": 10.0,
+      "focalLength": 15.0,
+      "screenDistance": 30.0,
+      "aperture": 4.0,
+      "diameter": 8.0
+    },
+    {
+      "objectDistance": 10.0,
+      "focalLength": 15.0,
+      "screenDistance": 45.0,
+      "aperture": 4.0,
+      "diameter": 10.0
+    },
+    {
+      "objectDistance": 10.0,
+      "focalLength": 15.0,
+      "screenDistance": 60.0,
+      "aperture": 4.0,
+      "diameter": 12.0
+    },
+    {
+      "objectDistance": 10.0,
+      "focalLength": 15.0,
+      "screenDistance": 80.0,
+      "aperture": 4.0,
+      "diameter": 14.66666666666667
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 15.0,
+      "screenDistance": 20.0,
+      "aperture": 4.0,
+      "diameter": 2.666666666666667
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 15.0,
+      "screenDistance": 24.0,
+      "aperture": 4.0,
+      "diameter": 2.4000000000000004
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 15.0,
+      "screenDistance": 30.0,
+      "aperture": 4.0,
+      "diameter": 2.0
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 15.0,
+      "screenDistance": 45.0,
+      "aperture": 4.0,
+      "diameter": 1.0
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 15.0,
+      "screenDistance": 60.0,
+      "aperture": 4.0,
+      "diameter": 0.0
+    },
+    {
+      "objectDistance": 20.0,
+      "focalLength": 15.0,
+      "screenDistance": 80.0,
+      "aperture": 4.0,
+      "diameter": 1.3333333333333315
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 15.0,
+      "screenDistance": 20.0,
+      "aperture": 4.0,
+      "diameter": 1.3333333333333333
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 15.0,
+      "screenDistance": 24.0,
+      "aperture": 4.0,
+      "diameter": 0.8
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 15.0,
+      "screenDistance": 30.0,
+      "aperture": 4.0,
+      "diameter": 0.0
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 15.0,
+      "screenDistance": 45.0,
+      "aperture": 4.0,
+      "diameter": 2.0
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 15.0,
+      "screenDistance": 60.0,
+      "aperture": 4.0,
+      "diameter": 4.0
+    },
+    {
+      "objectDistance": 30.0,
+      "focalLength": 15.0,
+      "screenDistance": 80.0,
+      "aperture": 4.0,
+      "diameter": 6.666666666666667
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 15.0,
+      "screenDistance": 20.0,
+      "aperture": 4.0,
+      "diameter": 0.6666666666666669
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 15.0,
+      "screenDistance": 24.0,
+      "aperture": 4.0,
+      "diameter": 0.0
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 15.0,
+      "screenDistance": 30.0,
+      "aperture": 4.0,
+      "diameter": 1.0
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 15.0,
+      "screenDistance": 45.0,
+      "aperture": 4.0,
+      "diameter": 3.5
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 15.0,
+      "screenDistance": 60.0,
+      "aperture": 4.0,
+      "diameter": 6.0
+    },
+    {
+      "objectDistance": 40.0,
+      "focalLength": 15.0,
+      "screenDistance": 80.0,
+      "aperture": 4.0,
+      "diameter": 9.333333333333332
+    }
+  ]
+}
