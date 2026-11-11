@@ -3,7 +3,7 @@ import { t } from "@pa/i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { ExamScreen } from "../../exam/screen";
+import { PendulumExamScreen } from "../../exam/pendulum";
 
 const BUILT = [simplePendulum.id] as const;
 
@@ -20,5 +20,5 @@ export const metadata: Metadata = {
 export default async function ExamPage({ params }: { params: Promise<{ experiment: string }> }) {
   const { experiment } = await params;
   if (!(BUILT as readonly string[]).includes(experiment)) notFound();
-  return <ExamScreen />;
+  return <PendulumExamScreen />;
 }

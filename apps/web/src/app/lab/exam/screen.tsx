@@ -1,17 +1,14 @@
 "use client";
 
-import { eventsBefore, examProjection, replay, type LabEvent } from "@pa/engine";
+import { eventsBefore, examProjection, replay, type Attempt, type LabEvent } from "@pa/engine";
 import {
   EXAM_MINUTES,
   EXAM_PARTS,
   examClock,
-  followUps,
-  markScript,
-  simplePendulum,
   type Mark,
+  type MarkedSection,
 } from "@pa/experiments";
 import { t, type MessageKey } from "@pa/i18n";
-import { DEFAULT_ENVIRONMENT } from "@pa/instruments";
 import { cn, Logo } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import { CheckIcon, MinusIcon, XIcon } from "@pa/ui/icons";
@@ -19,21 +16,32 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { reportContent } from "../report/content";
 import { save } from "../snapshot-export";
 import { startExam, useAttempt } from "../use-attempt";
 import { mmss } from "./bar";
-import { examFacts } from "./facts";
 
-const E = simplePendulum;
-const G = DEFAULT_ENVIRONMENT.g;
-
-const itemText = (id: string) => t(`exam.item.${id}` as MessageKey, { swings: E.swings });
 const lostText = (m: Mark) =>
   m.lost ? t(`exam.lost.${m.lost.key}` as MessageKey, m.lost.params) : undefined;
 
+/** What an exam screen needs to know of its experiment. */
+export interface ExamExperiment {
+  id: string;
+  title: string;
+  /** The question: its heading line, lead and numbered parts, in the lab's words. */
+  question: { meta: string; lead: string; parts: readonly string[] };
+  /** Mark the handed-in run. Pure. */
+  mark: (
+    attempt: Attempt,
+    events: readonly LabEvent[],
+  ) => { sections: MarkedSection[]; got: number; of: number };
+  /** What a marked item is called. */
+  itemText: (id: string) => string;
+  /** The likely follow-up questions (part (b)), with their answers. */
+  followUps: readonly { id: string; q: string; a: string }[];
+}
+
 /** The events up to the hand-in: the script is marked as it was handed in, and never changes. */
-function asHandedIn(events: readonly LabEvent[]): LabEvent[] {
+export function asHandedIn(events: readonly LabEvent[]): LabEvent[] {
   const handIn = events.find((e) => e.kind === "exam.hand-in");
   return handIn ? [...eventsBefore(events, handIn), handIn] : [...events];
 }
@@ -42,8 +50,9 @@ function asHandedIn(events: readonly LabEvent[]): LabEvent[] {
  * Exam mode (approved board Exam.dc.html): the question and the guide's split of the hour before
  * the clock starts, and the marked script with likely follow-up questions after the hand-in.
  */
-export function ExamScreen() {
+export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
   const handle = useAttempt(E.id);
+  const { itemText } = E;
   const router = useRouter();
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<string>();
@@ -62,9 +71,8 @@ export function ExamScreen() {
   );
   const marked = useMemo(() => {
     if (!attempt || !events || attempt.mode !== "exam" || !exam?.handedInAt) return undefined;
-    const report = reportContent(attempt, asHandedIn(events), G);
-    return markScript(examFacts(report));
-  }, [attempt, events, exam]);
+    return E.mark(attempt, asHandedIn(events));
+  }, [attempt, events, exam, E]);
 
   if (!handle || !exam) {
     return (
@@ -79,11 +87,7 @@ export function ExamScreen() {
 
   const running =
     handle.attempt.mode === "exam" && exam.startedAt !== undefined && !exam.handedInAt;
-  const questions = followUps(G).map((q) => ({
-    id: q.id,
-    q: t(`exam.q.${q.id}` as MessageKey, q.params),
-    a: t(`exam.a.${q.id}` as MessageKey, q.params),
-  }));
+  const questions = E.followUps;
   const used =
     exam.startedAt !== undefined && exam.handedInAt !== undefined
       ? Math.min(EXAM_MINUTES, Math.ceil((exam.handedInAt - exam.startedAt) / 60_000))
@@ -102,7 +106,7 @@ export function ExamScreen() {
     ]);
     const pdf = await scriptPdf(
       {
-        title: `${t("experiments.simple-pendulum.title")}: ${t("exam.script").toLowerCase()}`,
+        title: `${E.title}: ${t("exam.script").toLowerCase()}`,
         date: new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(
           handle.attempt.createdAt,
         ),
@@ -112,7 +116,7 @@ export function ExamScreen() {
         sections: marked.sections,
         itemText,
         lostText,
-        followUps: questions,
+        followUps: [...questions],
       },
       await loadFonts(),
       "a4",
@@ -136,7 +140,7 @@ export function ExamScreen() {
           className="flex items-center gap-2 text-muted-foreground"
         >
           <Link href={`/lab/${E.id}`} className="hover:text-foreground">
-            {t("experiments.simple-pendulum.title")}
+            {E.title}
           </Link>
           <span aria-hidden>›</span>
           <h1 className="text-foreground" aria-current="page">
@@ -276,18 +280,14 @@ export function ExamScreen() {
       ) : (
         <div className="flex flex-wrap items-stretch gap-3.5">
           <section
-            aria-label={t("exam.question.meta", { minutes: EXAM_MINUTES })}
+            aria-label={E.question.meta}
             className="flex min-w-0 flex-[999_1_620px] flex-col gap-3.5 border border-border bg-[var(--pa-ink-900)] px-[22px] py-5"
           >
-            <span className="text-xs text-muted-foreground">
-              {t("exam.question.meta", { minutes: EXAM_MINUTES })}
-            </span>
-            <h2 className="font-display text-[30px] leading-tight font-bold">
-              {t("exam.question.lead")}
-            </h2>
+            <span className="text-xs text-muted-foreground">{E.question.meta}</span>
+            <h2 className="font-display text-[30px] leading-tight font-bold">{E.question.lead}</h2>
             <ol className="m-0 flex flex-col gap-2 pl-5 text-soft">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <li key={n}>{t(`exam.question.${n}` as MessageKey, { swings: E.swings })}</li>
+              {E.question.parts.map((p, i) => (
+                <li key={i}>{p}</li>
               ))}
             </ol>
             <div className="flex flex-wrap items-center gap-2.5 pt-1">
