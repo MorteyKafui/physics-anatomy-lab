@@ -6,9 +6,10 @@ import {
   replay,
   REPORT_FORMATS,
   reportProjection,
+  type Attempt,
+  type LabEvent,
   type ReportCommand,
 } from "@pa/engine";
-import { simplePendulum } from "@pa/experiments";
 import { t, type MessageKey } from "@pa/i18n";
 import { cn, Logo } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
@@ -19,14 +20,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { csvText, pngBytes, save, svgText, zipBytes } from "../snapshot-export";
 import { sheetSize, SnapshotSheet } from "../snapshot-figure";
 import { useAttempt } from "../use-attempt";
-import { PRECAUTIONS_NEEDED, reportContent, type ReportSection } from "./content";
+import {
+  PRECAUTIONS_NEEDED,
+  type ReportContent,
+  type ReportExperiment,
+  type ReportSection,
+} from "./content";
 import { reportDocx } from "./docx";
 import { BenchDrawing, GraphFigure } from "./drawings";
 import { makeReportPdf, reportImages } from "./make";
 import type { Paper } from "./pdf";
 import { tableXlsx } from "./xlsx";
 
-const E = simplePendulum;
 const KINDS = ["pdf", "docx", "figures", "data"] as const;
 type Kind = (typeof KINDS)[number];
 const INCLUDES = ["captions", "mark", "logo", "notes"] as const;
@@ -76,7 +81,14 @@ function SectionText({ section }: { section: ReportSection }) {
  * or university format. The student edits any section; the PDF, Word file, figures and data are
  * made on this device.
  */
-export function ReportScreen() {
+export function ReportScreen({
+  experiment: E,
+  build,
+}: {
+  experiment: ReportExperiment;
+  /** The report's content for one run. Pure. */
+  build: (attempt: Attempt, events: readonly LabEvent[]) => ReportContent;
+}) {
   const handle = useAttempt(E.id);
   const [editing, setEditing] = useState<string>();
   const [draft, setDraft] = useState("");
@@ -105,8 +117,8 @@ export function ReportScreen() {
   const events = handle?.events;
   const attempt = handle?.attempt;
   const content = useMemo(
-    () => (attempt && events ? reportContent(attempt, events) : undefined),
-    [attempt, events],
+    () => (attempt && events ? build(attempt, events) : undefined),
+    [attempt, events, build],
   );
 
   if (!handle || !content) {
@@ -297,7 +309,7 @@ export function ReportScreen() {
           className="flex items-center gap-2 text-muted-foreground"
         >
           <Link href={`/lab/${E.id}`} className="hover:text-foreground">
-            {t("experiments.simple-pendulum.title")}
+            {E.title}
           </Link>
           <span aria-hidden>›</span>
           <h1 className="text-foreground" aria-current="page">

@@ -1,9 +1,9 @@
 import { assembled, plotsTSquaredAgainstL, type ExamFacts } from "@pa/experiments";
 
-import type { ReportContent } from "../report/content";
+import type { PendulumReport } from "../report/content";
 
 /** What the rubric looks at, from a run's review and its report, as the script was handed in. */
-export function examFacts(report: ReportContent): ExamFacts {
+export function examFacts(report: PendulumReport): ExamFacts {
   const r = report.review;
   const precautions = report.sections.find((s) => s.id === "precautions")?.text ?? "";
   const written = (a: { value: string } | undefined) => (a?.value ?? "").trim() !== "";

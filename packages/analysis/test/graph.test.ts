@@ -6,6 +6,7 @@ import {
   axisEnd,
   DIVISIONS,
   GRAPH_RULES,
+  lineToXAxis,
   mmBetween,
   mmFromLine,
   ON_POINT_MM,
@@ -194,4 +195,42 @@ test("a point half a small square from its place is within the tolerance (found 
     plotted: [{ row: "a", x: 0.8, y: 1.992 }, halfSquare.plotted[1]!],
   };
   expect(fired(twoSteps)).toContain("graph-misplotted");
+});
+
+describe("lineToXAxis", () => {
+  // I = (3.0 - V) / 1.5: the Ohm's law line, meeting the V axis at E = 3.0 V.
+  const line = { from: { x: 1.6, y: (3 - 1.6) / 1.5 }, to: { x: 2.4, y: (3 - 2.4) / 1.5 } };
+
+  test("carries the end nearer the axis to y = 0, where the line meets it", () => {
+    const out = lineToXAxis(line);
+    expect(out.from).toEqual(line.from);
+    expect(out.to.y).toBe(0);
+    expect(out.to.x).toBeCloseTo(3, 12);
+  });
+
+  test("keeps the slope, whichever way the line was drawn", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -10, max: 10, noNaN: true }),
+        fc.double({ min: 0.1, max: 10, noNaN: true }),
+        fc.double({ min: -5, max: 5, noNaN: true }),
+        (slope, c, x) => {
+          fc.pre(Math.abs(slope) > 1e-3);
+          const a = { x, y: slope * x + c };
+          const b = { x: x + 1, y: slope * (x + 1) + c };
+          const out = lineToXAxis({ from: b, to: a });
+          const s = (out.to.y - out.from.y) / (out.to.x - out.from.x);
+          return (
+            Math.abs(s - slope) <= 1e-9 * Math.max(1, Math.abs(slope)) &&
+            Math.min(Math.abs(out.from.y), Math.abs(out.to.y)) === 0
+          );
+        },
+      ),
+    );
+  });
+
+  test("leaves a line parallel to the axis as it is", () => {
+    const flat = { from: { x: 0, y: 1 }, to: { x: 2, y: 1 } };
+    expect(lineToXAxis(flat)).toBe(flat);
+  });
 });

@@ -57,6 +57,7 @@ export {
   mmFromLine,
   ON_POINT_MM,
   onLineAt,
+  lineToXAxis,
   onPaper,
   readingDecimals,
   referenceLine,

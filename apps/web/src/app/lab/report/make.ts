@@ -2,7 +2,6 @@
 
 import { pngBytes, svgText } from "../snapshot-export";
 import type { ReportContent } from "./content";
-import { BENCH_SIZE, GRAPH_SIZE } from "./drawings";
 import type { ReportImages, ReportOptions } from "./pdf";
 
 /** Print resolution for the figures: 3 × CSS px, about 290 dpi at the size they print. */
@@ -13,9 +12,12 @@ export async function reportImages(
   bench: SVGSVGElement | undefined,
   graph: SVGSVGElement | undefined,
 ): Promise<ReportImages> {
-  const draw = async (el: SVGSVGElement | undefined, size: { width: number; height: number }) =>
-    el ? { png: await pngBytes(svgText(el), size.width, size.height, SCALE), ...size } : undefined;
-  return { bench: await draw(bench, BENCH_SIZE), graph: await draw(graph, GRAPH_SIZE) };
+  const draw = async (el: SVGSVGElement | undefined) => {
+    if (!el) return undefined;
+    const size = { width: el.width.baseVal.value, height: el.height.baseVal.value };
+    return { png: await pngBytes(svgText(el), size.width, size.height, SCALE), ...size };
+  };
+  return { bench: await draw(bench), graph: await draw(graph) };
 }
 
 /** The report as a PDF, from the content and the figures on the page. */

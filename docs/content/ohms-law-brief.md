@@ -105,6 +105,11 @@ the V axis at 2.999 V. That is E less the millivolt the voltmeter's own current 
    (Physics Bench's union-find check, kept in the harvest review).
 4. **Guided flow, table and graph.**
 5. **Report, print sheets and exam**, with the part (b) questions and the rubric, for review.
+   Built as three pull requests, so each is reviewed on its own:
+   1. the report, in the WASSCE and university formats (the circuit as Fig. 1, I against V as
+      Fig. 2, E and r worked in Calculation);
+   2. the print sheets;
+   3. exam mode, with the part (b) questions and the rubric drafted here for the physics reviewer.
 6. **Usability test** with students at the target level.
 
 ## For the physics reviewer to decide
