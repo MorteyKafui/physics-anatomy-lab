@@ -4,8 +4,9 @@ Step 1 of the experiment playbook (master plan, "Adding an experiment"). It sets
 experiment is, before any of the lab is built, for the physics reviewer to approve.
 
 - **Experiment id:** `converging-lens` (Phase 2, the third flagship).
-- **Status:** decisions 1 to 5 below approved by Mortey (physics reviewer) on 2026-11-11. Two
-  more, from what the exact model showed, are open (6 and 7).
+- **Status:** decisions 1 to 5 below approved by Mortey (physics reviewer) on 2026-11-11, and
+  decision 6 (keep the 4.0 cm lens) after the exact model showed its aberration. Decision 7 is
+  open.
 
 ## What the student does
 
@@ -155,8 +156,8 @@ of sharp ranges above is the thin-lens one.
 3. Five positions, 20 to 40 cm, where the question lists four.
 4. The blur model and its sharpness threshold c = 0.5 mm, until the UEW reference data comes.
 5. Adding the exact ray trace (spherical aberration) to the model, as the plan asks.
-6. Open: the lens's diameter. 4.0 cm (approved) puts f from the graph 1.1% low and the sharp
-   image up to 2.8 cm short of v; 3.0 cm makes those 0.6% and 1.5 cm. (When 4.0 cm was approved
-   the brief called the effect small; the exact model shows it is not, so this is asked again.)
+6. Decided: the lens stays 4.0 cm across, with what the exact model shows: f from the graph
+   1.1% low, and the sharp image up to 2.8 cm short of v. (Asked again once the model showed the
+   effect is not small, as the brief first said; kept.)
 7. Open: the lab centres the sharp range on the exact lens's sharpest image, so a student's
    readings carry the aberration a real lens gives.
