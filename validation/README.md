@@ -7,6 +7,9 @@ validation", levels 1 and 2).
 - `pa_validation/pendulum.py` uses SciPy's complete elliptic integral for the exact period.
 - `pa_validation/circuits.py` solves the Ohm's law and potentiometer circuits by modified
   nodal analysis with NumPy, galvanometer included, and finds balance points with SciPy.
+  It also solves the potentiometer, ammeter and voltmeter practical (`terminal_pd_readings`)
+  and 60 random networks of cells, resistors and leads (`random_network`), against which
+  `solveNetwork` in `packages/physics` is checked.
 - `pa_validation/lens.py` images with paraxial ray-transfer matrices.
 - `pa_validation/mixtures.py` solves the energy balance by root-finding with SciPy.
 - `pa_validation/fit.py` fits straight lines with SciPy's `linregress` and NumPy's least squares.

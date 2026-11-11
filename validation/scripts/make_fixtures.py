@@ -16,7 +16,14 @@ import json
 import math
 from pathlib import Path
 
-from pa_validation.circuits import balance_length, ohms_law_readings
+import numpy as np
+
+from pa_validation.circuits import (
+    balance_length,
+    ohms_law_readings,
+    random_network,
+    terminal_pd_readings,
+)
 from pa_validation.fit import fit_line, fit_through_origin
 from pa_validation.lens import image
 from pa_validation.mixtures import final_temperature, solid_specific_heat
@@ -177,11 +184,42 @@ def build_circuits() -> dict[str, object]:
                 "balanceLength": balance_length(driver, emf, internal, load, 50.0),
             }
         )
+    terminal = []
+    for emf, internal, resistor, wire, (ammeter, voltmeter), jockey, key in itertools.product(
+        [1.5, 3.0],
+        [0.5, 1.5],
+        [1.0, 2.0],
+        [2.0, 4.0],
+        [(0.0, math.inf), (0.05, 5000.0), (0.2, 1000.0)],
+        [None, 0.0, 0.4, 0.6, 0.8, 1.0],
+        [True, False],
+    ):
+        terminal.append(
+            {
+                "emf": emf,
+                "internalResistance": internal,
+                "resistor": resistor,
+                "wireResistance": wire,
+                "wireLength": 1.0,
+                "ammeterResistance": ammeter,
+                # JSON has no infinity: null is an ideal voltmeter.
+                "voltmeterResistance": None if math.isinf(voltmeter) else voltmeter,
+                "jockey": jockey,
+                "keyClosed": key,
+                **terminal_pd_readings(
+                    emf, internal, resistor, wire, 1.0, ammeter, voltmeter, jockey, key
+                ),
+            }
+        )
+    rng = np.random.default_rng(2026)
+    networks = [random_network(rng) for _ in range(60)]
     return {
         "model": "DC circuits, modified nodal analysis (NumPy) and SciPy brentq",
         "units": {"emf": "V", "resistance": "ohm", "current": "A", "length": "m"},
         "ohmsLaw": ohms,
         "potentiometer": balances,
+        "terminalPd": terminal,
+        "networks": networks,
     }
 
 

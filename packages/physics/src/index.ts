@@ -31,3 +31,13 @@ export {
   WATER_SPECIFIC_HEAT_CAPACITY,
 } from "./mixtures";
 export type { Body, MixtureReadings } from "./mixtures";
+export { solveNetwork } from "./network";
+export type { Element, Solution, Solved } from "./network";
+export {
+  heatWire,
+  polarise,
+  terminalPdNetwork,
+  terminalPdReadings,
+  wireResistanceAt,
+} from "./terminal-pd";
+export type { Polarisation, TerminalPdSetup, WireHeating } from "./terminal-pd";
