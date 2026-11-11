@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from "@pa/ui/icons";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 
 /** A message with **emphasis** rendered as <b>. */
 export function Rich({ text }: { text: string }) {
@@ -52,8 +52,11 @@ function NotBuilt({ icon: Icon, name }: { icon: LucideIcon; name: string }) {
   );
 }
 
-/** The app rail (desktop): logo, sections, help and settings. Sections not built yet say so. */
-export function Rail({ current }: { current: "lab" | "notebook" }) {
+/**
+ * The app rail (desktop): logo, sections, help and settings. Sections not built yet say so.
+ * It is drawn again only when its section changes, not at every tap in the lab.
+ */
+export const Rail = memo(function Rail({ current }: { current: "lab" | "notebook" }) {
   const here = (on: boolean) =>
     cn(railItem, on && "border-l-2 border-primary bg-raised text-foreground");
   return (
@@ -87,10 +90,13 @@ export function Rail({ current }: { current: "lab" | "notebook" }) {
       <NotBuilt icon={SettingsIcon} name={t("lab.rail.settings")} />
     </nav>
   );
-}
+});
 
-/** The ten-step strip along the bottom: done, current, open or not yet open. */
-export function StepStrip({
+/**
+ * The ten-step strip along the bottom: done, current, open or not yet open. Given the same
+ * props, it is not drawn again, so a screen that keeps them steady keeps a tap cheap.
+ */
+export const StepStrip = memo(function StepStrip({
   current,
   completed,
   open,
@@ -185,7 +191,7 @@ export function StepStrip({
         ))}
     </nav>
   );
-}
+});
 
 /** One line of the step's checklist: done, the one in hand, or still to come. */
 export function CheckItem({

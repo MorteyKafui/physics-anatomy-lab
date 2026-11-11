@@ -57,6 +57,93 @@ const ARC_R = 42;
 
 const tone = (name: string) => `var(--pa-figure-${name})`;
 
+/*
+ * The parts that never move, made once. React skips an element it was given last time, so a
+ * frame of the swing only redraws the thread, the bob and the stopwatch's hand, not the whole
+ * figure (master plan, "Performance budgets": a tap answered within 200 ms on the benchmark
+ * phone, which also has to draw the swing at 30 fps).
+ */
+const BENCH_TOP = (
+  <>
+    {/* Bench top with its grid */}
+    <polygon
+      points="210,300 400,380 210,460 20,380"
+      fill={tone("floor")}
+      stroke={tone("floor-edge")}
+    />
+    <g stroke={tone("floor-line")} strokeWidth={1}>
+      <line x1={248} y1={316} x2={58} y2={396} />
+      <line x1={286} y1={332} x2={96} y2={412} />
+      <line x1={324} y1={348} x2={134} y2={428} />
+      <line x1={362} y1={364} x2={172} y2={444} />
+      <line x1={172} y1={316} x2={362} y2={396} />
+      <line x1={134} y1={332} x2={324} y2={412} />
+      <line x1={96} y1={348} x2={286} y2={428} />
+      <line x1={58} y1={364} x2={248} y2={444} />
+    </g>
+  </>
+);
+
+const BASE = (
+  <g data-part="base">
+    <polygon
+      points="200,340 260,365 230,378 170,353"
+      fill={tone("base-top")}
+      stroke={tone("base-edge")}
+    />
+    <polygon points="170,353 230,378 230,386 170,361" fill={tone("base-side")} />
+    <polygon points="230,378 260,365 260,373 230,386" fill={tone("base-side-dark")} />
+  </g>
+);
+
+const ROD = (
+  <g data-part="rod">
+    <rect x={202} y={70} width={7} height={280} fill={tone("rod")} />
+    <rect x={202} y={70} width={2} height={280} fill={tone("rod-light")} />
+  </g>
+);
+
+const CLAMP = (
+  <g data-part="clamp">
+    <rect x={196} y={96} width={19} height={14} fill={tone("clamp")} stroke={tone("clamp-edge")} />
+    <line
+      x1={215}
+      y1={103}
+      x2={295}
+      y2={136}
+      stroke={tone("clamp-edge")}
+      strokeWidth={6}
+      strokeLinecap="round"
+    />
+  </g>
+);
+
+const CORK = (
+  <polygon
+    data-part="cork"
+    points="293,132 307,138 307,150 293,144"
+    fill={tone("cork")}
+    stroke={tone("cork-edge")}
+  />
+);
+
+/** The stopwatch without its hand. */
+const WATCH_BODY = (
+  <>
+    <rect x={DIAL.x - 3} y={357} width={6} height={5} fill={tone("clamp")} />
+    <circle cx={DIAL.x} cy={DIAL.y} r={17} fill={tone("dial-rim")} stroke={tone("clamp")} />
+    <circle cx={DIAL.x} cy={DIAL.y} r={12} fill={tone("dial")} />
+    <line
+      x1={DIAL.x}
+      y1={DIAL.y}
+      x2={DIAL.x}
+      y2={DIAL.y - 9}
+      stroke={tone("ink")}
+      strokeWidth={1.5}
+    />
+  </>
+);
+
 /** Where the thread hangs from: the cork, or the clamp arm it was wrongly tied round. */
 const pivotOf = (a: Assembly) => (a.thread === "clamp-arm" ? ARM_TIE : CORK_PIVOT);
 
@@ -138,68 +225,11 @@ export function PendulumBench({
       aria-hidden={label ? undefined : true}
       className={className}
     >
-      {/* Bench top with its grid */}
-      <polygon
-        points="210,300 400,380 210,460 20,380"
-        fill={tone("floor")}
-        stroke={tone("floor-edge")}
-      />
-      <g stroke={tone("floor-line")} strokeWidth={1}>
-        <line x1={248} y1={316} x2={58} y2={396} />
-        <line x1={286} y1={332} x2={96} y2={412} />
-        <line x1={324} y1={348} x2={134} y2={428} />
-        <line x1={362} y1={364} x2={172} y2={444} />
-        <line x1={172} y1={316} x2={362} y2={396} />
-        <line x1={134} y1={332} x2={324} y2={412} />
-        <line x1={96} y1={348} x2={286} y2={428} />
-        <line x1={58} y1={364} x2={248} y2={444} />
-      </g>
-      {has("base") && (
-        <g data-part="base">
-          <polygon
-            points="200,340 260,365 230,378 170,353"
-            fill={tone("base-top")}
-            stroke={tone("base-edge")}
-          />
-          <polygon points="170,353 230,378 230,386 170,361" fill={tone("base-side")} />
-          <polygon points="230,378 260,365 260,373 230,386" fill={tone("base-side-dark")} />
-        </g>
-      )}
-      {has("rod") && (
-        <g data-part="rod">
-          <rect x={202} y={70} width={7} height={280} fill={tone("rod")} />
-          <rect x={202} y={70} width={2} height={280} fill={tone("rod-light")} />
-        </g>
-      )}
-      {has("clamp") && (
-        <g data-part="clamp">
-          <rect
-            x={196}
-            y={96}
-            width={19}
-            height={14}
-            fill={tone("clamp")}
-            stroke={tone("clamp-edge")}
-          />
-          <line
-            x1={215}
-            y1={103}
-            x2={295}
-            y2={136}
-            stroke={tone("clamp-edge")}
-            strokeWidth={6}
-            strokeLinecap="round"
-          />
-        </g>
-      )}
-      {has("cork") && (
-        <polygon
-          data-part="cork"
-          points="293,132 307,138 307,150 293,144"
-          fill={tone("cork")}
-          stroke={tone("cork-edge")}
-        />
-      )}
+      {BENCH_TOP}
+      {has("base") && BASE}
+      {has("rod") && ROD}
+      {has("clamp") && CLAMP}
+      {has("cork") && CORK}
       {has("thread") && (
         <g data-part="thread">
           {/* The vertical through the pivot, and the mark at the bottom of the swing */}
@@ -259,17 +289,7 @@ export function PendulumBench({
       )}
       {has("watch") && (
         <g data-part="watch">
-          <rect x={DIAL.x - 3} y={357} width={6} height={5} fill={tone("clamp")} />
-          <circle cx={DIAL.x} cy={DIAL.y} r={17} fill={tone("dial-rim")} stroke={tone("clamp")} />
-          <circle cx={DIAL.x} cy={DIAL.y} r={12} fill={tone("dial")} />
-          <line
-            x1={DIAL.x}
-            y1={DIAL.y}
-            x2={DIAL.x}
-            y2={DIAL.y - 9}
-            stroke={tone("ink")}
-            strokeWidth={1.5}
-          />
+          {WATCH_BODY}
           <line
             x1={DIAL.x}
             y1={DIAL.y}

@@ -131,25 +131,41 @@ test.describe("the benchmark phone, emulated", () => {
     const after = (await bob.boundingBox())!.x;
     expect(Math.abs(after - before)).toBeGreaterThan(1);
 
-    // Interaction to Next Paint, as the browser times it: Start, a count, and Stop.
+    /*
+     * Interaction to Next Paint, as the browser times it: the longest of Start, a count and Stop,
+     * the taps a phone run reads (docs/how-to/benchmark-phone.md). Only taps made at the
+     * benchmark speed count, not the ones that built the bench before it was slowed. One round's
+     * longest tap moves by 100 ms or more with whatever else the computer running the test is
+     * doing, so the round is made five times and the median round is held to the budget; every
+     * round is reported.
+     */
+    type Taps = { __taps: { at: number; ms: number }[] };
     await page.evaluate(() => {
-      (window as unknown as { __longest: number }).__longest = 0;
+      const w = window as unknown as Taps;
+      w.__taps = [];
       new PerformanceObserver((list) => {
-        for (const e of list.getEntries()) {
-          const w = window as unknown as { __longest: number };
-          w.__longest = Math.max(w.__longest, e.duration);
-        }
-      }).observe({
-        type: "event",
-        durationThreshold: 16,
-        buffered: true,
-      } as PerformanceObserverInit);
+        for (const e of list.getEntries()) w.__taps.push({ at: e.startTime, ms: e.duration });
+      }).observe({ type: "event", durationThreshold: 16 } as PerformanceObserverInit);
     });
-    await page.getByRole("button", { name: "Start", exact: true }).click();
-    await page.getByRole("button", { name: "Count a pass" }).click();
-    await page.getByRole("button", { name: "Stop", exact: true }).click();
-    await page.waitForTimeout(500);
-    const inp = await page.evaluate(() => (window as unknown as { __longest: number }).__longest);
+    const rounds: number[] = [];
+    for (let i = 0; i < 5; i++) {
+      const from = await page.evaluate(() => performance.now());
+      await page.getByRole("button", { name: "Start", exact: true }).click();
+      await page.getByRole("button", { name: "Count a pass" }).click();
+      await page.getByRole("button", { name: "Stop", exact: true }).click();
+      await page.waitForTimeout(500);
+      rounds.push(
+        await page.evaluate(
+          (since) =>
+            Math.max(
+              0,
+              ...(window as unknown as Taps).__taps.filter((t) => t.at >= since).map((t) => t.ms),
+            ),
+          from,
+        ),
+      );
+    }
+    const inp = [...rounds].sort((a, b) => a - b)[2]!;
 
     await cdp.send("Performance.enable");
     const heap = (await cdp.send("Performance.getMetrics")).metrics.find(
@@ -158,7 +174,10 @@ test.describe("the benchmark phone, emulated", () => {
 
     info.annotations.push(
       { type: "frame rate", description: `${fps.toFixed(1)} fps at ${BENCHMARK_CPU}× CPU` },
-      { type: "slowest interaction", description: `${Math.round(inp)} ms` },
+      {
+        type: "slowest interaction",
+        description: `${Math.round(inp)} ms, the median of five rounds (${rounds.map(Math.round).join(", ")} ms)`,
+      },
       { type: "memory", description: `${(heap / MB).toFixed(0)} MB of JavaScript heap` },
     );
     expect(fps).toBeGreaterThanOrEqual(30);

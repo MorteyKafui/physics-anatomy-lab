@@ -13,4 +13,7 @@ bun run --cwd e2e e2e
 - `tests/*.journey.spec.ts`: what a visitor sees and does.
 - `tests/accessibility.spec.ts`: axe on every page; fails on a serious or critical issue.
 - `tests/performance.spec.ts`: Largest Contentful Paint on the landing page over slow 4G,
-  budget 2.5 s (master plan section 13).
+  budget 2.5 s (master plan section 13), and the benchmark phone, emulated (CPU slowed 6×,
+  slow 4G): the JavaScript and offline pack sizes, the swing's frame rate, memory, and
+  Interaction to Next Paint for Start, Count a pass and Stop, held to 200 ms over the median of
+  five rounds.
