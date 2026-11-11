@@ -17,6 +17,11 @@ export interface InstrumentSpec {
   noise?: number;
   /** Height of the pointer or edge above the scale, in display units: drives parallax. */
   pointerHeight?: number;
+  /**
+   * The scale's two ends, in display units, for a needle that stops there (a moving-coil meter).
+   * A value beyond an end pins the needle against its stop.
+   */
+  scale?: readonly [min: number, max: number];
 }
 
 export interface Reading {
@@ -24,6 +29,11 @@ export interface Reading {
   truth: number;
   /** What the instrument shows: where the eye lines up, or the digits on the display. */
   shown: number;
+  /**
+   * The needle is hard against a stop: "low" when the meter is pushed backwards (connected the
+   * wrong way round), "high" when the value is beyond full scale.
+   */
+  pinned?: "low" | "high";
 }
 
 /**
@@ -41,7 +51,15 @@ export function takeReading(
 ): Reading {
   let shown = truth;
   if (spec.zeroError && !opts.zeroed) shown += spec.zeroError;
-  if (spec.noise) shown += gaussian(opts.rng, 0, spec.noise);
+  if (spec.scale) {
+    // The needle stops at the ends of the scale; the eye then reads the stop, square-on or not.
+    const [min, max] = spec.scale;
+    if (shown < min) return { truth, shown: min, pinned: "low" };
+    if (shown > max) return { truth, shown: max, pinned: "high" };
+  }
+  // A needle at rest does not flicker; a scale's needle never jitters past its stops.
+  if (spec.noise && (!spec.scale || truth !== 0)) shown += gaussian(opts.rng, 0, spec.noise);
+  if (spec.scale) shown = Math.min(spec.scale[1], Math.max(spec.scale[0], shown));
   if (spec.pointerHeight && opts.viewAngleDeg) {
     shown += parallaxShift(spec.pointerHeight, opts.viewAngleDeg);
   }

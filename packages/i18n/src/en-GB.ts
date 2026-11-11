@@ -967,6 +967,50 @@ export const enGB = {
   "findings.pendulum.stoppedEarly.title": "You stopped at {count} of {target}",
   "findings.pendulum.stoppedEarly.detail":
     "Time all {target} oscillations, so your reaction time is a small part of t.",
+  "findings.ohmsLaw.ammeterReversed.title": "The ammeter is the wrong way round",
+  "findings.ohmsLaw.ammeterReversed.detail":
+    "Current must go into the ammeter at its + terminal. Connected backwards, its needle kicks against the stop below zero and reads nothing.",
+  "findings.ohmsLaw.ammeterReversed.demonstrate":
+    "Follow the current from the cell's + terminal: through R, then into the ammeter's red (+) terminal and out of its black (−).",
+  "findings.ohmsLaw.voltmeterReversed.title": "The voltmeter is the wrong way round",
+  "findings.ohmsLaw.voltmeterReversed.detail":
+    "The voltmeter's + terminal goes to the cell's + side. Backwards, its needle pins at zero.",
+  "findings.ohmsLaw.voltmeterReversed.demonstrate":
+    "Join red to red: the voltmeter's + to the cell's +, and its − to the cell's −.",
+  "findings.ohmsLaw.metersSwapped.title": "The ammeter and voltmeter are in each other's places",
+  "findings.ohmsLaw.metersSwapped.detail":
+    "An ammeter goes in series, in the loop the current flows round. A voltmeter goes across what it measures, here the cell. The other way round, the voltmeter stops the current and the ammeter shorts the cell.",
+  "findings.ohmsLaw.metersSwapped.demonstrate":
+    "The ammeter is one link in the chain from the cell through R to the wire. The voltmeter sits beside the cell, one lead on each terminal.",
+  "findings.ohmsLaw.voltmeterAcrossResistor.title": "The voltmeter is across R, not the cell",
+  "findings.ohmsLaw.voltmeterAcrossResistor.detail":
+    "Across R it reads I R, which rises with the current, so your graph would slope upwards and say nothing about the cell. Move its leads to the cell's terminals to read the terminal p.d.",
+  "findings.ohmsLaw.voltmeterAcrossResistor.demonstrate":
+    "Look at the circuit diagram: the voltmeter's two leads go either side of the cell, not either side of R.",
+  "findings.ohmsLaw.jockeyToQ.title": "The jockey's lead goes to Q",
+  "findings.ohmsLaw.jockeyToQ.detail":
+    "From Q, the jockey cuts out the length JQ, so the current falls as you move it further from P, and the lengths in your table no longer mean what the question says. Take the lead to P.",
+  "findings.ohmsLaw.jockeyToQ.demonstrate":
+    "P is the end of the wire joined to the key. The jockey's lead starts there, so PJ is the length it cuts out.",
+  "findings.ohmsLaw.wiringWrong.title": "The circuit does not match the diagram",
+  "findings.ohmsLaw.wiringWrong.detail":
+    "{terminals} terminals are joined to the wrong places. The lit terminals are the ones to check against the circuit diagram.",
+  "findings.ohmsLaw.keyLeftClosed.title": "The key was closed for {seconds} s",
+  "findings.ohmsLaw.keyLeftClosed.detail":
+    "While current flows, the cell runs down: in that time its emf fell by about {millivolts} mV, so later readings sit below the line. Open the key as soon as each reading is taken.",
+  "findings.ohmsLaw.keyLeftClosed.demonstrate":
+    "Close the key, read both meters, then open it again before you move the jockey.",
+  "findings.ohmsLaw.jockeySlid.title": "The jockey was slid along the wire",
+  "findings.ohmsLaw.jockeySlid.detail":
+    "Sliding it scraped {centimetres} cm of the wire thinner, so that stretch now has about {percent}% more resistance per centimetre and the wire is no longer uniform. Lift the jockey, move it, then press it down.",
+  "findings.ohmsLaw.jockeySlid.demonstrate":
+    "Lift the jockey clear of the wire, set it over the next mark, and tap it straight down.",
+  "lab.ohmsLaw.unsafe.short-circuit":
+    "The key will not close: a lead joins the cell's terminals directly, which would short-circuit it.",
+  "lab.ohmsLaw.unsafe.ammeter-over-range":
+    "The key will not close: the current would push the ammeter past its 1 A full scale.",
+  "lab.ohmsLaw.unsafe.voltmeter-over-range":
+    "The key will not close: the voltage would push the voltmeter past its 3 V full scale.",
 } as const;
 
 export type MessageKey = keyof typeof enGB;

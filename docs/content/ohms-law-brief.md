@@ -4,7 +4,9 @@ Step 1 of the experiment playbook (master plan, "Adding an experiment"). It sets
 experiment is, before any of the lab is built, for the physics reviewer to approve.
 
 - **Experiment id:** `ohms-law` (Phase 2, the second flagship).
-- **Status:** draft, for the physics reviewer.
+- **Status:** approved by Mortey (physics reviewer) on 2026-11-11, PR #29: the reading of the
+  circuit, dry cells in place of the accumulator, meters reading to 0.02 A and 0.05 V, and the
+  polarisation model. The tolerances in the table were added in PR 2 and are for review there.
 
 ## What the student does
 
@@ -61,14 +63,15 @@ current, because some of its emf drives the current through the cell itself.
 
 ## The proposed bench, for the physics reviewer
 
-| Part               | Proposed                                            | Why                                                                                                                                                                                                                            |
-| ------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Cell               | Two 1.5 V dry cells in series: E = 3.0 V, r = 1.5 Ω | The book says "accumulator", but its worked readings imply r ≈ 1.7 Ω. A real lead-acid accumulator has r of a few hundredths of an ohm, which would make the line almost flat. Dry cells give the slope the practical expects. |
-| Resistor R         | 1.0 Ω                                               | Keeps the current within the ammeter's range at PJ = 80 cm                                                                                                                                                                     |
-| Potentiometer wire | 1.000 m of constantan, 4.0 Ω                        | A common school wire (about SWG 26)                                                                                                                                                                                            |
-| Ammeter            | 0 to 1 A, least count 0.02 A, 0.05 Ω                | The book's meter reads to 0.10 A, which gives only four distinct readings over this range                                                                                                                                      |
-| Voltmeter          | 0 to 3 V, least count 0.05 V, 5 kΩ                  | The book's reads to 0.1 V. A moving-coil voltmeter of about 1.7 kΩ per volt.                                                                                                                                                   |
-| Polarisation       | k = 0.1 V A⁻¹, τ = 60 s                             | Assumed. To be replaced by the UEW lab's reference data (Phase 2).                                                                                                                                                             |
+| Part               | Proposed                                                                                   | Why                                                                                                                                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Cell               | Two 1.5 V dry cells in series: E = 3.0 V, r = 1.5 Ω                                        | The book says "accumulator", but its worked readings imply r ≈ 1.7 Ω. A real lead-acid accumulator has r of a few hundredths of an ohm, which would make the line almost flat. Dry cells give the slope the practical expects. |
+| Resistor R         | 1.0 Ω                                                                                      | Keeps the current within the ammeter's range at PJ = 80 cm                                                                                                                                                                     |
+| Potentiometer wire | 1.000 m of constantan, 4.0 Ω                                                               | A common school wire (about SWG 26)                                                                                                                                                                                            |
+| Ammeter            | 0 to 1 A, least count 0.02 A, 0.05 Ω                                                       | The book's meter reads to 0.10 A, which gives only four distinct readings over this range                                                                                                                                      |
+| Voltmeter          | 0 to 3 V, least count 0.05 V, 5 kΩ                                                         | The book's reads to 0.1 V. A moving-coil voltmeter of about 1.7 kΩ per volt.                                                                                                                                                   |
+| Polarisation       | k = 0.1 V A⁻¹, τ = 60 s                                                                    | Assumed. To be replaced by the UEW lab's reference data (Phase 2).                                                                                                                                                             |
+| Tolerances (PR 2)  | emf ±2%, r ±8%, R ±5%, wire ±2%; about one meter in three has a zero error of one division | Each attempt's apparatus differs a little, as real apparatus does, while the current at PJ = 80 cm stays below the ammeter's 1 A full scale in every attempt (checked for 2,000 seeds)                                         |
 
 The readings these give, true values before the meters round them, from `terminalPdReadings`:
 
