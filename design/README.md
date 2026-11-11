@@ -4,22 +4,23 @@ The screens in `mockups/` were designed and approved on the Phase 0 design canva
 (claude.ai/artifact/NUVrA7XN8LsNdYNFzJ19iJ). **They are the specification.** Each screen in the
 apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and interactions.
 
-| Board                         | File               | Screenshot             | Builds into                   |
-| ----------------------------- | ------------------ | ---------------------- | ----------------------------- |
-| Landing page                  | `Main.dc.html`     | `screens/Main.jpg`     | `apps/web` `/`                |
-| Lab, desktop                  | `Lab.dc.html`      | `screens/Lab.jpg`      | `apps/web` lab                |
-| Lab, phone                    | `LabPhone.dc.html` | `screens/LabPhone.jpg` | `apps/web` lab at phone width |
-| Joining a class               | `Join.dc.html`     | `screens/Join.jpg`     | `apps/web` join flow          |
-| Table builder and graph sheet | `Table.dc.html`    | `screens/Table.jpg`    | `apps/web` steps 6 and 7      |
-| Report and labelled export    | `Report.dc.html`   | `screens/Report.jpg`   | `apps/web` step 10            |
-| Snapshot notebook             | `Notebook.dc.html` | `screens/Notebook.jpg` | `apps/web` notebook           |
-| Review, retry and compare     | `Review.dc.html`   | on the canvas only     | `apps/web` review             |
-| Exam mode                     | `Exam.dc.html`     | on the canvas only     | `apps/web` exam               |
-| Ohm's law: wiring, measuring  | `Ohms.dc.html`     | on the canvas only     | `apps/web` `/lab/ohms-law`    |
-| First-run tour                | `Tour.dc.html`     | `screens/Tour.jpg`     | `apps/web` onboarding         |
-| Teacher live class            | `Teacher.dc.html`  | `screens/Teacher.jpg`  | `apps/web` teacher dashboard  |
-| Admin portal                  | `Admin.dc.html`    | `screens/Admin.jpg`    | `apps/admin`                  |
-| Logo                          | `Logo.dc.html`     | `screens/Logo.jpg`     | `packages/ui` logo component  |
+| Board                         | File               | Screenshot             | Builds into                                      |
+| ----------------------------- | ------------------ | ---------------------- | ------------------------------------------------ |
+| Landing page                  | `Main.dc.html`     | `screens/Main.jpg`     | `apps/web` `/`                                   |
+| Lab, desktop                  | `Lab.dc.html`      | `screens/Lab.jpg`      | `apps/web` lab                                   |
+| Lab, phone                    | `LabPhone.dc.html` | `screens/LabPhone.jpg` | `apps/web` lab at phone width                    |
+| Joining a class               | `Join.dc.html`     | `screens/Join.jpg`     | `apps/web` join flow                             |
+| Table builder and graph sheet | `Table.dc.html`    | `screens/Table.jpg`    | `apps/web` steps 6 and 7                         |
+| Report and labelled export    | `Report.dc.html`   | `screens/Report.jpg`   | `apps/web` step 10                               |
+| Snapshot notebook             | `Notebook.dc.html` | `screens/Notebook.jpg` | `apps/web` notebook                              |
+| Review, retry and compare     | `Review.dc.html`   | on the canvas only     | `apps/web` review                                |
+| Exam mode                     | `Exam.dc.html`     | on the canvas only     | `apps/web` exam                                  |
+| Ohm's law: wiring, measuring  | `Ohms.dc.html`     | on the canvas only     | `apps/web` `/lab/ohms-law`                       |
+| Converging lens: the image    | `Lens.dc.html`     | on the canvas only     | `apps/web` `/lab/converging-lens` (for approval) |
+| First-run tour                | `Tour.dc.html`     | `screens/Tour.jpg`     | `apps/web` onboarding                            |
+| Teacher live class            | `Teacher.dc.html`  | `screens/Teacher.jpg`  | `apps/web` teacher dashboard                     |
+| Admin portal                  | `Admin.dc.html`    | `screens/Admin.jpg`    | `apps/admin`                                     |
+| Logo                          | `Logo.dc.html`     | `screens/Logo.jpg`     | `packages/ui` logo component                     |
 
 The `.dc.html` files are the source: open them on the canvas to see every state and interaction.
 The screenshots were taken without web fonts, so type looks slightly different; the canvas is

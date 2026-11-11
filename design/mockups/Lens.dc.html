@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lab: the converging lens, finding the image</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+.cl-f:focus-visible{outline:2px solid #FF8A6E;outline-offset:2px}
+@keyframes clUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.cl-toast{animation:clUp .25s ease}
+@media (prefers-reduced-motion:reduce){.cl-toast{animation:none}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; background: #0D0D0D; color: #F0F0F0; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="App" style="flex: 0 0 64px; background: #111110; border-right: 1px solid #242322; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0">
+    <svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true" style="margin-bottom: 14px"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F0F0F0" stroke-width="18"/><line x1="84" y1="26" x2="98" y2="60" stroke="#F0F0F0" stroke-width="5"/><circle cx="100" cy="68" r="12" fill="#F0482A"/></svg>
+    <a href="#home" aria-label="Home" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="#experiments" aria-label="Experiments" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #F0F0F0; background: #1E1D1D; border-left: 2px solid #F0482A"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></a>
+    <a href="#notebook" aria-label="Notebook" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></a>
+    <a href="#reference" aria-label="Reference" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></a>
+    <span style="flex: 1"></span>
+    <a href="#help" aria-label="Help" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></a>
+    <a href="#settings" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></a>
+  </nav>
+
+  <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 20px; border-bottom: 1px solid #242322">
+      <div style="display: flex; align-items: center; gap: 12px; background: #161616; border: 1px solid #2A2928; padding: 8px 14px">
+        <span style="width: 10px; height: 10px; background: #F5A524" aria-hidden="true"></span>
+        <div style="display: flex; flex-direction: column">
+          <span style="font-weight: 600">The converging lens</span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">Step 5 of 10 · Measure</span>
+        </div>
+        <div style="width: 120px; height: 4px; background: #2A2928" aria-label="40% complete"><div style="height: 4px; width: 40%; background: #F0482A"></div></div>
+      </div>
+      <div role="group" aria-label="Board state (mockup only)" style="display: flex; gap: 2px; background: #161616; border: 1px solid #2A2928; padding: 3px">
+        <button type="button" class="cl-f" onClick="{{showFinding}}" aria-pressed="{{isFinding}}" style="{{findingBtn}}">Finding the image</button>
+        <button type="button" class="cl-f" onClick="{{showSharp}}" aria-pressed="{{isSharp}}" style="{{sharpBtn}}">Sharp</button>
+        <button type="button" class="cl-f" onClick="{{showNone}}" aria-pressed="{{isNone}}" style="{{noneBtn}}">No image</button>
+      </div>
+      <span style="flex: 1"></span>
+      <label for="assist" style="display: flex; align-items: center; gap: 8px; color: #A3A19B; font-size: 13px">Help level
+        <select id="assist" style="background: #161616; color: #F0F0F0; border: 1px solid #2A2928; padding: 8px 10px; font: 500 13px Geist, sans-serif"><option>Auto</option><option selected="selected">Check my work</option><option>On my own</option></select>
+      </label>
+      <button type="button" style="height: 38px; padding: 0 14px; background: #F0482A; border: 0; color: #141414; display: flex; align-items: center; gap: 8px; font: 600 13px Geist, sans-serif"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>Snapshot</button>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+      <div style="flex: 999 1 560px; min-width: 0; position: relative; background: #0D0D0D; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 56px 24px 96px">
+        <div style="position: absolute; left: 24px; top: 18px; display: flex; flex-direction: column">
+          <span style="font-size: 12px; color: #8F8D88">Fig. 1</span>
+          <span style="font-weight: 600">{{figTitle}}</span>
+        </div>
+
+        <svg viewBox="0 0 600 300" style="width: 100%; max-width: 760px; height: auto; display: block" role="img" aria-label="{{benchLabel}}">
+          <!-- Bench top -->
+          <polygon points="30,40 570,40 600,290 0,290" fill="#121211" stroke="#2A2928"/>
+
+          <!-- The principal axis, dashed -->
+          <line x1="40" y1="150" x2="560" y2="150" stroke="#3A3936" stroke-dasharray="4 4"/>
+
+          <!-- Light from the gauze, through the lens, towards the image -->
+          <sc-if value="{{hasRays}}" hint-placeholder-val="{{ true }}">
+          <g stroke="#FFD27A" stroke-width="1" fill="none" opacity="0.75">
+            <sc-for list="{{rays}}" as="r" hint-placeholder-count="3"><path d="{{r.d}}"/></sc-for>
+          </g>
+          </sc-if>
+          <sc-if value="{{isNone}}" hint-placeholder-val="{{ false }}">
+          <g stroke="#FFD27A" stroke-width="1" fill="none" opacity="0.6">
+            <sc-for list="{{spread}}" as="r" hint-placeholder-count="3"><path d="{{r.d}}"/></sc-for>
+          </g>
+          </sc-if>
+
+          <!-- Optical bench: the rail, and its metre rule -->
+          <rect x="36" y="232" width="528" height="12" fill="#3A3936" stroke="#55534F"/>
+          <rect x="36" y="244" width="528" height="18" fill="#E8E4DC"/>
+          <g stroke="#141414" stroke-width="1">
+            <sc-for list="{{ticks}}" as="k" hint-placeholder-count="21"><line x1="{{k.x}}" y1="244" x2="{{k.x}}" y2="{{k.y2}}"/></sc-for>
+          </g>
+          <sc-for list="{{tickLabels}}" as="k" hint-placeholder-count="11"><text x="{{k.x}}" y="260" fill="#141414" font-family="Geist Mono, monospace" font-size="7" text-anchor="middle">{{k.label}}</text></sc-for>
+
+          <!-- Ray box R with its illuminated wire gauze -->
+          <g data-part="ray-box">
+            <rect x="{{boxX}}" y="118" width="40" height="64" fill="#2A2928" stroke="#55534F"/>
+            <circle cx="{{lampX}}" cy="150" r="8" fill="#F5A524" opacity="0.9"/>
+            <rect x="{{gauzeX}}" y="138" width="4" height="24" fill="#FFE6A8"/>
+            <rect x="{{boxStemX}}" y="182" width="6" height="50" fill="#55534F"/>
+            <rect x="{{boxBaseX}}" y="226" width="30" height="6" fill="#77746E"/>
+            <line x1="{{objectX}}" y1="226" x2="{{objectX}}" y2="250" stroke="#F0482A" stroke-width="1.5"/>
+            <text x="{{objectX}}" y="110" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">R</text>
+          </g>
+
+          <!-- The lens L in its holder -->
+          <g data-part="lens">
+            <path d="{{lensPath}}" fill="#6FA8C9" fill-opacity="0.35" stroke="#9CC6DD" stroke-width="1.2"/>
+            <rect x="{{lensStemX}}" y="184" width="6" height="48" fill="#55534F"/>
+            <rect x="{{lensBaseX}}" y="226" width="30" height="6" fill="#77746E"/>
+            <line x1="{{lensX}}" y1="226" x2="{{lensX}}" y2="250" stroke="#F0482A" stroke-width="1.5"/>
+            <text x="{{lensX}}" y="106" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">L</text>
+          </g>
+
+          <!-- The screen S -->
+          <g data-part="screen">
+            <rect x="{{screenRectX}}" y="96" width="6" height="108" fill="#E8E4DC" stroke="#A3A19B"/>
+            <rect x="{{screenStemX}}" y="204" width="6" height="28" fill="#55534F"/>
+            <rect x="{{screenBaseX}}" y="226" width="30" height="6" fill="#77746E"/>
+            <line x1="{{screenX}}" y1="226" x2="{{screenX}}" y2="250" stroke="#F0482A" stroke-width="1.5"/>
+            <text x="{{screenX}}" y="88" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">S</text>
+          </g>
+
+          <!-- u and v along the rule -->
+          <g font-family="Geist Mono, monospace" font-size="10" fill="#C9C6BF" text-anchor="middle">
+            <line x1="{{objectX}}" y1="276" x2="{{lensX}}" y2="276" stroke="#77746E"/>
+            <text x="{{uLabelX}}" y="287">u = {{uText}}</text>
+            <line x1="{{lensX}}" y1="276" x2="{{screenX}}" y2="276" stroke="#77746E"/>
+            <text x="{{vLabelX}}" y="287">v = {{vText}}</text>
+          </g>
+        </svg>
+
+        <div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px; width: 100%; max-width: 760px">
+          <div style="flex: 0 0 auto; background: #161616; border: 1px solid #2A2928; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; color: #A3A19B">On the screen</span>
+            <svg width="150" height="150" viewBox="0 0 150 150" role="img" aria-label="{{screenLabel}}">
+              <defs><filter id="clBlur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="{{blurPx}}"/></filter></defs>
+              <rect x="0" y="0" width="150" height="150" fill="#E8E4DC"/>
+              <sc-if value="{{hasImage}}" hint-placeholder-val="{{ true }}">
+              <g filter="url(#clBlur)" stroke="#5A4318" stroke-width="2.2" fill="#FFF3D2">
+                <rect x="{{imageX}}" y="{{imageY}}" width="{{imageW}}" height="{{imageH}}"/>
+                <sc-for list="{{gauzeLines}}" as="g" hint-placeholder-count="8"><line x1="{{g.x1}}" y1="{{g.y1}}" x2="{{g.x2}}" y2="{{g.y2}}"/></sc-for>
+              </g>
+              </sc-if>
+              <sc-if value="{{isNone}}" hint-placeholder-val="{{ false }}">
+              <circle cx="75" cy="75" r="62" fill="#FFF3D2" opacity="0.45"/>
+              </sc-if>
+            </svg>
+            <span style="{{chipStyle}}">{{chip}}</span>
+          </div>
+          <div style="flex: 1 1 260px; min-width: 0; background: #161616; border: 1px solid #2A2928; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <label for="screen-at" style="display: flex; justify-content: space-between; font-size: 13px; color: #A3A19B">Screen position <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">{{screenText}}</span></label>
+            <input id="screen-at" type="range" min="0" max="100" step="0.1" value="{{screenValue}}" aria-valuetext="{{screenText}}" style="width: 100%; accent-color: #F0482A">
+            <div style="display: flex; gap: 8px">
+              <button type="button" class="cl-f" style="flex: 1; height: 36px; background: transparent; border: 1px solid #2A2928; color: #F0F0F0; font: 500 13px Geist, sans-serif">Towards the lens</button>
+              <button type="button" class="cl-f" style="flex: 1; height: 36px; background: transparent; border: 1px solid #2A2928; color: #F0F0F0; font: 500 13px Geist, sans-serif">Away from the lens</button>
+            </div>
+            <span style="font-size: 12px; color: #8F8D88">Each press moves the screen 1 mm. Read the rule at the red centre mark of each holder.</span>
+          </div>
+        </div>
+
+        <sc-if value="{{isNone}}" hint-placeholder-val="{{ false }}">
+        <div role="alert" class="cl-toast" style="position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); max-width: 540px; background: #2B2112; border: 1px solid #F5A524; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-weight: 600; display: flex; align-items: center; gap: 8px; color: #F5C46B"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>No image on the screen</span>
+          <span style="color: #E8E4DC">With the object 12 cm from the lens, it is inside the focal length, so the lens makes no real image to catch on a screen. Move the ray box further from the lens.</span>
+          <span style="color: #A3A19B">Look through the lens from the screen's side: you see an upright, magnified image. It is virtual, behind the lens, so no screen can show it.</span>
+        </div>
+        </sc-if>
+      </div>
+
+      <aside aria-label="Coach" style="flex: 1 1 380px; min-width: 0; background: #161616; border-left: 1px solid #242322; display: flex; flex-direction: column">
+        <div role="tablist" aria-label="Coach" style="display: flex; gap: 22px; padding: 0 20px; border-bottom: 1px solid #2A2928">
+          <button type="button" role="tab" aria-selected="true" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #F0F0F0; border-bottom: 2px solid #F0482A">Instructions</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Explanation</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Tips</button>
+        </div>
+
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">{{coachTitle}}</span>
+          <span style="color: #C9C6BF">{{coachText}}</span>
+
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+              <div style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span>{{s.text}}</span></div>
+            </sc-for>
+          </div>
+
+          <div style="background: #0D0D0D; border: 1px solid #2A2928; padding: 12px 14px; display: flex; gap: 24px; font-family: 'Geist Mono', monospace">
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">u</span>{{uText}}</span>
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">v</span>{{vText}}</span>
+          </div>
+
+          <sc-if value="{{isSharp}}" hint-placeholder-val="{{ false }}">
+          <button type="button" class="cl-f" style="align-self: flex-start; height: 38px; padding: 0 16px; background: #F0482A; border: 0; color: #141414; font: 600 13px Geist, sans-serif">Take this reading</button>
+          </sc-if>
+
+          <sc-if value="{{isFinding}}" hint-placeholder-val="{{ true }}">
+          <div role="status" style="background: #2B2112; border: 1px solid #F5A524; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #F5C46B"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Find where it is sharpest</span>
+            <span style="color: #E8E4DC">Move the screen slowly towards the lens until the gauze's lines start to blur, then back the other way until they blur again. The sharpest image is halfway between.</span>
+          </div>
+          </sc-if>
+
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 13px; color: #A3A19B">Readings so far</span>
+            <span style="font-size: 13px; color: #8F8D88">None yet. The question sets u = 20.0, 25.0, 30.0, 35.0 and 40.0 cm.</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <nav aria-label="Stages" style="border-top: 1px solid #242322; background: #111110; padding: 10px 20px; display: flex; gap: 8px; overflow-x: auto">
+      <sc-for list="{{stages}}" as="s" hint-placeholder-count="10">
+        <a href="#stage" style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #8F8D88">{{s.n}}</span><span>{{s.name}}</span></span></a>
+      </sc-for>
+    </nav>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mode: 'finding' }; }
+  renderVals() {
+    const mode = this.state.mode;
+    const finding = mode === 'finding', sharp = mode === 'sharp', none = mode === 'none';
+    const btn = (on) => 'height: 32px; padding: 0 12px; border: 0; font: 500 13px Geist, sans-serif; cursor: pointer; background: ' + (on ? '#F0F0F0' : 'transparent') + '; color: ' + (on ? '#141414' : '#C9C6BF');
+
+    // The approved bench, from packages/experiments (convergingLens) and the exact lens of
+    // packages/physics for the nominal lens (f = 15.0 cm, n = 1.52, 4.0 cm across):
+    //   ray box at 10.0 cm and lens at 30.0 cm, so u = 20.0 cm;
+    //   sharpest image with the screen at 87.2 cm (v = 57.2 cm, the exact lens's best focus),
+    //   looking sharp from 86.5 to 88.0 cm on the rule; 5.7 cm tall, inverted (m = 2.86);
+    //   with the screen at 85.0 cm (v = 55.0 cm) the blur patch is 1.6 mm;
+    //   with the lens at 22.0 cm (u = 12.0 cm, inside f) there is no real image.
+    const X = (cm) => 40 + cm * 5.2;
+    const objectCm = 10.0;
+    const lensCm = none ? 22.0 : 30.0;
+    const screenCm = finding ? 85.0 : sharp ? 87.2 : 80.0;
+    const imageCm = 87.24;
+    const blurMm = finding ? 1.6 : 0;
+    const ox = X(objectCm), lx = X(lensCm), sx = X(screenCm), ix = X(imageCm);
+
+    // Heights drawn 8 px to 1 cm (not to scale along the bench): the gauze is 2 cm tall.
+    const top = 150 - 8, image = 150 + 8 * 2.862;
+    const rayFrom = (yLens) => {
+      const atScreen = yLens + (image - yLens) * (sx - lx) / (ix - lx);
+      return { d: 'M' + (ox + 2) + ',' + top + ' L' + lx + ',' + yLens + ' L' + sx + ',' + atScreen.toFixed(1) };
+    };
+    const rays = [rayFrom(128), rayFrom(150), rayFrom(172)];
+    // Inside f the rays leave the lens still spreading.
+    const spreadFrom = (yLens) => {
+      const slope = (yLens - top) / (lx - ox);
+      return { d: 'M' + (ox + 2) + ',' + top + ' L' + lx + ',' + yLens + ' L' + sx + ',' + (yLens + slope * 0.4 * (sx - lx)).toFixed(1) };
+    };
+    const spread = [spreadFrom(130), spreadFrom(150), spreadFrom(170)];
+
+    const ticks = Array.from({ length: 21 }, (_, i) => ({ x: X(i * 5), y2: i % 2 === 0 ? 252 : 249 }));
+    const tickLabels = Array.from({ length: 11 }, (_, i) => ({ x: X(i * 10), label: String(i * 10) }));
+
+    // The gauze's image on the screen: inverted and 2.86 times the gauze, as the screen's face shows it.
+    const imageW = 64, imageH = 64, imageX = 43, imageY = 43;
+    const gauzeLines = [];
+    for (let i = 1; i < 5; i += 1) {
+      const p = imageX + (imageW * i) / 5;
+      gauzeLines.push({ x1: p, y1: imageY, x2: p, y2: imageY + imageH });
+      const q = imageY + (imageH * i) / 5;
+      gauzeLines.push({ x1: imageX, y1: q, x2: imageX + imageW, y2: q });
+    }
+
+    const current = 4;
+    const names = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const stages = names.map((name, i) => {
+      const done = i < current, cur = i === current;
+      return {
+        name, n: String(i + 1).padStart(2, '0'),
+        mark: done ? '✓' : cur ? '●' : '',
+        style: 'flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 8px 14px; text-decoration: none; color: ' + (cur ? '#F0F0F0' : done ? '#C9C6BF' : '#8F8D88') + '; background: ' + (cur ? '#1E1D1D' : 'transparent') + '; border: 1px solid ' + (cur ? '#F0482A' : '#242322'),
+        markStyle: 'width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (done ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (done ? '#6CC25A' : cur ? '#F0482A' : '#55534F')
+      };
+    });
+
+    const step = (text, state) => ({
+      text,
+      mark: state === 'done' ? '✓' : state === 'now' ? '●' : '',
+      style: 'display: flex; align-items: center; gap: 10px; padding: 8px 10px; color: ' + (state === 'done' ? '#8F8D88' : state === 'now' ? '#F0F0F0' : '#A3A19B') + '; background: ' + (state === 'now' ? '#2A1914' : 'transparent') + '; border: 1px solid ' + (state === 'now' ? '#F0482A' : 'transparent'),
+      markStyle: 'width: 22px; height: 22px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (state === 'done' ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (state === 'done' ? '#6CC25A' : state === 'now' ? '#F0482A' : '#55534F')
+    });
+    const steps = none
+      ? [step('Set the ray box at 10.0 cm and the lens 20.0 cm from it', 'now'), step('Move the screen until the image is sharpest', 'later'), step("Read v from the screen's centre mark", 'later')]
+      : [step('Ray box at 10.0 cm, lens at 30.0 cm: u = 20.0 cm', 'done'), step('Move the screen until the image is sharpest', finding ? 'now' : 'done'), step("Read v from the screen's centre mark", sharp ? 'now' : 'later')];
+
+    const fmt = (cm) => cm.toFixed(1) + ' cm';
+    return {
+      isFinding: finding, isSharp: sharp, isNone: none, hasRays: !none, hasImage: !none,
+      findingBtn: btn(finding), sharpBtn: btn(sharp), noneBtn: btn(none),
+      showFinding: () => this.setState({ mode: 'finding' }), showSharp: () => this.setState({ mode: 'sharp' }), showNone: () => this.setState({ mode: 'none' }),
+      figTitle: none ? 'The object inside the focal length' : 'Finding the image of the gauze',
+      benchLabel: none
+        ? 'The ray box at 10.0 cm and the lens at 22.0 cm, 12.0 cm apart: inside the focal length, so the light leaves the lens still spreading and no image forms on the screen at 80.0 cm'
+        : 'The ray box at 10.0 cm, the lens at 30.0 cm and the screen at ' + fmt(screenCm) + '; the light from the gauze ' + (finding ? 'has not yet met when it reaches the screen' : 'meets on the screen'),
+      screenLabel: none ? 'A faint, even patch of light: no image' : finding ? 'The gauze, upside down and blurred' : 'The gauze, upside down and sharp',
+      chip: none ? 'No image' : finding ? 'Blurred' : 'Sharp',
+      chipStyle: 'align-self: flex-start; font-size: 12px; padding: 2px 8px; border: 1px solid ' + (sharp ? '#6CC25A' : '#F5A524') + '; color: ' + (sharp ? '#9BDB8C' : '#F5C46B'),
+      blurPx: (blurMm * 1.6).toFixed(2),
+      imageX, imageY, imageW, imageH, gauzeLines,
+      screenText: fmt(screenCm), screenValue: screenCm,
+      uText: fmt(lensCm - objectCm), vText: fmt(screenCm - lensCm),
+      coachTitle: none ? 'No image to find' : sharp ? "Read v from the screen's centre mark" : 'Find the sharpest image',
+      coachText: none
+        ? 'An object this close to the lens makes no image on a screen, wherever you put it.'
+        : sharp
+          ? 'The image of the gauze is sharp. Read the rule at the screen holder’s centre mark, with your eye directly above it.'
+          : 'Move the screen towards the lens and away from it. The image of the gauze is sharp at one place only.',
+      steps, rays, spread, ticks, tickLabels, stages,
+      objectX: ox, lensX: lx, screenX: sx,
+      boxX: ox - 38, lampX: ox - 22, gauzeX: ox - 2, boxStemX: ox - 21, boxBaseX: ox - 15,
+      lensPath: 'M' + lx + ',114 Q' + (lx + 9) + ',150 ' + lx + ',186 Q' + (lx - 9) + ',150 ' + lx + ',114 Z',
+      lensStemX: lx - 3, lensBaseX: lx - 15,
+      screenRectX: sx - 3, screenStemX: sx - 3, screenBaseX: sx - 15,
+      uLabelX: (ox + lx) / 2, vLabelX: (lx + sx) / 2
+    };
+  }
+}
+</script>
+</body>
+</html>
