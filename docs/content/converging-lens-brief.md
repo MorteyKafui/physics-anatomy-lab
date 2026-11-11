@@ -4,7 +4,8 @@ Step 1 of the experiment playbook (master plan, "Adding an experiment"). It sets
 experiment is, before any of the lab is built, for the physics reviewer to approve.
 
 - **Experiment id:** `converging-lens` (Phase 2, the third flagship).
-- **Status:** a draft for the physics reviewer.
+- **Status:** decisions 1 to 5 below approved by Mortey (physics reviewer) on 2026-11-11. Two
+  more, from what the exact model showed, are open (6 and 7).
 
 ## What the student does
 
@@ -72,8 +73,8 @@ matrices in `validation/pa_validation/lens.py`. This experiment adds:
 - **The exact lens (the plan's "paraxial plus exact").** A ray traced exactly through the lens's
   two spherical surfaces by Snell's law. Rays near the edge cross the axis a little nearer the
   lens than paraxial ones (spherical aberration), so the sharpest image sits a little short of the
-  thin-lens v. The effect is small for a school lens, and it is the honest reason a careful
-  student's f comes out slightly off.
+  thin-lens v. It is the honest reason a careful student's f comes out a little off: about 1% for
+  the proposed lens (see "What the exact model shows").
 - **Cross-checks** against an independent NumPy model in `validation/`: the blur patch from
   traced rays, and the exact trace against vector Snell's law in three dimensions, with the
   paraxial limit equal to the thin-lens formula.
@@ -104,6 +105,31 @@ range of screen positions a student would call sharp, v (1 ± c ⁄ D)):
 Every object–screen distance here is at least 4f = 60 cm (exactly 60 cm at u = 30.0 cm, where
 u = v = 2f), so each position gives a real image on the screen.
 
+## What the exact model shows
+
+Built to the approved bench (`lensForFocalLength(15.0, 1.52, 4.0)`): R = 15.54 cm on both faces,
+0.36 cm thick at the centre. f from the student's graph, 2 ⁄ (m₁ + m₂), through the five positions:
+
+| Image taken at                                   | f from the graph / cm |
+| ------------------------------------------------ | --------------------- |
+| The thin-lens v                                  | 15.00                 |
+| The thick lens's paraxial image, from its centre | 15.03                 |
+| The sharpest image (least spread over the face)  | 14.83                 |
+
+Spherical aberration dominates, and it grows fast with the lens's width. The sharpest image
+moves nearer the lens than the thin-lens v, most at u = 20.0 cm where v is largest:
+
+| Lens diameter / cm | Sharpest image at u = 20.0 cm, from v = 60.0 cm | f from the graph / cm |
+| ------------------ | ----------------------------------------------- | --------------------- |
+| 2.0                | 0.6 cm nearer                                   | 14.97                 |
+| 3.0                | 1.5 cm nearer                                   | 14.91                 |
+| 4.0                | 2.8 cm nearer                                   | 14.83                 |
+| 5.0                | 4.3 cm nearer                                   | 14.73                 |
+
+At 4.0 cm the shift at u = 20.0 cm is larger than the sharp range (± 0.75 cm), so where the image
+looks sharp should be centred on the sharpest image, not on the thin-lens v. The brief's table
+of sharp ranges above is the thin-lens one.
+
 ## What comes next (one pull request each)
 
 1. **The physics.** Blur on the screen, the sharp range and the exact trace, with the NumPy
@@ -129,3 +155,8 @@ u = v = 2f), so each position gives a real image on the screen.
 3. Five positions, 20 to 40 cm, where the question lists four.
 4. The blur model and its sharpness threshold c = 0.5 mm, until the UEW reference data comes.
 5. Adding the exact ray trace (spherical aberration) to the model, as the plan asks.
+6. Open: the lens's diameter. 4.0 cm (approved) puts f from the graph 1.1% low and the sharp
+   image up to 2.8 cm short of v; 3.0 cm makes those 0.6% and 1.5 cm. (When 4.0 cm was approved
+   the brief called the effect small; the exact model shows it is not, so this is asked again.)
+7. Open: the lab centres the sharp range on the exact lens's sharpest image, so a student's
+   readings carry the aberration a real lens gives.

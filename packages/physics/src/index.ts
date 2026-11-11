@@ -18,12 +18,20 @@ export {
 } from "./circuits";
 export type { OhmsLawCircuit, Potentiometer } from "./circuits";
 export {
+  bestFocus,
+  defocusBlur,
   focalLengthFromDistances,
   focalLengthFromIntercept,
   imageDistance,
+  lensForFocalLength,
   magnification,
   minimumObjectScreenDistance,
+  paraxialImageDistance,
+  sharpRange,
+  thickLensFocalLength,
+  traceAxialRay,
 } from "./lens";
+export type { SphericalLens } from "./lens";
 export {
   finalTemperature,
   heatCapacity,

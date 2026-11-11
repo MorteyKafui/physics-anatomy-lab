@@ -26,6 +26,13 @@ from pa_validation.circuits import (
 )
 from pa_validation.fit import fit_line, fit_through_origin
 from pa_validation.lens import image
+from pa_validation.lens_exact import (
+    axis_crossing,
+    best_focus,
+    defocus_blur,
+    lens_for_focal_length,
+    paraxial_image,
+)
 from pa_validation.mixtures import final_temperature, solid_specific_heat
 from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
 from pa_validation.pendulum import period_exact
@@ -236,6 +243,49 @@ def build_lens() -> dict[str, object]:
     }
 
 
+def build_lens_exact() -> dict[str, object]:
+    """The approved school lens (docs/content/converging-lens-brief.md): f = 15.0 cm, n = 1.52,
+    4.0 cm across, traced exactly, and the thin lens's blur on the screen."""
+    lens = lens_for_focal_length(15.0, 1.52, 4.0)
+    positions = [20.0, 25.0, 30.0, 35.0, 40.0, 60.0]
+    return {
+        "model": "biconvex spherical lens, 3-D vector Snell's law; best focus by least RMS spread",
+        "units": {"distance": "cm"},
+        "lens": {
+            "focalLength": 15.0,
+            "index": 1.52,
+            "aperture": 4.0,
+            "edge": 0.1,
+            "radius": lens.radius,
+            "thickness": lens.thickness,
+        },
+        "rays": [
+            {"objectDistance": u, "height": h, "crossing": axis_crossing(lens, u, h)}
+            for u in positions
+            for h in (0.25, 0.5, 1.0, 1.5, 1.9)
+        ],
+        "images": [
+            {
+                "objectDistance": u,
+                "paraxial": paraxial_image(lens, u),
+                "bestFocus": best_focus(lens, u),
+            }
+            for u in positions
+        ],
+        "blur": [
+            {
+                "objectDistance": u,
+                "focalLength": 15.0,
+                "screenDistance": s,
+                "aperture": 4.0,
+                "diameter": defocus_blur(u, 15.0, s, 4.0),
+            }
+            for u in (10.0, 20.0, 30.0, 40.0)
+            for s in (20.0, 24.0, 30.0, 45.0, 60.0, 80.0)
+        ],
+    }
+
+
 SOLIDS = {"copper": 390.0, "aluminium": 900.0, "iron": 450.0, "brass": 380.0}
 
 
@@ -380,6 +430,7 @@ if __name__ == "__main__":
     write("sigfigs.json", build_sigfigs())
     write("circuits.json", build_circuits())
     write("lens.json", build_lens())
+    write("lens-exact.json", build_lens_exact())
     write("mixtures.json", build_mixtures())
     write("student_t.json", build_student_t())
     write("outliers.json", build_outliers())
