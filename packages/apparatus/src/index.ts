@@ -14,3 +14,5 @@ export {
   wireX,
 } from "./circuit-bench";
 export type { CircuitBenchProps } from "./circuit-bench";
+export { benchX, OPTICAL_VIEWBOX, OpticalBench, RULE, ScreenFace } from "./optical-bench";
+export type { OpticalBenchProps, ScreenFaceProps } from "./optical-bench";
