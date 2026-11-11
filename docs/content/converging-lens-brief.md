@@ -4,9 +4,8 @@ Step 1 of the experiment playbook (master plan, "Adding an experiment"). It sets
 experiment is, before any of the lab is built, for the physics reviewer to approve.
 
 - **Experiment id:** `converging-lens` (Phase 2, the third flagship).
-- **Status:** decisions 1 to 5 below approved by Mortey (physics reviewer) on 2026-11-11, and
-  decision 6 (keep the 4.0 cm lens) after the exact model showed its aberration. Decision 7 is
-  open.
+- **Status:** approved by Mortey (physics reviewer) on 2026-11-11: decisions 1 to 5, then 6 and
+  7 once the exact model showed the lens's aberration.
 
 ## What the student does
 
@@ -128,8 +127,8 @@ moves nearer the lens than the thin-lens v, most at u = 20.0 cm where v is large
 | 5.0                | 4.3 cm nearer                                   | 14.73                 |
 
 At 4.0 cm the shift at u = 20.0 cm is larger than the sharp range (± 0.75 cm), so where the image
-looks sharp should be centred on the sharpest image, not on the thin-lens v. The brief's table
-of sharp ranges above is the thin-lens one.
+looks sharp is centred on the sharpest image, not on the thin-lens v (decision 7). The brief's
+table of sharp ranges above is the thin-lens one.
 
 ## What comes next (one pull request each)
 
@@ -159,5 +158,6 @@ of sharp ranges above is the thin-lens one.
 6. Decided: the lens stays 4.0 cm across, with what the exact model shows: f from the graph
    1.1% low, and the sharp image up to 2.8 cm short of v. (Asked again once the model showed the
    effect is not small, as the brief first said; kept.)
-7. Open: the lab centres the sharp range on the exact lens's sharpest image, so a student's
-   readings carry the aberration a real lens gives.
+7. Decided: the lab centres the sharp range on the exact lens's sharpest image (`bestFocus`),
+   not the thin-lens v, so a student's readings carry the aberration a real lens gives. Built
+   with the bench, when the lab first draws the image on the screen.
