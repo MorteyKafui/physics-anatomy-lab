@@ -1075,6 +1075,12 @@ export function OhmsLawScreen() {
                   </div>
                 </div>
                 <p className="text-soft">{t(`${P}.explain.graph`)}</p>
+                <Link
+                  href={`/lab/${E.id}/sheets`}
+                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("sheets.link")}
+                </Link>
               </TabsContent>
 
               <TabsContent value="tips" className="flex flex-col gap-3 p-5">

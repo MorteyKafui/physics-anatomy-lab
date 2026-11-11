@@ -102,7 +102,11 @@ function footer(c: Ctx, middle: string, right: string) {
 
 /** Page one of the poster and the explainer: the name, the question, numbers, figure, parts. */
 function overview(c: Ctx, s: SheetContent, main: PDFImage, mainPic: Picture, label: string) {
-  text(c, s.name, M, M - 6, { size: 40, bold: true });
+  // The name set large, smaller only if it would run into the sheet number on the right.
+  const room = c.W - 2 * M - 120;
+  let size = 40;
+  while (size > 20 && c.bold.widthOfTextAtSize(s.name, size) > room) size -= 1;
+  text(c, s.name, M, M - 6 + (40 - size) * 0.6, { size, bold: true });
   let my = M;
   for (const line of [s.number, label, s.style])
     my = text(c, line, c.W - M, my, { size: 7.5, color: MUTED, align: "right" });

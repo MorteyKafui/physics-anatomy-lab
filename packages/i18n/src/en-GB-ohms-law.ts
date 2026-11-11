@@ -204,7 +204,65 @@ export const enGBOhmsLaw = {
   "experiments.ohms-law.keyClosed": "closed",
   "experiments.ohms-law.jockeyLifted": "The jockey is lifted",
   "experiments.ohms-law.jockeyPressed": "The jockey is pressed at PJ = {pj} cm",
-  "experiments.ohms-law.inDevelopment": "Being built: print sheets and the exam come next",
+  "experiments.ohms-law.sheet.drawingTitle":
+    "Ohm's law and the potentiometer: how the line gives E and r",
+  "experiments.ohms-law.sheet.style": "Find E and r from one graph",
+  "experiments.ohms-law.sheet.question": "Why does a cell's voltage drop when it drives a current?",
+  "experiments.ohms-law.sheet.lead":
+    "Part of a cell's emf is spent driving the current through the cell itself. Plot I against V, and one straight line gives both the emf and the internal resistance.",
+  "experiments.ohms-law.sheet.n.E": "emf, where the line meets the V axis",
+  "experiments.ohms-law.sheet.n.r": "internal resistance, −1 ⁄ slope",
+  "experiments.ohms-law.sheet.n.slope": "slope of I against V",
+  "experiments.ohms-law.sheet.n.positions": "positions of the jockey",
+  "experiments.ohms-law.sheet.n.lost": "lost inside the cells at PJ = {last} cm",
+  "experiments.ohms-law.sheet.part.E":
+    "Two {cellEmf} V cells in series. Part of their emf drives the current through the cells themselves.",
+  "experiments.ohms-law.sheet.part.K":
+    "Open it as soon as each reading is taken, or the cells run down.",
+  "experiments.ohms-law.sheet.part.R": "{R} Ω. It keeps the current within the ammeter's range.",
+  "experiments.ohms-law.sheet.part.A":
+    "In series with the cells. Reads 0 to {ampsMax} A, to {amps} A.",
+  "experiments.ohms-law.sheet.part.V":
+    "Across the cells, so it reads their terminal p.d. Reads 0 to {voltsMax} V, to {volts} V.",
+  "experiments.ohms-law.sheet.part.PQ":
+    "{length} m of constantan, {wireOhms} Ω. Pressing the jockey at J cuts the length PJ out of the circuit.",
+  "experiments.ohms-law.sheet.part.J":
+    "Press it on the wire and lift it off. Sliding it scrapes the wire.",
+  "experiments.ohms-law.sheet.spec.cells": "Cells",
+  "experiments.ohms-law.sheet.spec.cellsValue":
+    "Two {cellEmf} V dry cells: E = {emf} V, r = {cellR} Ω",
+  "experiments.ohms-law.sheet.spec.resistor": "Resistor R",
+  "experiments.ohms-law.sheet.spec.resistorValue": "{R} Ω",
+  "experiments.ohms-law.sheet.spec.wire": "Wire PQ",
+  "experiments.ohms-law.sheet.spec.wireValue": "{length} m of constantan, {wireOhms} Ω",
+  "experiments.ohms-law.sheet.spec.ammeter": "Ammeter",
+  "experiments.ohms-law.sheet.spec.ammeterValue": "0 to {ampsMax} A, reads to {amps} A",
+  "experiments.ohms-law.sheet.spec.voltmeter": "Voltmeter",
+  "experiments.ohms-law.sheet.spec.voltmeterValue": "0 to {voltsMax} V, reads to {volts} V",
+  "experiments.ohms-law.sheet.spec.positions": "Jockey",
+  "experiments.ohms-law.sheet.spec.positionsValue": "PJ = {list} cm",
+  "experiments.ohms-law.sheet.spec.result": "From the line",
+  "experiments.ohms-law.sheet.spec.resultValue": "E = {E} V, r = {r} Ω",
+  "experiments.ohms-law.sheet.step.wire.title": "Wire the circuit",
+  "experiments.ohms-law.sheet.step.wire.text":
+    "Join the cells, the key K, the resistor R, the ammeter and the wire PQ in series, and the voltmeter across the cells. A lead from P ends in the jockey J.",
+  "experiments.ohms-law.sheet.step.noContact.title": "Read with the jockey off the wire",
+  "experiments.ohms-law.sheet.step.noContact.text":
+    "Close the key and read both meters: I = {I0} A and V = {V0} V. Then open the key.",
+  "experiments.ohms-law.sheet.step.jockey.title": "Press the jockey at PJ = {pj} cm",
+  "experiments.ohms-law.sheet.step.jockey.text":
+    "The length PJ is cut out of the circuit, so the current rises to {I} A and V falls to {V} V. Read both meters, then lift the jockey.",
+  "experiments.ohms-law.sheet.step.positions.title": "Repeat at {count} positions",
+  "experiments.ohms-law.sheet.step.positions.text":
+    "Take I and V at PJ = {list} cm, opening the key after each reading so the cells do not run down. Then take them again with PJ decreasing.",
+  "experiments.ohms-law.sheet.step.plot.title": "Plot I against V",
+  "experiments.ohms-law.sheet.step.plot.text":
+    "The line's slope is {slope} A V⁻¹, so r = −1 ⁄ slope = {r} Ω. Carried on to the V axis, where I = 0, it meets it at E = {E} V.",
+  "experiments.ohms-law.sheet.why.title": "Why open the key after each reading?",
+  "experiments.ohms-law.sheet.why.text":
+    "While a dry cell drives a current, its emf sags a little as it polarises, and it recovers while the key is open. Leave the key closed and the later readings of V come out low, so those points fall below the line.",
+  "experiments.ohms-law.sheet.motto": "Press, read, lift, open the key",
+  "experiments.ohms-law.inDevelopment": "Being built: the exam comes next",
   "experiments.ohms-law.explain.title": "Why the voltmeter reading falls",
   "experiments.ohms-law.explain.text":
     "The cell's emf E drives the current round the circuit and through the cell itself. The cell has its own resistance r, which uses up part of E as the current passes, so the p.d. across its terminals is less.",
