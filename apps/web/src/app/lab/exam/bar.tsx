@@ -54,7 +54,7 @@ export function ExamBar({
   const part = EXAM_PARTS[clock.part]!;
 
   return (
-    <div className="flex flex-col border-b border-border">
+    <div className="flex shrink-0 flex-col border-b border-border">
       <div
         role="timer"
         aria-label={t("exam.clock")}

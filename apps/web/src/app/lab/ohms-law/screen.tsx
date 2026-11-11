@@ -19,6 +19,9 @@ import {
   answersProjection,
   coach,
   coachIsOn,
+  decideExam,
+  EMPTY_EXAM,
+  examProjection,
   frontier,
   HELP_LEVELS,
   helpLevelFor,
@@ -71,7 +74,9 @@ import { Button } from "@pa/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -83,7 +88,8 @@ import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
 import { flagsFor, useTable } from "../table-builder";
-import { useAttempt } from "../use-attempt";
+import { ExamBar } from "../exam/bar";
+import { backToPractice, useAttempt } from "../use-attempt";
 
 const E = ohmsLaw;
 const P = "experiments.ohms-law";
@@ -101,6 +107,22 @@ const leadKey = (l: Lead) => `${l[0]}~${l[1]}`;
  */
 export function OhmsLawScreen() {
   const handle = useAttempt(E.id);
+  const router = useRouter();
+  // Exam mode: the clock, from the attempt's own events.
+  const exam = useMemo(
+    () => (handle ? replay(examProjection, handle.attempt, handle.events) : EMPTY_EXAM),
+    [handle],
+  );
+  const handIn = useCallback(
+    async (auto: boolean) => {
+      if (!handle) return;
+      const now = replay(examProjection, handle.attempt, handle.events);
+      const d = decideExam(handle.attempt.mode, now, { type: "hand-in", auto });
+      if (d.ok) await handle.record(d.events);
+      router.push(`/lab/${E.id}/exam`);
+    },
+    [handle, router],
+  );
   const [tab, setTab] = useState("instructions");
   const [from, setFrom] = useState<Terminal>();
   const [pointer, setPointer] = useState<{ x: number; y: number }>();
@@ -510,26 +532,49 @@ export function OhmsLawScreen() {
             </div>
           </div>
           <span className="hidden flex-1 md:block" />
-          <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-            <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
-            <select
-              className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
-              value={state.helpLevel}
-              onChange={(e) =>
-                void handle.dispatch({ type: "set-help-level", level: e.target.value as HelpLevel })
-              }
-            >
-              {HELP_LEVELS.map((level) => (
-                <option key={level} value={level}>
-                  {t(`lab.helpLevel.${level}` as MessageKey)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <span className="border border-border px-2.5 py-1 text-xs text-muted-foreground">
-            {t(`${P}.inDevelopment`)}
-          </span>
+          {/* In an exam the coach is off: no help level to choose. */}
+          {state.mode !== "exam" && (
+            <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
+              <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
+              <select
+                className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
+                value={state.helpLevel}
+                onChange={(e) =>
+                  void handle.dispatch({
+                    type: "set-help-level",
+                    level: e.target.value as HelpLevel,
+                  })
+                }
+              >
+                {HELP_LEVELS.map((level) => (
+                  <option key={level} value={level}>
+                    {t(`lab.helpLevel.${level}` as MessageKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </header>
+        {handle.attempt.mode === "exam" &&
+          exam.startedAt !== undefined &&
+          exam.handedInAt === undefined && (
+            <ExamBar startedAt={exam.startedAt} onHandIn={(auto) => void handIn(auto)} />
+          )}
+        {handle.attempt.mode === "exam" && exam.handedInAt !== undefined && (
+          <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
+            <span>{exam.auto ? t("exam.timeUp") : t("exam.handedIn")}</span>
+            <Link href={`/lab/${E.id}/exam`} className="font-semibold underline underline-offset-2">
+              {t("exam.seeScript")}
+            </Link>
+            <button
+              type="button"
+              className="underline underline-offset-2"
+              onClick={() => void backToPractice(E.id).then(() => window.location.reload())}
+            >
+              {t("exam.backToPractice")}
+            </button>
+          </div>
+        )}
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           {panel ? (
@@ -668,7 +713,7 @@ export function OhmsLawScreen() {
               )}
             </section>
           ) : (
-            <div className="relative flex min-w-0 flex-1 items-center justify-center px-6 pt-16 pb-28">
+            <div className="relative flex min-w-0 flex-1 items-center justify-center px-6 pt-16 pb-28 md:[container-type:size]">
               <div className="absolute top-5 left-6 hidden flex-col gap-0.5 md:flex">
                 <span className="text-sm text-muted-foreground">{t(`${P}.figure`)}</span>
                 <span className="font-semibold">
@@ -677,7 +722,9 @@ export function OhmsLawScreen() {
               </div>
               <div
                 ref={stage}
-                className="relative w-full max-w-[760px]"
+                // As wide as the space allows and, on a wide screen, no taller than it, keeping the
+                // drawing's shape, so the bench never spills over the header when the window is short.
+                className="relative w-full max-w-[760px] md:w-[min(100cqw,760px,calc(100cqh*600/420))]"
                 style={{ aspectRatio: `${CIRCUIT_VIEWBOX.width} / ${CIRCUIT_VIEWBOX.height}` }}
               >
                 <CircuitBench
@@ -1086,6 +1133,14 @@ export function OhmsLawScreen() {
                 >
                   {t("sheets.link")}
                 </Link>
+                {handle.attempt.mode !== "exam" && (
+                  <Link
+                    href={`/lab/${E.id}/exam`}
+                    className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                  >
+                    {t("exam.try")}
+                  </Link>
+                )}
               </TabsContent>
 
               <TabsContent value="tips" className="flex flex-col gap-3 p-5">

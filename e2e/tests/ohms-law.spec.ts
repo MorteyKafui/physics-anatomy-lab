@@ -1,6 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { WEB } from "../playwright.config";
+import { DIAGRAM, serious, terminal, wire } from "./ohms-walk";
 
 /*
  * The Ohm's law lab, steps 1 to 5 (Phase 2, PR 3): the approved board "Ohm's law: wiring and
@@ -8,26 +8,6 @@ import { WEB } from "../playwright.config";
  * safety block; and live readings from the circuit solver.
  */
 const OHMS = `${WEB}/lab/ohms-law`;
-
-const DIAGRAM: [string, string][] = [
-  ["cell+", "R.1"],
-  ["R.2", "A+"],
-  ["A-", "wire.Q"],
-  ["jockey", "wire.P"],
-  ["wire.P", "key.1"],
-  ["key.2", "cell-"],
-  ["V+", "cell+"],
-  ["V-", "cell-"],
-];
-
-const serious = async (page: Page) => {
-  const { violations } = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-    .analyze();
-  return violations
-    .filter((v) => v.impact === "serious" || v.impact === "critical")
-    .map((v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(" ")).join(", ")})`);
-};
 
 /**
  * Finish a step. The apparatus differs a little in every attempt, so on some the coach flags a
@@ -43,8 +23,6 @@ async function finish(page: Page, button: string, next: string) {
   await expect(step).toBeVisible();
 }
 
-const terminal = (page: Page, t: string) => page.locator(`[data-terminal-button="${t}"]`);
-
 /** Through the question and the prediction to the bench. */
 async function toBuild(page: Page) {
   await page.goto(OHMS);
@@ -54,13 +32,6 @@ async function toBuild(page: Page) {
   await expect(page.getByText("You said: It falls. Measure and see.")).toBeVisible();
   await page.getByRole("button", { name: "Continue to Build" }).click();
   await expect(page.getByText("Step 3 of 10 · Build")).toBeVisible();
-}
-
-async function wire(page: Page, leads: [string, string][]) {
-  for (const [a, b] of leads) {
-    await terminal(page, a).click();
-    await terminal(page, b).click();
-  }
 }
 
 test("the student wires the circuit terminal by terminal, the check passes, and the meters read the circuit", async ({
@@ -90,7 +61,9 @@ test("the student wires the circuit terminal by terminal, the check passes, and 
 
   await page.getByRole("button", { name: "Open the key" }).click();
   await expect(page.getByRole("img", { name: /The key is open/ })).toBeVisible();
-  await expect(page.getByRole("img", { name: /reads 0.00 A/ })).toBeVisible();
+  // No current: the ammeter reads zero, or one division off it on a meter with a zero error
+  // (about one in three, as real meters have).
+  await expect(page.getByRole("img", { name: /ammeter reads 0\.0[02] A/ })).toBeVisible();
 });
 
 test("a lead straight across the cells is blocked: the key will not close", async ({ page }) => {

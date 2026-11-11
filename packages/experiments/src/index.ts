@@ -146,3 +146,5 @@ export type {
 } from "./ohms-law-table";
 export { OHMS_LAW_SHEET_NUMBER, ohmsLawSheet } from "./ohms-law-sheets";
 export type { OhmsLawSheet } from "./ohms-law-sheets";
+export { markOhmsLawScript, ohmsLawFollowUps } from "./ohms-law-exam";
+export type { OhmsLawExamFacts } from "./ohms-law-exam";

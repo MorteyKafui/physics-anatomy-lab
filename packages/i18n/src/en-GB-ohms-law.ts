@@ -262,7 +262,53 @@ export const enGBOhmsLaw = {
   "experiments.ohms-law.sheet.why.text":
     "While a dry cell drives a current, its emf sags a little as it polarises, and it recovers while the key is open. Leave the key closed and the later readings of V come out low, so those points fall below the line.",
   "experiments.ohms-law.sheet.motto": "Press, read, lift, open the key",
-  "experiments.ohms-law.inDevelopment": "Being built: the exam comes next",
+  "experiments.ohms-law.exam.question.meta":
+    "Question 1 · Ohm's law and the potentiometer · {minutes} minutes",
+  "experiments.ohms-law.exam.question.lead":
+    "Find the emf and the internal resistance of the cells.",
+  "experiments.ohms-law.exam.question.1":
+    "Connect the circuit as shown in the diagram, with the voltmeter across the cells.",
+  "experiments.ohms-law.exam.question.2":
+    "Close the key K. Record the ammeter reading I and the voltmeter reading V with the jockey not touching the wire.",
+  "experiments.ohms-law.exam.question.3":
+    "Press the jockey on the wire at J, with PJ = {list} cm in turn, and record I and V at each. Open the key after each reading.",
+  "experiments.ohms-law.exam.question.4":
+    "Tabulate your readings. Plot a graph of I on the vertical axis against V on the horizontal axis.",
+  "experiments.ohms-law.exam.question.5":
+    "Find the slope s of the graph and the value of V where I = 0. Calculate r = −1 ⁄ s. State two precautions you took.",
+  "experiments.ohms-law.exam.question.6":
+    "Part (b): answer the questions that follow the experiment.",
+  "experiments.ohms-law.exam.item.circuit": "Circuit connected as the diagram shows",
+  "experiments.ohms-law.exam.item.voltmeterAcross": "Voltmeter across the cells",
+  "experiments.ohms-law.exam.item.positions": "Readings at five positions of the jockey",
+  "experiments.ohms-law.exam.item.noContact": "A reading with the jockey off the wire",
+  "experiments.ohms-law.exam.item.decimals": "Readings to the meters' least counts",
+  "experiments.ohms-law.exam.item.means": "Means of I and V worked out correctly",
+  "experiments.ohms-law.exam.item.keyOpened": "Key opened between readings",
+  "experiments.ohms-law.exam.item.axes": "I plotted against V, axes labelled",
+  "experiments.ohms-law.exam.item.E": "E where the line meets the V axis, with its unit",
+  "experiments.ohms-law.exam.item.r": "r from −1 ⁄ slope, with its unit",
+  "experiments.ohms-law.exam.lost.circuit": "The circuit is not connected as the diagram shows.",
+  "experiments.ohms-law.exam.lost.voltmeterAcross": "The voltmeter is not across the cells.",
+  "experiments.ohms-law.exam.lost.positions": "Positions read: {n} of 5.",
+  "experiments.ohms-law.exam.lost.noContact": "No reading with the jockey off the wire.",
+  "experiments.ohms-law.exam.lost.meterDecimals": "Readings off the meters' least counts: {n}.",
+  "experiments.ohms-law.exam.lost.noMeans": "No columns for the means of I and V.",
+  "experiments.ohms-law.exam.lost.keyOpened":
+    "The key was left closed between readings, so the cells ran down.",
+  "experiments.ohms-law.exam.lost.axesIV": "The graph is not I against V.",
+  "experiments.ohms-law.exam.q.lost-volts":
+    "At PJ = {pj} cm the ammeter reads {I} A and the voltmeter {V} V. The emf of the cells is {E} V. Find the lost volts and the internal resistance r.",
+  "experiments.ohms-law.exam.a.lost-volts":
+    "Lost volts = E − V = {E} − {V} = {lost} V. r = lost volts ⁄ I = {lost} ⁄ {I} = {r} Ω.",
+  "experiments.ohms-law.exam.q.no-contact":
+    "With the jockey off the wire, the voltmeter still reads less than the emf. Why?",
+  "experiments.ohms-law.exam.a.no-contact":
+    "The key is closed, so the cells still drive a current through R, the ammeter and the whole wire: {I} A. Part of the emf drives that current through the cells themselves, so V = {V} V, {lost} V below E.",
+  "experiments.ohms-law.exam.q.constantan":
+    "Why is a potentiometer wire made of constantan and not copper?",
+  "experiments.ohms-law.exam.a.constantan":
+    "Constantan's resistance hardly changes as it warms, so the wire's resistance stays the same while current flows. Its resistivity is also high, so a metre of wire has a useful resistance.",
   "experiments.ohms-law.explain.title": "Why the voltmeter reading falls",
   "experiments.ohms-law.explain.text":
     "The cell's emf E drives the current round the circuit and through the cell itself. The cell has its own resistance r, which uses up part of E as the current passes, so the p.d. across its terminals is less.",
