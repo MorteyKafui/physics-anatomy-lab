@@ -130,6 +130,33 @@ At 4.0 cm the shift at u = 20.0 cm is larger than the sharp range (± 0.75 cm), 
 looks sharp is centred on the sharpest image, not on the thin-lens v (decision 7). The brief's
 table of sharp ranges above is the thin-lens one.
 
+## The bench and the mistakes (item 2), for the physics reviewer
+
+`packages/experiments/src/converging-lens.ts` builds each attempt's lens from its seed (f ± 2%),
+shows the image on the screen sharpest at the exact lens's best focus (decision 7), and reads the
+rule as the student does. Sizes it assumes, to be checked in the UEW lab:
+
+| Part                   | Assumed                    | What it decides                                            |
+| ---------------------- | -------------------------- | ---------------------------------------------------------- |
+| Holder, centre to edge | 1.0 cm                     | A reading from the edge is out by this much                |
+| Gauze off the axis     | More than 3 mm is noticed  | When the coach says the set-up is not coaxial              |
+| Screen and gauze       | 10 cm and 2 cm high        | When an off-axis image runs off the screen                 |
+| Rule read at an angle  | More than 5° off square-on | When the coach names parallax; the shift is the rule's own |
+
+The catalogue, each with its coaching copy (`findings.lens.*`):
+
+- reading u or v from a holder's edge, not its centre mark;
+- the gauze and the lens not on one axis;
+- taking a blurred image as sharp;
+- an object at or inside the focal length (no image on the screen);
+- reading the rule at an angle.
+
+Plotting v against u instead of 1/v against 1/u is checked with the graph (item 5), as Ohm's law
+checks I against V there.
+
+A careful student's f, from five readings to the millimetre with every image at its sharpest,
+comes out 1.0% to 1.2% short of the lens's own f over 500 lenses: the aberration the brief records.
+
 ## What comes next (one pull request each)
 
 1. **The physics.** Blur on the screen, the sharp range and the exact trace, with the NumPy

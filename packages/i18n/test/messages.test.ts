@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { emphasis, enGB, hasMessage, t } from "../src";
+import { enGBConvergingLens } from "../src/converging-lens";
 import { enGBOhmsLaw } from "../src/ohms-law";
 
 describe("t", () => {
@@ -31,10 +32,17 @@ describe("emphasis", () => {
 });
 
 describe("the en-GB messages", () => {
-  const entries = [...Object.entries(enGB), ...Object.entries(enGBOhmsLaw)];
+  const entries = [
+    ...Object.entries(enGB),
+    ...Object.entries(enGBOhmsLaw),
+    ...Object.entries(enGBConvergingLens),
+  ];
 
   test("an experiment's own file repeats no shared key", () => {
     expect(Object.keys(enGBOhmsLaw).filter((k) => k in enGB)).toEqual([]);
+    expect(Object.keys(enGBConvergingLens).filter((k) => k in enGB || k in enGBOhmsLaw)).toEqual(
+      [],
+    );
   });
 
   test("an experiment's messages are found once its file is registered", () => {
