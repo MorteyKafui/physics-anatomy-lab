@@ -1,6 +1,6 @@
 "use client";
 
-import { BENCH_VIEWBOX, PendulumBench } from "@pa/apparatus";
+import { BENCH_VIEWBOX, CIRCUIT_VIEWBOX, CircuitBench, PendulumBench } from "@pa/apparatus";
 import type { Ref } from "react";
 
 import { GRAPH_VIEWBOX, GraphDrawing } from "../graph-sheet";
@@ -16,6 +16,10 @@ export const BENCH_SIZE = {
   width: 360,
   height: (360 * BENCH_VIEWBOX.height) / BENCH_VIEWBOX.width,
 };
+export const CIRCUIT_SIZE = {
+  width: 440,
+  height: (440 * CIRCUIT_VIEWBOX.height) / CIRCUIT_VIEWBOX.width,
+};
 export const GRAPH_SIZE = { width: 400, height: (400 * 276) / 234 };
 
 export function BenchDrawing({
@@ -28,29 +32,41 @@ export function BenchDrawing({
   ref?: Ref<SVGSVGElement>;
 }) {
   const d = scene.drawing;
-  if (d.kind !== "bench") return null;
+  if (d.kind !== "bench" && d.kind !== "circuit") return null;
+  const size = d.kind === "bench" ? BENCH_SIZE : CIRCUIT_SIZE;
   return (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       data-figure="paper"
-      viewBox={`0 0 ${BENCH_SIZE.width} ${BENCH_SIZE.height}`}
-      width={BENCH_SIZE.width}
-      height={BENCH_SIZE.height}
+      viewBox={`0 0 ${size.width} ${size.height}`}
+      width={size.width}
+      height={size.height}
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
       className="block h-auto max-w-full"
     >
-      <rect width={BENCH_SIZE.width} height={BENCH_SIZE.height} fill="var(--pa-graph-paper)" />
-      <svg x={0} y={0} width={BENCH_SIZE.width} height={BENCH_SIZE.height}>
-        <PendulumBench
-          angle={d.angle}
-          stopwatchSeconds={d.stopwatch}
-          length={d.length}
-          assembly={d.assembly}
-          letters={d.letters}
-        />
+      <rect width={size.width} height={size.height} fill="var(--pa-graph-paper)" />
+      <svg x={0} y={0} width={size.width} height={size.height}>
+        {d.kind === "bench" ? (
+          <PendulumBench
+            angle={d.angle}
+            stopwatchSeconds={d.stopwatch}
+            length={d.length}
+            assembly={d.assembly}
+            letters={d.letters}
+          />
+        ) : (
+          <CircuitBench
+            leads={d.leads}
+            keyClosed={false}
+            jockey={d.jockey}
+            wireLength={d.wireLength}
+            ammeter={0}
+            voltmeter={0}
+          />
+        )}
       </svg>
     </svg>
   );

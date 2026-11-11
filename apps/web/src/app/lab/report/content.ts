@@ -97,7 +97,17 @@ export interface ReportContent {
   graph: FigureScene;
   /** What the coach pointed out and the student put right, for the "Coach's notes" option. */
   notes: string[];
+}
+
+/** The pendulum's report, with the run's review (the exam marks the script from it). */
+export interface PendulumReport extends ReportContent {
   review: RunReview;
+}
+
+/** What a report screen needs to know of its experiment. */
+export interface ReportExperiment {
+  id: string;
+  title: string;
 }
 
 const P = "experiments.simple-pendulum";
@@ -139,7 +149,7 @@ export function reportContent(
   attempt: Attempt,
   events: readonly LabEvent[],
   g = DEFAULT_ENVIRONMENT.g,
-): ReportContent {
+): PendulumReport {
   const review = reviewRun(attempt, events, g);
   const report = replay(reportProjection, attempt, events);
   const { assembly, readings, state, view, columns, units, answers, shownTable, table } = review;

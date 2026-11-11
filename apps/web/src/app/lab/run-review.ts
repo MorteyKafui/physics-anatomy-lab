@@ -53,6 +53,7 @@ import {
   type RightWay,
 } from "@pa/experiments";
 
+import { coachHistory } from "./coach-history";
 import { graphColumnsFor, graphView, type GraphView } from "./graph-sheet";
 
 /**
@@ -114,40 +115,6 @@ const levelOf = (state: CoachState, skill: Skill) =>
   coachIsOn(state) ? helpLevelFor(state, skill) : "on-my-own";
 
 const SEVERE = new Set(["error", "warning"]);
-
-/** The coach's hints in a run, with the step each was raised in. */
-function raised(attempt: Attempt, events: readonly LabEvent[]) {
-  const out: {
-    rule: string;
-    skill: Skill;
-    key: string;
-    params: Record<string, string | number>;
-    step: Step;
-  }[] = [];
-  let state = coachProjection.initial(attempt);
-  for (const e of events) {
-    if (e.kind === "coach.hint" || e.kind === "coach.note") {
-      const d = (e.data ?? {}) as Record<string, Json>;
-      if (typeof d.rule === "string" && typeof d.hint === "string" && typeof d.skill === "string")
-        out.push({
-          rule: d.rule,
-          skill: d.skill as Skill,
-          key: d.hint,
-          params:
-            d.params && typeof d.params === "object" && !Array.isArray(d.params)
-              ? (Object.fromEntries(
-                  Object.entries(d.params).filter(
-                    ([, v]) => typeof v === "string" || typeof v === "number",
-                  ),
-                ) as Record<string, string | number>)
-              : {},
-          step: state.step,
-        });
-    }
-    state = coachProjection.apply(state, e);
-  }
-  return out;
-}
 
 const textOf = (a: { value: string; unit: string } | undefined) =>
   a && a.value.trim() !== "" ? `${a.value.trim()} ${a.unit}`.trim() : undefined;
@@ -255,7 +222,7 @@ export function reviewRun(attempt: Attempt, events: readonly LabEvent[], g: numb
   ].filter((f) => SEVERE.has(f.severity));
 
   // Every mistake once: the coach's history first (it knows the step), then what is still there.
-  const history = raised(attempt, events);
+  const history = coachHistory(attempt, events);
   const rows = (f: Finding): Record<string, number> => {
     const i = table.rows.findIndex((r) => r.id === f.rows?.[0]);
     return i >= 0 ? { row: i + 1 } : {};
