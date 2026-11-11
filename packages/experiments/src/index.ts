@@ -171,3 +171,21 @@ export type {
   ReadFrom,
   ScreenImage,
 } from "./converging-lens";
+export {
+  asLensReading,
+  decideLensBench,
+  GAUZE_REACH,
+  HOLDER_GAP,
+  initialLensBench,
+  LENS_BENCH_START,
+  LENS_PARTS,
+  lensBenchProjection,
+  lensReadingData,
+} from "./converging-lens-bench";
+export type {
+  LensBenchCommand,
+  LensBenchDecision,
+  LensBenchRefusal,
+  LensBenchState,
+  LensPart,
+} from "./converging-lens-bench";
