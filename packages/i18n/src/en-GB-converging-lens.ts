@@ -5,6 +5,89 @@
  */
 export const enGBConvergingLens = {
   "experiments.converging-lens.title": "The converging lens",
+  "experiments.converging-lens.question.title": "The focal length of a converging lens",
+  "experiments.converging-lens.question.text":
+    "Set the illuminated ray box at a distance u = 20.0 cm from the lens. Move the screen until a sharp image of the wire gauze is formed on it, and read its distance v from the lens. Repeat for u = 25.0, 30.0, 35.0 and 40.0 cm. Plot 1/v against 1/u, and find f from the two intercepts.",
+  "experiments.converging-lens.predict.title": "As the object moves away, what does the image do?",
+  "experiments.converging-lens.predict.text":
+    "You will move the ray box further from the lens each time. Where will the sharp image be?",
+  "experiments.converging-lens.predict.rise": "It moves further from the lens",
+  "experiments.converging-lens.predict.fall": "It moves closer to the lens",
+  "experiments.converging-lens.predict.same": "It stays in the same place",
+  "experiments.converging-lens.predict.saved": "You said: {choice}. Measure and see.",
+  "experiments.converging-lens.build.title": "Set up the bench",
+  "experiments.converging-lens.build.why":
+    "Put the lens 20.0 cm from the ray box, and set the gauze at the height of the lens's centre, so its image falls in the middle of the screen.",
+  "experiments.converging-lens.build.u": "Lens 20.0 cm from the ray box",
+  "experiments.converging-lens.build.coaxial": "Gauze on the lens's axis",
+  "experiments.converging-lens.build.gauze": "Gauze height",
+  "experiments.converging-lens.build.gauzeAt": "{mm} mm above the axis",
+  "experiments.converging-lens.build.gauzeBelow": "{mm} mm below the axis",
+  "experiments.converging-lens.build.gauzeOn": "On the axis",
+  "experiments.converging-lens.build.raise": "Raise the gauze",
+  "experiments.converging-lens.build.lower": "Lower the gauze",
+  "experiments.converging-lens.check.title": "Check the set-up",
+  "experiments.converging-lens.check.right":
+    "The gauze, the lens and the screen are on one axis, and the lens is 20.0 cm from the ray box.",
+  "experiments.converging-lens.check.u":
+    "The lens is {u} cm from the ray box. Set it 20.0 cm away for the first reading.",
+  "experiments.converging-lens.check.fix": "Back to the bench",
+  "experiments.converging-lens.measure.title": "Find the sharpest image",
+  "experiments.converging-lens.measure.why":
+    "Set u, then move the screen towards the lens and away from it. The image of the gauze is sharp at one place only. Read u and v from the holders' centre marks.",
+  "experiments.converging-lens.measure.lens": "Lens position",
+  "experiments.converging-lens.measure.screen": "Screen position",
+  "experiments.converging-lens.measure.towards": "Towards the lens",
+  "experiments.converging-lens.measure.away": "Away from the lens",
+  "experiments.converging-lens.measure.step":
+    "Each press moves the screen 1 mm. Read the rule at the red centre mark of each holder.",
+  "experiments.converging-lens.measure.onScreen": "On the screen",
+  "experiments.converging-lens.measure.sharp": "Sharp",
+  "experiments.converging-lens.measure.blurred": "Blurred",
+  "experiments.converging-lens.measure.noImage": "No image",
+  "experiments.converging-lens.measure.take": "Take this reading",
+  "experiments.converging-lens.measure.readings": "Readings so far",
+  "experiments.converging-lens.measure.none":
+    "None yet. The question sets u = 20.0, 25.0, 30.0, 35.0 and 40.0 cm.",
+  "experiments.converging-lens.measure.reading": "u = {u} cm, v = {v} cm",
+  "experiments.converging-lens.measure.cannot": "There is no image on the screen to read.",
+  "experiments.converging-lens.screen.sharp": "The gauze, upside down and sharp",
+  "experiments.converging-lens.screen.blurred": "The gauze, upside down and blurred",
+  "experiments.converging-lens.screen.none": "A faint, even patch of light: no image",
+  "experiments.converging-lens.screen.offScreen":
+    "The gauze's image, running off the edge of the screen",
+  "experiments.converging-lens.bench":
+    "The ray box at {object} cm, the lens at {lens} cm and the screen at {screen} cm. {image}",
+  "experiments.converging-lens.bench.sharp": "The light from the gauze meets on the screen.",
+  "experiments.converging-lens.bench.blurred":
+    "The light from the gauze does not meet on the screen.",
+  "experiments.converging-lens.bench.none":
+    "The light leaves the lens still spreading, so no image forms.",
+  "experiments.converging-lens.refused.off-the-rule": "That is off the end of the bench.",
+  "experiments.converging-lens.refused.holders-cross":
+    "The holders cannot pass each other on the bench.",
+  "experiments.converging-lens.refused.gauze-out-of-reach": "The gauze will not go any further.",
+  "experiments.converging-lens.explain.title": "Where a lens puts the image",
+  "experiments.converging-lens.explain.text":
+    "A converging lens bends the light from each point of the gauze so that it meets again at one place behind the lens: the image. A screen there shows it sharp; anywhere else the light is spread into a blurred patch.",
+  "experiments.converging-lens.explain.u": "object distance, gauze to lens · cm · the rule",
+  "experiments.converging-lens.explain.v":
+    "image distance, lens to the sharp image · cm · the rule",
+  "experiments.converging-lens.explain.f": "focal length of the lens · cm · from the graph",
+  "experiments.converging-lens.explain.graph":
+    "Plot 1/v against 1/u: a straight line of slope −1, meeting both axes at 1/f.",
+  "experiments.converging-lens.tips.title": "Precautions examiners look for",
+  "experiments.converging-lens.tips.1": "I made sure the wire gauze and the lens were on one axis.",
+  "experiments.converging-lens.tips.2":
+    "I located only sharp images, moving the screen both ways each time.",
+  "experiments.converging-lens.tips.3": "I read u and v from the centre mark of each holder.",
+  "experiments.converging-lens.tips.4":
+    "I read the rule with my eye directly above the mark, to avoid parallax.",
+  "experiments.converging-lens.tips.5":
+    "I cleaned the lens with a soft cloth to get a sharp image.",
+  "experiments.converging-lens.next":
+    "Tabulating, plotting and the analysis come with the next part of this lab. Your readings are kept.",
+  "experiments.converging-lens.inDevelopment": "Being built: the table and graph come next",
   "findings.lens.readFromEdge.title": "Readings taken from the edge of a holder",
   "findings.lens.readFromEdge.detail":
     "{count} of your distances were read from a holder's edge, which puts each about {cm} cm out. Read u and v from the centre mark of each holder.",

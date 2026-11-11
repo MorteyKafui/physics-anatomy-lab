@@ -94,6 +94,17 @@ export const figureTone = {
   terminalMinus: "#141414",
   lead: "#77746E",
   leadPlus: "#B8352A",
+  // Optics: the ray box's lamp and lit gauze, glass, the light it passes, the screen and the image
+  // on it; the red centre mark each holder is read at.
+  lamp: "#F5A524",
+  gauze: "#FFE6A8",
+  glass: "#6FA8C9",
+  glassEdge: "#9CC6DD",
+  light: "#FFD27A",
+  screen: "#E8E4DC",
+  image: "#5A4318",
+  imageLight: "#FFF3D2",
+  mark: "#F0482A",
 } as const;
 
 /**
@@ -124,4 +135,13 @@ export const figureTonePaper: Record<keyof typeof figureTone, string> = {
   terminalMinus: "#141414",
   lead: "#5A5853",
   leadPlus: "#B8352A",
+  lamp: "#D98A12",
+  gauze: "#F2D58C",
+  glass: "#BBD8E8",
+  glassEdge: "#3E7090",
+  light: "#C98A1A",
+  screen: "#FFFFFF",
+  image: "#3D2E10",
+  imageLight: "#FFF3D2",
+  mark: "#B8352A",
 };
