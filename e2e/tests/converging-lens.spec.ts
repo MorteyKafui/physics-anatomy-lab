@@ -34,9 +34,11 @@ async function toBuild(page: Page) {
 /** Lower the gauze onto the lens's axis: it starts 6 mm above. */
 async function centreGauze(page: Page) {
   await expect(page.getByText("6 mm above the axis")).toBeVisible();
-  for (let i = 0; i < 6; i += 1)
+  // Each press is waited for, as a student sees the gauze move before pressing again.
+  for (let mm = 5; mm >= 0; mm -= 1) {
     await page.getByRole("button", { name: "Lower the gauze" }).click();
-  await expect(page.getByText("On the axis")).toBeVisible();
+    await expect(page.getByText(mm ? `${mm} mm above the axis` : "On the axis")).toBeVisible();
+  }
 }
 
 /** Move the screen out from the lens until the image looks sharp. */
