@@ -6,7 +6,7 @@ import { DEFAULT_ENVIRONMENT } from "@pa/instruments";
 
 import { reportContent } from "../report/content";
 import { examFacts } from "./facts";
-import { ExamScreen, type ExamExperiment } from "./screen";
+import { ExamScreen, sharedLostText, type ExamExperiment } from "./screen";
 
 const E = simplePendulum;
 const G = DEFAULT_ENVIRONMENT.g;
@@ -23,6 +23,7 @@ const experiment: ExamExperiment = {
   },
   mark: (attempt, events) => markScript(examFacts(reportContent(attempt, events, G))),
   itemText: (id) => t(`exam.item.${id}` as MessageKey, { swings: E.swings }),
+  lostText: sharedLostText,
   followUps: followUps(G).map((q) => ({
     id: q.id,
     q: t(`exam.q.${q.id}` as MessageKey, q.params),

@@ -20,7 +20,8 @@ import { save } from "../snapshot-export";
 import { startExam, useAttempt } from "../use-attempt";
 import { mmss } from "./bar";
 
-const lostText = (m: Mark) =>
+/** Why marks were lost, in the shared words (exam.lost). */
+export const sharedLostText = (m: Mark) =>
   m.lost ? t(`exam.lost.${m.lost.key}` as MessageKey, m.lost.params) : undefined;
 
 /** What an exam screen needs to know of its experiment. */
@@ -34,8 +35,9 @@ export interface ExamExperiment {
     attempt: Attempt,
     events: readonly LabEvent[],
   ) => { sections: MarkedSection[]; got: number; of: number };
-  /** What a marked item is called. */
+  /** What a marked item is called, and why its marks were lost. */
   itemText: (id: string) => string;
+  lostText: (m: Mark) => string | undefined;
   /** The likely follow-up questions (part (b)), with their answers. */
   followUps: readonly { id: string; q: string; a: string }[];
 }
@@ -52,7 +54,7 @@ export function asHandedIn(events: readonly LabEvent[]): LabEvent[] {
  */
 export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
   const handle = useAttempt(E.id);
-  const { itemText } = E;
+  const { itemText, lostText } = E;
   const router = useRouter();
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<string>();
