@@ -148,13 +148,15 @@ test("at Auto the whole two-pin lab runs: four readings, the table, xy against (
   await expect(page.getByText(/A graph of xy against \(x \+ y\)/)).toBeVisible();
   await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
 
-  // f is the slope: the lens's own, within the spread of lenses the seed builds.
+  // f is the slope. The lens is 15.0 cm, 2% either way, and the walk takes the first place of no
+  // parallax it finds, anywhere in a 7 to 8 mm stretch, as a student may: so f is within about 7%.
+  // The exact place is checked against the model in packages/experiments.
   const read = async (id: string) =>
     Number((await page.locator(`[data-answer="${id}"]`).textContent())!.split(" ")[0]);
   const [slope, f] = [await read("slope"), await read("f")];
   expect(f).toBeCloseTo(slope, 6);
-  expect(f).toBeGreaterThan(14.4);
-  expect(f).toBeLessThan(15.6);
+  expect(f).toBeGreaterThan(14.0);
+  expect(f).toBeLessThan(16.0);
   await expect(page.locator('[data-answer="f"]')).toContainText("cm");
   await finish(page, "Finish analysing", "Step 9 of 10 · Conclude");
 
