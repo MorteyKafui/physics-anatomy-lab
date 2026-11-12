@@ -272,3 +272,5 @@ export type {
   PinsGraphContext,
   PinsTemplate,
 } from "./converging-lens-pins-table";
+export { PINS_SHEET_NUMBER, pinsSheet } from "./converging-lens-pins-sheets";
+export type { PinsSheet } from "./converging-lens-pins-sheets";

@@ -499,6 +499,57 @@ export const enGBConvergingLens = {
     "A real lens bends the light through its edge a little more than through its centre, so as the head moves the image seems to shift a little, and the place of no parallax is a little nearer the lens than the thin-lens formula gives.",
   "experiments.converging-lens-pins.report.conclusion":
     "The focal length of the lens was found to be {f}.",
+  "experiments.converging-lens-pins.sheet.drawingTitle":
+    "The converging lens with two pins: how no parallax finds the image",
+  "experiments.converging-lens-pins.sheet.style": "Find f from one slope",
+  "experiments.converging-lens-pins.sheet.question":
+    "How can you find an image you cannot catch on a screen?",
+  "experiments.converging-lens-pins.sheet.lead":
+    "Look through the lens at the image of a pin, and move a second pin until the two stay together as you move your head. Where there is no parallax, the second pin is at the image. Plot xy against (x + y), and the slope is the focal length.",
+  "experiments.converging-lens-pins.sheet.n.f": "focal length, the slope of xy against (x + y)",
+  "experiments.converging-lens-pins.sheet.n.y": "no parallax at x = {x} cm",
+  "experiments.converging-lens-pins.sheet.n.xy": "xy at x = {x} cm",
+  "experiments.converging-lens-pins.sheet.n.stretch":
+    "of the pin's travel with no parallax at x = {x} cm",
+  "experiments.converging-lens-pins.sheet.n.count": "object distances",
+  "experiments.converging-lens-pins.sheet.part.P1":
+    "A pin with its tip level with the centre of the lens. It is the object; its image is upside down.",
+  "experiments.converging-lens-pins.sheet.part.L":
+    "Biconvex glass, {d} cm across, f = {f} cm. Look through it from the far side to see the image of P₁.",
+  "experiments.converging-lens-pins.sheet.part.P2":
+    "The search pin. Move it until it and the image of P₁ stay together as you move your head, then read y from its centre mark.",
+  "experiments.converging-lens-pins.sheet.spec.lens": "Lens L",
+  "experiments.converging-lens-pins.sheet.spec.lensValue":
+    "Biconvex glass, n = {n}, {d} cm across, f = {f} cm",
+  "experiments.converging-lens-pins.sheet.spec.distances": "Object distances",
+  "experiments.converging-lens-pins.sheet.spec.distancesValue": "x = {list} cm",
+  "experiments.converging-lens-pins.sheet.spec.rule": "Optical bench",
+  "experiments.converging-lens-pins.sheet.spec.ruleValue": "1 m rule, reads to {rule} cm",
+  "experiments.converging-lens-pins.sheet.spec.look": "Looking",
+  "experiments.converging-lens-pins.sheet.spec.lookValue":
+    "The eye {eye} cm behind the image, the head moving {head} cm either side",
+  "experiments.converging-lens-pins.sheet.spec.result": "From the line",
+  "experiments.converging-lens-pins.sheet.spec.resultValue": "slope = f = {slope} cm",
+  "experiments.converging-lens-pins.sheet.step.level.title": "Set both tips level with the lens",
+  "experiments.converging-lens-pins.sheet.step.level.text":
+    "Raise or lower each pin until its tip is level with the centre of the lens, so the tip of the image can meet the tip of the search pin.",
+  "experiments.converging-lens-pins.sheet.step.look.title": "Look for the image",
+  "experiments.converging-lens-pins.sheet.step.look.text":
+    "With the object pin x = {x} cm from the lens, look through the lens from the far side. The image of the pin is upside down, its tip pointing down at the search pin's.",
+  "experiments.converging-lens-pins.sheet.step.find.title":
+    "Move the search pin until there is no parallax",
+  "experiments.converging-lens-pins.sheet.step.find.text":
+    "If the image moves against your head, it is nearer you: move the pin away from the lens. If it moves with your head, move the pin towards the lens. Here no parallax is at y = {y} cm, over about {stretch} mm of the pin's travel.",
+  "experiments.converging-lens-pins.sheet.step.repeat.title": "Repeat at {count} object distances",
+  "experiments.converging-lens-pins.sheet.step.repeat.text":
+    "Find y for x = {list} cm. As the object pin moves away from the lens, the place of no parallax moves closer to it.",
+  "experiments.converging-lens-pins.sheet.step.plot.title": "Plot xy against (x + y)",
+  "experiments.converging-lens-pins.sheet.step.plot.text":
+    "At x = {x} cm, xy = {xy} cm² and x + y = {sum} cm. The line through the points has slope {slope} cm, and that is f.",
+  "experiments.converging-lens-pins.sheet.why.title": "Why does the image move against your head?",
+  "experiments.converging-lens-pins.sheet.why.text":
+    "Things nearer you move further across your view as your head moves. If the image is nearer you than the search pin, it moves the other way from your head; if it is further away, it moves with you. At the same place they move together: no parallax.",
+  "experiments.converging-lens-pins.sheet.motto": "Tips level, eye on the axis, no parallax",
   "experiments.converging-lens-pins.refused.off-the-rule": "That is off the end of the bench.",
   "experiments.converging-lens-pins.refused.holders-cross":
     "The holders cannot pass each other on the bench.",
