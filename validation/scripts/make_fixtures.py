@@ -33,6 +33,7 @@ from pa_validation.lens_exact import (
     lens_for_focal_length,
     paraxial_image,
 )
+from pa_validation.lens_parallax import ARCMIN, View, no_parallax, separation
 from pa_validation.mixtures import final_temperature, solid_specific_heat
 from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
 from pa_validation.pendulum import period_exact
@@ -286,6 +287,58 @@ def build_lens_exact() -> dict[str, object]:
     }
 
 
+def build_lens_parallax() -> dict[str, object]:
+    """No parallax with two optical pins (Experiment 96, brief decisions 8 to 11): the approved
+    lens, the eye 25 cm behind the image, 1 minute of arc, and the head moving 0.5 cm either side
+    of the axis, as far as the lens allows, and 0.5 cm either side of a place 1.0 cm off it."""
+    lens = lens_for_focal_length(15.0, 1.52, 4.0)
+    xs = [20.0, 30.0, 40.0, 50.0]
+    views = {
+        "approved": View(25.0, 0.5, ARCMIN),
+        "fullHead": View(25.0, math.inf, ARCMIN),
+        "offAxis": View(25.0, 0.5, ARCMIN, centre=1.0),
+    }
+    angles = []
+    for u in xs:
+        v = paraxial_image(lens, u)
+        eye = v + 25.0
+        for pin in (0.98 * v, v, 1.02 * v):
+            for h in (0.1, 0.3, 0.5, -0.3):
+                angles.append(
+                    {
+                        "objectDistance": u,
+                        "pin": pin,
+                        "eye": eye,
+                        "head": h,
+                        "angle": separation(lens, u, pin, eye, h),
+                    }
+                )
+    places = []
+    for name, view in views.items():
+        for u in xs:
+            r = no_parallax(lens, u, view)
+            places.append(
+                {
+                    "view": name,
+                    "objectDistance": u,
+                    "eyeBehind": view.eye_behind,
+                    "head": view.head if math.isfinite(view.head) else None,
+                    "centre": view.centre,
+                    "acuity": view.acuity,
+                    **{k: r[k] for k in ("at", "residual", "from", "to")},
+                    "reach": r["head"],
+                }
+            )
+    return {
+        "model": "biconvex spherical lens, 3-D vector Snell's law; the ray to the eye by Brent's "
+        "method, the head's travel at 401 places, SciPy's bounded minimiser",
+        "units": {"distance": "cm", "angle": "rad"},
+        "lens": {"focalLength": 15.0, "index": 1.52, "aperture": 4.0, "edge": 0.1},
+        "angles": angles,
+        "places": places,
+    }
+
+
 SOLIDS = {"copper": 390.0, "aluminium": 900.0, "iron": 450.0, "brass": 380.0}
 
 
@@ -431,6 +484,7 @@ if __name__ == "__main__":
     write("circuits.json", build_circuits())
     write("lens.json", build_lens())
     write("lens-exact.json", build_lens_exact())
+    write("lens-parallax.json", build_lens_parallax())
     write("mixtures.json", build_mixtures())
     write("student_t.json", build_student_t())
     write("outliers.json", build_outliers())
