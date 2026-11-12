@@ -98,19 +98,21 @@ def test_mixture_conserves_energy_and_recovers_c() -> None:
 def test_committed_fixtures_are_current(name: str, build: Callable[[], object]) -> None:
     committed = json.loads((FIXTURES / name).read_text(encoding="utf-8"))
     current = json.loads(json.dumps(build()))
-    _assert_close(committed, current)
+    # The calorimetry fixture comes from a numerical integration, whose last few digits differ
+    # between platforms (a peak time by 6 parts in 10^12 between Windows and Linux): 10^-9 there.
+    _assert_close(committed, current, 1e-9 if name == "calorimetry.json" else 1e-12)
 
 
-def _assert_close(old: object, new: object) -> None:
+def _assert_close(old: object, new: object, rel: float = 1e-12) -> None:
     if isinstance(old, float) or isinstance(new, float):
-        assert old == pytest.approx(new, rel=1e-12, abs=1e-15)
+        assert old == pytest.approx(new, rel=rel, abs=1e-15)
     elif isinstance(old, dict) and isinstance(new, dict):
         assert old.keys() == new.keys()
         for key in old:
-            _assert_close(old[key], new[key])
+            _assert_close(old[key], new[key], rel)
     elif isinstance(old, list) and isinstance(new, list):
         assert len(old) == len(new)
         for a, b in zip(old, new, strict=True):
-            _assert_close(a, b)
+            _assert_close(a, b, rel)
     else:
         assert old == new
