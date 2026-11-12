@@ -123,7 +123,8 @@ Done carefully at 40 to 70 cm³ the rises are 19.4, 17.5, 16.0 and 14.7 °C, eac
 
 Plotting V against T, the sixth, is checked with the graph, as for the lens.
 
-Three assumptions until the UEW reference data, for the reviewer:
+Three assumptions until the UEW reference data, approved by Mortey (physics reviewer) on
+2026-11-12:
 
 1. The open beaker loses heat as fast as the calorimeter without its lid, 8% a minute, so no new
    constant is needed; and a pour more than 10 s after the water reaches 65 °C is slow.
