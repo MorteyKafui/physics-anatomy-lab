@@ -309,4 +309,27 @@ export const enGBConvergingLens = {
   "findings.lens.wrongGraph.detail":
     "Your graph is {y} against {x}. v against u is a curve. 1/v against 1/u is a straight line of slope −1 that meets both axes at 1/f, which is how the question finds f.",
   "findings.lens.wrongGraph.demonstrate": "Choose u⁻¹ for the x axis and v⁻¹ for the y axis.",
+  "experiments.converging-lens-pins.refused.off-the-rule": "That is off the end of the bench.",
+  "experiments.converging-lens-pins.refused.holders-cross":
+    "The holders cannot pass each other on the bench.",
+  "experiments.converging-lens-pins.refused.out-of-reach": "It will not go any further.",
+  "findings.pins.eyeOffAxis.title": "Your eye was off the lens's axis",
+  "findings.pins.eyeOffAxis.detail":
+    "Your eye was {mm} mm off the axis, so the light reached you through the outer part of the lens, which brings it to a focus nearer the lens. The place you found is {cm} cm short of where it is with your eye on the axis.",
+  "findings.pins.eyeOffAxis.demonstrate":
+    "Bring your eye level with the tips of the pins, and look along the lens's axis as you move your head from side to side.",
+  "findings.pins.tipsOffAxis.title": "The tips are not level",
+  "findings.pins.tipsOffAxis.detail":
+    "The image's tip and the search pin's tip are {mm} mm apart in height, so they cannot be brought together however you move the pin.",
+  "findings.pins.tipsOffAxis.demonstrate":
+    "Raise or lower each pin until its tip is level with the centre of the lens. The image is upside down, so its tip then meets the search pin's from above.",
+  "findings.pins.parallaxLeft.title": "There was still parallax",
+  "findings.pins.parallaxLeft.detail":
+    "In {count} reading(s) the image's tip and the search pin's tip still moved apart as you moved your head, by up to {arcmin} minutes of arc. The search pin was {cm} cm from the place of no parallax.",
+  "findings.pins.parallaxLeft.demonstrate":
+    "If the image moves against your head, it is nearer you than the pin: move the pin away from the lens. If it moves with your head, it is further away: move the pin towards the lens. Stop when the tips stay together.",
+  "findings.pins.readFromEdge.title": "Readings taken from the edge of a holder",
+  "findings.pins.readFromEdge.detail":
+    "{count} reading(s) were read at the edge of a holder, not its centre mark, so x or y is out by {cm} cm.",
+  "findings.pins.readFromEdge.demonstrate": "Read the rule at the red centre mark of each holder.",
 } as const;
