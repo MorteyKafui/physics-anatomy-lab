@@ -138,6 +138,15 @@
       "title": "The converging lens: two pins and no parallax (Phase 2, approved)",
       "expand": "fill",
       "is_interactive": true
+    },
+    "Mixtures.dc.html": {
+      "x": 6240,
+      "y": 3060,
+      "w": 1440,
+      "h": 900,
+      "title": "The method of mixtures: reading the highest temperature (Phase 2, approved)",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -185,7 +194,8 @@
     "Teacher.dc.html",
     "Admin.dc.html",
     "Logo.dc.html",
-    "Pins.dc.html"
+    "Pins.dc.html",
+    "Mixtures.dc.html"
   ],
   "pages": [],
   "title": "Physics Anatomy Mockups"

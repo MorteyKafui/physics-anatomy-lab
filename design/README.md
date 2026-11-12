@@ -18,6 +18,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Ohm's law: wiring, measuring  | `Ohms.dc.html`     | on the canvas only     | `apps/web` `/lab/ohms-law`    |
 | Converging lens: the image    | `Lens.dc.html`     | on the canvas only     | `apps/web` lens lab           |
 | Converging lens: two pins     | `Pins.dc.html`     | on the canvas only     | `apps/web` lens lab, pins     |
+| Method of mixtures            | `Mixtures.dc.html` | on the canvas only     | `apps/web` mixtures lab       |
 | First-run tour                | `Tour.dc.html`     | `screens/Tour.jpg`     | `apps/web` onboarding         |
 | Teacher live class            | `Teacher.dc.html`  | `screens/Teacher.jpg`  | `apps/web` teacher dashboard  |
 | Admin portal                  | `Admin.dc.html`    | `screens/Admin.jpg`    | `apps/admin`                  |

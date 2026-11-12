@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lab: the method of mixtures, reading the highest temperature</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+.cl-f:focus-visible{outline:2px solid #FF8A6E;outline-offset:2px}
+@keyframes clUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.cl-toast{animation:clUp .25s ease}
+@media (prefers-reduced-motion:reduce){.cl-toast{animation:none}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; background: #0D0D0D; color: #F0F0F0; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="App" style="flex: 0 0 64px; background: #111110; border-right: 1px solid #242322; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0">
+    <svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true" style="margin-bottom: 14px"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F0F0F0" stroke-width="18"/><line x1="84" y1="26" x2="98" y2="60" stroke="#F0F0F0" stroke-width="5"/><circle cx="100" cy="68" r="12" fill="#F0482A"/></svg>
+    <a href="#home" aria-label="Home" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="#experiments" aria-label="Experiments" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #F0F0F0; background: #1E1D1D; border-left: 2px solid #F0482A"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></a>
+    <a href="#notebook" aria-label="Notebook" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></a>
+    <a href="#reference" aria-label="Reference" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></a>
+    <span style="flex: 1"></span>
+    <a href="#help" aria-label="Help" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></a>
+    <a href="#settings" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></a>
+  </nav>
+
+  <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 20px; border-bottom: 1px solid #242322">
+      <div style="display: flex; align-items: center; gap: 12px; background: #161616; border: 1px solid #2A2928; padding: 8px 14px">
+        <span style="width: 10px; height: 10px; background: #F5A524" aria-hidden="true"></span>
+        <div style="display: flex; flex-direction: column">
+          <span style="font-weight: 600">The method of mixtures</span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">Step 5 of 10 · Measure</span>
+        </div>
+        <div style="width: 120px; height: 4px; background: #2A2928" aria-label="40% complete"><div style="height: 4px; width: 40%; background: #F0482A"></div></div>
+      </div>
+      <div role="group" aria-label="Board state (mockup only)" style="display: flex; gap: 2px; background: #161616; border: 1px solid #2A2928; padding: 3px">
+        <button type="button" class="cl-f" onClick="{{showRising}}" aria-pressed="{{isRising}}" style="{{risingBtn}}">Still rising</button>
+        <button type="button" class="cl-f" onClick="{{showPeak}}" aria-pressed="{{isPeak}}" style="{{peakBtn}}">At the highest</button>
+        <button type="button" class="cl-f" onClick="{{showUnstirred}}" aria-pressed="{{isUnstirred}}" style="{{unstirredBtn}}">Not stirred</button>
+      </div>
+      <span style="flex: 1"></span>
+      <label for="assist" style="display: flex; align-items: center; gap: 8px; color: #A3A19B; font-size: 13px">Help level
+        <select id="assist" style="background: #161616; color: #F0F0F0; border: 1px solid #2A2928; padding: 8px 10px; font: 500 13px Geist, sans-serif"><option>Auto</option><option selected="selected">Check my work</option><option>On my own</option></select>
+      </label>
+      <button type="button" style="height: 38px; padding: 0 14px; background: #F0482A; border: 0; color: #141414; display: flex; align-items: center; gap: 8px; font: 600 13px Geist, sans-serif"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>Snapshot</button>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+      <div style="flex: 999 1 560px; min-width: 0; position: relative; background: #0D0D0D; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 56px 24px 96px">
+        <div style="position: absolute; left: 24px; top: 18px; display: flex; flex-direction: column">
+          <span style="font-size: 12px; color: #8F8D88">Fig. 1</span>
+          <span style="font-weight: 600">{{figTitle}}</span>
+        </div>
+
+        <svg viewBox="0 0 600 300" style="width: 100%; max-width: 760px; height: auto; display: block" role="img" aria-label="{{benchLabel}}">
+          <defs>
+            <pattern id="felt" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="6" height="6" fill="#1B1A19"/><line x1="0" y1="0" x2="0" y2="6" stroke="#3A3936" stroke-width="2"/>
+            </pattern>
+            <linearGradient id="layers" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#F5A524" stop-opacity="0.55"/>
+              <stop offset="0.38" stop-color="#F5A524" stop-opacity="0.4"/>
+              <stop offset="0.52" stop-color="#6FA8C9" stop-opacity="0.35"/>
+              <stop offset="1" stop-color="#6FA8C9" stop-opacity="0.35"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Bench top -->
+          <polygon points="30,250 570,250 600,290 0,290" fill="#121211" stroke="#2A2928"/>
+
+          <!-- The lagging jacket: an outer can packed with felt -->
+          <g data-part="jacket">
+            <rect x="150" y="96" width="200" height="154" fill="url(#felt)" stroke="#55534F"/>
+            <text x="250" y="270" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">Lagging</text>
+          </g>
+
+          <!-- The copper calorimeter, and the water in it -->
+          <g data-part="calorimeter">
+            <rect x="180" y="110" width="140" height="130" fill="#141414" stroke="#B87333" stroke-width="3"/>
+            <rect x="182" y="{{waterTop}}" width="136" height="{{waterHeight}}" fill="{{waterFill}}"/>
+            <line x1="182" y1="{{waterTop}}" x2="318" y2="{{waterTop}}" stroke="#9CC6DD" stroke-opacity="0.6"/>
+          </g>
+
+          <!-- The lid, with the thermometer and the stirrer through it -->
+          <g data-part="lid">
+            <rect x="174" y="100" width="152" height="8" fill="#55534F" opacity="{{lidOpacity}}"/>
+            <text x="338" y="106" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11">Lid</text>
+          </g>
+
+          <!-- The stirrer: a ring near the bottom, its rod up through the lid -->
+          <g data-part="stirrer" transform="translate(0,{{stirrerShift}})">
+            <line x1="286" y1="40" x2="286" y2="226" stroke="#C9C6BF" stroke-width="2"/>
+            <rect x="196" y="224" width="108" height="5" fill="none" stroke="#C9C6BF" stroke-width="2"/>
+            <rect x="278" y="34" width="16" height="8" fill="#77746E"/>
+            <text x="300" y="44" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11">Stirrer</text>
+          </g>
+
+          <!-- The thermometer: its bulb in the water by the bottom, its stem up through the lid -->
+          <g data-part="thermometer">
+            <rect x="218" y="22" width="12" height="196" fill="#141414" stroke="#8F8D88"/>
+            <circle cx="224" cy="222" r="8" fill="#E8E4DC"/>
+            <rect x="221" y="{{mercuryTop}}" width="6" height="{{mercuryHeight}}" fill="#E8E4DC"/>
+            <text x="212" y="34" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="end">Thermometer</text>
+          </g>
+
+          <!-- The beaker the hot water came from, now empty -->
+          <g data-part="beaker">
+            <path d="M420,170 L420,248 L486,248 L486,170" fill="none" stroke="#9CC6DD" stroke-width="1.5"/>
+            <path d="M414,170 L420,170" stroke="#9CC6DD" stroke-width="1.5"/>
+            <text x="453" y="270" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">Beaker, poured</text>
+          </g>
+
+          <!-- What is in the calorimeter -->
+          <g font-family="Geist Mono, monospace" font-size="11" fill="#C9C6BF">
+            <text x="40" y="150">V = 40 cm³</text>
+            <text x="40" y="166">at 28.0 °C</text>
+            <text x="40" y="190">+ 50 cm³</text>
+            <text x="40" y="206">at 65.0 °C</text>
+          </g>
+        </svg>
+
+        <div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px; width: 100%; max-width: 760px">
+          <div style="flex: 1 1 300px; min-width: 0; background: #161616; border: 1px solid #2A2928; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; color: #A3A19B">The thermometer since you poured</span>
+            <svg viewBox="0 -12 300 162" style="width: 100%; height: auto; display: block" role="img" aria-label="{{traceLabel}}">
+              <rect x="36" y="8" width="256" height="112" fill="#1B1A19"/>
+              <g stroke="#33312F" stroke-width="1">
+                <sc-for list="{{gridY}}" as="gy" hint-placeholder-count="6"><line x1="36" y1="{{gy.y}}" x2="292" y2="{{gy.y}}"/></sc-for>
+                <sc-for list="{{gridX}}" as="gx" hint-placeholder-count="7"><line x1="{{gx.x}}" y1="8" x2="{{gx.x}}" y2="120"/></sc-for>
+              </g>
+              <g fill="#8F8D88" font-family="Geist Mono, monospace" font-size="10">
+                <text x="30" y="123.0" text-anchor="end">25</text><text x="30" y="100.6" text-anchor="end">30</text><text x="30" y="78.2" text-anchor="end">35</text><text x="30" y="55.8" text-anchor="end">40</text><text x="30" y="33.4" text-anchor="end">45</text><text x="30" y="11.0" text-anchor="end">50</text>
+                <text x="36.0" y="134" text-anchor="middle">0</text><text x="78.7" y="134" text-anchor="middle">30</text><text x="121.3" y="134" text-anchor="middle">60</text><text x="164.0" y="134" text-anchor="middle">90</text><text x="206.7" y="134" text-anchor="middle">120</text><text x="249.3" y="134" text-anchor="middle">150</text><text x="292.0" y="134" text-anchor="middle">180</text>
+              </g>
+              <text x="164" y="148" fill="#8F8D88" font-family="Geist, sans-serif" font-size="10" text-anchor="middle">t / s</text>
+              <text x="4" y="-2" fill="#8F8D88" font-family="Geist, sans-serif" font-size="10">θ / °C</text>
+              <polyline points="{{trace}}" fill="none" stroke="#FFD27A" stroke-width="2"/>
+              <circle cx="{{nowX}}" cy="{{nowY}}" r="3.5" fill="#FFD27A"/>
+            </svg>
+          </div>
+          <div style="flex: 1 1 260px; min-width: 0; background: #161616; border: 1px solid #2A2928; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline">
+              <span style="font-size: 13px; color: #A3A19B">Thermometer</span>
+              <span style="font-family: 'Geist Mono', monospace; font-size: 28px; line-height: 1">{{reading}}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: #A3A19B">Since you poured <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">{{clock}}</span></div>
+            <span style="{{chipStyle}}">{{chip}}</span>
+            <div style="display: flex; gap: 8px">
+              <button type="button" class="cl-f" aria-pressed="{{stirring}}" style="{{stirBtn}}">{{stirText}}</button>
+              <button type="button" class="cl-f" aria-pressed="true" style="flex: 1; height: 36px; background: #F0F0F0; border: 0; color: #141414; font: 500 13px Geist, sans-serif">Lid on</button>
+            </div>
+            <span style="font-size: 12px; color: #8F8D88">Read with your eye level with the top of the mercury. The thermometer reads to 0.1 °C.</span>
+          </div>
+        </div>
+      </div>
+
+      <aside aria-label="Coach" style="flex: 1 1 380px; min-width: 0; background: #161616; border-left: 1px solid #242322; display: flex; flex-direction: column">
+        <div role="tablist" aria-label="Coach" style="display: flex; gap: 22px; padding: 0 20px; border-bottom: 1px solid #2A2928">
+          <button type="button" role="tab" aria-selected="true" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #F0F0F0; border-bottom: 2px solid #F0482A">Instructions</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Explanation</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Tips</button>
+        </div>
+
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">{{coachTitle}}</span>
+          <span style="color: #C9C6BF">{{coachText}}</span>
+
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+              <div style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span>{{s.text}}</span></div>
+            </sc-for>
+          </div>
+
+          <div style="background: #0D0D0D; border: 1px solid #2A2928; padding: 12px 14px; display: flex; gap: 24px; font-family: 'Geist Mono', monospace">
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">V</span>40 cm³</span>
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">Starting</span>28.0 °C</span>
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">Now</span>{{reading}}</span>
+          </div>
+
+          <sc-if value="{{isPeak}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <span style="color: #C9C6BF">The rise T is 47.4 − 28.0 = <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">19.4 °C</span>.</span>
+            <button type="button" class="cl-f" style="align-self: flex-start; height: 38px; padding: 0 16px; background: #F0482A; border: 0; color: #141414; font: 600 13px Geist, sans-serif">Take this reading</button>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{isRising}}" hint-placeholder-val="{{ true }}">
+          <div role="status" style="background: #1B1A19; border: 1px solid #2A2928; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="font-weight: 600">It is still rising</span>
+            <span style="color: #E8E4DC">The thermometer rose 2.5 °C in the last 10 s. Keep stirring and keep watching: read it when it stops rising, just before it starts to fall.</span>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{isUnstirred}}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="background: #2B2112; border: 1px solid #F5A524; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #F5C46B"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>The mixture is not being stirred</span>
+            <span style="color: #E8E4DC">The hot water is staying near the top, so the water by the bulb is warming slowly: 34.9 °C after 61 s. Left like this, the thermometer would not reach its highest for 8 minutes, and then 1.6 °C lower than stirred, because heat goes to the room while it waits.</span>
+            <span style="color: #A3A19B">Stir gently all the time from the moment you pour, so the hot and cold water mix in seconds.</span>
+          </div>
+          </sc-if>
+
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 13px; color: #A3A19B">Readings so far</span>
+            <span style="font-size: 13px; color: #8F8D88">None yet. The question sets V = 40, 50, 60 and 70 cm³.</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <nav aria-label="Stages" style="border-top: 1px solid #242322; background: #111110; padding: 10px 20px; display: flex; gap: 8px; overflow-x: auto">
+      <sc-for list="{{stages}}" as="s" hint-placeholder-count="10">
+        <a href="#stage" style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #8F8D88">{{s.n}}</span><span>{{s.name}}</span></span></a>
+      </sc-for>
+    </nav>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mode: 'rising' }; }
+  renderVals() {
+    const mode = this.state.mode;
+    const rising = mode === 'rising', peak = mode === 'peak', unstirred = mode === 'unstirred';
+    const btn = (on) => 'height: 32px; padding: 0 12px; border: 0; font: 500 13px Geist, sans-serif; cursor: pointer; background: ' + (on ? '#F0F0F0' : 'transparent') + '; color: ' + (on ? '#141414' : '#C9C6BF');
+
+    // Experiment 62 as approved (brief decisions 1 to 5), from thermometerTruth and mixturesPeak in
+    // packages/experiments on the heat model in packages/physics: 50 cm³ at 65 °C poured into
+    // 40 cm³ at 28 °C in the 50 g copper calorimeter, the lid on.
+    //   Stirred, the thermometer every 5 s from the pour; its highest is 47.35 °C at 61 s.
+    //   Not stirred, the same; its highest would be 45.71 °C at 480 s.
+    const stirredTrace = [28,31.63,37.01,41.15,43.83,45.42,46.33,46.83,47.1,47.24,47.31,47.34,47.35,47.35,47.34,47.33,47.31,47.3,47.28,47.27,47.25,47.23,47.22,47.2,47.19,47.17,47.15,47.14,47.12,47.11,47.09,47.07,47.06,47.04,47.03,47.01,46.99];
+    const unstirredTrace = [28,28.21,28.68,29.28,29.93,30.6,31.26,31.9,32.52,33.13,33.7,34.25,34.78,35.29,35.78,36.24,36.69,37.11,37.52,37.91,38.29,38.64,38.98,39.31,39.62,39.92,40.21,40.48,40.74,40.99,41.23,41.46,41.68,41.88,42.08,42.27,42.45];
+    const t = rising ? 30 : 61;
+    const now = rising ? 46.33 : peak ? 47.35 : 34.89;
+    const trace = unstirred ? unstirredTrace : stirredTrace;
+
+    // The trace, as far as the student has seen it: 0 to 180 s along, 25 to 50 °C up.
+    const tx = (s) => 36 + s * 256 / 180, ty = (c) => 120 - (c - 25) * 112 / 25;
+    const seen = trace.map((c, i) => [i * 5, c]).filter(([s]) => s < t);
+    const points = seen.concat([[t, now]]).map(([s, c]) => tx(s).toFixed(1) + ',' + ty(c).toFixed(1)).join(' ');
+    const gridY = [25, 30, 35, 40, 45, 50].map((c) => ({ y: ty(c), ty: ty(c) + 3, label: String(c) }));
+    const gridX = [0, 30, 60, 90, 120, 150, 180].map((s) => ({ x: tx(s), label: String(s) }));
+
+    // The thermometer's stem: 20 °C just above the bulb, 3.3 px to a degree.
+    const mercuryTop = 214 - (now - 20) * 1.5 * 2.2;
+    // 90 cm³ in the calorimeter, 1 px to 0.7 cm³ above its floor.
+    const waterHeight = 90 / 0.7, waterTop = 240 - waterHeight;
+
+    const current = 4;
+    const names = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const stages = names.map((name, i) => {
+      const done = i < current, cur = i === current;
+      return {
+        name, n: String(i + 1).padStart(2, '0'),
+        mark: done ? '✓' : cur ? '●' : '',
+        style: 'flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 8px 14px; text-decoration: none; color: ' + (cur ? '#F0F0F0' : done ? '#C9C6BF' : '#8F8D88') + '; background: ' + (cur ? '#1E1D1D' : 'transparent') + '; border: 1px solid ' + (cur ? '#F0482A' : '#242322'),
+        markStyle: 'width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (done ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (done ? '#6CC25A' : cur ? '#F0482A' : '#55534F')
+      };
+    });
+
+    const step = (text, state) => ({
+      text,
+      mark: state === 'done' ? '✓' : state === 'now' ? '●' : '',
+      style: 'display: flex; align-items: center; gap: 10px; padding: 8px 10px; color: ' + (state === 'done' ? '#8F8D88' : state === 'now' ? '#F0F0F0' : '#A3A19B') + '; background: ' + (state === 'now' ? '#2A1914' : 'transparent') + '; border: 1px solid ' + (state === 'now' ? '#F0482A' : 'transparent'),
+      markStyle: 'width: 22px; height: 22px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (state === 'done' ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (state === 'done' ? '#6CC25A' : state === 'now' ? '#F0482A' : '#55534F')
+    });
+    const steps = [
+      step('40 cm³ of cold water in the calorimeter, at 28.0 °C', 'done'),
+      step('Pour in the 50 cm³ of hot water at 65.0 °C, and stir', unstirred ? 'now' : 'done'),
+      step('Read the highest temperature the thermometer reaches', unstirred ? 'later' : 'now')
+    ];
+
+    const fmt = (c) => c.toFixed(1) + ' °C';
+    const stirStyle = (on) => 'flex: 1; height: 36px; border: ' + (on ? '0' : '1px solid #2A2928') + '; background: ' + (on ? '#F0F0F0' : 'transparent') + '; color: ' + (on ? '#141414' : '#F0F0F0') + '; font: 500 13px Geist, sans-serif';
+    return {
+      isRising: rising, isPeak: peak, isUnstirred: unstirred,
+      risingBtn: btn(rising), peakBtn: btn(peak), unstirredBtn: btn(unstirred),
+      showRising: () => this.setState({ mode: 'rising' }), showPeak: () => this.setState({ mode: 'peak' }), showUnstirred: () => this.setState({ mode: 'unstirred' }),
+      figTitle: unstirred ? 'Not stirred: the hot water stays on top' : 'Mixing hot and cold water',
+      benchLabel: 'A copper calorimeter in its lagging, with its lid on, the thermometer and the stirrer through the lid. It holds 40 cm³ of cold water at 28.0 °C and the 50 cm³ of hot water at 65.0 °C just poured in from the beaker. ' + (unstirred ? 'Not stirred, the hot water lies on top.' : 'Stirred, the water is mixed.') + ' The thermometer reads ' + fmt(now) + ', ' + t + ' s after pouring.',
+      waterFill: unstirred ? 'url(#layers)' : 'rgba(111, 168, 201, 0.35)',
+      waterTop, waterHeight,
+      lidOpacity: 1,
+      stirrerShift: unstirred ? 0 : -6,
+      mercuryTop, mercuryHeight: 222 - mercuryTop,
+      trace: points, nowX: tx(t), nowY: ty(now), gridX, gridY,
+      traceLabel: 'The thermometer against time since pouring, up to ' + t + ' s: ' + (unstirred ? 'rising slowly, ' : peak ? 'risen quickly and level at its highest, ' : 'rising quickly, ') + fmt(now) + ' now',
+      reading: fmt(now),
+      clock: t + ' s',
+      chip: peak ? 'Stopped rising' : 'Still rising',
+      chipStyle: 'align-self: flex-start; font-size: 12px; padding: 2px 8px; border: 1px solid ' + (peak ? '#6CC25A' : '#F5A524') + '; color: ' + (peak ? '#9BDB8C' : '#F5C46B'),
+      stirring: !unstirred, stirBtn: stirStyle(!unstirred), stirText: unstirred ? 'Stir' : 'Stirring',
+      coachTitle: peak ? 'Read the highest temperature' : unstirred ? 'Stir the mixture' : 'Watch the thermometer rise',
+      coachText: peak
+        ? 'The thermometer has stopped rising at 47.4 °C, 61 s after you poured. That is the highest temperature the mixture reaches: write it down.'
+        : 'Stir gently all the time, and watch the thermometer. It rises quickly, then stops, then falls slowly as the mixture loses heat to the room.',
+      steps, stages
+    };
+  }
+}
+</script>
+</body>
+</html>
