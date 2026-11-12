@@ -134,6 +134,32 @@ export function thermometerTruth(bench: MixturesBench, t: number): number {
   return calorimeterAt(mixturesCalorimeter(bench, bench.pouredAfter), t).thermometer;
 }
 
+/**
+ * What the calorimeter shows t s after the pour: the thermometer, and how much of the poured
+ * water still lies on top, from 1 at the pour to 0 when mixed (for the figure). Before the pour,
+ * the cold water's temperature and no layer.
+ */
+export function mixturesAt(
+  bench: MixturesBench,
+  t: number,
+): { thermometer: number; layered: number } {
+  if (bench.pouredAfter === null || bench.cold === null || bench.hot === null)
+    return { thermometer: methodOfMixtures.room, layered: 0 };
+  const c = mixturesCalorimeter(bench, bench.pouredAfter);
+  const s = calorimeterAt(c, t);
+  return {
+    thermometer: s.thermometer,
+    layered: (s.hot - s.cold) / (c.hot.temperature - methodOfMixtures.room),
+  };
+}
+
+/** What the measuring cylinder showed the student for the water now in a vessel, cm³. */
+export function cylinderRead(bench: MixturesBench, vessel: "cold" | "hot"): number | null {
+  const v = vessel === "cold" ? bench.cold : bench.hot;
+  const angle = vessel === "cold" ? bench.coldAngle : bench.hotAngle;
+  return v === null ? null : v + parallaxShift(MEASURING_CYLINDER.pointerHeight ?? 0, angle);
+}
+
 /** The highest the thermometer reads after this pour, and when, s after it. */
 export function mixturesPeak(bench: MixturesBench): { at: number; temperature: number } {
   if (bench.pouredAfter === null) throw new RangeError("pour first");

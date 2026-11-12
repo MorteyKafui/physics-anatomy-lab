@@ -99,6 +99,12 @@
   --pa-figure-image: #5a4318;
   --pa-figure-image-light: #fff3d2;
   --pa-figure-mark: #f0482a;
+  --pa-figure-copper: #b87333;
+  --pa-figure-felt: #1b1a19;
+  --pa-figure-felt-line: #3a3936;
+  --pa-figure-water: #6fa8c9;
+  --pa-figure-hot-water: #f5a524;
+  --pa-figure-mercury: #e8e4dc;
 
   /* Lyra: square corners everywhere. Round things use --pa-round. */
   --pa-radius: 0;
@@ -148,6 +154,12 @@
   --pa-figure-image: #3d2e10;
   --pa-figure-image-light: #fff3d2;
   --pa-figure-mark: #b8352a;
+  --pa-figure-copper: #a0612a;
+  --pa-figure-felt: #f3f1e8;
+  --pa-figure-felt-line: #bdbab1;
+  --pa-figure-water: #bbd8e8;
+  --pa-figure-hot-water: #f2c46b;
+  --pa-figure-mercury: #3d3b37;
 }
 
 @media (prefers-reduced-motion: reduce) {
