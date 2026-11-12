@@ -276,3 +276,36 @@ export { PINS_SHEET_NUMBER, pinsSheet } from "./converging-lens-pins-sheets";
 export type { PinsSheet } from "./converging-lens-pins-sheets";
 export { markPinsScript, pinsFollowUps } from "./converging-lens-pins-exam";
 export type { PinsExamFacts } from "./converging-lens-pins-exam";
+export {
+  asMixturesReading,
+  correctMixturesBench,
+  cylinderAtAngle,
+  decideMixtures,
+  filledVolume,
+  hotAtPour,
+  initialMixturesBench,
+  methodOfMixtures,
+  MIXTURES_BENCH_START,
+  MIXTURES_PROCEDURE_RULES,
+  MIXTURES_THERMOMETER,
+  mixturesCalorimeter,
+  mixturesPeak,
+  mixturesProjection,
+  mixturesReadingData,
+  notCovered,
+  notStirred,
+  readBeforePeak,
+  readThermometer,
+  recordedTemperature,
+  slowPour,
+  thermometerAtAngle,
+  thermometerTruth,
+} from "./method-of-mixtures";
+export type {
+  MixturesBench,
+  MixturesCommand,
+  MixturesDecision,
+  MixturesProcedureContext,
+  MixturesReading,
+  MixturesRefusal,
+} from "./method-of-mixtures";

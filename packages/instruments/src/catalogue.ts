@@ -29,6 +29,18 @@ export const THERMOMETER: Readonly<InstrumentSpec> = {
 };
 
 /**
+ * A 100 cm³ measuring cylinder with 1 cm³ divisions. The water's surface meets the glass behind
+ * the marks, so read from above or below it seems shifted by about 1 cm³ × tan(angle) (assumed
+ * until the UEW data).
+ */
+export const MEASURING_CYLINDER: Readonly<InstrumentSpec> = {
+  id: "measuring-cylinder",
+  resolution: 1,
+  unit: "cm³",
+  pointerHeight: 1,
+};
+
+/**
  * A moving-coil ammeter, 0 to 1 A, with 0.02 A divisions (the Ohm's law brief). Its needle sits
  * a little above the scale, so reading it at an angle shifts the reading; it flickers by about a
  * fifth of a division; and its own resistance is 0.05 Ω.
