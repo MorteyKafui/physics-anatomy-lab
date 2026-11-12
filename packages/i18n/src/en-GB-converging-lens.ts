@@ -422,6 +422,83 @@ export const enGBConvergingLens = {
   "experiments.converging-lens-pins.next":
     "The report, the print sheets and the exam for the two-pin method come with the next part of this lab. Your work is kept.",
   "experiments.converging-lens-pins.inDevelopment": "Being built: the report comes next",
+  "experiments.converging-lens-pins.report.title":
+    "{experiment}: the focal length of a converging lens by no parallax",
+  "experiments.converging-lens-pins.report.aim":
+    "To determine the focal length f of a converging lens by locating the image of an object pin with a search pin at no parallax.",
+  "experiments.converging-lens-pins.report.apparatus.pins":
+    "Two optical pins in holders: the object pin (P₁) and the search pin (P₂)",
+  "experiments.converging-lens-pins.report.apparatus.lens":
+    "A converging lens {d} cm across, in a holder (L)",
+  "experiments.converging-lens-pins.report.apparatus.bench":
+    "An optical bench with a {length} cm rule",
+  "experiments.converging-lens-pins.report.benchCaption":
+    "The object pin P₁, the lens L and the search pin P₂ on the optical bench, with the search pin at the image of P₁: no parallax.",
+  "experiments.converging-lens-pins.report.benchCaptionAsLeft":
+    "The object pin P₁, the lens L and the search pin P₂ on the optical bench, as they were left.",
+  "experiments.converging-lens-pins.report.benchAlt": "{caption}: the optical bench with two pins",
+  "experiments.converging-lens-pins.report.letter.P1": "P₁",
+  "experiments.converging-lens-pins.report.letter.L": "L",
+  "experiments.converging-lens-pins.report.letter.P2": "P₂",
+  "experiments.converging-lens-pins.report.legend.P1": "object pin",
+  "experiments.converging-lens-pins.report.legend.L": "converging lens",
+  "experiments.converging-lens-pins.report.legend.P2": "search pin",
+  "experiments.converging-lens-pins.report.values.bench":
+    "x = {x} cm, search pin {y} cm from the lens",
+  "experiments.converging-lens-pins.report.theory":
+    "A thin converging lens of focal length f forms a real image of an object a distance x from it at a distance y on the other side, with 1/x + 1/y = 1/f. Multiplying through by xyf gives xy = f (x + y): a graph of xy against (x + y) is a straight line through the origin whose slope is f. The image is found with a search pin: where the pin is at the image, the two stay together as the eye moves from side to side, and there is no parallax.",
+  "experiments.converging-lens-pins.report.method.setUp":
+    "I set the tips of both pins level with the centre of the lens.",
+  "experiments.converging-lens-pins.report.method.readings":
+    "For each object distance from x = {min} cm to {max} cm, I looked through the lens at the image of the object pin and moved the search pin until there was no parallax between them, then read y from the centre marks of the holders.",
+  "experiments.converging-lens-pins.report.method.repeat":
+    "At some object distances I found the place of no parallax twice, bringing the search pin in from each side, and used the mean of y.",
+  "experiments.converging-lens-pins.report.method.analyse":
+    "I plotted xy against (x + y), drew the best straight line, and found its slope from a large triangle.",
+  "experiments.converging-lens-pins.report.method.analyseOther":
+    "I plotted {y} against {x} and drew the best straight line.",
+  "experiments.converging-lens-pins.report.observations.readings":
+    "I took {n} readings. The rule read to {cm} cm.",
+  "experiments.converging-lens-pins.report.observations.one":
+    "I took one reading. The rule read to {cm} cm.",
+  "experiments.converging-lens-pins.report.observations.trend":
+    "As x increased from {xmin} cm to {xmax} cm, y decreased from {ymax} cm to {ymin} cm.",
+  "experiments.converging-lens-pins.report.observations.image":
+    "Each image of the object pin was real and upside down, and seen through the lens.",
+  "experiments.converging-lens-pins.report.table":
+    "Table 1 The object and image distances, their product xy and their sum (x + y).",
+  "experiments.converging-lens-pins.report.graph":
+    "Fig. 2 {caption} The slope is found from triangle ABC.",
+  "experiments.converging-lens-pins.report.calcSlope":
+    "slope = CB ⁄ AC = {rise} {yu} ⁄ {run} {xu} = {slope}",
+  "experiments.converging-lens-pins.report.calcF": "f = slope = {f}",
+  "experiments.converging-lens-pins.report.precaution.tips":
+    "I set the tips of the object and search pins level with the axis of the lens.",
+  "experiments.converging-lens-pins.report.precaution.eye":
+    "I kept my eye along the axis of the lens in locating the image of P₁.",
+  "experiments.converging-lens-pins.report.precaution.parallax":
+    "I moved the search pin until there was no parallax between it and the image.",
+  "experiments.converging-lens-pins.report.precaution.centre":
+    "I read x and y from the centre mark of each holder.",
+  "experiments.converging-lens-pins.report.precaution.clean":
+    "I cleaned the lens with a soft cloth to see the image clearly.",
+  "experiments.converging-lens-pins.report.precaution.repeat":
+    "I found the place of no parallax from each side and used the mean of y.",
+  "experiments.converging-lens-pins.report.source.eyeOff":
+    "My eye was off the lens's axis, so the light came through the outer part of the lens and some readings of y were short.",
+  "experiments.converging-lens-pins.report.source.tipsOff":
+    "The tips were not level, so the image's tip and the search pin's could not be brought together exactly.",
+  "experiments.converging-lens-pins.report.source.parallaxLeft":
+    "Some readings were taken with parallax still there, so y was off the place of no parallax.",
+  "experiments.converging-lens-pins.report.source.fromEdge":
+    "Some readings were taken from the edge of a holder, not its centre mark, so they are out by about {cm} cm.",
+  "experiments.converging-lens-pins.report.source.leastCount": "The rule reads only to {cm} cm.",
+  "experiments.converging-lens-pins.report.source.stretch":
+    "The tips seem to stay together over about {range} cm of the search pin's travel at x = {x} cm, so the place of no parallax has to be judged.",
+  "experiments.converging-lens-pins.report.source.aberration":
+    "A real lens bends the light through its edge a little more than through its centre, so as the head moves the image seems to shift a little, and the place of no parallax is a little nearer the lens than the thin-lens formula gives.",
+  "experiments.converging-lens-pins.report.conclusion":
+    "The focal length of the lens was found to be {f}.",
   "experiments.converging-lens-pins.refused.off-the-rule": "That is off the end of the bench.",
   "experiments.converging-lens-pins.refused.holders-cross":
     "The holders cannot pass each other on the bench.",

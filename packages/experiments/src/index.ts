@@ -226,6 +226,7 @@ export {
   initialPinsBench,
   lensPins,
   lineUpAt,
+  noParallaxStretch,
   parallaxStillThere,
   PINS_BENCH_START,
   PINS_PARTS,

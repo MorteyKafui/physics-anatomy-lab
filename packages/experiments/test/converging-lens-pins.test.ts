@@ -11,6 +11,7 @@ import {
   lensPins,
   lensWorld,
   lineUpAt,
+  noParallaxStretch,
   PINS_PROCEDURE_RULES,
   pinsBenchProjection,
   pinsReadingData,
@@ -135,6 +136,17 @@ describe("no parallax, as the eye view shows it (decision 12)", () => {
         const far = at(8);
         expect(far.kind === "image" && far.clear).toBe(false);
       }
+    }
+  });
+
+  test("the no-parallax stretch is 7 to 9 mm at every x, around where the views line up", () => {
+    for (const x of lensPins.objectDistances) {
+      const r = noParallaxStretch(world, x);
+      const at = lineUpAt(world, x, 0);
+      expect(r.from).toBeLessThan(at);
+      expect(r.to).toBeGreaterThan(at);
+      expect((r.to - r.from) * 1000).toBeGreaterThan(7);
+      expect((r.to - r.from) * 1000).toBeLessThan(9);
     }
   });
 

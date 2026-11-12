@@ -439,3 +439,27 @@ export function pinsEyeView(world: LensWorld, bench: PinsBench): PinsEyeView[] |
     return { head, across: across / minute, up };
   });
 }
+
+/**
+ * The stretch of the search pin's travel, m from the lens, over which the eye view shows no
+ * parallax (decision 12), found by bisection either side of where the views line up.
+ */
+export function noParallaxStretch(
+  world: LensWorld,
+  x: number,
+  eye = 0,
+): { from: number; to: number } {
+  const at = lineUpAt(world, x, eye);
+  const clear = (s: number) => seenApart(world, x, s, eye) <= lensPins.view.acuity;
+  const edge = (outside: number) => {
+    let inside = at;
+    let out = outside;
+    for (let i = 0; i < 60; i += 1) {
+      const mid = (inside + out) / 2;
+      if (clear(mid)) inside = mid;
+      else out = mid;
+    }
+    return (inside + out) / 2;
+  };
+  return { from: edge(at - 0.05), to: edge(at + 0.05) };
+}

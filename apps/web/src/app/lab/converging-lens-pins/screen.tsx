@@ -959,8 +959,16 @@ export function ConvergingLensPinsScreen() {
                     <p className="text-soft">
                       {state.step === "conclude"
                         ? t(`${P}.conclude.text`, { f: fText() })
-                        : t(`${P}.next`)}
+                        : t("report.openHint")}
                     </p>
+                    {state.step === "report" && (
+                      <Link
+                        href={`/lab/${E.id}/report`}
+                        className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                      >
+                        {t("report.open")}
+                      </Link>
+                    )}
                     {state.step === "conclude" && next && (
                       <Button className="self-start" onClick={() => void finishStep()}>
                         {t("lab.steps.continue", { step: stepName(next) })}
