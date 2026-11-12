@@ -11,6 +11,7 @@ from pa_validation.circuits import balance_length, ohms_law_readings
 from pa_validation.lens import image
 from pa_validation.mixtures import final_temperature, solid_specific_heat
 from scripts.make_fixtures import (
+    build_calorimetry,
     build_circuits,
     build_lens,
     build_lens_exact,
@@ -91,6 +92,7 @@ def test_mixture_conserves_energy_and_recovers_c() -> None:
         ("lens-exact.json", build_lens_exact),
         ("lens-parallax.json", build_lens_parallax),
         ("mixtures.json", build_mixtures),
+        ("calorimetry.json", build_calorimetry),
     ],
 )
 def test_committed_fixtures_are_current(name: str, build: Callable[[], object]) -> None:

@@ -12,6 +12,10 @@ validation", levels 1 and 2).
   `solveNetwork` in `packages/physics` is checked.
 - `pa_validation/lens.py` images with paraxial ray-transfer matrices.
 - `pa_validation/mixtures.py` solves the energy balance by root-finding with SciPy.
+- `pa_validation/calorimetry.py` integrates the lumped heat model of the method of mixtures
+  (heat lost to the room, mixing, a lagging thermometer) as heat flows with SciPy's DOP853, and
+  finds the thermometer's peak by event location. `calorimetry.json` is its fixture; the
+  TypeScript's closed form must match it to 10⁻⁸ °C (the integrator's own error is about 10⁻⁹).
 - `pa_validation/fit.py` fits straight lines with SciPy's `linregress` and NumPy's least squares.
 - `pa_validation/outliers.py` computes deleted residuals from the hat matrix and the Bonferroni
   critical value from `scipy.stats.t`.
