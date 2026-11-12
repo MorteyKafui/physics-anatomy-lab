@@ -19,6 +19,9 @@ import {
   answersProjection,
   coach,
   coachIsOn,
+  decideExam,
+  EMPTY_EXAM,
+  examProjection,
   frontier,
   HELP_LEVELS,
   helpLevelFor,
@@ -61,13 +64,15 @@ import { Button } from "@pa/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, lineAcrossAxes, useGraph } from "../graph-sheet";
 import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
-import { useAttempt } from "../use-attempt";
+import { ExamBar } from "../exam/bar";
+import { backToPractice, useAttempt } from "../use-attempt";
 
 const E = convergingLens;
 const P = "experiments.converging-lens";
@@ -82,11 +87,27 @@ const MM = 0.001;
 /**
  * The converging lens lab (the approved board "The converging lens: finding the image"): the
  * same lab as the others, with the optical bench, the shared table builder and graph sheet, and
- * the experiment's own analysis (f from the two intercepts of 1/v against 1/u). The report, print
- * sheets and exam come next.
+ * the experiment's own analysis (f from the two intercepts of 1/v against 1/u). Exam mode runs
+ * the same lab with the coach off, against the clock.
  */
 export function ConvergingLensScreen() {
   const handle = useAttempt(E.id);
+  const router = useRouter();
+  // Exam mode: the clock, from the attempt's own events.
+  const exam = useMemo(
+    () => (handle ? replay(examProjection, handle.attempt, handle.events) : EMPTY_EXAM),
+    [handle],
+  );
+  const handIn = useCallback(
+    async (auto: boolean) => {
+      if (!handle) return;
+      const now = replay(examProjection, handle.attempt, handle.events);
+      const d = decideExam(handle.attempt.mode, now, { type: "hand-in", auto });
+      if (d.ok) await handle.record(d.events);
+      router.push(`/lab/${E.id}/exam`);
+    },
+    [handle, router],
+  );
   const [tab, setTab] = useState("instructions");
   const [refusal, setRefusal] = useState<string>();
   const [advice, setAdvice] = useState<Advice[]>([]);
@@ -469,26 +490,49 @@ export function ConvergingLensScreen() {
             </div>
           </div>
           <span className="hidden flex-1 md:block" />
-          <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-            <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
-            <select
-              className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
-              value={state.helpLevel}
-              onChange={(e) =>
-                void handle.dispatch({ type: "set-help-level", level: e.target.value as HelpLevel })
-              }
-            >
-              {HELP_LEVELS.map((level) => (
-                <option key={level} value={level}>
-                  {t(`lab.helpLevel.${level}` as MessageKey)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <span className="border border-border px-2.5 py-1 text-xs text-muted-foreground">
-            {t(`${P}.inDevelopment`)}
-          </span>
+          {/* In an exam the coach is off: no help level to choose. */}
+          {state.mode !== "exam" && (
+            <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
+              <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
+              <select
+                className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
+                value={state.helpLevel}
+                onChange={(e) =>
+                  void handle.dispatch({
+                    type: "set-help-level",
+                    level: e.target.value as HelpLevel,
+                  })
+                }
+              >
+                {HELP_LEVELS.map((level) => (
+                  <option key={level} value={level}>
+                    {t(`lab.helpLevel.${level}` as MessageKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </header>
+        {handle.attempt.mode === "exam" &&
+          exam.startedAt !== undefined &&
+          exam.handedInAt === undefined && (
+            <ExamBar startedAt={exam.startedAt} onHandIn={(auto) => void handIn(auto)} />
+          )}
+        {handle.attempt.mode === "exam" && exam.handedInAt !== undefined && (
+          <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
+            <span>{exam.auto ? t("exam.timeUp") : t("exam.handedIn")}</span>
+            <Link href={`/lab/${E.id}/exam`} className="font-semibold underline underline-offset-2">
+              {t("exam.seeScript")}
+            </Link>
+            <button
+              type="button"
+              className="underline underline-offset-2"
+              onClick={() => void backToPractice(E.id).then(() => window.location.reload())}
+            >
+              {t("exam.backToPractice")}
+            </button>
+          </div>
+        )}
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           {panel ? (
@@ -930,8 +974,16 @@ export function ConvergingLensScreen() {
                     <p className="text-soft">
                       {state.step === "conclude"
                         ? t(`${P}.conclude.text`, { f: shownAnswer("f", fUnit, "f") })
-                        : t(`${P}.next`)}
+                        : t("report.openHint")}
                     </p>
+                    {state.step === "report" && (
+                      <Link
+                        href={`/lab/${E.id}/report`}
+                        className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                      >
+                        {t("report.open")}
+                      </Link>
+                    )}
                     {state.step === "conclude" && next && (
                       <Button className="self-start" onClick={() => void finishStep()}>
                         {t("lab.steps.continue", { step: stepName(next) })}
@@ -972,6 +1024,20 @@ export function ConvergingLensScreen() {
                   </div>
                 </div>
                 <p className="text-soft">{t(`${P}.explain.graph`)}</p>
+                <Link
+                  href={`/lab/${E.id}/sheets`}
+                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("sheets.link")}
+                </Link>
+                {handle.attempt.mode !== "exam" && (
+                  <Link
+                    href={`/lab/${E.id}/exam`}
+                    className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                  >
+                    {t("exam.try")}
+                  </Link>
+                )}
               </TabsContent>
 
               <TabsContent value="tips" className="flex flex-col gap-3 p-5">

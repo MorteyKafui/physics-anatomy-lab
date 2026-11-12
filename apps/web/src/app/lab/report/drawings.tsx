@@ -1,6 +1,13 @@
 "use client";
 
-import { BENCH_VIEWBOX, CIRCUIT_FIGURE, CircuitBench, PendulumBench } from "@pa/apparatus";
+import {
+  BENCH_VIEWBOX,
+  CIRCUIT_FIGURE,
+  CircuitBench,
+  OPTICAL_VIEWBOX,
+  OpticalBench,
+  PendulumBench,
+} from "@pa/apparatus";
 import type { Ref } from "react";
 
 import { GRAPH_VIEWBOX, GraphDrawing } from "../graph-sheet";
@@ -20,6 +27,10 @@ export const CIRCUIT_SIZE = {
   width: 440,
   height: (440 * CIRCUIT_FIGURE.height) / CIRCUIT_FIGURE.width,
 };
+export const OPTICAL_SIZE = {
+  width: 440,
+  height: (440 * OPTICAL_VIEWBOX.height) / OPTICAL_VIEWBOX.width,
+};
 export const GRAPH_SIZE = { width: 400, height: (400 * 276) / 234 };
 
 export function BenchDrawing({
@@ -32,8 +43,8 @@ export function BenchDrawing({
   ref?: Ref<SVGSVGElement>;
 }) {
   const d = scene.drawing;
-  if (d.kind !== "bench" && d.kind !== "circuit") return null;
-  const size = d.kind === "bench" ? BENCH_SIZE : CIRCUIT_SIZE;
+  if (d.kind !== "bench" && d.kind !== "circuit" && d.kind !== "optical") return null;
+  const size = d.kind === "bench" ? BENCH_SIZE : d.kind === "optical" ? OPTICAL_SIZE : CIRCUIT_SIZE;
   return (
     <svg
       ref={ref}
@@ -56,6 +67,15 @@ export function BenchDrawing({
             length={d.length}
             assembly={d.assembly}
             letters={d.letters}
+          />
+        ) : d.kind === "optical" ? (
+          <OpticalBench
+            object={d.object}
+            lens={d.lens}
+            screen={d.screen}
+            offAxis={d.offAxis}
+            objectHalfHeight={d.objectHalfHeight}
+            image={d.image}
           />
         ) : (
           <CircuitBench

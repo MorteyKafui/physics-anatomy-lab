@@ -42,6 +42,8 @@ test("the Ohm's law lab's explanation links to its print sheets", async ({ page 
 test("the Ohm's law poster, explained drawing and explainer download as PDFs with real text", async ({
   page,
 }) => {
+  // Three PDFs are made on the device, about 20 to 30 s on the build machine; more under load.
+  test.setTimeout(60_000);
   await page.goto(SHEETS);
 
   const poster = await download(page, "Poster");

@@ -1,7 +1,14 @@
 "use client";
 
 import { decimalsForResolution, fillDerived, heading, pointsFor } from "@pa/analysis";
-import { BENCH_VIEWBOX, CIRCUIT_FIGURE, CircuitBench, PendulumBench } from "@pa/apparatus";
+import {
+  BENCH_VIEWBOX,
+  CIRCUIT_FIGURE,
+  CircuitBench,
+  OPTICAL_VIEWBOX,
+  OpticalBench,
+  PendulumBench,
+} from "@pa/apparatus";
 import {
   coachIsOn,
   coachProjection,
@@ -70,6 +77,16 @@ export type FigureDrawing =
       leads: readonly Lead[];
       jockey: { at: number; pressed: boolean };
       wireLength: number;
+    }
+  | {
+      /** The converging lens bench: each holder's place on the rule, m, and the image there. */
+      kind: "optical";
+      object: number;
+      lens: number;
+      screen: number;
+      offAxis: number;
+      objectHalfHeight: number;
+      image: { at: number; magnification: number } | undefined;
     }
   | { kind: "table"; headings: string[]; rows: string[][] }
   | { kind: "graph"; view: GraphView; headings: { x: string; y: string } };
@@ -224,7 +241,7 @@ function wrap(text: string, width = 84): string[] {
 }
 
 function drawingHeight(d: FigureDrawing): number {
-  if (d.kind === "bench" || d.kind === "circuit") return 400;
+  if (d.kind === "bench" || d.kind === "circuit" || d.kind === "optical") return 400;
   if (d.kind === "graph") return 440;
   return 30 + 26 * Math.max(1, d.rows.length) + 2;
 }
@@ -303,7 +320,11 @@ export function SnapshotSheet({
         y={TOP}
         width={boxW}
         height={boxH}
-        fill={d.kind === "bench" || d.kind === "circuit" ? "var(--pa-ink-950)" : "var(--pa-bg)"}
+        fill={
+          d.kind === "bench" || d.kind === "circuit" || d.kind === "optical"
+            ? "var(--pa-ink-950)"
+            : "var(--pa-bg)"
+        }
         stroke="var(--pa-border)"
       />
       {d.kind === "bench" && (
@@ -337,6 +358,23 @@ export function SnapshotSheet({
             ammeter={0}
             voltmeter={0}
             figure
+          />
+        </svg>
+      )}
+      {d.kind === "optical" && (
+        <svg
+          x={PAD + 20}
+          y={TOP + (boxH - ((boxW - 40) * OPTICAL_VIEWBOX.height) / OPTICAL_VIEWBOX.width) / 2}
+          width={boxW - 40}
+          height={((boxW - 40) * OPTICAL_VIEWBOX.height) / OPTICAL_VIEWBOX.width}
+        >
+          <OpticalBench
+            object={d.object}
+            lens={d.lens}
+            screen={d.screen}
+            offAxis={d.offAxis}
+            objectHalfHeight={d.objectHalfHeight}
+            image={d.image}
           />
         </svg>
       )}

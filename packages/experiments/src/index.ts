@@ -214,3 +214,7 @@ export type {
   LensGraphContext,
   LensTemplate,
 } from "./converging-lens-table";
+export { LENS_SHEET_NUMBER, lensSheet } from "./converging-lens-sheets";
+export type { LensSheet } from "./converging-lens-sheets";
+export { lensFollowUps, markLensScript } from "./converging-lens-exam";
+export type { LensExamFacts } from "./converging-lens-exam";
