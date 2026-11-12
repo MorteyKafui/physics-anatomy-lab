@@ -189,10 +189,10 @@ comes out 1.0% to 1.2% short of the lens's own f over 500 lenses: the aberration
    not the thin-lens v, so a student's readings carry the aberration a real lens gives. Built
    with the bench, when the lab first draws the image on the screen.
 
-## Experiment 96: two optical pins (proposed)
+## Experiment 96: two optical pins
 
 The second lens practical, from the same lens and bench, and the plan's pin parallax model.
-Proposed here for review before anything is built.
+Decisions 8 to 11 are approved; nothing is built yet.
 
 ### What the student does
 
@@ -254,10 +254,12 @@ Each with its real effect in the model, and its coaching text, as for the screen
 
 ### For the physics reviewer to decide, Experiment 96
 
+Approved by Mortey on 2026-11-12, all four as proposed.
+
 8. Experiment 96 as the book sets it: x = 20, 30, 40 and 50 cm, and a graph of xy against
    (x + y) with slope f.
 9. The eye 25 cm behind the image, and no parallax as under 1 minute of arc of relative movement,
    until the UEW reference data comes.
-10. How far the head moves: ±0.5 cm (proposed), which gives a clear no-parallax place, or as far
-    as the lens allows, which leaves some parallax at every place.
+10. How far the head moves: ±0.5 cm, which gives a clear no-parallax place, rather than as far as
+    the lens allows, which leaves some parallax at every place.
 11. The five mistakes above.
