@@ -60,7 +60,7 @@ describe("the two-pin table", () => {
       ["x", "cm"],
       ["y", "cm"],
       ["xy", "cm²"],
-      ["x + y", "cm"],
+      ["(x + y)", "cm"],
     ]);
     const table = tabulate([...PINS_STANDARD_TABLE], [reading("r1", 20, 60)]);
     expect(table.rows[0]!.cells).toMatchObject({ x: "20.0", y: "60.0" });
@@ -86,7 +86,7 @@ describe("the two-pin table", () => {
 describe("the graph", () => {
   test("is checked to be xy against (x + y), and y against x is caught", () => {
     expect(
-      runRules(PINS_GRAPH_RULES, { columns: PINS_PLOT, symbols: { x: "x + y", y: "xy" } }),
+      runRules(PINS_GRAPH_RULES, { columns: PINS_PLOT, symbols: { x: "(x + y)", y: "xy" } }),
     ).toEqual([]);
     expect(
       runRules(PINS_GRAPH_RULES, { columns: { x: "x", y: "y" }, symbols: { x: "x", y: "y" } }).map(

@@ -46,7 +46,7 @@ const productColumn: DesignColumn = {
 };
 const sumColumn: DesignColumn = {
   id: "xPlusY",
-  symbol: "x + y",
+  symbol: "(x + y)",
   kind: "length",
   unit: "cm",
   role: "derived",

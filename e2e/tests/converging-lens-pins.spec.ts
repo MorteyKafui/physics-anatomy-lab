@@ -94,7 +94,96 @@ test("the student levels the tips, the check passes, and the search pin finds no
   await expect(page.locator("aside ol li").first()).toContainText("x = 20.0 cm");
   await page.getByRole("button", { name: "Finish measuring" }).click();
   await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
-  await expect(page.getByText(/come with the next part of this lab/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tabulate your readings" })).toBeVisible();
+});
+
+/**
+ * Finish a step. The apparatus differs a little in every attempt, so on some the coach flags
+ * something on the way out; the student reads it and finishes again to carry on.
+ */
+async function finish(page: Page, button: string, next: string) {
+  const step = page.getByText(next);
+  await page.getByRole("button", { name: button }).click();
+  await step
+    .waitFor({ timeout: 3000 })
+    .catch(() => page.getByRole("button", { name: button }).click());
+  await expect(step).toBeVisible();
+}
+
+/** Where to look for no parallax at each x, cm from the lens, around every lens the seed builds. */
+const LOOK: Record<number, [number, number]> = {
+  20: [48, 68],
+  30: [26, 35],
+  40: [21, 27],
+  50: [18, 24],
+};
+
+/** Through Measure at Auto, with a reading at each of the question's distances. */
+async function measureAll(page: Page, xs: number[]) {
+  await toBuild(page);
+  await page.getByLabel("Help level").selectOption("auto");
+  await levelTips(page);
+  await page.getByRole("button", { name: "Finish building" }).click();
+  await page.getByRole("button", { name: "Continue to Measure" }).click();
+  // The object pin stays at 10.0 cm; the lens is set for each x, then the search pin is found.
+  for (const x of xs) {
+    await slide(page, "Lens position", 10 + x);
+    const [from, to] = LOOK[x]!;
+    await findNoParallax(page, 10 + x, from, to);
+    await page.getByRole("button", { name: "Take this reading" }).click();
+    await expect(page.locator("aside ol li").last()).toContainText(`x = ${x}.0 cm`);
+  }
+  await finish(page, "Finish measuring", "Step 6 of 10 · Tabulate");
+  await page.getByRole("button", { name: "Standard" }).click();
+  await page.getByRole("button", { name: "Fill in my readings" }).click();
+  await finish(page, "Finish tabulating", "Step 7 of 10 · Plot");
+}
+
+test("at Auto the whole two-pin lab runs: four readings, the table, xy against (x + y), and f from its slope", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(180_000);
+  await measureAll(page, [20, 30, 40, 50]);
+  await expect(page.getByText(/A graph of xy against \(x \+ y\)/)).toBeVisible();
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
+
+  // f is the slope: the lens's own, within the spread of lenses the seed builds.
+  const read = async (id: string) =>
+    Number((await page.locator(`[data-answer="${id}"]`).textContent())!.split(" ")[0]);
+  const [slope, f] = [await read("slope"), await read("f")];
+  expect(f).toBeCloseTo(slope, 6);
+  expect(f).toBeGreaterThan(14.4);
+  expect(f).toBeLessThan(15.6);
+  await expect(page.locator('[data-answer="f"]')).toContainText("cm");
+  await finish(page, "Finish analysing", "Step 9 of 10 · Conclude");
+
+  await expect(page.getByText(`The focal length of the lens is ${f.toFixed(1)} cm.`)).toBeVisible();
+  await page.getByRole("button", { name: "Continue to Report" }).click();
+  await expect(page.getByText("Step 10 of 10 · Report")).toBeVisible();
+  await expect(page.getByText(/The report, the print sheets and the exam/)).toBeVisible();
+});
+
+test("plotting y against x is caught, and the analysis asks for xy against (x + y)", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(120_000);
+  await measureAll(page, [30, 50]);
+  const column = (axis: string) =>
+    page
+      .getByRole("region", { name: "Graph sheet" })
+      .getByRole("group", { name: axis })
+      .getByLabel("Plot");
+  await column("Across (x)").selectOption({ label: "x/cm" });
+  await column("Up (y)").selectOption({ label: "y/cm" });
+  await expect(
+    page.getByRole("status").filter({ hasText: "Plot xy against (x + y)" }).first(),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Finish plotting" }).click();
+  await page.getByRole("button", { name: "Finish plotting" }).click();
+  await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
+  await expect(page.getByText(/Your graph is y against x/)).toBeVisible();
 });
 
 test("a reading with parallax left is caught by the coach", async ({ page }) => {
