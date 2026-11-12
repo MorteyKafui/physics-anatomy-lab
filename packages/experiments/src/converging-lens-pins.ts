@@ -1,12 +1,12 @@
 import type { Finding, Rule } from "@pa/analysis";
 import type { Attempt, Json, LabEvent, NewEvent, Projection } from "@pa/engine";
-import { noParallax, paraxialImageDistance, parallaxLeft, type ParallaxView } from "@pa/physics";
+import { paraxialImageDistance, parallaxAngle } from "@pa/physics";
 
 import { convergingLens, lensWorld, type LensWorld, type ReadFrom } from "./converging-lens";
 
 /**
  * The converging lens with two optical pins (Experiment 96), as approved in
- * docs/content/converging-lens-brief.md (decisions 8 to 11): the object pin P₁ at x in front of
+ * docs/content/converging-lens-brief.md (decisions 8 to 12): the object pin P₁ at x in front of
  * the lens, and the search pin P₂ moved behind it until it shows no parallax with the image of P₁.
  * The lens, the rule and the holders are the screen method's; every number comes from
  * packages/physics (AGENTS.md rule 1). Lengths in metres; the rule reads in centimetres.
@@ -50,12 +50,16 @@ export type PinsView =
       x: number;
       /** The search pin's distance from the lens, m. */
       y: number;
-      /** Where there is least parallax for this eye, m from the lens, and what is left there, rad. */
+      /**
+       * Where the tips line up seen from the left and the right for this eye, m from the lens, and
+       * the same for the eye on the axis: where the student should find it.
+       */
       at: number;
-      leastLeft: number;
-      /** The same for the eye on the axis: where the student should find it. */
       atOnAxis: number;
-      /** The parallax left with the pin where it stands, rad, and whether the eye sees none. */
+      /**
+       * How far apart the tips are seen from the left and the right with the pin where it stands,
+       * the larger of the two, rad, and whether that is within the eye's acuity: no parallax.
+       */
       left: number;
       clear: boolean;
       /** The image's tip and the search pin's tip, how far apart in height, m. */
@@ -63,7 +67,44 @@ export type PinsView =
       magnification: number;
     };
 
-const viewFor = (eye: number): ParallaxView => ({ ...lensPins.view, centre: eye });
+/** Where the eye is, m behind the lens's centre: 25 cm behind the paraxial image. */
+const eyeDistance = (world: LensWorld, x: number) =>
+  paraxialImageDistance(world.lens, x) + lensPins.view.eyeBehind;
+
+/**
+ * What the eye view shows (decision 12): the tips' separation seen from the left and from the
+ * right of the head's travel about the eye's height, the larger of the two, rad. Within the eye's
+ * acuity there is no parallax. The lens's aberration means this is not quite the place of least
+ * separation over the whole travel (noParallax, which the brief records): the lab goes by what the
+ * student sees.
+ */
+export function seenApart(world: LensWorld, x: number, pin: number, eye: number): number {
+  const at = eyeDistance(world, x);
+  // A view the lens does not let the eye see the image from is left out; with neither, nothing
+  // can be lined up.
+  const sides = [eye - lensPins.view.head, eye + lensPins.view.head]
+    .map((h) => parallaxAngle(world.lens, x, pin, at, h))
+    .filter((a): a is number => a !== undefined)
+    .map(Math.abs);
+  return sides.length ? Math.max(...sides) : Infinity;
+}
+
+/** Where the tips line up seen from the left and the right, m from the lens: golden-section search. */
+export function lineUpAt(world: LensWorld, x: number, eye: number): number {
+  const v = paraxialImageDistance(world.lens, x);
+  let a = 0.8 * v;
+  let b = 1.1 * v;
+  const g = (Math.sqrt(5) - 1) / 2;
+  let c = b - g * (b - a);
+  let d = a + g * (b - a);
+  for (let i = 0; i < 80 && b - a > 1e-7; i += 1) {
+    if (seenApart(world, x, c, eye) < seenApart(world, x, d, eye)) b = d;
+    else a = c;
+    c = b - g * (b - a);
+    d = a + g * (b - a);
+  }
+  return (a + b) / 2;
+}
 
 /**
  * The view through the lens. The object pin's tip at h makes an image tip at −m h (inverted), so
@@ -75,18 +116,16 @@ export function pinsView(world: LensWorld, bench: PinsBench): PinsView {
   const y = bench.pin - bench.lens;
   if (!(x > 0) || !(y > 0)) return { kind: "misplaced" };
   if (x <= world.focalLength) return { kind: "no-image", x };
-  const view = viewFor(bench.eye);
-  const best = noParallax(world.lens, x, view);
-  const onAxis = bench.eye === 0 ? best : noParallax(world.lens, x, viewFor(0));
-  const left = parallaxLeft(world.lens, x, y, view);
+  const at = lineUpAt(world, x, bench.eye);
+  const atOnAxis = bench.eye === 0 ? at : lineUpAt(world, x, 0);
+  const left = seenApart(world, x, y, bench.eye);
   const magnification = paraxialImageDistance(world.lens, x) / x;
   return {
     kind: "image",
     x,
     y,
-    at: best.at,
-    leastLeft: best.residual,
-    atOnAxis: onAxis.at,
+    at,
+    atOnAxis,
     left,
     clear: left <= lensPins.view.acuity,
     tipGap: Math.abs(-magnification * bench.objectTip - bench.pinTip),
@@ -100,7 +139,7 @@ export function correctPinsBench(world: LensWorld, x: number, objectAt = 0.1): P
   return {
     object: objectAt,
     lens,
-    pin: lens + noParallax(world.lens, x, viewFor(0)).at,
+    pin: lens + lineUpAt(world, x, 0),
     objectTip: 0,
     pinTip: 0,
     eye: 0,
@@ -213,7 +252,8 @@ export interface PinsReading {
   s: number;
   at: number;
   atOnAxis: number;
-  /** The parallax left at the pin, rad; the eye's height, m; the tips' gap in height, m. */
+  /** The tips' separation seen from the left and the right, rad; the eye's height, m; the tips'
+   * gap in height, m. */
   left: number;
   eye: number;
   tipGap: number;
@@ -367,3 +407,35 @@ export const PINS_PROCEDURE_RULES: Rule<PinsProcedureContext>[] = [
   parallaxStillThere,
   pinsReadFromEdge,
 ];
+
+/** One view through the lens: how far the image's tip seems from the search pin's, in minutes of arc. */
+export interface PinsEyeView {
+  /** Where the head is, m off the eye's centre: −head, 0 or +head. */
+  head: number;
+  /** Across: positive when the image's tip is to the left of the pin's. Up: positive when above. */
+  across: number;
+  up: number;
+}
+
+/**
+ * The eye view from the left, the centre and the right of the head's travel (the approved board).
+ * Across is parallaxAngle (positive when the image moves against the head, so it shows to the left
+ * from the right). Up is the tips' heights, the image's −m times the object pin's, as each is seen
+ * from the eye. Undefined when there is no real image to look at.
+ */
+export function pinsEyeView(world: LensWorld, bench: PinsBench): PinsEyeView[] | undefined {
+  const v = pinsView(world, bench);
+  if (v.kind !== "image") return undefined;
+  const eye = eyeDistance(world, v.x);
+  const minute = lensPins.view.acuity;
+  const imageTip = -v.magnification * bench.objectTip;
+  const up =
+    (Math.atan((imageTip - bench.eye) / (eye - v.at)) -
+      Math.atan((bench.pinTip - bench.eye) / (eye - v.y))) /
+    minute;
+  return [-1, 0, 1].map((side) => {
+    const head = side * lensPins.view.head;
+    const across = parallaxAngle(world.lens, v.x, v.y, eye, bench.eye + head) ?? 0;
+    return { head, across: across / minute, up };
+  });
+}

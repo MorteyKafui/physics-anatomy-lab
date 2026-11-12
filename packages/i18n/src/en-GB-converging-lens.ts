@@ -309,6 +309,103 @@ export const enGBConvergingLens = {
   "findings.lens.wrongGraph.detail":
     "Your graph is {y} against {x}. v against u is a curve. 1/v against 1/u is a straight line of slope −1 that meets both axes at 1/f, which is how the question finds f.",
   "findings.lens.wrongGraph.demonstrate": "Choose u⁻¹ for the x axis and v⁻¹ for the y axis.",
+  "experiments.converging-lens-pins.title": "The converging lens: two pins",
+  "experiments.converging-lens-pins.question.title":
+    "The focal length of a converging lens, with two pins",
+  "experiments.converging-lens-pins.question.text":
+    "Set the object pin P₁ at a distance x = 20.0 cm from the lens. Look through the lens from the other side, and move the search pin P₂ until it and the image of P₁ show no parallax. Read the distance y of P₂ from the lens. Repeat for x = 30.0, 40.0 and 50.0 cm. Plot xy against (x + y), and find f from the slope.",
+  "experiments.converging-lens-pins.predict.title":
+    "As the object pin moves away, where will the image be?",
+  "experiments.converging-lens-pins.predict.text":
+    "You will move the object pin further from the lens each time. Where will the search pin show no parallax?",
+  "experiments.converging-lens-pins.predict.rise": "Further from the lens",
+  "experiments.converging-lens-pins.predict.fall": "Closer to the lens",
+  "experiments.converging-lens-pins.predict.same": "In the same place",
+  "experiments.converging-lens-pins.predict.saved": "You said: {choice}. Measure and see.",
+  "experiments.converging-lens-pins.build.title": "Set up the bench",
+  "experiments.converging-lens-pins.build.why":
+    "Put the lens 20.0 cm from the object pin, and set both pins' tips level with the centre of the lens, so the tip of the image can meet the tip of the search pin.",
+  "experiments.converging-lens-pins.build.x": "Lens 20.0 cm from the object pin",
+  "experiments.converging-lens-pins.build.level": "Both tips level with the lens's centre",
+  "experiments.converging-lens-pins.build.objectTip": "Object pin's tip",
+  "experiments.converging-lens-pins.build.searchTip": "Search pin's tip",
+  "experiments.converging-lens-pins.build.tipAbove": "{mm} mm above the axis",
+  "experiments.converging-lens-pins.build.tipBelow": "{mm} mm below the axis",
+  "experiments.converging-lens-pins.build.tipOn": "On the axis",
+  "experiments.converging-lens-pins.build.raise.object": "Raise the object pin",
+  "experiments.converging-lens-pins.build.lower.object": "Lower the object pin",
+  "experiments.converging-lens-pins.build.raise.search": "Raise the search pin",
+  "experiments.converging-lens-pins.build.lower.search": "Lower the search pin",
+  "experiments.converging-lens-pins.check.title": "Check the set-up",
+  "experiments.converging-lens-pins.check.right":
+    "Both tips are level with the lens's centre, and the lens is 20.0 cm from the object pin.",
+  "experiments.converging-lens-pins.check.x":
+    "The lens is {x} cm from the object pin. Set it 20.0 cm away for the first reading.",
+  "experiments.converging-lens-pins.check.fix": "Back to the bench",
+  "experiments.converging-lens-pins.measure.title": "Find where there is no parallax",
+  "experiments.converging-lens-pins.measure.why":
+    "Look through the lens at the image of the object pin. Move your head from side to side, and move the search pin until its tip and the image's tip stay together.",
+  "experiments.converging-lens-pins.measure.lens": "Lens position",
+  "experiments.converging-lens-pins.measure.pin": "Search pin position",
+  "experiments.converging-lens-pins.measure.towards": "Towards the lens",
+  "experiments.converging-lens-pins.measure.away": "Away from the lens",
+  "experiments.converging-lens-pins.measure.left": "Look from the left",
+  "experiments.converging-lens-pins.measure.right": "Look from the right",
+  "experiments.converging-lens-pins.measure.step":
+    "Each press moves the pin 1 mm. Move your head from side to side: where the tips stay together, there is no parallax.",
+  "experiments.converging-lens-pins.measure.through": "Through the lens, as you move your head",
+  "experiments.converging-lens-pins.measure.clear": "No parallax",
+  "experiments.converging-lens-pins.measure.parallax": "Parallax",
+  "experiments.converging-lens-pins.measure.noImage": "No image",
+  "experiments.converging-lens-pins.measure.take": "Take this reading",
+  "experiments.converging-lens-pins.measure.readings": "Readings so far",
+  "experiments.converging-lens-pins.measure.none":
+    "None yet. The question sets x = 20.0, 30.0, 40.0 and 50.0 cm.",
+  "experiments.converging-lens-pins.measure.reading": "x = {x} cm, y = {y} cm",
+  "experiments.converging-lens-pins.measure.cannot":
+    "There is no real image behind the lens to find.",
+  "experiments.converging-lens-pins.eye.left": "Left",
+  "experiments.converging-lens-pins.eye.centre": "Centre",
+  "experiments.converging-lens-pins.eye.right": "Right",
+  "experiments.converging-lens-pins.eye.together":
+    "{where}: the image's tip and the search pin's tip together",
+  "experiments.converging-lens-pins.eye.toLeft":
+    "{where}: the image's tip to the left of the search pin's",
+  "experiments.converging-lens-pins.eye.toRight":
+    "{where}: the image's tip to the right of the search pin's",
+  "experiments.converging-lens-pins.eye.none": "{where}: no image to see",
+  "experiments.converging-lens-pins.bench":
+    "The object pin at {object} cm, the lens at {lens} cm and the search pin at {pin} cm. {image}",
+  "experiments.converging-lens-pins.bench.clear":
+    "The image of the object pin is at the search pin: no parallax.",
+  "experiments.converging-lens-pins.bench.parallax":
+    "The image of the object pin and the search pin are not at the same place.",
+  "experiments.converging-lens-pins.bench.none":
+    "The object pin is inside the focal length: there is no real image behind the lens.",
+  "experiments.converging-lens-pins.explain.title": "No parallax",
+  "experiments.converging-lens-pins.explain.text":
+    "Two things at the same place stay together as you move your head. If the image moves against your head, it is nearer you than the pin; if it moves with your head, it is further away. Where they stay together, the search pin is at the image.",
+  "experiments.converging-lens-pins.explain.x":
+    "object distance, object pin to lens · cm · the rule",
+  "experiments.converging-lens-pins.explain.y":
+    "image distance, lens to the search pin · cm · the rule",
+  "experiments.converging-lens-pins.explain.f":
+    "focal length of the lens · cm · the slope of the graph",
+  "experiments.converging-lens-pins.explain.graph":
+    "From 1/x + 1/y = 1/f, xy = f (x + y): plot xy against (x + y), and the slope of the straight line is f.",
+  "experiments.converging-lens-pins.tips.title": "Precautions examiners look for",
+  "experiments.converging-lens-pins.tips.1":
+    "I set the tips of the object and search pins level with the axis of the lens.",
+  "experiments.converging-lens-pins.tips.2":
+    "I kept my eye along the axis of the lens in locating the image of P₁.",
+  "experiments.converging-lens-pins.tips.3":
+    "I moved the search pin until there was no parallax between it and the image.",
+  "experiments.converging-lens-pins.tips.4": "I read x and y from the centre mark of each holder.",
+  "experiments.converging-lens-pins.tips.5":
+    "I cleaned the lens with a soft cloth to see the image clearly.",
+  "experiments.converging-lens-pins.next":
+    "Tabulating, plotting and the analysis come with the next part of this lab. Your readings are kept.",
+  "experiments.converging-lens-pins.inDevelopment": "Being built: the table and graph come next",
   "experiments.converging-lens-pins.refused.off-the-rule": "That is off the end of the bench.",
   "experiments.converging-lens-pins.refused.holders-cross":
     "The holders cannot pass each other on the bench.",
