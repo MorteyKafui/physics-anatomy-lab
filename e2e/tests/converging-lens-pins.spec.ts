@@ -81,10 +81,11 @@ test("the student levels the tips, the check passes, and the search pin finds no
 
   // Far from the image there is parallax; at the right place, none.
   await expect(chip(page)).toHaveText("Parallax");
-  const y = await findNoParallax(page, 30, 50, 66);
-  // Short of the paraxial image, by the lens's aberration (brief, decisions 9 and 10).
-  expect(y).toBeLessThan(62);
-  expect(y).toBeGreaterThan(56);
+  const y = await findNoParallax(page, 30, 48, 68);
+  // Near the image of every lens the seed can build (f = 15.0 cm, 2% either way); the exact
+  // place is checked against the model in packages/experiments.
+  expect(y).toBeLessThan(65);
+  expect(y).toBeGreaterThan(52);
   await expect(
     page.getByRole("img", { name: /^Centre: the image's tip and the search pin's tip together/ }),
   ).toBeVisible();
