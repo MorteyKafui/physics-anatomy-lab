@@ -8,4 +8,11 @@ export { classifySlip, parallaxShift, quantise, takeReading } from "./reading";
 export type { InstrumentSpec, Reading, TranscriptionSlip } from "./reading";
 export { ANTICIPATED_EVENT, handTimedInterval, pressDelay } from "./timing";
 export type { ReactionTime } from "./timing";
-export { AMMETER, METRE_RULE, STOPWATCH, THERMOMETER, VOLTMETER } from "./catalogue";
+export {
+  AMMETER,
+  MEASURING_CYLINDER,
+  METRE_RULE,
+  STOPWATCH,
+  THERMOMETER,
+  VOLTMETER,
+} from "./catalogue";

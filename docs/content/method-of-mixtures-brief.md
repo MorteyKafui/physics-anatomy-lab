@@ -101,6 +101,38 @@ Each with its real effect in the model, and coaching text:
 - reading the thermometer or the measuring cylinder at an angle (parallax);
 - plotting V against T where the question asks for V against 1/T.
 
+## The bench and the mistakes (item 2), for the physics reviewer
+
+`packages/experiments/src/method-of-mixtures.ts` builds the bench from the attempt's events:
+the cold and hot water measured in the cylinder, the lid, the stirrer, the pour (and how long the
+hot water waited), and emptying the calorimeter for the next volume. The calorimeter, the room and
+the model's constants are the approved ones; the heat model (`calorimetry.ts`) gives every
+temperature.
+
+Done carefully at 40 to 70 cm³ the rises are 19.4, 17.5, 16.0 and 14.7 °C, each at its peak about
+61 s after the pour. Each mistake, with its real effect in the model (at 40 cm³, then 70 cm³):
+
+| Mistake                                 | Caught when                                | Effect                                       |
+| --------------------------------------- | ------------------------------------------ | -------------------------------------------- |
+| Reading before the peak                 | read while still more than 0.1 °C below it | at 30 s: 1.0 and 0.8 °C short                |
+| Not stirring                            | not stirred                                | peak at 8 minutes, 1.6 and 1.2 °C lower      |
+| The lid off                             | not covered                                | 0.9 and 0.7 °C lower                         |
+| Delay in pouring                        | poured more than 10 s after 65 °C          | at 30 s: in at 63.5 °C, 0.8 and 0.6 °C lower |
+| The thermometer read at an angle        | more than 5° off square-on                 | 0.2 °C at 20°                                |
+| The measuring cylinder read at an angle | more than 5° from level                    | 0.4 cm³ at 20°                               |
+
+Plotting V against T, the sixth, is checked with the graph, as for the lens.
+
+Three assumptions until the UEW reference data, approved by Mortey (physics reviewer) on
+2026-11-12:
+
+1. The open beaker loses heat as fast as the calorimeter without its lid, 8% a minute, so no new
+   constant is needed; and a pour more than 10 s after the water reaches 65 °C is slow.
+2. The thermometer's mercury sits behind its scale by the width of 0.5 °C, so read at an angle θ
+   it is out by 0.5 °C × tan θ.
+3. The water's surface meets the cylinder's glass behind its marks by the width of 1 cm³, so read
+   from above or below it is out by 1 cm³ × tan θ.
+
 ## What comes next (one pull request each)
 
 1. **The physics.** The lumped model in `packages/physics`, with the SciPy cross-check, built to
