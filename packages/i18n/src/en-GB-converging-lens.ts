@@ -403,9 +403,25 @@ export const enGBConvergingLens = {
   "experiments.converging-lens-pins.tips.4": "I read x and y from the centre mark of each holder.",
   "experiments.converging-lens-pins.tips.5":
     "I cleaned the lens with a soft cloth to see the image clearly.",
+  "experiments.converging-lens-pins.tabulate.title": "Tabulate your readings",
+  "experiments.converging-lens-pins.tabulate.why":
+    "Record x and y for each object distance as you read them on the rule, and work out xy in cm² and (x + y) in cm.",
+  "experiments.converging-lens-pins.plot.title": "Plot xy against (x + y)",
+  "experiments.converging-lens-pins.plot.why":
+    "Put (x + y) along the bottom and xy up the side. Draw the best straight line through your points, then a large triangle on it to find its slope.",
+  "experiments.converging-lens-pins.analyse.title": "Find f from the slope",
+  "experiments.converging-lens-pins.analyse.why":
+    "From 1/x + 1/y = 1/f, xy = f (x + y), so the slope of your line is f.",
+  "experiments.converging-lens-pins.analyse.slopeLead":
+    "slope = CB ⁄ AC = {rise} {yu} ⁄ {run} {xu} =",
+  "experiments.converging-lens-pins.analyse.fLead": "f = slope =",
+  "experiments.converging-lens-pins.analyse.otherGraph":
+    "Your graph is {y} against {x}. The question asks for xy against (x + y): only that line's slope is f. Go back to Plot to change the axes.",
+  "experiments.converging-lens-pins.conclude.text":
+    "The focal length of the lens is {f}. As the object pin moved away from the lens, the place of no parallax moved closer to it.",
   "experiments.converging-lens-pins.next":
-    "Tabulating, plotting and the analysis come with the next part of this lab. Your readings are kept.",
-  "experiments.converging-lens-pins.inDevelopment": "Being built: the table and graph come next",
+    "The report, the print sheets and the exam for the two-pin method come with the next part of this lab. Your work is kept.",
+  "experiments.converging-lens-pins.inDevelopment": "Being built: the report comes next",
   "experiments.converging-lens-pins.refused.off-the-rule": "That is off the end of the bench.",
   "experiments.converging-lens-pins.refused.holders-cross":
     "The holders cannot pass each other on the bench.",
@@ -429,4 +445,9 @@ export const enGBConvergingLens = {
   "findings.pins.readFromEdge.detail":
     "{count} reading(s) were read at the edge of a holder, not its centre mark, so x or y is out by {cm} cm.",
   "findings.pins.readFromEdge.demonstrate": "Read the rule at the red centre mark of each holder.",
+  "findings.pins.wrongGraph.title": "Plot xy against (x + y)",
+  "findings.pins.wrongGraph.detail":
+    "Your graph is {y} against {x}. y against x is a curve. xy against (x + y) is a straight line whose slope is f, which is how the question finds f.",
+  "findings.pins.wrongGraph.demonstrate":
+    "Choose x + y for the axis along the bottom and xy for the axis up the side.",
 } as const;

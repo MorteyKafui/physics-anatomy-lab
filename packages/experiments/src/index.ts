@@ -250,3 +250,24 @@ export type {
   PinsReading,
   PinsView,
 } from "./converging-lens-pins";
+export {
+  PINS_ANALYSIS_RULES,
+  PINS_ANSWERS,
+  PINS_GRAPH_RULES,
+  PINS_INSTRUMENTS,
+  PINS_PLOT,
+  PINS_ROWS,
+  PINS_STANDARD_TABLE,
+  PINS_TEMPLATES,
+  pinsAnswerRules,
+  pinsExpected,
+  pinsReadingsIntoTable,
+  plotsXyAgainstXPlusY,
+  wrongPinsGraph,
+} from "./converging-lens-pins-table";
+export type {
+  PinsAnalysisContext,
+  PinsAnswer,
+  PinsGraphContext,
+  PinsTemplate,
+} from "./converging-lens-pins-table";

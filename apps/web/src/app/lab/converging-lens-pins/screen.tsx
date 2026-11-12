@@ -1,8 +1,21 @@
 "use client";
 
 import { EyeView, PinsBench } from "@pa/apparatus";
-import { runRules, type Finding, type Skill } from "@pa/analysis";
 import {
+  fillDerived,
+  formatQuantity,
+  formulaUnitFindings,
+  GRAPH_RULES,
+  parseTable,
+  pointsFor,
+  runRules,
+  TABLE_RULES,
+  toTableView,
+  type Finding,
+  type Skill,
+} from "@pa/analysis";
+import {
+  answersProjection,
   coach,
   coachIsOn,
   frontier,
@@ -10,6 +23,7 @@ import {
   helpLevelFor,
   replay,
   STEPS,
+  writeAnswer,
   type Advice,
   type HelpLevel,
   type Step,
@@ -18,8 +32,20 @@ import {
   asPinsReading,
   decidePinsBench,
   lensPins,
+  PINS_ANALYSIS_RULES,
+  PINS_GRAPH_RULES,
+  PINS_INSTRUMENTS,
+  PINS_PLOT,
   PINS_PROCEDURE_RULES,
+  PINS_ROWS,
+  PINS_STANDARD_TABLE,
+  PINS_TEMPLATES,
   pinsBenchProjection,
+  pinsExpected,
+  pinsReadingsIntoTable,
+  plotsXyAgainstXPlusY,
+  slopeOf,
+  typedQuantity,
   pinsEyeView,
   pinsReadingData,
   pinsView,
@@ -38,7 +64,10 @@ import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
+import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
 import { CheckItem, Rail, StepStrip } from "../parts";
+import { flagsFor, useTable } from "../table-builder";
 import { useAttempt } from "../use-attempt";
 
 const E = lensPins;
@@ -56,7 +85,8 @@ const PIN_STEP = MM;
 /**
  * The converging lens with two pins (the approved board "The converging lens: two pins and no
  * parallax"): the same lab as the others, with the two-pin bench and an eye view through the
- * lens. Steps 1 to 5 are built here; tabulating, plotting and the analysis come next.
+ * lens, the shared table builder and graph sheet, and the experiment's own analysis (f is the
+ * slope of xy against (x + y)). The report, print sheets and exam come next.
  */
 export function ConvergingLensPinsScreen() {
   const handle = useAttempt(E.id);
@@ -78,6 +108,12 @@ export function ConvergingLensPinsScreen() {
     const choice = (e?.data as { choice?: string } | null)?.choice;
     return choice === "rise" || choice === "fall" || choice === "same" ? choice : undefined;
   }, [handle]);
+  const results = useTable(handle);
+  const plot = useGraph(handle);
+  const answers = useMemo(
+    () => (handle ? replay(answersProjection, handle.attempt, handle.events) : {}),
+    [handle],
+  );
   const shown = useMemo(
     () => (bench && draft ? { ...bench, [draft.part]: draft.to } : bench),
     [bench, draft],
@@ -170,6 +206,142 @@ export function ConvergingLensPinsScreen() {
   const levelFor = (skill: Skill): HelpLevel =>
     coachIsOn(state) ? helpLevelFor(state, skill) : "on-my-own";
   const measureMarks = levelFor("measurement") !== "on-my-own";
+  const tableAssist = levelFor("tabulation") === "auto";
+  const tableMarks = levelFor("tabulation") !== "on-my-own";
+  const graphAssist = levelFor("graph") === "auto";
+  const graphMarks = levelFor("graph") !== "on-my-own";
+  const analysisAssist = levelFor("analysis") === "auto";
+  const analysisMarks = levelFor("analysis") !== "on-my-own";
+  const readingText = (r: PinsReading) =>
+    t(`${P}.measure.reading`, { x: r.x.toFixed(1), y: r.y.toFixed(1) });
+
+  // The table (step 6): x and y as read, xy and (x + y) worked out.
+  const table = results.table;
+  const shownTable = tableAssist ? fillDerived(table) : table;
+  const tableFindings = table.layout
+    ? [
+        ...runRules(TABLE_RULES, {
+          table: parseTable(toTableView(shownTable)),
+          plot: PINS_PLOT,
+          // The range the student chooses is x's, which the question sets; y follows from it.
+          spread: "x",
+        }),
+        ...formulaUnitFindings(table),
+      ]
+    : [];
+  const tableFlags = flagsFor(
+    tableMarks
+      ? tableFindings.filter((f) => f.severity !== "good")
+      : advice.map((a) => a.finding).filter((f) => f.skill === "tabulation"),
+  );
+  const fillReadings = () => {
+    const current = results.now();
+    const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
+    const cells = pinsReadingsIntoTable(current, readings, newRowId);
+    const newRows = [...new Set(cells.map((c) => c.row))].filter(
+      (id) => !current.rows.some((r) => r.id === id),
+    );
+    void results.run([
+      ...newRows.map((id) => ({ type: "add-row" as const, id })),
+      ...cells.map((c) => ({ type: "set-cell" as const, ...c })),
+    ]);
+  };
+  const keepWorkedCells = () =>
+    results.run(
+      shownTable.rows.flatMap((row) => {
+        const typed = table.rows.find((r) => r.id === row.id)?.cells ?? {};
+        return table.columns
+          .filter((c) => c.role === "mean" || c.role === "derived")
+          .filter((c) => (row.cells[c.id] ?? "") !== (typed[c.id] ?? ""))
+          .map((c) => ({
+            type: "set-cell" as const,
+            row: row.id,
+            column: c.id,
+            value: row.cells[c.id] ?? "",
+          }));
+      }),
+    );
+
+  // The graph (step 7): xy against (x + y) by default, or any two columns the student picks.
+  const numericColumns = table.columns.filter((c) => c.role !== "notes");
+  const graphColumns = graphColumnsFor(plot.graph, table.columns, PINS_PLOT);
+  const columnFor = (id: string) => table.columns.find((c) => c.id === id);
+  const symbols = {
+    x: columnFor(graphColumns.x)?.symbol ?? graphColumns.x,
+    y: columnFor(graphColumns.y)?.symbol ?? graphColumns.y,
+  };
+  const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
+  const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist);
+  const rightGraph = plotsXyAgainstXPlusY(graphColumns);
+  const graphFindings =
+    graphData.length >= 2
+      ? runRules(GRAPH_RULES, {
+          sheet: graphShown.sheet,
+          symbols,
+          data: graphData,
+          plotted: graphShown.plotted,
+          line: graphShown.line,
+          triangle: graphShown.triangle,
+        })
+      : [];
+  const pinsGraphFindings = runRules(PINS_GRAPH_RULES, { columns: graphColumns, symbols });
+  const graphPart = (rule: string) =>
+    rule === "graph-scale-small" || rule === "graph-off-sheet"
+      ? "scale"
+      : rule.startsWith("graph-line")
+        ? "line"
+        : rule.startsWith("graph-triangle")
+          ? "triangle"
+          : "points";
+  const partFindings = { scale: [], points: [], line: [], triangle: [] } as Record<
+    "scale" | "points" | "line" | "triangle",
+    Finding[]
+  >;
+  for (const f of graphFindings) partFindings[graphPart(f.rule)].push(f);
+  const graphFlagged = new Set(
+    (graphMarks ? graphFindings : advice.map((a) => a.finding).filter((f) => f.skill === "graph"))
+      .filter((f) => f.rule === "graph-misplotted" || f.rule === "graph-off-sheet")
+      .flatMap((f) => f.rows ?? []),
+  );
+
+  // The analysis (step 8): the slope from the triangle, and f, which is the slope.
+  const graphUnits = {
+    x: columnFor(graphColumns.x)?.unit ?? "",
+    y: columnFor(graphColumns.y)?.unit ?? "",
+  };
+  // xy over (x + y): cm² over cm is cm.
+  const slopeUnit = graphUnits.x || "cm";
+  const expected = pinsExpected(graphShown.triangle, graphColumns, graphUnits, answers);
+  const analysisFindings = runRules(PINS_ANALYSIS_RULES, { answers, expected });
+  const slope = graphShown.triangle && slopeOf(graphShown.triangle, graphUnits);
+  const analysisFlags = (id: string) =>
+    analysisMarks ? analysisFindings.filter((f) => f.column === id) : [];
+  const write = (id: string) => (a: { value: string; unit: string }) => {
+    const e = writeAnswer(answers, id, a);
+    if (e) void handle.record([e]);
+  };
+  const fText = () => {
+    const typed = answers.f;
+    if (typed?.value) return `${typed.value} ${typed.unit}`.trim();
+    const worked = expected.f ?? (slope && typedQuantity(answers.slope, slope.slope));
+    return worked ? formatQuantity(worked, 3, slopeUnit) : "f";
+  };
+
+  const finishPanelStep = async () => {
+    if (state.step === "tabulate") {
+      // At Auto the worked-out cells were filled in for the student; finishing writes them in.
+      if (tableAssist) await keepWorkedCells();
+      await finishChecked(tableFindings, `table:${JSON.stringify(shownTable)}`);
+    } else if (state.step === "plot") {
+      await finishChecked(
+        [...pinsGraphFindings, ...graphFindings],
+        `graph:${JSON.stringify(plot.graph)}`,
+      );
+    } else {
+      await finishChecked(analysisFindings, `analysis:${JSON.stringify(answers)}`);
+    }
+  };
+  const panel = state.step === "tabulate" || state.step === "plot" || state.step === "analyse";
 
   const takeReading = async () => {
     const rng = createRng((handle.attempt.seed ^ (readings.length + 1)) >>> 0);
@@ -355,126 +527,254 @@ export function ConvergingLensPinsScreen() {
         </header>
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
-            <div className="w-full max-w-[760px]">
-              <PinsBench
-                className="block h-auto w-full"
-                label={description}
-                object={shown.object}
-                lens={shown.lens}
-                pin={shown.pin}
-                objectTip={shown.objectTip}
-                pinTip={shown.pinTip}
-                eye={shown.eye}
-                image={
-                  view.kind === "image"
-                    ? { at: view.at, magnification: view.magnification }
-                    : undefined
-                }
-              />
-            </div>
-            <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
-              <div className="flex flex-col gap-2 border border-border bg-surface p-3">
-                <span className="text-xs text-muted-foreground">{t(`${P}.measure.through`)}</span>
-                <div className="flex gap-2">
-                  {sides.map((side, i) => (
-                    <div
-                      key={side}
-                      className={
-                        looking === i - 1
-                          ? "flex flex-col items-center gap-1 outline-2 outline-primary"
-                          : "flex flex-col items-center gap-1"
+          {panel ? (
+            <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+              {state.step === "tabulate" && (
+                <TableBuilder
+                  table={table}
+                  shown={shownTable}
+                  assist={tableAssist}
+                  marks={tableMarks}
+                  flags={tableFlags}
+                  spec={{
+                    standard: PINS_STANDARD_TABLE,
+                    templates: PINS_TEMPLATES,
+                    defaultTemplate: "single",
+                    instruments: PINS_INSTRUMENTS,
+                    defaultKind: "length",
+                    rowsNeeded: Math.max(PINS_ROWS, new Set(readings.map((r) => r.x)).size),
+                    readingsSummary: readings.length
+                      ? readings.map(readingText).join(" · ")
+                      : undefined,
+                  }}
+                  onRun={results.run}
+                  onFillReadings={tableAssist ? fillReadings : undefined}
+                  onCommit={() => undefined}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+                    ) : null
+                  }
+                />
+              )}
+              {state.step === "plot" && (
+                <GraphPanel
+                  state={plot.graph}
+                  view={graphShown}
+                  data={graphData}
+                  headings={{
+                    x: headingFor(table.columns, graphColumns.x),
+                    y: headingFor(table.columns, graphColumns.y),
+                  }}
+                  numericColumns={numericColumns}
+                  flaggedRows={graphFlagged}
+                  partFindings={partFindings}
+                  showChecks={graphMarks && !graphAssist}
+                  onRun={plot.run}
+                  latest={plot.now}
+                  below={
+                    advice.length > 0 || (graphMarks && pinsGraphFindings.length > 0) ? (
+                      <div className="flex flex-col gap-3">
+                        {advice.length > 0
+                          ? adviceCards
+                          : pinsGraphFindings.map((f) => findingCard(f))}
+                      </div>
+                    ) : null
+                  }
+                />
+              )}
+              {state.step === "analyse" && (
+                <section
+                  aria-label={t("lab.analyse.label")}
+                  className="flex w-full min-w-0 flex-col gap-4"
+                >
+                  <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+                    {!graphShown.triangle || !slope ? (
+                      <div className="flex flex-col items-start gap-3">
+                        <p className="text-soft">{t("lab.analyse.needTriangle")}</p>
+                        <Button
+                          variant="outline"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
+                        >
+                          {t("lab.analyse.backToPlot")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+                        <AnswerLine
+                          id="slope"
+                          unit={slopeUnit}
+                          lead={t(`${P}.analyse.slopeLead`, {
+                            rise: slope.rise.toFixed(1),
+                            run: slope.run.toFixed(1),
+                            yu: graphUnits.y,
+                            xu: graphUnits.x,
+                          })}
+                          written={answers.slope}
+                          expected={expected.slope}
+                          assist={analysisAssist}
+                          marks={analysisMarks && !analysisAssist}
+                          flagged={analysisFlags("slope")}
+                          onWrite={write("slope")}
+                        />
+                        {rightGraph ? (
+                          <AnswerLine
+                            id="f"
+                            unit={slopeUnit}
+                            lead={t(`${P}.analyse.fLead`)}
+                            written={answers.f}
+                            expected={expected.f}
+                            assist={analysisAssist}
+                            marks={analysisMarks && !analysisAssist}
+                            flagged={analysisFlags("f")}
+                            onWrite={write("f")}
+                          />
+                        ) : (
+                          <p className="font-sans text-sm text-soft">
+                            {t(`${P}.analyse.otherGraph`, symbols)}
+                          </p>
+                        )}
+                        {analysisAssist && (
+                          <span className="font-sans text-xs text-muted-foreground">
+                            {t("lab.analyse.workedOut")}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+                    <Calculator />
+                  </div>
+                  {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
+                </section>
+              )}
+            </section>
+          ) : (
+            <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
+              <div className="w-full max-w-[760px]">
+                <PinsBench
+                  className="block h-auto w-full"
+                  label={description}
+                  object={shown.object}
+                  lens={shown.lens}
+                  pin={shown.pin}
+                  objectTip={shown.objectTip}
+                  pinTip={shown.pinTip}
+                  eye={shown.eye}
+                  image={
+                    view.kind === "image"
+                      ? { at: view.at, magnification: view.magnification }
+                      : undefined
+                  }
+                />
+              </div>
+              <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
+                <div className="flex flex-col gap-2 border border-border bg-surface p-3">
+                  <span className="text-xs text-muted-foreground">{t(`${P}.measure.through`)}</span>
+                  <div className="flex gap-2">
+                    {sides.map((side, i) => (
+                      <div
+                        key={side}
+                        className={
+                          looking === i - 1
+                            ? "flex flex-col items-center gap-1 outline-2 outline-primary"
+                            : "flex flex-col items-center gap-1"
+                        }
+                      >
+                        <EyeView
+                          apart={
+                            eyeViews?.[i]
+                              ? { across: eyeViews[i]!.across, up: eyeViews[i]!.up }
+                              : undefined
+                          }
+                          label={viewLabel(i)}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          {t(`${P}.eye.${side}`)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <span
+                    className={
+                      clear
+                        ? "self-start border border-ok px-2 py-0.5 text-xs text-ok"
+                        : "self-start border border-warn px-2 py-0.5 text-xs text-warn"
+                    }
+                  >
+                    {t(
+                      view.kind !== "image"
+                        ? `${P}.measure.noImage`
+                        : clear
+                          ? `${P}.measure.clear`
+                          : `${P}.measure.parallax`,
+                    )}
+                  </span>
+                </div>
+                <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 border border-border bg-surface p-3.5">
+                  {slider("lens")}
+                  {slider("pin")}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() =>
+                        void act({
+                          type: "move",
+                          part: "pin",
+                          to: Number((bench.pin - PIN_STEP).toFixed(4)),
+                        })
                       }
                     >
-                      <EyeView
-                        apart={
-                          eyeViews?.[i]
-                            ? { across: eyeViews[i]!.across, up: eyeViews[i]!.up }
-                            : undefined
-                        }
-                        label={viewLabel(i)}
-                      />
-                      <span className="text-xs text-muted-foreground">{t(`${P}.eye.${side}`)}</span>
-                    </div>
-                  ))}
+                      {t(`${P}.measure.towards`)}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() =>
+                        void act({
+                          type: "move",
+                          part: "pin",
+                          to: Number((bench.pin + PIN_STEP).toFixed(4)),
+                        })
+                      }
+                    >
+                      {t(`${P}.measure.away`)}
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      aria-pressed={looking === -1}
+                      onClick={() => setLooking(looking === -1 ? 0 : -1)}
+                    >
+                      {t(`${P}.measure.left`)}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      aria-pressed={looking === 1}
+                      onClick={() => setLooking(looking === 1 ? 0 : 1)}
+                    >
+                      {t(`${P}.measure.right`)}
+                    </Button>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{t(`${P}.measure.step`)}</span>
                 </div>
-                <span
-                  className={
-                    clear
-                      ? "self-start border border-ok px-2 py-0.5 text-xs text-ok"
-                      : "self-start border border-warn px-2 py-0.5 text-xs text-warn"
-                  }
+              </div>
+              {refusal && (
+                <p
+                  role="alert"
+                  className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
                 >
-                  {t(
-                    view.kind !== "image"
-                      ? `${P}.measure.noImage`
-                      : clear
-                        ? `${P}.measure.clear`
-                        : `${P}.measure.parallax`,
-                  )}
-                </span>
-              </div>
-              <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 border border-border bg-surface p-3.5">
-                {slider("lens")}
-                {slider("pin")}
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() =>
-                      void act({
-                        type: "move",
-                        part: "pin",
-                        to: Number((bench.pin - PIN_STEP).toFixed(4)),
-                      })
-                    }
-                  >
-                    {t(`${P}.measure.towards`)}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() =>
-                      void act({
-                        type: "move",
-                        part: "pin",
-                        to: Number((bench.pin + PIN_STEP).toFixed(4)),
-                      })
-                    }
-                  >
-                    {t(`${P}.measure.away`)}
-                  </Button>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    aria-pressed={looking === -1}
-                    onClick={() => setLooking(looking === -1 ? 0 : -1)}
-                  >
-                    {t(`${P}.measure.left`)}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    aria-pressed={looking === 1}
-                    onClick={() => setLooking(looking === 1 ? 0 : 1)}
-                  >
-                    {t(`${P}.measure.right`)}
-                  </Button>
-                </div>
-                <span className="text-xs text-muted-foreground">{t(`${P}.measure.step`)}</span>
-              </div>
-            </div>
-            {refusal && (
-              <p
-                role="alert"
-                className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
-              >
-                {refusal}
-              </p>
-            )}
-          </section>
+                  {refusal}
+                </p>
+              )}
+            </section>
+          )}
 
           <aside
             aria-label={t("lab.coach.label")}
@@ -636,12 +936,36 @@ export function ConvergingLensPinsScreen() {
                     </Button>
                   </>
                 )}
-                {stepIndex > STEPS.indexOf("measure") && (
+                {panel && (
+                  <>
+                    <h2 className="font-display text-2xl leading-tight font-bold">
+                      {t(`${P}.${state.step}.title` as MessageKey)}
+                    </h2>
+                    <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
+                    <Button onClick={() => void finishPanelStep()}>
+                      {state.step === "tabulate"
+                        ? t("lab.steps.finishTabulating")
+                        : state.step === "plot"
+                          ? t("lab.steps.finishPlotting")
+                          : t("lab.steps.finishAnalysing")}
+                    </Button>
+                  </>
+                )}
+                {(state.step === "conclude" || state.step === "report") && (
                   <>
                     <h2 className="font-display text-2xl leading-tight font-bold">
                       {stepName(state.step)}
                     </h2>
-                    <p className="text-soft">{t(`${P}.next`)}</p>
+                    <p className="text-soft">
+                      {state.step === "conclude"
+                        ? t(`${P}.conclude.text`, { f: fText() })
+                        : t(`${P}.next`)}
+                    </p>
+                    {state.step === "conclude" && next && (
+                      <Button className="self-start" onClick={() => void finishStep()}>
+                        {t("lab.steps.continue", { step: stepName(next) })}
+                      </Button>
+                    )}
                   </>
                 )}
                 {(state.step === "question" ||
@@ -696,10 +1020,7 @@ export function ConvergingLensPinsScreen() {
         <StepStrip
           current={state.step}
           completed={state.completed}
-          // Steps 6 to 10 come with the next pull request; until then the lab stops at Measure.
-          open={(s) =>
-            STEPS.indexOf(s) <= Math.min(STEPS.indexOf("measure"), STEPS.indexOf(frontier(state)))
-          }
+          open={(s) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state))}
           onGo={(s) => void handle.dispatch({ type: "go-to-step", step: s })}
         />
       </div>
