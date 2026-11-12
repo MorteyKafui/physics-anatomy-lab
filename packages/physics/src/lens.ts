@@ -330,6 +330,49 @@ export function parallaxAngle(
 }
 
 /**
+ * The eye and the rays that reach it over the head's travel, found once, and the largest apparent
+ * separation of the image and a pin's tip at s over that travel. The ray to the eye at each head
+ * does not depend on the pin.
+ */
+function parallaxSpread(lens: SphericalLens, objectDistance: number, view: ParallaxView) {
+  const u = positive(objectDistance, "objectDistance");
+  const v = paraxialImageDistance(lens, u);
+  const eye = v + view.eyeBehind;
+  const centre = view.centre ?? 0;
+  // Heads the eye can see the image from, sampled over the travel: no further off the axis than
+  // the rays through the rim of the lens reach.
+  const reach = edgeReach(lens, u, eye);
+  const half = Math.min(view.head, reach + Math.abs(centre));
+  const rays: { h: number; slope: number }[] = [];
+  for (let i = 0; i <= 200; i += 1) {
+    const h = centre - half + (2 * half * i) / 200;
+    if (h === 0 || Math.abs(h) > reach) continue;
+    const ray = rayToEye(lens, u, eye, Math.abs(h));
+    if (ray) rays.push({ h, slope: ray.slope });
+  }
+  const worst = (s: number) =>
+    rays.reduce(
+      (m, r) => Math.max(m, Math.abs(Math.atan(r.slope) - Math.atan(Math.abs(r.h) / (eye - s)))),
+      0,
+    );
+  return { v, eye, reach, worst };
+}
+
+/**
+ * The parallax left with the search pin at s (from the lens's centre): the largest apparent
+ * separation of its tip and the image's over the head's travel, in radians. Within the eye's
+ * acuity, the student sees no parallax there.
+ */
+export function parallaxLeft(
+  lens: SphericalLens,
+  objectDistance: number,
+  pin: number,
+  view: ParallaxView,
+): number {
+  return parallaxSpread(lens, objectDistance, view).worst(pin);
+}
+
+/**
  * Where the search pin shows no parallax with the image of an axial object pin at u: the place
  * where the image and the pin's tip move apart least as the head moves (`at`, the least of the
  * largest apparent separation over the head's travel, `residual`, in radians), and the stretch of
@@ -342,28 +385,7 @@ export function noParallax(
   objectDistance: number,
   view: ParallaxView,
 ): { at: number; residual: number; from?: number; to?: number; head: number } {
-  const u = positive(objectDistance, "objectDistance");
-  const v = paraxialImageDistance(lens, u);
-  const eye = v + view.eyeBehind;
-  const centre = view.centre ?? 0;
-  // Heads the eye can see the image from, sampled over the travel: no further off the axis than
-  // the rays through the rim of the lens reach.
-  const reach = edgeReach(lens, u, eye);
-  const half = Math.min(view.head, reach + Math.abs(centre));
-  // The ray to the eye at each head does not depend on the pin: each is found once.
-  const rays: { h: number; slope: number }[] = [];
-  for (let i = 0; i <= 200; i += 1) {
-    const h = centre - half + (2 * half * i) / 200;
-    if (h === 0 || Math.abs(h) > reach) continue;
-    const ray = rayToEye(lens, u, eye, Math.abs(h));
-    if (ray) rays.push({ h, slope: ray.slope });
-  }
-  // The largest apparent separation of the image and the pin's tip over the head's travel.
-  const worst = (s: number) =>
-    rays.reduce(
-      (m, r) => Math.max(m, Math.abs(Math.atan(r.slope) - Math.atan(Math.abs(r.h) / (eye - s)))),
-      0,
-    );
+  const { v, eye, reach, worst } = parallaxSpread(lens, objectDistance, view);
   // The largest separation falls and then rises as the pin passes the image: golden-section search.
   let a = 0.5 * v;
   let b = Math.min(1.2 * v, eye - 1e-6 * eye);

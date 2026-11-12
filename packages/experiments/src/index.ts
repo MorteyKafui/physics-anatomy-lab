@@ -218,3 +218,31 @@ export { LENS_SHEET_NUMBER, lensSheet } from "./converging-lens-sheets";
 export type { LensSheet } from "./converging-lens-sheets";
 export { lensFollowUps, markLensScript } from "./converging-lens-exam";
 export type { LensExamFacts } from "./converging-lens-exam";
+export {
+  asPinsReading,
+  correctPinsBench,
+  decidePinsBench,
+  eyeOffAxis,
+  initialPinsBench,
+  lensPins,
+  parallaxStillThere,
+  PINS_BENCH_START,
+  PINS_PARTS,
+  PINS_PROCEDURE_RULES,
+  pinsBenchProjection,
+  pinsReadFromEdge,
+  pinsReadingData,
+  pinsView,
+  tipsOffAxis,
+} from "./converging-lens-pins";
+export type {
+  PinsBench,
+  PinsBenchCommand,
+  PinsBenchDecision,
+  PinsBenchRefusal,
+  PinsBenchState,
+  PinsPart,
+  PinsProcedureContext,
+  PinsReading,
+  PinsView,
+} from "./converging-lens-pins";

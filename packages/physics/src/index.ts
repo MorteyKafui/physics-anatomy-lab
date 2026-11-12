@@ -26,6 +26,7 @@ export {
   lensForFocalLength,
   noParallax,
   parallaxAngle,
+  parallaxLeft,
   magnification,
   minimumObjectScreenDistance,
   paraxialImageDistance,

@@ -2,7 +2,13 @@ import { describe, expect, test } from "bun:test";
 import fc from "fast-check";
 
 import fixture from "../../../validation/fixtures/lens-parallax.json";
-import { lensForFocalLength, noParallax, paraxialImageDistance, parallaxAngle } from "../src";
+import {
+  lensForFocalLength,
+  noParallax,
+  paraxialImageDistance,
+  parallaxAngle,
+  parallaxLeft,
+} from "../src";
 
 const { focalLength, index, aperture, edge } = fixture.lens;
 const lens = lensForFocalLength(focalLength, index, aperture, edge);
@@ -92,6 +98,17 @@ describe("the parallax between the search pin and the image (Experiment 96)", ()
       const on = noParallax(lens, u, { eyeBehind: 25, head: 0.5, acuity: ARCMIN });
       const off = noParallax(lens, u, { eyeBehind: 25, head: 0.5, acuity: ARCMIN, centre: 1 });
       expect(off.at).toBeLessThan(on.at);
+    }
+  });
+
+  test("the parallax left at a pin is the least at the no-parallax place, and within the eye's acuity only inside its stretch", () => {
+    const view = { eyeBehind: 25, head: 0.5, acuity: ARCMIN };
+    for (const u of [20, 30, 40, 50]) {
+      const r = noParallax(lens, u, view);
+      expect(parallaxLeft(lens, u, r.at, view)).toBeCloseTo(r.residual, 12);
+      expect(parallaxLeft(lens, u, (r.from! + r.to!) / 2, view)).toBeLessThanOrEqual(ARCMIN);
+      expect(parallaxLeft(lens, u, r.from! - 0.1, view)).toBeGreaterThan(ARCMIN);
+      expect(parallaxLeft(lens, u, r.to! + 0.1, view)).toBeGreaterThan(ARCMIN);
     }
   });
 });
