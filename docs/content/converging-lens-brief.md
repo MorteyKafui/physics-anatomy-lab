@@ -188,3 +188,78 @@ comes out 1.0% to 1.2% short of the lens's own f over 500 lenses: the aberration
 7. Decided: the lab centres the sharp range on the exact lens's sharpest image (`bestFocus`),
    not the thin-lens v, so a student's readings carry the aberration a real lens gives. Built
    with the bench, when the lab first draws the image on the screen.
+
+## Experiment 96: two optical pins
+
+The second lens practical, from the same lens and bench, and the plan's pin parallax model.
+Decisions 8 to 11 are approved; nothing is built yet.
+
+### What the student does
+
+The object is a pin P₁ standing a distance x in front of the lens. The student looks through
+the lens from the far side, sees the inverted image P₁′ of the pin, and moves a second pin P₂
+(the search pin) along the bench until P₂ and P₁′ stay together as the eye moves from side to
+side: no parallax. The distance y of P₂ from the lens is the image distance. The book sets
+x = 20, 30, 40 and 50 cm, and asks for a graph of xy against (x + y). From 1/x + 1/y = 1/f,
+xy = f(x + y): a straight line through the origin of slope f.
+
+The skill this practical adds is no parallax: if the image moves with the eye, it is further
+from the eye than the pin, and the pin goes back towards the image; if it moves against the
+eye, it is nearer. The rule reading, the centre marks and the lens are the screen method's.
+
+### What the exact model shows
+
+An exploratory trace of the approved lens (the same exact meridional trace as `lens.ts`, not
+yet in the repository) gives these places for the search pin. The pin tips are on the axis,
+the eye stands 25 cm behind the image, and "no parallax" means the image and the pin tip move
+apart by less than 1 minute of arc, the eye's resolution, as the head moves.
+
+| x / cm | Thin-lens y / cm | Paraxial y / cm | No parallax, head ±0.5 cm | Head as far as the lens allows |
+| ------ | ---------------- | --------------- | ------------------------- | ------------------------------ |
+| 20     | 60.00            | 60.61           | 59.39 to 59.46            | none: 4.7′ left at best        |
+| 30     | 30.00            | 30.12           | 29.65 to 30.39            | none: 2.4′ left at best        |
+| 40     | 24.00            | 24.08           | 23.67 to 24.41            | none: 2.0′ left at best        |
+| 50     | 21.43            | 21.50           | 21.10 to 21.84            | none: 1.9′ left at best        |
+
+- With a small head movement the no-parallax place is sharp: a few millimetres at most, and
+  under a millimetre at x = 20 cm. That is the method's strength against the screen's
+  ±0.75 cm.
+- The further the head moves, the further out on the lens the rays that reach the eye pass,
+  and the lens's aberration brings those rays to a focus nearer the lens. Moved as far as the
+  lens allows, some parallax is left wherever the pin stands. A real student sees this as an
+  image that will not quite settle.
+- With the no-parallax places for a ±0.5 cm head movement, the graph of xy against (x + y) has
+  slope 14.83 cm and an intercept of 12 cm², where the thin lens gives 15.0 cm and none. The
+  intercept is the aberration at x = 20 cm.
+
+### The mistakes, proposed
+
+Each with its real effect in the model, and its coaching text, as for the screen method:
+
+- the eye off the lens's axis, so the rays come through an outer zone and the image sits nearer
+  the lens;
+- the pin tips not level with the axis, so the tips cannot be brought together;
+- stopping with parallax still there;
+- reading x or y from the edge of a holder, not its centre mark (shared with Experiment 95);
+- plotting y against x, or 1/y against 1/x, where the question asks for xy against (x + y).
+
+### What comes next (one pull request each)
+
+1. **The physics.** The no-parallax model in `packages/physics`, with the NumPy cross-check in
+   `validation/`, built to what this review decides.
+2. **The board.** The pins on the bench and an eye view, where the student moves the search pin
+   and the eye and watches the two tips, on the design canvas for approval.
+3. **The bench and the mistakes**, then **the guided flow, table and graph**, then **the
+   report, sheets and exam**, as for Experiment 95.
+
+### For the physics reviewer to decide, Experiment 96
+
+Approved by Mortey on 2026-11-12, all four as proposed.
+
+8. Experiment 96 as the book sets it: x = 20, 30, 40 and 50 cm, and a graph of xy against
+   (x + y) with slope f.
+9. The eye 25 cm behind the image, and no parallax as under 1 minute of arc of relative movement,
+   until the UEW reference data comes.
+10. How far the head moves: ±0.5 cm, which gives a clear no-parallax place, rather than as far as
+    the lens allows, which leaves some parallax at every place.
+11. The five mistakes above.
