@@ -24,6 +24,8 @@ export {
   focalLengthFromIntercept,
   imageDistance,
   lensForFocalLength,
+  noParallax,
+  parallaxAngle,
   magnification,
   minimumObjectScreenDistance,
   paraxialImageDistance,
@@ -31,7 +33,7 @@ export {
   thickLensFocalLength,
   traceAxialRay,
 } from "./lens";
-export type { SphericalLens } from "./lens";
+export type { ParallaxView, SphericalLens } from "./lens";
 export {
   finalTemperature,
   heatCapacity,

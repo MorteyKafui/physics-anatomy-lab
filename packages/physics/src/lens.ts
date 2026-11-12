@@ -258,3 +258,169 @@ export function bestFocus(lens: SphericalLens, objectDistance: number, rings = 6
   if (den === 0) throw new RangeError("no ray gets through the lens");
   return -num / den;
 }
+
+/**
+ * How the student looks for no parallax (Experiment 96): the eye stands `eyeBehind` beyond the
+ * paraxial image, moves its head up to `head` either side of `centre` (0 is on the lens's axis),
+ * and sees two things apart when they are further apart than `acuity` radians. Lengths in the
+ * lens's units.
+ */
+export interface ParallaxView {
+  eyeBehind: number;
+  head: number;
+  acuity: number;
+  centre?: number;
+}
+
+/**
+ * The ray from the axial object point at u that reaches an eye at distance `eye` behind the
+ * lens's centre and height h above the axis, and the angle it arrives at. A ray through height y
+ * of the front surface crosses the axis and reaches the far side, so the eye above the axis sees
+ * the ray through −y; by symmetry that is the ray through y, reflected. Found by bisection on y.
+ * Undefined if no ray through the lens reaches the eye there.
+ */
+function rayToEye(
+  lens: SphericalLens,
+  objectDistance: number,
+  eye: number,
+  h: number,
+): { height: number; slope: number } | undefined {
+  // How high, on the eye's side of the axis, the ray through front height y arrives.
+  const arrives = (y: number) => {
+    const r = traceAxialRay(lens, objectDistance, y);
+    if (!r) return undefined;
+    const k = r.direction.y / r.direction.z;
+    return { at: -(r.point.y + k * (eye - r.point.z)), slope: -k };
+  };
+  const rim = outermostRay(lens, objectDistance);
+  const top = arrives(rim);
+  if (!top || h > top.at) return undefined;
+  let lo = 1e-9 * lens.aperture;
+  let hi = rim;
+  for (let i = 0; i < 100; i += 1) {
+    const mid = (lo + hi) / 2;
+    const a = arrives(mid);
+    if (!a) return undefined;
+    if (a.at < h) lo = mid;
+    else hi = mid;
+  }
+  const a = arrives((lo + hi) / 2)!;
+  return { height: (lo + hi) / 2, slope: a.slope };
+}
+
+/**
+ * The apparent angle between the image of an axial object pin at u and the tip of a search pin
+ * at s on the axis (both from the lens's centre), for an eye at distance `eye` behind the lens's
+ * centre, h off the axis. Positive when the image moves against the head (it is nearer the eye
+ * than the pin's tip), negative when it moves with it (it is further away). 0 for the eye on the
+ * axis. Undefined where the eye cannot see the image through the lens.
+ */
+export function parallaxAngle(
+  lens: SphericalLens,
+  objectDistance: number,
+  pin: number,
+  eye: number,
+  h: number,
+): number | undefined {
+  if (h === 0) return 0;
+  const ray = rayToEye(lens, objectDistance, eye, Math.abs(h));
+  if (!ray) return undefined;
+  const angle = Math.atan(ray.slope) - Math.atan(Math.abs(h) / (eye - pin));
+  return Math.sign(h) * angle;
+}
+
+/**
+ * Where the search pin shows no parallax with the image of an axial object pin at u: the place
+ * where the image and the pin's tip move apart least as the head moves (`at`, the least of the
+ * largest apparent separation over the head's travel, `residual`, in radians), and the stretch of
+ * the bench where that separation stays within the eye's acuity (`from` to `to`; undefined when
+ * some parallax is left everywhere). The head's travel is cut to what the lens lets the eye see
+ * through (`head`). For a lens without aberration `at` is the image distance and `residual` 0.
+ */
+export function noParallax(
+  lens: SphericalLens,
+  objectDistance: number,
+  view: ParallaxView,
+): { at: number; residual: number; from?: number; to?: number; head: number } {
+  const u = positive(objectDistance, "objectDistance");
+  const v = paraxialImageDistance(lens, u);
+  const eye = v + view.eyeBehind;
+  const centre = view.centre ?? 0;
+  // Heads the eye can see the image from, sampled over the travel: no further off the axis than
+  // the rays through the rim of the lens reach.
+  const reach = edgeReach(lens, u, eye);
+  const half = Math.min(view.head, reach + Math.abs(centre));
+  // The ray to the eye at each head does not depend on the pin: each is found once.
+  const rays: { h: number; slope: number }[] = [];
+  for (let i = 0; i <= 200; i += 1) {
+    const h = centre - half + (2 * half * i) / 200;
+    if (h === 0 || Math.abs(h) > reach) continue;
+    const ray = rayToEye(lens, u, eye, Math.abs(h));
+    if (ray) rays.push({ h, slope: ray.slope });
+  }
+  // The largest apparent separation of the image and the pin's tip over the head's travel.
+  const worst = (s: number) =>
+    rays.reduce(
+      (m, r) => Math.max(m, Math.abs(Math.atan(r.slope) - Math.atan(Math.abs(r.h) / (eye - s)))),
+      0,
+    );
+  // The largest separation falls and then rises as the pin passes the image: golden-section search.
+  let a = 0.5 * v;
+  let b = Math.min(1.2 * v, eye - 1e-6 * eye);
+  const g = (Math.sqrt(5) - 1) / 2;
+  let c = b - g * (b - a);
+  let d = a + g * (b - a);
+  for (let i = 0; i < 200 && b - a > 1e-12 * v; i += 1) {
+    if (worst(c) < worst(d)) b = d;
+    else a = c;
+    c = b - g * (b - a);
+    d = a + g * (b - a);
+  }
+  const at = (a + b) / 2;
+  const residual = worst(at);
+  const out: { at: number; residual: number; from?: number; to?: number; head: number } = {
+    at,
+    residual,
+    head: Math.min(view.head, reach),
+  };
+  if (residual > view.acuity) return out;
+  // Each edge of the no-parallax stretch, by bisection from the best place outwards.
+  const edge = (outside: number) => {
+    let inside = at;
+    let out2 = outside;
+    for (let i = 0; i < 200; i += 1) {
+      const mid = (inside + out2) / 2;
+      if (worst(mid) <= view.acuity) inside = mid;
+      else out2 = mid;
+    }
+    return (inside + out2) / 2;
+  };
+  out.from = edge(0.5 * v);
+  out.to = edge(Math.min(1.2 * v, eye - 1e-6 * eye));
+  return out;
+}
+
+/**
+ * The largest height on the front surface whose ray gets through the lens: the rim, unless rays
+ * from a near object spread so far inside the glass that they leave past the back surface's rim.
+ */
+function outermostRay(lens: SphericalLens, objectDistance: number): number {
+  const rim = lens.aperture / 2;
+  if (traceAxialRay(lens, objectDistance, rim)) return rim;
+  let lo = 0;
+  let hi = rim;
+  for (let i = 0; i < 100; i += 1) {
+    const mid = (lo + hi) / 2;
+    if (traceAxialRay(lens, objectDistance, mid)) lo = mid;
+    else hi = mid;
+  }
+  return lo;
+}
+
+/** The furthest the eye's head can be off the axis and still see the image through the lens. */
+function edgeReach(lens: SphericalLens, objectDistance: number, eye: number): number {
+  const r = traceAxialRay(lens, objectDistance, outermostRay(lens, objectDistance));
+  if (!r) return 0;
+  const k = r.direction.y / r.direction.z;
+  return Math.max(0, -(r.point.y + k * (eye - r.point.z)));
+}

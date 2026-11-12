@@ -192,7 +192,7 @@ comes out 1.0% to 1.2% short of the lens's own f over 500 lenses: the aberration
 ## Experiment 96: two optical pins
 
 The second lens practical, from the same lens and bench, and the plan's pin parallax model.
-Decisions 8 to 11 are approved; nothing is built yet.
+Decisions 8 to 11 are approved, and the model is built (`noParallax` in `packages/physics`).
 
 ### What the student does
 
@@ -209,17 +209,18 @@ eye, it is nearer. The rule reading, the centre marks and the lens are the scree
 
 ### What the exact model shows
 
-An exploratory trace of the approved lens (the same exact meridional trace as `lens.ts`, not
-yet in the repository) gives these places for the search pin. The pin tips are on the axis,
-the eye stands 25 cm behind the image, and "no parallax" means the image and the pin tip move
-apart by less than 1 minute of arc, the eye's resolution, as the head moves.
+`noParallax` in `packages/physics/src/lens.ts` traces the rays that reach the eye exactly, and
+NumPy agrees (`validation/pa_validation/lens_parallax.py`, `fixtures/lens-parallax.json`). It
+gives these places for the search pin. The pin tips are on the axis, the eye stands 25 cm
+behind the image, and "no parallax" means the image and the pin tip move apart by less than
+1 minute of arc, the eye's resolution, as the head moves.
 
-| x / cm | Thin-lens y / cm | Paraxial y / cm | No parallax, head ±0.5 cm | Head as far as the lens allows |
-| ------ | ---------------- | --------------- | ------------------------- | ------------------------------ |
-| 20     | 60.00            | 60.61           | 59.39 to 59.46            | none: 4.7′ left at best        |
-| 30     | 30.00            | 30.12           | 29.65 to 30.39            | none: 2.4′ left at best        |
-| 40     | 24.00            | 24.08           | 23.67 to 24.41            | none: 2.0′ left at best        |
-| 50     | 21.43            | 21.50           | 21.10 to 21.84            | none: 1.9′ left at best        |
+| x / cm | Thin-lens y / cm | Paraxial y / cm | No parallax, head ±0.5 cm | Head as far as the lens allows | Eye 1 cm off the axis |
+| ------ | ---------------- | --------------- | ------------------------- | ------------------------------ | --------------------- |
+| 20     | 60.00            | 60.62           | 59.39 to 59.45            | none: 5.0′ left at best        | best at 56.88         |
+| 30     | 30.00            | 30.12           | 29.65 to 30.38            | none: 2.6′ left at best        | best at 29.50         |
+| 40     | 24.00            | 24.08           | 23.67 to 24.40            | none: 2.1′ left at best        | best at 23.81         |
+| 50     | 21.43            | 21.50           | 21.10 to 21.83            | none: 2.0′ left at best        | best at 21.31         |
 
 - With a small head movement the no-parallax place is sharp: a few millimetres at most, and
   under a millimetre at x = 20 cm. That is the method's strength against the screen's
@@ -232,7 +233,7 @@ apart by less than 1 minute of arc, the eye's resolution, as the head moves.
   slope 14.83 cm and an intercept of 12 cm², where the thin lens gives 15.0 cm and none. The
   intercept is the aberration at x = 20 cm.
 
-### The mistakes, proposed
+### The mistakes
 
 Each with its real effect in the model, and its coaching text, as for the screen method:
 
