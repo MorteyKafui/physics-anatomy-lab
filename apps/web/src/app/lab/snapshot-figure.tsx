@@ -8,6 +8,7 @@ import {
   OPTICAL_VIEWBOX,
   OpticalBench,
   PendulumBench,
+  PinsBench,
 } from "@pa/apparatus";
 import {
   coachIsOn,
@@ -86,6 +87,14 @@ export type FigureDrawing =
       screen: number;
       offAxis: number;
       objectHalfHeight: number;
+      image: { at: number; magnification: number } | undefined;
+    }
+  | {
+      /** The converging lens with two pins: each holder's place, m, and the image there. */
+      kind: "pins";
+      object: number;
+      lens: number;
+      pin: number;
       image: { at: number; magnification: number } | undefined;
     }
   | { kind: "table"; headings: string[]; rows: string[][] }
@@ -241,7 +250,8 @@ function wrap(text: string, width = 84): string[] {
 }
 
 function drawingHeight(d: FigureDrawing): number {
-  if (d.kind === "bench" || d.kind === "circuit" || d.kind === "optical") return 400;
+  if (d.kind === "bench" || d.kind === "circuit" || d.kind === "optical" || d.kind === "pins")
+    return 400;
   if (d.kind === "graph") return 440;
   return 30 + 26 * Math.max(1, d.rows.length) + 2;
 }
@@ -321,7 +331,7 @@ export function SnapshotSheet({
         width={boxW}
         height={boxH}
         fill={
-          d.kind === "bench" || d.kind === "circuit" || d.kind === "optical"
+          d.kind === "bench" || d.kind === "circuit" || d.kind === "optical" || d.kind === "pins"
             ? "var(--pa-ink-950)"
             : "var(--pa-bg)"
         }
@@ -374,6 +384,24 @@ export function SnapshotSheet({
             screen={d.screen}
             offAxis={d.offAxis}
             objectHalfHeight={d.objectHalfHeight}
+            image={d.image}
+          />
+        </svg>
+      )}
+      {d.kind === "pins" && (
+        <svg
+          x={PAD + 20}
+          y={TOP + (boxH - ((boxW - 40) * OPTICAL_VIEWBOX.height) / OPTICAL_VIEWBOX.width) / 2}
+          width={boxW - 40}
+          height={((boxW - 40) * OPTICAL_VIEWBOX.height) / OPTICAL_VIEWBOX.width}
+        >
+          <PinsBench
+            object={d.object}
+            lens={d.lens}
+            pin={d.pin}
+            objectTip={0}
+            pinTip={0}
+            eye={0}
             image={d.image}
           />
         </svg>

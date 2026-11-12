@@ -7,6 +7,7 @@ import {
   OPTICAL_VIEWBOX,
   OpticalBench,
   PendulumBench,
+  PinsBench,
 } from "@pa/apparatus";
 import type { Ref } from "react";
 
@@ -43,8 +44,14 @@ export function BenchDrawing({
   ref?: Ref<SVGSVGElement>;
 }) {
   const d = scene.drawing;
-  if (d.kind !== "bench" && d.kind !== "circuit" && d.kind !== "optical") return null;
-  const size = d.kind === "bench" ? BENCH_SIZE : d.kind === "optical" ? OPTICAL_SIZE : CIRCUIT_SIZE;
+  if (d.kind !== "bench" && d.kind !== "circuit" && d.kind !== "optical" && d.kind !== "pins")
+    return null;
+  const size =
+    d.kind === "bench"
+      ? BENCH_SIZE
+      : d.kind === "optical" || d.kind === "pins"
+        ? OPTICAL_SIZE
+        : CIRCUIT_SIZE;
   return (
     <svg
       ref={ref}
@@ -75,6 +82,16 @@ export function BenchDrawing({
             screen={d.screen}
             offAxis={d.offAxis}
             objectHalfHeight={d.objectHalfHeight}
+            image={d.image}
+          />
+        ) : d.kind === "pins" ? (
+          <PinsBench
+            object={d.object}
+            lens={d.lens}
+            pin={d.pin}
+            objectTip={0}
+            pinTip={0}
+            eye={0}
             image={d.image}
           />
         ) : (
