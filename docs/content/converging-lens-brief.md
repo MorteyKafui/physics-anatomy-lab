@@ -264,3 +264,11 @@ Approved by Mortey on 2026-11-12, all four as proposed.
 10. How far the head moves: ±0.5 cm, which gives a clear no-parallax place, rather than as far as
     the lens allows, which leaves some parallax at every place.
 11. The five mistakes above.
+12. Decided while building the lab (Mortey, 2026-11-12): no parallax is judged by what the eye
+    view shows, the tips within 1 minute of arc of each other seen from the left and from the
+    right of the head's travel. With the least separation over the whole travel (decision 10's
+    model), some lenses at x = 20 cm show no parallax nowhere, and the left and right views line
+    up about 4 mm short of that place, so a student going by what they see would be marked wrong.
+    Judged by the views, the no-parallax stretch is 7 to 8 mm wide at every x for every lens, and
+    the 1 mm presses cannot jump it. `noParallax` stays the physics the table above records; the
+    lab uses `seenApart` and `lineUpAt` (`packages/experiments`).

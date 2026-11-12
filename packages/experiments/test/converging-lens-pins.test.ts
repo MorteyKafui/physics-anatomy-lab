@@ -10,6 +10,7 @@ import {
   initialPinsBench,
   lensPins,
   lensWorld,
+  lineUpAt,
   PINS_PROCEDURE_RULES,
   pinsBenchProjection,
   pinsReadingData,
@@ -120,6 +121,33 @@ describe("the view through the lens", () => {
   });
 });
 
+describe("no parallax, as the eye view shows it (decision 12)", () => {
+  test("is reachable at every x for every lens, and a millimetre's press either way cannot jump it", () => {
+    for (const seed of [1, 2, 3, 7, 99, 987654]) {
+      const w = lensWorld(seed);
+      for (const x of lensPins.objectDistances) {
+        const b = { ...correctPinsBench(w, x), world: w };
+        const at = (mm: number) => pinsView(w, { ...b, pin: b.pin + mm / 1000 });
+        for (const mm of [-1, 0, 1]) {
+          const v = at(mm);
+          expect(v.kind === "image" && v.clear, `seed ${seed}, x = ${x} m, ${mm} mm`).toBe(true);
+        }
+        const far = at(8);
+        expect(far.kind === "image" && far.clear).toBe(false);
+      }
+    }
+  });
+
+  test("where the views line up is short of the thin-lens image, by the lens's aberration", () => {
+    for (const x of lensPins.objectDistances) {
+      const v = imageDistance(x, world.focalLength);
+      const at = lineUpAt(world, x, 0);
+      expect(at).toBeLessThan(v * 1.01);
+      expect(at).toBeGreaterThan(v * 0.95);
+    }
+  });
+});
+
 describe("the mistakes", () => {
   test("a careful reading at each distance raises none", () => {
     expect(
@@ -129,14 +157,14 @@ describe("the mistakes", () => {
 
   test("the eye off the axis: the place moves nearer the lens, by the model's own amount", () => {
     const right = correctPinsBench(world, 0.2);
-    const offEye = { ...right, eye: 0.01 };
+    const offEye = { ...right, eye: 0.005 };
     const v = pinsView(world, offEye);
     if (v.kind !== "image") throw new Error("no image");
     const b = { ...offEye, pin: offEye.lens + v.at, world };
     const findings = runRules(PINS_PROCEDURE_RULES, { readings: [read(b)] });
     const f = findings.find((x) => x.rule === "pins-eye-off-axis")!;
-    expect(f.params).toMatchObject({ mm: 10 });
-    expect(Number(f.params!.cm)).toBeGreaterThan(1);
+    expect(f.params).toMatchObject({ mm: 5 });
+    expect(Number(f.params!.cm)).toBeGreaterThan(0.5);
   });
 
   test("tips not level, parallax left, and readings from the edge", () => {

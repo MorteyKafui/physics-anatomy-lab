@@ -281,3 +281,243 @@ export function ScreenFace({ image, label, className }: ScreenFaceProps) {
     </svg>
   );
 }
+
+export interface PinsBenchProps {
+  /** Each holder's centre mark on the rule, m. */
+  object: number;
+  lens: number;
+  pin: number;
+  /** Heights above the lens's axis, m: each pin's tip, and the eye's centre. */
+  objectTip: number;
+  pinTip: number;
+  eye: number;
+  /**
+   * The real image of the object pin, from the model: where it is, m from the lens, and its
+   * magnification. Undefined when there is none (the object inside the focal length).
+   */
+  image: { at: number; magnification: number } | undefined;
+  /** Accessible description; omit for a decorative copy. */
+  label?: string;
+  className?: string;
+}
+
+/**
+ * The converging lens with two optical pins, as drawn on the approved board ("The converging lens:
+ * two pins and no parallax"): the object pin P₁, the lens L, the search pin P₂ and the inverted
+ * image P₁′ of the object pin, dashed, with the eye beyond the rule's end looking back along the
+ * axis. Like OpticalBench it draws a given state and does no physics.
+ */
+export function PinsBench({
+  object,
+  lens,
+  pin,
+  objectTip,
+  pinTip,
+  eye,
+  image,
+  label,
+  className,
+}: PinsBenchProps) {
+  const axis = RULE.axis;
+  const ox = benchX(object);
+  const lx = benchX(lens);
+  const px = benchX(pin);
+  const up = (m: number) => axis - m * PX_PER_M_UP;
+  const objectY = up(objectTip);
+  const pinY = up(pinTip);
+  const eyeY = up(eye);
+  const eyeX = 586;
+  const ix = image ? benchX(lens + image.at) : undefined;
+  const imageY = image ? up(-image.magnification * objectTip) : axis;
+  // Two rays from the object pin's tip, through the lens, crossing at the image, on to the eye.
+  const rays =
+    ix === undefined
+      ? []
+      : [axis - 12, axis + 12].map((y) => {
+          const atEye = imageY + ((imageY - y) * (eyeX - ix)) / (ix - lx);
+          return `M${ox},${objectY} L${lx},${y} L${ix},${imageY} L${eyeX},${atEye.toFixed(1)}`;
+        });
+  const ticks = Array.from({ length: 21 }, (_, i) => ({ x: benchX(i * 0.05), long: i % 2 === 0 }));
+  const holderBase = (x: number) => (
+    <>
+      <rect x={x - 15} y={226} width={30} height={6} fill={tone("clamp-edge")} />
+      <line x1={x} y1={226} x2={x} y2={250} stroke={tone("mark")} strokeWidth={1.5} />
+    </>
+  );
+  const text = (x: number, y: number, s: string, anchor: "middle" | "end" = "middle") => (
+    <text
+      x={x}
+      y={y}
+      fill={tone("rod")}
+      fontFamily="var(--font-sans, sans-serif)"
+      fontSize={11}
+      textAnchor={anchor}
+    >
+      {s}
+    </text>
+  );
+  return (
+    <svg
+      viewBox={`0 0 ${OPTICAL_VIEWBOX.width} ${OPTICAL_VIEWBOX.height}`}
+      role={label ? "img" : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      className={className}
+    >
+      <polygon
+        points="30,40 570,40 600,290 0,290"
+        fill={tone("floor")}
+        stroke={tone("floor-edge")}
+      />
+      <line
+        x1={RULE.x0}
+        y1={axis}
+        x2={590}
+        y2={axis}
+        stroke={tone("base-top")}
+        strokeDasharray="4 4"
+      />
+
+      <g data-part="light" stroke={tone("light")} strokeWidth={1} fill="none" opacity={0.7}>
+        {rays.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
+      </g>
+
+      <rect
+        x={26}
+        y={232}
+        width={548}
+        height={12}
+        fill={tone("base-top")}
+        stroke={tone("base-edge")}
+      />
+      <rect x={26} y={244} width={548} height={24} fill={tone("dial")} />
+      <g stroke={tone("ink")} strokeWidth={1}>
+        {ticks.map((k, i) => (
+          <line key={i} x1={k.x} y1={244} x2={k.x} y2={k.long ? 254 : 250} />
+        ))}
+      </g>
+      <g
+        fill={tone("ink")}
+        fontFamily="var(--font-mono, ui-monospace, monospace)"
+        fontSize={10}
+        textAnchor="middle"
+      >
+        {Array.from({ length: 11 }, (_, i) => (
+          <text key={i} x={benchX(i * 0.1)} y={265}>
+            {i * 10}
+          </text>
+        ))}
+      </g>
+
+      <g data-part="object-pin">
+        <line x1={ox} y1={objectY} x2={ox} y2={226} stroke={tone("rod-light")} strokeWidth={2} />
+        <circle cx={ox} cy={objectY} r={2} fill={tone("rod-light")} />
+        {holderBase(ox)}
+        {text(ox, objectY - 10, "P₁")}
+      </g>
+
+      <g data-part="lens">
+        <path
+          d={`M${lx},${axis - 36} Q${lx + 9},${axis} ${lx},${axis + 36} Q${lx - 9},${axis} ${lx},${axis - 36} Z`}
+          fill={tone("glass")}
+          fillOpacity={0.35}
+          stroke={tone("glass-edge")}
+          strokeWidth={1.2}
+        />
+        <rect
+          x={lx - 3}
+          y={axis + 34}
+          width={6}
+          height={232 - axis - 34}
+          fill={tone("base-edge")}
+        />
+        {holderBase(lx)}
+        {text(lx, axis - 44, "L")}
+      </g>
+
+      {ix !== undefined && (
+        <g data-part="image" opacity={0.75}>
+          <line
+            x1={ix}
+            y1={74}
+            x2={ix}
+            y2={imageY}
+            stroke={tone("light")}
+            strokeWidth={2}
+            strokeDasharray="5 3"
+          />
+          {text(ix + 12, 70, "P₁′")}
+        </g>
+      )}
+
+      <g data-part="search-pin">
+        <line x1={px} y1={pinY} x2={px} y2={226} stroke={tone("thread")} strokeWidth={2} />
+        <circle cx={px} cy={pinY} r={2} fill={tone("thread")} />
+        {holderBase(px)}
+        {text(px - 6, 214, "P₂", "end")}
+      </g>
+
+      <g data-part="eye">
+        <path
+          d={`M${eyeX - 12},${eyeY} Q${eyeX},${eyeY - 10} ${eyeX + 12},${eyeY} Q${eyeX},${eyeY + 10} ${eyeX - 12},${eyeY} Z`}
+          fill={tone("floor")}
+          stroke={tone("rod")}
+          strokeWidth={1.5}
+        />
+        <circle cx={eyeX} cy={eyeY} r={3} fill={tone("rod")} />
+        {text(eyeX, eyeY - 16, "Eye")}
+      </g>
+    </svg>
+  );
+}
+
+export interface EyeViewProps {
+  /**
+   * How far the image's tip seems from the search pin's, seen from this place of the head: across,
+   * in minutes of arc (positive when the image's tip is to the left), and up, in minutes of arc
+   * (positive when the image's tip is above the pin's). Undefined when the image cannot be seen.
+   */
+  apart: { across: number; up: number } | undefined;
+  label?: string;
+  className?: string;
+}
+
+/** Px to a minute of arc in the eye view, as on the board, so a minute or two shows. */
+const PX_PER_ARCMIN = 3;
+
+/**
+ * One view through the lens: the inverted image's tip, from above, and the search pin's tip, from
+ * below, as the eye sees them from one place of the head.
+ */
+export function EyeView({ apart, label, className }: EyeViewProps) {
+  // Far apart, the image's tip is kept at the edge of the view, so it still shows which way it is.
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+  const ix = clamp(48 - (apart?.across ?? 0) * PX_PER_ARCMIN, 10, 86);
+  const iy = clamp(60 - (apart?.up ?? 0) * PX_PER_ARCMIN, 22, 108);
+  return (
+    <svg
+      width={96}
+      height={120}
+      viewBox="0 0 96 120"
+      role={label ? "img" : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      className={className}
+    >
+      <rect width={96} height={120} fill={tone("floor")} />
+      <circle
+        cx={48}
+        cy={60}
+        r={44}
+        fill={tone("glass")}
+        fillOpacity={0.12}
+        stroke={tone("glass-edge")}
+        strokeOpacity={0.5}
+      />
+      {apart && <line x1={ix} y1={16} x2={ix} y2={iy} stroke={tone("light")} strokeWidth={2.4} />}
+      <line x1={48} y1={60} x2={48} y2={116} stroke={tone("thread")} strokeWidth={2.4} />
+    </svg>
+  );
+}
