@@ -419,9 +419,6 @@ export const enGBConvergingLens = {
     "Your graph is {y} against {x}. The question asks for xy against (x + y): only that line's slope is f. Go back to Plot to change the axes.",
   "experiments.converging-lens-pins.conclude.text":
     "The focal length of the lens is {f}. As the object pin moved away from the lens, the place of no parallax moved closer to it.",
-  "experiments.converging-lens-pins.next":
-    "The report, the print sheets and the exam for the two-pin method come with the next part of this lab. Your work is kept.",
-  "experiments.converging-lens-pins.inDevelopment": "Being built: the report comes next",
   "experiments.converging-lens-pins.report.title":
     "{experiment}: the focal length of a converging lens by no parallax",
   "experiments.converging-lens-pins.report.aim":
@@ -550,6 +547,55 @@ export const enGBConvergingLens = {
   "experiments.converging-lens-pins.sheet.why.text":
     "Things nearer you move further across your view as your head moves. If the image is nearer you than the search pin, it moves the other way from your head; if it is further away, it moves with you. At the same place they move together: no parallax.",
   "experiments.converging-lens-pins.sheet.motto": "Tips level, eye on the axis, no parallax",
+  "experiments.converging-lens-pins.exam.question.meta":
+    "Question 1 · The converging lens: two pins · {minutes} minutes",
+  "experiments.converging-lens-pins.exam.question.lead":
+    "Find the focal length of the converging lens by no parallax.",
+  "experiments.converging-lens-pins.exam.question.1":
+    "Mount the lens L in its holder, and set the tips of both optical pins level with the centre of the lens.",
+  "experiments.converging-lens-pins.exam.question.2":
+    "Set the object pin P₁ at a distance x = {first} cm from the lens. Use the other pin P₂ on the far side of the lens to locate the image of P₁ by no parallax, and measure its distance y from the lens.",
+  "experiments.converging-lens-pins.exam.question.3":
+    "Repeat for x = {list} cm. Read x and y from the centre marks of the holders.",
+  "experiments.converging-lens-pins.exam.question.4":
+    "Tabulate your readings, with xy and (x + y). Plot a graph of xy on the vertical axis against (x + y) on the horizontal axis.",
+  "experiments.converging-lens-pins.exam.question.5":
+    "Determine the slope of your graph, and state the focal length f of the lens. State two precautions you took.",
+  "experiments.converging-lens-pins.exam.question.6":
+    "Part (b): answer the questions that follow the experiment.",
+  "experiments.converging-lens-pins.exam.item.tipsLevel":
+    "Both pins' tips level with the lens's axis",
+  "experiments.converging-lens-pins.exam.item.eyeOnAxis": "The eye kept along the lens's axis",
+  "experiments.converging-lens-pins.exam.item.distances": "Readings at four object distances",
+  "experiments.converging-lens-pins.exam.item.noParallax": "Each y taken at no parallax",
+  "experiments.converging-lens-pins.exam.item.decimals": "x and y to the rule's least count",
+  "experiments.converging-lens-pins.exam.item.products": "xy and (x + y) worked out correctly",
+  "experiments.converging-lens-pins.exam.item.axes": "xy plotted against (x + y), axes labelled",
+  "experiments.converging-lens-pins.exam.item.slope": "Slope from the triangle, with its unit",
+  "experiments.converging-lens-pins.exam.item.f": "f, the slope, with its unit",
+  "experiments.converging-lens-pins.exam.lost.tipsLevel":
+    "The pins' tips were not level with the lens's axis.",
+  "experiments.converging-lens-pins.exam.lost.eyeOnAxis":
+    "Readings were taken with the eye off the lens's axis.",
+  "experiments.converging-lens-pins.exam.lost.distances": "Object distances read: {n} of 4.",
+  "experiments.converging-lens-pins.exam.lost.parallaxLeft":
+    "Readings taken with parallax still there: {n}.",
+  "experiments.converging-lens-pins.exam.lost.ruleDecimals":
+    "Readings off the rule's least count: {n}.",
+  "experiments.converging-lens-pins.exam.lost.noProducts": "No columns for xy and (x + y).",
+  "experiments.converging-lens-pins.exam.lost.axesPins": "The graph is not xy against (x + y).",
+  "experiments.converging-lens-pins.exam.q.from-graph":
+    "The line of xy against (x + y) passes through xy = {xy} cm². Read (x + y) there and find the focal length of the lens.",
+  "experiments.converging-lens-pins.exam.a.from-graph":
+    "At xy = {xy} cm², (x + y) = {sum} cm. From xy = f (x + y), f = xy ⁄ (x + y) = {xy} ⁄ {sum} = {f} cm.",
+  "experiments.converging-lens-pins.exam.q.focal-length":
+    "Define the focal length of a converging lens.",
+  "experiments.converging-lens-pins.exam.a.focal-length":
+    "The distance from the centre of the lens to its principal focus: the point on the axis where rays parallel to the axis meet after passing through the lens.",
+  "experiments.converging-lens-pins.exam.q.microscope":
+    "Describe how this lens, of focal length {f} cm, is used as a simple microscope, and the image it forms.",
+  "experiments.converging-lens-pins.exam.a.microscope":
+    "The object is placed nearer the lens than its focal length, {f} cm, and the eye looks through the lens from the far side. The rays leave the lens still spreading, so the eye sees an upright, magnified, virtual image on the same side as the object, further from the lens.",
   "experiments.converging-lens-pins.refused.off-the-rule": "That is off the end of the bench.",
   "experiments.converging-lens-pins.refused.holders-cross":
     "The holders cannot pass each other on the bench.",
