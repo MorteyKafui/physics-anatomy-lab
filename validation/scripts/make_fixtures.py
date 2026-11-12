@@ -4,6 +4,7 @@ pendulum.json  exact pendulum period (SciPy ellipk)        read by packages/phys
 circuits.json  Ohm's law and potentiometer (NumPy MNA)    read by packages/physics
 lens.json      converging lens (ray-transfer matrices)    read by packages/physics
 mixtures.json  method of mixtures (SciPy brentq)          read by packages/physics
+calorimetry.json  the lumped heat model (SciPy DOP853)    read by packages/physics
 fit.json       straight-line fits (SciPy linregress)       read by packages/analysis
 sigfigs.json   significant figures (Python decimal)        read by packages/analysis
 student_t.json Student's t CDF and quantiles (SciPy)      read by packages/analysis
@@ -18,6 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
+from pa_validation.calorimetry import Setup, peak, states
 from pa_validation.circuits import (
     balance_length,
     ohms_law_readings,
@@ -468,6 +470,51 @@ def build_review() -> dict[str, object]:
     }
 
 
+def build_calorimetry() -> dict[str, object]:
+    """The method of mixtures with heat lost, mixing and a lagging thermometer (Experiment 62,
+    brief decisions 1 to 5): 50 g of water at 65 °C into V g of water in a 50 g copper
+    calorimeter at 28 °C, lagged and covered (1% a minute), stirred (5 s), and a thermometer
+    lagging 8 s; then not stirred (2 minutes), not covered (8% a minute), tap water cooler than
+    the room, a thermometer with no lag, no loss at all, and the lag equal to the difference's
+    decay time, where the closed form changes."""
+    water, copper = 4200.0, 390.0
+    k = 0.01 / 60
+    times = [0.0, 1.0, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0, 600.0]
+
+    def case(name, v, *, room=28.0, tap=28.0, loss=k, mixing=5.0, lag=8.0):
+        hot = {"mass": 0.050, "specificHeatCapacity": water, "temperature": 65.0}
+        cold = [
+            {"mass": v / 1000, "specificHeatCapacity": water, "temperature": tap},
+            {"mass": 0.050, "specificHeatCapacity": copper, "temperature": tap},
+        ]
+        s = Setup(
+            0.050 * water, 65.0, v / 1000 * water + 0.050 * copper, tap, room, loss, mixing, lag
+        )
+        return {
+            "name": name,
+            "hot": hot,
+            "cold": cold,
+            "room": room,
+            "loss": loss,
+            "mixing": mixing,
+            "lag": lag,
+            "times": times,
+            "states": states(s, times),
+            "peak": peak(s),
+        }
+
+    cases = [case("approved", v) for v in (40, 50, 60, 70, 80)]
+    cases += [case("not stirred", v, mixing=120.0) for v in (40, 70)]
+    cases += [case("not covered", v, loss=8 * k) for v in (40, 70)]
+    cases += [
+        case("tap cooler than the room", 50, room=30.0, tap=26.0),
+        case("no lag", 50, lag=0.0),
+        case("no loss", 50, loss=0.0),
+        case("lag equal to the mixing decay", 50, lag=1 / (k + 1 / 5.0)),
+    ]
+    return {"cases": cases}
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -486,6 +533,7 @@ if __name__ == "__main__":
     write("lens-exact.json", build_lens_exact())
     write("lens-parallax.json", build_lens_parallax())
     write("mixtures.json", build_mixtures())
+    write("calorimetry.json", build_calorimetry())
     write("student_t.json", build_student_t())
     write("outliers.json", build_outliers())
     write("review.json", build_review())

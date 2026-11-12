@@ -42,6 +42,8 @@ export {
   WATER_SPECIFIC_HEAT_CAPACITY,
 } from "./mixtures";
 export type { Body, MixtureReadings } from "./mixtures";
+export { calorimeterAt, newtonCooling, thermometerPeak, waterEquivalent } from "./calorimetry";
+export type { Calorimeter, CalorimeterState } from "./calorimetry";
 export { solveNetwork } from "./network";
 export type { Element, Solution, Solved } from "./network";
 export {
