@@ -808,7 +808,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 ### Phase 2: Three more flagships
 
 - [x] Ohm's law and potentiometer: circuit solver, real meters, mistake catalogue
-- [ ] Converging lens: ray tracing, screen, pin parallax
+- [x] Converging lens: ray tracing, screen, pin parallax
 - [ ] Method of mixtures: heat model, thermometer lag, heat loss
 - [ ] Data templates, import and compare
 - [ ] Advanced uncertainty layer
