@@ -6,6 +6,9 @@ from the school practical book, built one after the other (decided by Mortey, 20
 Experiment 62 first, then Experiment 64. The scans are kept private under ADR 0012; this brief
 paraphrases them and quotes nothing.
 
+- **Experiment id:** `method-of-mixtures` (Phase 2, the fourth flagship).
+- **Status:** approved by Mortey (physics reviewer) on 2026-11-12: decisions 1 to 5, as proposed.
+
 ## What the student does (Experiment 62)
 
 **Water at two temperatures.** A measured 50 cm³ of tap water is heated in a beaker to 65 °C.
@@ -108,6 +111,10 @@ Each with its real effect in the model, and coaching text:
 4. **The usability test** with students at the target level.
 
 ## For the physics reviewer to decide
+
+Approved by Mortey on 2026-11-12, all five as proposed: the four volumes the book's question
+sets (40 to 70 cm³, without the worked table's 80 cm³), and the room and tap water at a fixed
+28 °C. Either can be changed later with a new decision here.
 
 1. Experiment 62 as the book sets it: 50 cm³ at 65 °C into V = 40, 50, 60 and 70 cm³ (and 80 cm³,
    as the worked table has?), and a graph of V against 1/T.
