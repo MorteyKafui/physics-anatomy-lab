@@ -163,7 +163,26 @@ test("at Auto the whole two-pin lab runs: four readings, the table, xy against (
   await expect(page.getByText(`The focal length of the lens is ${f.toFixed(1)} cm.`)).toBeVisible();
   await page.getByRole("button", { name: "Continue to Report" }).click();
   await expect(page.getByText("Step 10 of 10 · Report")).toBeVisible();
-  await expect(page.getByText(/The report, the print sheets and the exam/)).toBeVisible();
+
+  // Step 10: the report, written from this run.
+  await page.getByRole("link", { name: "Open your report" }).click();
+  await expect(page).toHaveURL(/\/lab\/converging-lens-pins\/report$/);
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText(
+      "The converging lens: two pins: the focal length of a converging lens by no parallax",
+    ),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^Fig\. 1 The object pin P₁, the lens L and the search pin P₂/),
+  ).toBeVisible();
+  await expect(paper.getByRole("img", { name: /the optical bench with two pins/ })).toBeVisible();
+  await expect(paper.getByRole("table")).toContainText("50.0");
+  await expect(paper.getByText(new RegExp(`^f = slope = ${f.toFixed(1)} cm$`))).toBeVisible();
+  await expect(
+    paper.getByText(/^I set the tips of the object and search pins level with the axis/),
+  ).toBeVisible();
+  await expect(paper.getByText(/^The tips seem to stay together over about/)).toBeVisible();
 });
 
 test("plotting y against x is caught, and the analysis asks for xy against (x + y)", async ({
