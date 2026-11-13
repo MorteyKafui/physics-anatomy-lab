@@ -22,6 +22,11 @@ export function tableXlsx(
   headings: readonly string[],
   rows: readonly (readonly string[])[],
 ) {
+  return sheetXlsx(name, [headings, ...rows]);
+}
+
+/** Any rows of cells as a one-sheet workbook; numbers as numbers, the rest as text. */
+export function sheetXlsx(name: string, rows: readonly (readonly string[])[]) {
   const cell = (v: string, r: number, c: number) => {
     const ref = `${column(c)}${r}`;
     const n = v.trim() === "" ? NaN : Number(v.trim());
@@ -29,7 +34,7 @@ export function tableXlsx(
       ? `<c r="${ref}"><v>${n}</v></c>`
       : `<c r="${ref}" t="inlineStr"><is><t>${esc(v)}</t></is></c>`;
   };
-  const sheetRows = [headings, ...rows]
+  const sheetRows = rows
     .map((r, i) => `<row r="${i + 1}">${r.map((v, c) => cell(v, i + 1, c)).join("")}</row>`)
     .join("");
   const enc = (s: string) => new TextEncoder().encode(s);

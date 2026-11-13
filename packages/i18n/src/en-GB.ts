@@ -971,6 +971,27 @@ export const enGB = {
     "Time all {target} oscillations, so your reaction time is a small part of t.",
   "lab.analyse.name.E": "E",
   "lab.analyse.name.r": "r",
+
+  // Lab data: data templates, bringing in a student's own readings, and the model check.
+  "labData.template.title": "Physics Anatomy data template",
+  "labData.template.experiment": "Experiment",
+  "labData.template.version": "Template version",
+  "labData.template.values": "Your apparatus",
+  "labData.template.readings": "Your readings",
+  "labData.problem.too-large": "The file is larger than {limit} MB.",
+  "labData.problem.wrong-type": "Bring in a CSV or XLSX file. {name} is neither.",
+  "labData.problem.macros": "Save the workbook as .xlsx without macros, then bring it in again.",
+  "labData.problem.unreadable": "The file could not be read as {kind}.",
+  "labData.problem.no-headings":
+    "No row has the headings {headings}. Start from the data template.",
+  "labData.problem.unit": "{heading}: the unit {unit} is not one this column can take.",
+  "labData.problem.too-many-rows": "Only the first {limit} rows are kept.",
+  "labData.problem.not-a-number": "Row {row}, {column}: not a number.",
+  "labData.problem.comma":
+    "Row {row}, {column}: it reads “{value}”. Use a full stop for the decimal point, {suggestion}.",
+  "labData.problem.missing": "Row {row}, {column}: empty.",
+  "labData.problem.value-missing": "{label}: empty.",
+  "labData.problem.value-not-a-number": "{label}: not a number.",
 } as const;
 
 export type MessageKey = keyof typeof enGB;
