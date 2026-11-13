@@ -823,7 +823,7 @@ export const enGBMethodOfMixtures = {
   "experiments.method-of-mixtures-solid.check.note":
     "Read the water's temperature as the solid goes in (t = 0), then every minute. Change the masses and the boiling water's temperature if yours differ.",
   "experiments.method-of-mixtures-solid.check.solid": "Mass of the solid",
-  "experiments.method-of-mixtures-solid.check.empty": "Mass of the calorimeter, empty",
+  "experiments.method-of-mixtures-solid.check.empty": "Mass of the empty calorimeter",
   "experiments.method-of-mixtures-solid.check.filled": "Mass of the calorimeter with water",
   "experiments.method-of-mixtures-solid.check.boiling": "Temperature of the boiling water",
   "experiments.method-of-mixtures-solid.check.c": "Specific heat capacity of the metal c",
