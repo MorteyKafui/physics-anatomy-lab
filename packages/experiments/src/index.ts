@@ -397,3 +397,19 @@ export { SOLID_SHEET_NUMBER, solidSheet } from "./method-of-mixtures-solid-sheet
 export type { SolidSheet, SolidSheetMetal } from "./method-of-mixtures-solid-sheets";
 export { markSolidScript, solidFollowUps } from "./method-of-mixtures-solid-exam";
 export type { SolidExamFacts } from "./method-of-mixtures-solid-exam";
+export type {
+  CheckFinding,
+  DataTemplate,
+  LabCheck,
+  LabRow,
+  TemplateColumn,
+  TemplateValue,
+} from "./lab-data";
+export {
+  PENDULUM_CHECK_COLUMNS,
+  PENDULUM_DATA_TEMPLATE,
+  pendulumCarefulSpread,
+  pendulumCheck,
+  pendulumExample,
+  pendulumModelT2,
+} from "./pendulum-check";
