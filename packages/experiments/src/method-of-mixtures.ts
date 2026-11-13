@@ -11,6 +11,7 @@ import {
   type Rng,
 } from "@pa/instruments";
 import {
+  type Body,
   type Calorimeter,
   calorimeterAt,
   newtonCooling,
@@ -110,7 +111,7 @@ export function hotAtPour(after: number): number {
 export function mixturesCalorimeter(
   bench: Pick<MixturesBench, "cold" | "hot" | "covered" | "stirring">,
   pouredAfter = 0,
-): Calorimeter {
+): Calorimeter & { hot: Body } {
   const m = methodOfMixtures;
   if (bench.cold === null || bench.hot === null) throw new RangeError("fill both first");
   const water = (cm3: number, temperature: number) => ({

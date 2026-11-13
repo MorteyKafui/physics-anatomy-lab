@@ -2,7 +2,10 @@ import { type Body, WATER_SPECIFIC_HEAT_CAPACITY } from "./mixtures";
 
 /**
  * A lumped heat model of the method of mixtures (Experiment 62; brief decisions 1 to 5): hot water
- * poured into a calorimeter of cold water, read by a thermometer.
+ * poured into a calorimeter of cold water, read by a thermometer. Experiment 64 (decisions 6 to 10)
+ * is the same model with a hot solid in place of the hot water, and the film of boiling water it
+ * carries in with it as part of the hot side: the hot side may be several bodies at one
+ * temperature, as the cold side is.
  *
  * Three temperatures from the moment of pouring, t = 0:
  *
@@ -32,8 +35,11 @@ import { type Body, WATER_SPECIFIC_HEAT_CAPACITY } from "./mixtures";
  */
 
 export interface Calorimeter {
-  /** The water poured in, at its temperature as it is poured. */
-  hot: Body;
+  /**
+   * The hot side as it goes in, at one temperature: the water poured in (Experiment 62), or the
+   * hot solid with any boiling water it carries (Experiment 64).
+   */
+  hot: Body | readonly Body[];
   /** The cold water and the calorimeter with its stirrer, all at one temperature. */
   cold: readonly Body[];
   /** The room's temperature, °C. */
@@ -87,7 +93,16 @@ function check(c: Calorimeter): Solved {
     return b.mass * b.specificHeatCapacity;
   };
   if (c.cold.length === 0) throw new RangeError("the calorimeter needs its cold water");
-  const ch = capacity(c.hot, "hot water");
+  const hots: readonly Body[] = Array.isArray(c.hot) ? c.hot : [c.hot as Body];
+  if (hots.length === 0) throw new RangeError("the calorimeter needs something hot put in it");
+  const hotT = hots[0]!.temperature;
+  let ch = 0;
+  hots.forEach((b, i) => {
+    ch += capacity(b, `hot body ${i + 1}`);
+    if (b.temperature !== hotT) {
+      throw new RangeError("the hot side must go in at one temperature");
+    }
+  });
   const start = c.cold[0]!.temperature;
   let cc = 0;
   c.cold.forEach((b, i) => {
@@ -109,8 +124,8 @@ function check(c: Calorimeter): Solved {
     room: c.room,
     wh: ch / total,
     wc: cc / total,
-    mean0: (ch * (c.hot.temperature - c.room) + cc * (start - c.room)) / total,
-    diff0: c.hot.temperature - start,
+    mean0: (ch * (hotT - c.room) + cc * (start - c.room)) / total,
+    diff0: hotT - start,
     k: c.loss,
     b: c.loss + 1 / c.mixing,
     meter0: start - c.room,

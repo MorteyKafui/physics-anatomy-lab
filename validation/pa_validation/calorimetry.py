@@ -97,3 +97,14 @@ def peak(s: Setup, t_end: float = 86_400.0) -> dict[str, float] | None:
     t = float(sol.t_events[0][0])
     y = sol.y_events[0][0]
     return {"at": t, "temperature": float(y[1] if s.lag == 0 else y[2])}
+
+
+def air_cooled(start: float, room: float, loss: float, seconds: float) -> float:
+    """A hot solid carried through the air for `seconds`, cooling by Newton's law, integrated."""
+    if seconds == 0:
+        return start
+    sol = solve_ivp(
+        lambda t, y: [-loss * (y[0] - room)], [0.0, seconds], [start], t_eval=[seconds], **TOL
+    )
+    assert sol.success, sol.message
+    return float(sol.y[0, -1])
