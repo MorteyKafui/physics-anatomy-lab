@@ -120,7 +120,8 @@ test("readings typed in are checked the same way", async ({ page }) => {
   await page.getByRole("button", { name: "Type them in instead" }).click();
   for (const [i, l] of SHEET_LENGTHS.entries()) {
     const t = (simplePendulum.swings * Math.sqrt(pendulumModelT2(l))).toFixed(2);
-    await page.getByLabel(`t₁ / s, row ${i + 1}`).fill(t);
+    // Key by key, as a student types.
+    await page.getByLabel(`t₁ / s, row ${i + 1}`).pressSequentially(t);
   }
   await expect(
     page.getByRole("heading", { name: "Your readings agree with the model" }),
