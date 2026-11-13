@@ -19,7 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pa_validation.calorimetry import Setup, peak, states
+from pa_validation.calorimetry import Setup, air_cooled, peak, states
 from pa_validation.circuits import (
     balance_length,
     ohms_law_readings,
@@ -511,6 +511,54 @@ def build_calorimetry() -> dict[str, object]:
         case("no lag", 50, lag=0.0),
         case("no loss", 50, loss=0.0),
         case("lag equal to the mixing decay", 50, lag=1 / (k + 1 / 5.0)),
+    ]
+    # Experiment 64 (decisions 6 to 10): a 100 g solid from boiling water into 50 g of water in the
+    # same calorimeter, sharing its heat in 10 s stirred; carried through the air at 5% a minute.
+    air = 0.05 / 60
+
+    def solid(name, metal, c, *, transfer=0.0, film=0.0, water_g=50.0, loss=k, mixing=10.0):
+        hot_t = air_cooled(100.0, 28.0, air, transfer)
+        hot = [{"mass": 0.100, "specificHeatCapacity": c, "temperature": hot_t}]
+        if film:
+            hot.append({"mass": film / 1000, "specificHeatCapacity": water, "temperature": hot_t})
+        cold = [
+            {"mass": water_g / 1000, "specificHeatCapacity": water, "temperature": 28.0},
+            {"mass": 0.050, "specificHeatCapacity": copper, "temperature": 28.0},
+        ]
+        s = Setup(
+            0.100 * c + film / 1000 * water,
+            hot_t,
+            water_g / 1000 * water + 0.050 * copper,
+            28.0,
+            28.0,
+            loss,
+            mixing,
+            8.0,
+        )
+        return {
+            "name": name,
+            "metal": metal,
+            "transfer": transfer,
+            "airLoss": air,
+            "hot": hot,
+            "cold": cold,
+            "room": 28.0,
+            "loss": loss,
+            "mixing": mixing,
+            "lag": 8.0,
+            "times": times,
+            "states": states(s, times),
+            "peak": peak(s),
+        }
+
+    metals = {"copper": 390.0, "brass": 380.0, "iron": 450.0, "aluminium": 900.0}
+    cases += [solid("solid", m, c) for m, c in metals.items()]
+    cases += [
+        solid("solid, slow transfer", "copper", 390.0, transfer=30.0),
+        solid("solid, boiling water carried in", "copper", 390.0, film=1.0),
+        solid("solid, water splashed out", "copper", 390.0, water_g=47.0),
+        solid("solid, not stirred", "copper", 390.0, mixing=120.0),
+        solid("solid, lid off", "copper", 390.0, loss=8 * k),
     ]
     return {"cases": cases}
 

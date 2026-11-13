@@ -7,6 +7,7 @@ import {
   calorimeterAt,
   finalTemperature,
   newtonCooling,
+  specificHeatCapacityFromMixture,
   thermometerPeak,
   WATER_SPECIFIC_HEAT_CAPACITY as WATER,
   waterEquivalent,
@@ -33,7 +34,7 @@ function bench(v: number, change: Partial<Calorimeter> = {}): Calorimeter {
 
 describe("the lumped heat model of the method of mixtures (Experiment 62)", () => {
   test("every temperature and every peak agrees with SciPy's integration of the heat flows", () => {
-    expect(fixture.cases.length).toBe(13);
+    expect(fixture.cases.length).toBe(22);
     for (const c of fixture.cases) {
       c.times.forEach((t, i) => {
         const got = calorimeterAt(c, t);
@@ -55,7 +56,7 @@ describe("the lumped heat model of the method of mixtures (Experiment 62)", () =
 
   test("with no loss, the water settles at the ideal mixture and the heat is all still there", () => {
     const c = bench(50, { loss: 0 });
-    const ideal = finalTemperature([c.hot, ...c.cold]);
+    const ideal = finalTemperature([...[c.hot].flat(), ...c.cold]);
     const ch = 0.05 * WATER;
     const cc = 0.05 * WATER + 0.05 * COPPER;
     for (const t of [0, 1, 7, 30, 120]) {
@@ -101,7 +102,7 @@ describe("the lumped heat model of the method of mixtures (Experiment 62)", () =
     const vs = [40, 50, 60, 70];
     const points = vs.map((v) => {
       const c = bench(v);
-      const ideal = finalTemperature([c.hot, ...c.cold]) - 28;
+      const ideal = finalTemperature([...[c.hot].flat(), ...c.cold]) - 28;
       const rise = thermometerPeak(c)!.temperature - 28;
       expect(ideal - rise).toBeGreaterThan(0.1);
       expect(ideal - rise).toBeLessThan(0.25);
@@ -151,5 +152,89 @@ describe("the lumped heat model of the method of mixtures (Experiment 62)", () =
         bench(50, { hot: { mass: 0.05, specificHeatCapacity: WATER, temperature: 20 } }),
       ),
     ).toBeNull();
+  });
+});
+
+describe("a hot solid into water (Experiment 64)", () => {
+  /** A 100 g solid from boiling water into 50 g of water in the approved calorimeter. */
+  const solid = (c: number, change: Partial<Calorimeter> = {}): Calorimeter =>
+    bench(50, {
+      hot: [{ mass: 0.1, specificHeatCapacity: c, temperature: 100 }],
+      mixing: 10,
+      ...change,
+    });
+
+  test("several hot bodies at one temperature are one body with their heat capacities added", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 0.5, noNaN: true }),
+        fc.double({ min: 0.0001, max: 0.01, noNaN: true }),
+        fc.double({ min: 0, max: 600, noNaN: true }),
+        (solidKg, filmKg, t) => {
+          const both = solid(390, {
+            hot: [
+              { mass: solidKg, specificHeatCapacity: COPPER, temperature: 100 },
+              { mass: filmKg, specificHeatCapacity: WATER, temperature: 100 },
+            ],
+          });
+          const one = solid(390, {
+            hot: {
+              mass: 1,
+              specificHeatCapacity: solidKg * COPPER + filmKg * WATER,
+              temperature: 100,
+            },
+          });
+          return (
+            Math.abs(calorimeterAt(both, t).thermometer - calorimeterAt(one, t).thermometer) < 1e-9
+          );
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  test("with no loss, each metal's specific heat capacity comes back from the mixture", () => {
+    for (const c of [390, 380, 450, 900]) {
+      const s = solid(c, { loss: 0 });
+      const final = calorimeterAt(s, 3600).thermometer;
+      expect(
+        specificHeatCapacityFromMixture({
+          solidMass: 0.1,
+          solidTemperature: 100,
+          waterMass: 0.05,
+          calorimeterMass: 0.05,
+          calorimeterSpecificHeatCapacity: COPPER,
+          initialTemperature: 28,
+          finalTemperature: final,
+        }),
+      ).toBeCloseTo(c, 6);
+    }
+  });
+
+  test("the solid carried through the air cools by Newton's law, as SciPy integrates it", () => {
+    const moved = fixture.cases.filter((c) => "transfer" in c && c.transfer > 0);
+    expect(moved.length).toBe(1);
+    for (const c of moved) {
+      const hot = (c.hot as { temperature: number }[])[0]!;
+      const k = (c as { airLoss: number }).airLoss;
+      expect(
+        Math.abs(newtonCooling(100, 28, k, (c as { transfer: number }).transfer) - hot.temperature),
+      ).toBeLessThan(1e-9);
+    }
+  });
+
+  test("refuses a hot side that goes in at two temperatures", () => {
+    expect(() =>
+      calorimeterAt(
+        solid(390, {
+          hot: [
+            { mass: 0.1, specificHeatCapacity: COPPER, temperature: 100 },
+            { mass: 0.001, specificHeatCapacity: WATER, temperature: 90 },
+          ],
+        }),
+        1,
+      ),
+    ).toThrow(RangeError);
+    expect(() => calorimeterAt(solid(390, { hot: [] }), 1)).toThrow(RangeError);
   });
 });
