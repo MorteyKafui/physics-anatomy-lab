@@ -11,7 +11,7 @@ import { ohmsLawReport } from "../report-content";
 export function OhmsLawReportScreen() {
   return (
     <ReportScreen
-      experiment={{ id: ohmsLaw.id, title: t("experiments.ohms-law.title") }}
+      experiment={{ id: ohmsLaw.id, title: t("experiments.ohms-law.title"), check: true }}
       build={ohmsLawReport}
     />
   );

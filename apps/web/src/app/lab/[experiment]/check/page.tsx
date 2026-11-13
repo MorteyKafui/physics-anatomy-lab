@@ -14,7 +14,7 @@ export function generateStaticParams() {
 export const dynamicParams = false;
 
 export const metadata: Metadata = {
-  title: `${t("experiments.simple-pendulum.check.title")} · ${t("experiments.simple-pendulum.title")} · Physics Anatomy`,
+  title: `${t("labData.check.title")} · ${t("experiments.simple-pendulum.title")} · Physics Anatomy`,
 };
 
 /** The model check (data templates brief, decision 8): it works signed out, and uses no AI. */

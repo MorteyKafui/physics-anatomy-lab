@@ -42,7 +42,11 @@ export interface CheckExperiment {
   template: DataTemplate;
   /** The table's columns, as the lab's table heads them, worked columns included. */
   columns: readonly { symbol: string; unit: string; places: number }[];
-  check: (rows: readonly LabRow[]) => LabCheck;
+  /** The check of the rows, with the apparatus values the file gives, in the template's units. */
+  check: (
+    rows: readonly LabRow[],
+    values: Readonly<Record<string, number | undefined>>,
+  ) => LabCheck;
   example: readonly LabRow[];
   /** The graph's axes: the symbols with units, as the lab's graph writes them. */
   axes: { x: string; y: string };
@@ -51,10 +55,11 @@ export interface CheckExperiment {
     tableNote: string;
     graphTitle: string;
     graphLabel: (n: number) => string;
-    legendModel: string;
+    /** The model's line in the legend; left out where there is no model line (Ohm's law). */
+    legendModel?: string;
     parts: (check: NonNullable<LabCheck["check"]>) => CheckPart[];
     /** The result the slope gives, as a sentence: "g from your slope: 9.84 N kg⁻¹." */
-    result: (check: NonNullable<LabCheck["check"]>) => string;
+    result: (lab: LabCheck) => string;
     /** A finding's message key, in words. */
     finding: (key: string, params?: Readonly<Record<string, string | number>>) => string;
   };
@@ -140,7 +145,8 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
   );
   const rows = data ? completeRows(data, T).map((r) => r.values) : E.example;
   const isExample = !data;
-  const result = useMemo(() => E.check(rows), [E, rows]);
+  const values = useMemo(() => data?.values ?? {}, [data]);
+  const result = useMemo(() => E.check(rows, values), [E, rows, values]);
   const check = result.check;
 
   // The graph's scales, from the points and the model's line together.
@@ -186,7 +192,7 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
           </Link>
           <span aria-hidden>›</span>
           <h1 className="text-foreground" aria-current="page">
-            {t("experiments.simple-pendulum.check.title")}
+            {t("labData.check.title")}
           </h1>
         </nav>
       </header>
@@ -377,14 +383,16 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
                   fill={tone("paper")}
                 />
                 <Grid tone={tone} />
-                <polyline
-                  points={result.modelLine.map((p) => `${X(p.x)},${Y(p.y)}`).join(" ")}
-                  fill="none"
-                  stroke={tone("triangle")}
-                  strokeWidth={1.8}
-                  strokeDasharray="8 5"
-                />
-                {check?.fit && (
+                {E.copy.legendModel && (
+                  <polyline
+                    points={result.modelLine.map((p) => `${X(p.x)},${Y(p.y)}`).join(" ")}
+                    fill="none"
+                    stroke={tone("triangle")}
+                    strokeWidth={1.8}
+                    strokeDasharray="8 5"
+                  />
+                )}
+                {check?.fit && result.modelLine.length === 2 && (
                   <line
                     x1={X(result.modelLine[0]!.x)}
                     y1={Y(check.fit.slope * result.modelLine[0]!.x + check.fit.intercept)}
@@ -427,7 +435,7 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
                     x={14}
                     y={14}
                     width={220}
-                    height={70}
+                    height={E.copy.legendModel ? 70 : 50}
                     fill={tone("paper")}
                     stroke={tone("frame")}
                     strokeWidth={0.8}
@@ -440,18 +448,22 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
                   <text x={46} y={54}>
                     {t("labData.check.legend.fit")}
                   </text>
-                  <line
-                    x1={22}
-                    y1={70}
-                    x2={40}
-                    y2={70}
-                    stroke={tone("triangle")}
-                    strokeWidth={1.8}
-                    strokeDasharray="8 5"
-                  />
-                  <text x={46} y={74}>
-                    {E.copy.legendModel}
-                  </text>
+                  {E.copy.legendModel && (
+                    <>
+                      <line
+                        x1={22}
+                        y1={70}
+                        x2={40}
+                        y2={70}
+                        stroke={tone("triangle")}
+                        strokeWidth={1.8}
+                        strokeDasharray="8 5"
+                      />
+                      <text x={46} y={74}>
+                        {E.copy.legendModel}
+                      </text>
+                    </>
+                  )}
                 </g>
               </svg>
             </div>
@@ -502,7 +514,7 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
                     </span>
                   </div>
                 ))}
-                <span className="text-[13px] text-muted-foreground">{E.copy.result(check)}</span>
+                <span className="text-[13px] text-muted-foreground">{E.copy.result(result)}</span>
               </>
             )}
           </section>
@@ -601,19 +613,41 @@ function TypeIn({
   onChange: (cells: string[][]) => void;
 }) {
   const head = template.columns.map((c) => heading(c.symbol, c.unit));
-  const [rows, setRows] = useState<string[][]>(
-    () =>
-      start?.slice(1) ??
-      template.settings.map((s) =>
-        template.columns.map((_, i) => (i < s.length ? String(s[i]) : "")),
-      ),
+  const labels = template.values.map((v) => heading(v.label, v.unit));
+  const at = start ? start.findIndex((r) => r[0] === head[0]) : -1;
+  const [rows, setRows] = useState<string[][]>(() =>
+    at >= 0
+      ? start!.slice(at + 1)
+      : template.settings.map((s) =>
+          template.columns.map((_, i) => (s[i] !== undefined ? String(s[i]) : "")),
+        ),
   );
+  const [vals, setVals] = useState<string[]>(() =>
+    labels.map((l) => start?.find((r) => r[0] === l)?.[1] ?? ""),
+  );
+  const emit = (r: string[][], v: string[]) =>
+    onChange([...labels.map((l, i) => [l, v[i]!]), [], head, ...r]);
   const set = (next: string[][]) => {
     setRows(next);
-    onChange([head, ...next]);
+    emit(next, vals);
   };
   return (
     <div className="flex flex-col gap-2">
+      {labels.map((l, i) => (
+        <label key={l} className="flex flex-wrap items-center gap-2 text-[13px]">
+          <span className="text-muted-foreground">{l}</span>
+          <input
+            value={vals[i]}
+            inputMode="decimal"
+            onChange={(e) => {
+              const next = vals.map((v, k) => (k === i ? e.target.value : v));
+              setVals(next);
+              emit(rows, next);
+            }}
+            className="h-9 w-24 border border-input bg-background px-2 text-right font-mono focus-visible:outline-2 focus-visible:outline-ring"
+          />
+        </label>
+      ))}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse font-mono text-[13px]">
           <thead>

@@ -153,7 +153,7 @@ export function matchTemplate(
       if (n.success) values[column.id] = convert(n.data);
       // An empty setting is a problem; an empty reading beside others is a repeat not taken.
       else if (raw.trim() === "") {
-        if (column.role === "setting")
+        if (column.role === "setting" && !column.optional)
           problems.push({ code: "missing", row, column: column.symbol });
       } else if (COMMA_DECIMAL.test(raw))
         problems.push({
@@ -174,6 +174,7 @@ export function matchTemplate(
 export const completeRows = (data: LabData, template: DataTemplate) =>
   data.rows.filter(
     (r) =>
-      template.columns.every((c) => c.role !== "setting" || r.values[c.id] !== undefined) &&
-      template.columns.some((c) => c.role === "reading" && r.values[c.id] !== undefined),
+      template.columns.every(
+        (c) => c.role !== "setting" || c.optional || r.values[c.id] !== undefined,
+      ) && template.columns.some((c) => c.role === "reading" && r.values[c.id] !== undefined),
   );

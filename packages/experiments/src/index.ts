@@ -413,3 +413,11 @@ export {
   pendulumExample,
   pendulumModelT2,
 } from "./pendulum-check";
+export {
+  OHMS_LAW_CHECK_COLUMNS,
+  OHMS_LAW_DATA_TEMPLATE,
+  ohmsLawCarefulSpread,
+  ohmsLawCheck,
+  ohmsLawExample,
+} from "./ohms-law-check";
+export type { OhmsLawResult } from "./ohms-law-check";

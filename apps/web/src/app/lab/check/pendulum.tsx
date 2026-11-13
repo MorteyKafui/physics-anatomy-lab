@@ -79,7 +79,8 @@ const experiment: CheckExperiment = {
         }),
       },
     ],
-    result: (c) => t(`${M}.g`, { g: c.fit ? ((4 * Math.PI ** 2) / c.fit.slope).toFixed(2) : "–" }),
+    result: (r) =>
+      t(`${M}.g`, { g: r.check?.fit ? ((4 * Math.PI ** 2) / r.check.fit.slope).toFixed(2) : "–" }),
     finding: (key, params) => t(key as MessageKey, params),
   },
 };

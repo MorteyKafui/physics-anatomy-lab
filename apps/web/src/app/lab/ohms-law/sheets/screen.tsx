@@ -33,7 +33,7 @@ const figures: SheetFigures = {
 export function OhmsLawSheetsScreen() {
   return (
     <SheetsScreen
-      experiment={{ id: ohmsLaw.id, title: t("experiments.ohms-law.title") }}
+      experiment={{ id: ohmsLaw.id, title: t("experiments.ohms-law.title"), check: true }}
       content={content}
       figures={figures}
     />
