@@ -120,3 +120,61 @@ test("the hot-solid bench has no serious accessibility issues, weighing and meas
   await page.getByRole("button", { name: "Read it now" }).click();
   expect(await serious(page)).toEqual([]);
 });
+
+/**
+ * Finish a step. On some runs the coach flags something on the way out; the student reads it and
+ * finishes again to carry on.
+ */
+async function finish(page: Page, button: string, next: string) {
+  const step = page.getByText(next);
+  await page.getByRole("button", { name: button }).click();
+  await step
+    .waitFor({ timeout: 3000 })
+    .catch(() => page.getByRole("button", { name: button }).click());
+  await expect(step).toBeVisible();
+}
+
+const C = { copper: 390, brass: 380, iron: 450, aluminium: 900 } as const;
+
+test("at Auto the whole hot-solid lab runs: a run read every minute, θ against t, c, and the metal named", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(120_000);
+  await toBuild(page);
+  await page.getByLabel("Help level").selectOption("auto");
+  await weighAll(page);
+  await page.getByRole("button", { name: "Finish building" }).click();
+  await page.getByRole("button", { name: "Continue to Measure" }).click();
+  await moveAcross(page, { shake: true });
+  for (let m = 1; m <= 3; m += 1) {
+    await page.clock.fastForward("01:00");
+    await page.getByRole("button", { name: "Read it now" }).click();
+    await expect(page.locator("tbody tr")).toHaveCount(m + 1);
+  }
+  await page.getByRole("button", { name: "Take this reading" }).click();
+  await finish(page, "Finish measuring", "Step 6 of 10 · Tabulate");
+  await page.getByRole("button", { name: "Standard" }).click();
+  await page.getByRole("button", { name: "Fill in my readings" }).click();
+  await finish(page, "Finish tabulating", "Step 7 of 10 · Plot");
+  await expect(page.getByText(/A graph of θ against t/)).toBeVisible();
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
+
+  const read = async (id: string) =>
+    Number((await page.locator(`[data-answer="${id}"]`).textContent())!.split(" ")[0]);
+  const [T, c] = [await read("T"), await read("c")];
+  expect(T).toBeGreaterThan(37);
+  expect(T).toBeLessThan(49);
+  await expect(page.locator('[data-answer="c"]')).toContainText("J kg⁻¹ K⁻¹");
+  await finish(page, "Finish analysing", "Step 9 of 10 · Conclude");
+
+  // The metal is named only now, and c is within 4% of its own (read every minute, to 0.1 °C).
+  const conclusion = page.getByText(/^The specific heat capacity of the solid is/);
+  await expect(conclusion).toBeVisible();
+  const metal = (await conclusion.textContent())!.match(
+    /The solid S is (copper|brass|iron|aluminium)/,
+  )![1] as keyof typeof C;
+  expect(Math.abs(c / C[metal] - 1)).toBeLessThan(0.04);
+  await page.getByRole("button", { name: "Continue to Report" }).click();
+  await expect(page.getByText("Step 10 of 10 · Report")).toBeVisible();
+});
