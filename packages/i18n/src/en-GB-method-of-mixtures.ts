@@ -145,9 +145,193 @@ export const enGBMethodOfMixtures = {
     "I read the highest temperature, when the thermometer stopped rising.",
   "experiments.method-of-mixtures.tips.5":
     "I kept the lid on the lagged calorimeter to reduce heat lost to the room.",
-  "experiments.method-of-mixtures.next":
-    "The report, the print sheets and the exam for the method of mixtures come with the next part of this lab. Your work is kept.",
-  "experiments.method-of-mixtures.inDevelopment": "Being built: the report comes next",
+  "experiments.method-of-mixtures.report.title":
+    "{experiment}: the water equivalent of a calorimeter by the method of mixtures",
+  "experiments.method-of-mixtures.report.aim":
+    "To find the water equivalent of a calorimeter by mixing hot and cold water in it, from a graph of V against 1/T.",
+  "experiments.method-of-mixtures.report.apparatus.calorimeter":
+    "A {g} g copper calorimeter with its stirrer, in a lagging jacket with a lid",
+  "experiments.method-of-mixtures.report.apparatus.thermometer":
+    "A thermometer reading to {celsius} °C",
+  "experiments.method-of-mixtures.report.apparatus.cylinder":
+    "A {capacity} cm³ measuring cylinder reading to {cm3} cm³",
+  "experiments.method-of-mixtures.report.apparatus.beaker": "A beaker, a heater and tap water",
+  "experiments.method-of-mixtures.report.benchCaption":
+    "The calorimeter C in its lagging L, with the thermometer T and the stirrer S through its lid",
+  "experiments.method-of-mixtures.report.benchAlt":
+    "{caption}: a copper can of water inside a lagged jacket, with a thermometer and a stirrer through the lid.",
+  "experiments.method-of-mixtures.report.letter.C": "C",
+  "experiments.method-of-mixtures.report.letter.L": "L",
+  "experiments.method-of-mixtures.report.letter.T": "T",
+  "experiments.method-of-mixtures.report.letter.S": "S",
+  "experiments.method-of-mixtures.report.legend.C": "Copper calorimeter",
+  "experiments.method-of-mixtures.report.legend.L": "Lagging",
+  "experiments.method-of-mixtures.report.legend.T": "Thermometer",
+  "experiments.method-of-mixtures.report.legend.S": "Stirrer",
+  "experiments.method-of-mixtures.report.values.bench":
+    "Last mixture: {v} cm³ of cold water and {hot} cm³ of hot water, highest {highest} °C",
+  "experiments.method-of-mixtures.report.theory":
+    "The heat the hot water gives up is taken in by the cold water and the calorimeter. With the room at θ₀ and the calorimeter's water equivalent W, 50 (65 − θ₀ − T) = (V + W) T, so V = 50 (65 − θ₀) ⁄ T − (50 + W). A graph of V against 1/T is a straight line meeting the V axis at −(50 + W).",
+  "experiments.method-of-mixtures.report.method.setUp":
+    "I measured the cold water into the lagged calorimeter and the hot water into a beaker with the measuring cylinder, and put the lid on.",
+  "experiments.method-of-mixtures.report.method.readings":
+    "I heated the beaker to 65 °C, poured it in at once, stirred, and read the highest temperature the mixture reached, for V from {min} to {max} cm³.",
+  "experiments.method-of-mixtures.report.method.repeat": "I mixed some volumes more than once.",
+  "experiments.method-of-mixtures.report.method.analyse":
+    "I tabulated V, T and 1/T, plotted V against 1/T, carried the line back to the V axis, and found W from where it met it.",
+  "experiments.method-of-mixtures.report.method.analyseOther":
+    "I tabulated my readings and plotted {y} against {x}.",
+  "experiments.method-of-mixtures.report.observations.readings":
+    "I took {n} readings, each temperature to {celsius} °C.",
+  "experiments.method-of-mixtures.report.observations.one":
+    "I took one reading, each temperature to {celsius} °C.",
+  "experiments.method-of-mixtures.report.observations.trend":
+    "As V rose from {vmin} to {vmax} cm³, the rise T fell from {tmax} to {tmin} °C.",
+  "experiments.method-of-mixtures.report.observations.peak":
+    "Each time the thermometer rose quickly, stopped about a minute after pouring, then fell slowly.",
+  "experiments.method-of-mixtures.report.table": "The table shows V, T and 1/T for each mixture.",
+  "experiments.method-of-mixtures.report.graph":
+    "Fig. 2 {caption} The points lie on a straight line, carried back to meet the V axis below zero; the slope is found from triangle ABC.",
+  "experiments.method-of-mixtures.report.calcSlope":
+    "slope = CB ⁄ AC = {rise} {yu} ⁄ {run} {xu} = {slope}",
+  "experiments.method-of-mixtures.report.calcIntercept":
+    "V where the line meets the V axis = {intercept}",
+  "experiments.method-of-mixtures.report.calcW":
+    "W = −(intercept) − 50 cm³ = −({intercept}) − 50 cm³ = {W}",
+  "experiments.method-of-mixtures.report.precaution.lid":
+    "I kept the lid on the lagged calorimeter to reduce heat lost to the room.",
+  "experiments.method-of-mixtures.report.precaution.stir": "I stirred the mixture all the time.",
+  "experiments.method-of-mixtures.report.precaution.quick":
+    "I poured the hot water in quickly, as soon as it reached 65 °C.",
+  "experiments.method-of-mixtures.report.precaution.highest":
+    "I read the highest temperature, when the thermometer stopped rising.",
+  "experiments.method-of-mixtures.report.precaution.thermometerEye":
+    "I read the thermometer with my eye level with the top of the mercury.",
+  "experiments.method-of-mixtures.report.precaution.cylinderEye":
+    "I read the measuring cylinder with my eye level with the bottom of the meniscus.",
+  "experiments.method-of-mixtures.report.precaution.repeat":
+    "I repeated some mixtures and checked they agreed.",
+  "experiments.method-of-mixtures.report.source.early":
+    "Some readings were taken before the thermometer had stopped rising, so T is too small.",
+  "experiments.method-of-mixtures.report.source.unstirred":
+    "Some mixtures were not stirred, so they reached their highest late and low.",
+  "experiments.method-of-mixtures.report.source.uncovered":
+    "Some mixtures were left without the lid, so more heat went to the room.",
+  "experiments.method-of-mixtures.report.source.slow":
+    "Some hot water waited before it was poured, so it went in below 65 °C.",
+  "experiments.method-of-mixtures.report.source.thermometerAngle":
+    "Some temperatures were read at an angle, so they are shifted by parallax.",
+  "experiments.method-of-mixtures.report.source.cylinderAngle":
+    "Some volumes were read at an angle, so the water measured is not what was written down.",
+  "experiments.method-of-mixtures.report.source.leastCount":
+    "The thermometer reads to {celsius} °C and the measuring cylinder to {cm3} cm³.",
+  "experiments.method-of-mixtures.report.source.loss":
+    "Even with the lid on, heat goes to the room while the thermometer catches up: at {v} cm³ the highest is about {celsius} °C below the rise with no loss.",
+  "experiments.method-of-mixtures.report.conclusion":
+    "The water equivalent of the calorimeter is {W}.",
+  "experiments.method-of-mixtures.sheet.drawingTitle": "The calorimeter, explained",
+  "experiments.method-of-mixtures.sheet.style": "A copper calorimeter in its lagging",
+  "experiments.method-of-mixtures.sheet.question": "How much water is a calorimeter worth?",
+  "experiments.method-of-mixtures.sheet.lead":
+    "Hot water poured into cold shares its heat with the cold water and the can that holds it. A graph of V against 1/T finds how much water the can is worth.",
+  "experiments.method-of-mixtures.sheet.n.W":
+    "cm³: the water equivalent of the {g} g copper calorimeter",
+  "experiments.method-of-mixtures.sheet.n.intercept":
+    "cm³: where V against 1/T meets the V axis, −(50 + W)",
+  "experiments.method-of-mixtures.sheet.n.rise":
+    "°C: the highest rise with {v} cm³ of cold water, {lost} °C below the rise with no loss",
+  "experiments.method-of-mixtures.sheet.n.at": "s after pouring, when the thermometer stops rising",
+  "experiments.method-of-mixtures.sheet.n.count": "volumes the question sets",
+  "experiments.method-of-mixtures.sheet.part.C":
+    "The copper can that holds the water. It warms with the water, so it takes heat too: {W} cm³ of water's worth.",
+  "experiments.method-of-mixtures.sheet.part.L":
+    "The lagging and the lid keep the heat in, so little goes to the room.",
+  "experiments.method-of-mixtures.sheet.part.T":
+    "Reads to {thermometer} °C. It lags a few seconds behind the water, so wait for it to stop rising.",
+  "experiments.method-of-mixtures.sheet.part.S":
+    "Mixes the hot and cold water in seconds, so the bulb sits in mixed water.",
+  "experiments.method-of-mixtures.sheet.spec.calorimeter": "Calorimeter",
+  "experiments.method-of-mixtures.sheet.spec.calorimeterValue":
+    "{g} g of copper, c = {c} J kg⁻¹ K⁻¹, in a lagging jacket with a lid",
+  "experiments.method-of-mixtures.sheet.spec.volumes": "Volumes",
+  "experiments.method-of-mixtures.sheet.spec.volumesValue":
+    "{hot} cm³ at {hotT} °C into V = {list} cm³ at {room} °C",
+  "experiments.method-of-mixtures.sheet.spec.scales": "Scales",
+  "experiments.method-of-mixtures.sheet.spec.scalesValue":
+    "Thermometer to {thermometer} °C, measuring cylinder to {cylinder} cm³",
+  "experiments.method-of-mixtures.sheet.spec.model": "Heat loss",
+  "experiments.method-of-mixtures.sheet.spec.modelValue":
+    "{loss}% of the excess a minute with the lid on; mixed in {mixing} s; the thermometer {lag} s behind",
+  "experiments.method-of-mixtures.sheet.spec.result": "Result",
+  "experiments.method-of-mixtures.sheet.spec.resultValue":
+    "W = {W} cm³; the line meets the V axis at {intercept} cm³",
+  "experiments.method-of-mixtures.sheet.step.measure.title": "Measure the water",
+  "experiments.method-of-mixtures.sheet.step.measure.text":
+    "{v} cm³ of cold water into the calorimeter, {hot} cm³ into the beaker, eye level with the water in the cylinder.",
+  "experiments.method-of-mixtures.sheet.step.pour.title": "Heat and pour",
+  "experiments.method-of-mixtures.sheet.step.pour.text":
+    "Heat the beaker to {hotT} °C and pour it in at once, so it has no time to cool.",
+  "experiments.method-of-mixtures.sheet.step.stir.title": "Lid on, and stir",
+  "experiments.method-of-mixtures.sheet.step.stir.text":
+    "Stir all the time through the lid, so the water by the bulb is mixed.",
+  "experiments.method-of-mixtures.sheet.step.read.title": "Read the highest",
+  "experiments.method-of-mixtures.sheet.step.read.text":
+    "The thermometer stops rising about {at} s after pouring, at a rise of {rise} °C for {v} cm³. Read it then.",
+  "experiments.method-of-mixtures.sheet.step.plot.title": "Plot V against 1/T",
+  "experiments.method-of-mixtures.sheet.step.plot.text":
+    "A straight line. Carry it back to the V axis: it meets it at −(50 + W), here {intercept} cm³.",
+  "experiments.method-of-mixtures.sheet.why.title": "Why V against 1/T?",
+  "experiments.method-of-mixtures.sheet.why.text":
+    "Heat lost by the hot water is heat gained by the cold water and the can: 50 (65 − θ₀ − T) = (V + W) T. So V = 50 (65 − θ₀) ⁄ T − (50 + W), a straight line in 1/T. Its slope here is {slope} cm³ °C, and where 1/T = 0, V = −(50 + W).",
+  "experiments.method-of-mixtures.sheet.motto": "The can takes heat too.",
+  "experiments.method-of-mixtures.exam.question.meta":
+    "Question 1 · The method of mixtures · {minutes} minutes",
+  "experiments.method-of-mixtures.exam.question.lead":
+    "Find the water equivalent of the calorimeter by the method of mixtures.",
+  "experiments.method-of-mixtures.exam.question.1":
+    "You are given a lagged calorimeter with a stirrer and a lid, a thermometer, a measuring cylinder, a beaker and a heater. Heat {hot} cm³ of water in the beaker to {hotT} °C.",
+  "experiments.method-of-mixtures.exam.question.2":
+    "Measure V = {first} cm³ of cold water into the calorimeter and read its temperature θ₁.",
+  "experiments.method-of-mixtures.exam.question.3":
+    "Pour the hot water in quickly, stir, and read the highest temperature θ₂ the mixture reaches. Find the rise T = θ₂ − θ₁.",
+  "experiments.method-of-mixtures.exam.question.4":
+    "Repeat for V = {list} cm³. Tabulate V, T and 1/T.",
+  "experiments.method-of-mixtures.exam.question.5":
+    "Plot V against 1/T. Find its slope, and V where 1/T = 0. Hence find the water equivalent W of the calorimeter.",
+  "experiments.method-of-mixtures.exam.question.6": "State two precautions you took.",
+  "experiments.method-of-mixtures.exam.item.covered":
+    "Lid on the lagged calorimeter for every mixture",
+  "experiments.method-of-mixtures.exam.item.stirred": "Every mixture stirred",
+  "experiments.method-of-mixtures.exam.item.volumes": "Four volumes mixed",
+  "experiments.method-of-mixtures.exam.item.highest":
+    "Each highest temperature read when the thermometer stopped rising",
+  "experiments.method-of-mixtures.exam.item.decimals":
+    "Temperatures to the thermometer's least count",
+  "experiments.method-of-mixtures.exam.item.inverse": "1/T worked out correctly",
+  "experiments.method-of-mixtures.exam.item.axes": "V plotted against 1/T, axes labelled",
+  "experiments.method-of-mixtures.exam.item.intercept":
+    "V where the line meets the V axis, with its unit",
+  "experiments.method-of-mixtures.exam.item.W": "W = −(intercept) − 50 cm³, with its unit",
+  "experiments.method-of-mixtures.exam.lost.covered": "A mixture was left without the lid.",
+  "experiments.method-of-mixtures.exam.lost.stirred": "A mixture was not stirred.",
+  "experiments.method-of-mixtures.exam.lost.volumes": "Volumes mixed: {n} of 4.",
+  "experiments.method-of-mixtures.exam.lost.early": "Readings taken before the highest: {n}.",
+  "experiments.method-of-mixtures.exam.lost.thermometerDecimals":
+    "Temperatures off the thermometer's least count: {n}.",
+  "experiments.method-of-mixtures.exam.lost.noInverse": "No 1/T column worked out.",
+  "experiments.method-of-mixtures.exam.lost.axesMixtures": "The graph is not V against 1/T.",
+  "experiments.method-of-mixtures.exam.q.one-mixing":
+    "{hot} g of water at {hotT} °C is poured into {cold} g of water at {coldT} °C in a calorimeter whose water equivalent is {W} g. If no heat is lost, find the final temperature.",
+  "experiments.method-of-mixtures.exam.a.one-mixing":
+    "Heat lost = heat gained: {hot} (65 − θ) = ({cold} + {W}) (θ − 28). So θ = ({hot} × 65 + {coldW} × 28) ⁄ {total} = {final} °C.",
+  "experiments.method-of-mixtures.exam.q.flask":
+    "Explain how a vacuum flask keeps a hot drink hot.",
+  "experiments.method-of-mixtures.exam.a.flask":
+    "The vacuum between the double walls stops heat passing by conduction and convection. The silvered walls reflect heat back, so little goes by radiation. The stopper stops heat leaving by convection and evaporation at the top.",
+  "experiments.method-of-mixtures.exam.q.clinical":
+    "Why does a clinical thermometer have a constriction in its bore and a short range?",
+  "experiments.method-of-mixtures.exam.a.clinical":
+    "The constriction stops the mercury running back when the thermometer leaves the body, so it keeps the highest reading until it is shaken down. A short range, about 35 to 42 °C, gives a long scale for each degree, so it can be read to 0.1 °C.",
   "experiments.method-of-mixtures.refused.cylinder-holds":
     "The measuring cylinder holds up to 100 cm³.",
   "experiments.method-of-mixtures.refused.already-poured":

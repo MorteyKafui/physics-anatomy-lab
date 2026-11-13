@@ -206,7 +206,24 @@ test("at Auto the whole mixtures lab runs: four mixtures, the table, V against 1
   await expect(page.getByText(/The water equivalent of the calorimeter is/)).toBeVisible();
   await page.getByRole("button", { name: "Continue to Report" }).click();
   await expect(page.getByText("Step 10 of 10 · Report")).toBeVisible();
-  await expect(page.getByText(/The report, the print sheets and the exam/)).toBeVisible();
+
+  // Step 10: the report, written from this run.
+  await page.getByRole("link", { name: "Open your report" }).click();
+  await expect(page).toHaveURL(/\/lab\/method-of-mixtures\/report$/);
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText(
+      "The method of mixtures: the water equivalent of a calorimeter by the method of mixtures",
+    ),
+  ).toBeVisible();
+  await expect(paper.getByText(/^Fig\. 1 The calorimeter C in its lagging L/)).toBeVisible();
+  await expect(
+    paper.getByRole("img", { name: /a copper can of water inside a lagged/ }),
+  ).toBeVisible();
+  await expect(paper.getByRole("table")).toContainText("70");
+  await expect(paper.getByText(/^W = −\(intercept\) − 50 cm³ = /)).toBeVisible();
+  await expect(paper.getByText(/^I kept the lid on the lagged calorimeter/)).toBeVisible();
+  await expect(paper.getByText(/^Even with the lid on, heat goes to the room/)).toBeVisible();
 });
 
 test("plotting V against T is caught, and the analysis asks for V against 1/T", async ({

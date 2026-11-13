@@ -3,6 +3,8 @@
 import { decimalsForResolution, fillDerived, heading, pointsFor } from "@pa/analysis";
 import {
   BENCH_VIEWBOX,
+  Calorimeter,
+  CALORIMETER_VIEWBOX,
   CIRCUIT_FIGURE,
   CircuitBench,
   OPTICAL_VIEWBOX,
@@ -96,6 +98,14 @@ export type FigureDrawing =
       lens: number;
       pin: number;
       image: { at: number; magnification: number } | undefined;
+    }
+  | {
+      /** The method of mixtures: the water in the calorimeter, cm³, the lid, the stirrer, °C. */
+      kind: "calorimeter";
+      water: number;
+      covered: boolean;
+      stirring: boolean;
+      thermometer: number;
     }
   | { kind: "table"; headings: string[]; rows: string[][] }
   | { kind: "graph"; view: GraphView; headings: { x: string; y: string } };
@@ -250,7 +260,13 @@ function wrap(text: string, width = 84): string[] {
 }
 
 function drawingHeight(d: FigureDrawing): number {
-  if (d.kind === "bench" || d.kind === "circuit" || d.kind === "optical" || d.kind === "pins")
+  if (
+    d.kind === "bench" ||
+    d.kind === "circuit" ||
+    d.kind === "optical" ||
+    d.kind === "pins" ||
+    d.kind === "calorimeter"
+  )
     return 400;
   if (d.kind === "graph") return 440;
   return 30 + 26 * Math.max(1, d.rows.length) + 2;
@@ -331,7 +347,11 @@ export function SnapshotSheet({
         width={boxW}
         height={boxH}
         fill={
-          d.kind === "bench" || d.kind === "circuit" || d.kind === "optical" || d.kind === "pins"
+          d.kind === "bench" ||
+          d.kind === "circuit" ||
+          d.kind === "optical" ||
+          d.kind === "pins" ||
+          d.kind === "calorimeter"
             ? "var(--pa-ink-950)"
             : "var(--pa-bg)"
         }
@@ -403,6 +423,26 @@ export function SnapshotSheet({
             pinTip={0}
             eye={0}
             image={d.image}
+          />
+        </svg>
+      )}
+      {d.kind === "calorimeter" && (
+        <svg
+          x={PAD + 20}
+          y={
+            TOP +
+            (boxH - ((boxW - 40) * CALORIMETER_VIEWBOX.height) / CALORIMETER_VIEWBOX.width) / 2
+          }
+          width={boxW - 40}
+          height={((boxW - 40) * CALORIMETER_VIEWBOX.height) / CALORIMETER_VIEWBOX.width}
+        >
+          <Calorimeter
+            calorimeterWater={d.water}
+            beakerWater={0}
+            covered={d.covered}
+            stirring={d.stirring}
+            thermometer={d.thermometer}
+            layered={0}
           />
         </svg>
       )}
