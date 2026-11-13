@@ -811,7 +811,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 - [x] Converging lens: ray tracing, screen, pin parallax
 - [x] Method of mixtures: heat model, thermometer lag, heat loss
 - [x] Data templates, import and compare
-- [ ] Advanced uncertainty layer
+- [x] Advanced uncertainty layer
 - [ ] Physical reference data collected in a UEW lab
 
 ### Phase 3: Accounts, sync and classrooms
