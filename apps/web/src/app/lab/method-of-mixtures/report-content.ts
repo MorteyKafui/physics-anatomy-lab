@@ -2,6 +2,10 @@
 
 import {
   fillDerived,
+  fitLine,
+  largestPercentUncertainty,
+  readingUncertainty,
+  tableUncertainties,
   formatQuantity,
   formulaUnitFindings,
   GRAPH_RULES,
@@ -57,6 +61,7 @@ import {
   type ReportSection,
 } from "../report/content";
 import { figureDate, type FigureScene } from "../snapshot-figure";
+import { quoteWithUncertainty } from "../uncertainty-format";
 
 /**
  * The method of mixtures: its report (master plan, "Lab report"), in the WASSCE or university
@@ -343,6 +348,48 @@ export function mixturesReport(attempt: Attempt, events: readonly LabEvent[]): R
     t(`${R}.apparatus.beaker`),
   );
 
+  // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7):
+  // the slope and where the line meets the V axis by least squares, and W = −(intercept) − V₀ with
+  // the hot water's own reading on the cylinder added as the worst case. The calorimeter's W is
+  // not known in advance, so there is no accepted value to agree with.
+  const university = report.format === "university";
+  const worked = university ? fillDerived(table) : undefined;
+  const points = worked && rightGraph ? pointsFor(worked, columns.x, columns.y) : [];
+  const fit =
+    points.length >= 3 && new Set(points.map((p) => p.x)).size >= 2 ? fitLine(points) : undefined;
+  const quote = quoteWithUncertainty;
+  const uncertaintyWorking = fit
+    ? (() => {
+        const hot = readingUncertainty(MEASURING_CYLINDER.resolution, "scale");
+        const W = -fit.intercept - methodOfMixtures.hot.volume;
+        return lines(
+          t("report.gen.uncertainty.rules"),
+          t("report.gen.uncertainty.slope", {
+            slope: quote(fit.slope, fit.slopeError),
+            unit: "cm³ °C",
+            percent: ((100 * fit.slopeError) / Math.abs(fit.slope)).toFixed(2),
+          }),
+          t("experiments.method-of-mixtures.report.uncertainty.intercept", {
+            a: quote(fit.intercept, fit.interceptError),
+          }),
+          t("experiments.method-of-mixtures.report.uncertainty.W", {
+            W: quote(W, fit.interceptError + hot),
+            hot: hot.toFixed(1),
+          }),
+        );
+      })()
+    : "";
+  const largest = worked
+    ? largestPercentUncertainty(worked, tableUncertainties(worked))
+    : undefined;
+  const discussion =
+    university && largest
+      ? t("report.gen.uncertainty.largest", {
+          symbol: largest.symbol,
+          percent: largest.percent.toFixed(2),
+        })
+      : "";
+
   const generated: Record<string, string> = {
     "date-title": `${date}. ${title}`,
     aim: t(`${R}.aim`),
@@ -355,8 +402,8 @@ export function mixturesReport(attempt: Attempt, events: readonly LabEvent[]): R
     graph: view.plotted.length
       ? t(rightGraph ? `${R}.graph` : "report.gen.graph", { caption: graphCaption })
       : "",
-    calculation,
-    discussion: "",
+    calculation: lines(calculation, uncertaintyWorking),
+    discussion,
     // In an exam the precautions and sources of error are the candidate's own to write.
     precautions: attempt.mode === "exam" ? "" : precautions,
     sources: attempt.mode === "exam" ? "" : sources,

@@ -93,3 +93,16 @@ test("a value written as the difference of two readings carries both: a rise of 
   const u = tableUncertainties({ columns: [rise], rows: [{ id: "r", cells: { T: "17.5" } }] });
   expect(u.get("r")!.T).toBeCloseTo(0.1, 12);
 });
+
+test("a temperature's least count is a step, converted without the scale's offset: ± 0.05 °C", () => {
+  const theta = col({
+    id: "theta",
+    symbol: "θ",
+    kind: "temperature",
+    unit: "°C",
+    role: "measured",
+    leastCount: { value: 0.1, unit: "°C" },
+  });
+  const u = tableUncertainties({ columns: [theta], rows: [{ id: "r", cells: { theta: "38.3" } }] });
+  expect(u.get("r")!.theta).toBeCloseTo(0.05, 12);
+});

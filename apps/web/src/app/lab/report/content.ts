@@ -7,7 +7,6 @@ import {
   heading,
   largestPercentUncertainty,
   pointsFor,
-  quotedUncertainty,
   readingDecimals,
   tableUncertainties,
 } from "@pa/analysis";
@@ -33,6 +32,7 @@ import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT, METRE_RULE } from "@pa/instrume
 
 import { reviewRun, type RunReview } from "../run-review";
 import { figureDate, figureScene, type FigureScene } from "../snapshot-figure";
+import { quoteWithUncertainty } from "../uncertainty-format";
 
 /**
  * The lab report's content (master plan, "Lab report"), generated from the attempt's events: the
@@ -300,10 +300,7 @@ export function reportContent(
           percent: (100 * fit.slopeError) / fit.slope,
         }
       : undefined;
-  const quote = (v: number, u: number) => {
-    const q = quotedUncertainty(u);
-    return `${v.toFixed(q.decimals)} ± ${q.value.toFixed(q.decimals)}`;
-  };
+  const quote = quoteWithUncertainty;
   const largest = worked
     ? largestPercentUncertainty(
         worked,

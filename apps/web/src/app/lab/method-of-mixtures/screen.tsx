@@ -3,6 +3,9 @@
 import { Calorimeter, ThermometerTrace } from "@pa/apparatus";
 import {
   fillDerived,
+  fitLine,
+  readingUncertainty,
+  tableUncertainties,
   formatQuantity,
   formulaUnitFindings,
   GRAPH_RULES,
@@ -62,7 +65,7 @@ import {
 import { hasMessage, t, type MessageKey } from "@pa/i18n";
 // The mixtures copy is kept apart from the shared messages.
 import "@pa/i18n/method-of-mixtures";
-import { createRng } from "@pa/instruments";
+import { createRng, MEASURING_CYLINDER } from "@pa/instruments";
 import { Button } from "@pa/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
@@ -71,7 +74,10 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
-import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
+import { UncertaintySwitch } from "../uncertainty-switch";
+import { showUncertainty } from "../uncertainty-format";
+import { useUncertainties } from "../use-uncertainties";
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
 import { ExamBar } from "../exam/bar";
@@ -109,6 +115,7 @@ const rng = createRng(1);
  */
 export function MethodOfMixturesScreen() {
   const handle = useAttempt(E.id);
+  const [uncertain, setUncertain] = useUncertainties();
   const [tab, setTab] = useState("instructions");
   const [refusal, setRefusal] = useState<string>();
   const [advice, setAdvice] = useState<Advice[]>([]);
@@ -337,6 +344,31 @@ export function MethodOfMixturesScreen() {
   const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
   const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist, "y-axis");
   const rightGraph = plotsVAgainstInverseT(graphColumns);
+  // The uncertainty layer (docs/content/uncertainty-brief.md): each cell's uncertainty and the
+  // graph's error bars.
+  const uncertainties = uncertain ? tableUncertainties(fillDerived(table)) : undefined;
+  const bars = uncertainties
+    ? new Map(
+        [...uncertainties].map(([row, u]) => [
+          row,
+          { dx: u[graphColumns.x] ?? 0, dy: u[graphColumns.y] ?? 0 },
+        ]),
+      )
+    : undefined;
+  // W = −(where the line meets the V axis) − V₀: the intercept's least-squares uncertainty, and
+  // the hot water's own reading on the cylinder, added as the worst case.
+  const lineUncertainty = (() => {
+    if (!uncertain || !rightGraph || graphData.length < 3) return undefined;
+    if (new Set(graphData.map((p) => p.x)).size < 2) return undefined;
+    const fit = fitLine(graphData);
+    const hot = readingUncertainty(MEASURING_CYLINDER.resolution, "scale");
+    const W = -fit.intercept - methodOfMixtures.hot.volume;
+    const worked = fit.interceptError + hot;
+    return {
+      slope: fit.slopeError,
+      W: { worked, percent: W !== 0 ? (100 * worked) / Math.abs(W) : Infinity },
+    };
+  })();
   const graphFindings =
     graphData.length >= 2
       ? runRules(GRAPH_RULES, {
@@ -667,6 +699,7 @@ export function MethodOfMixturesScreen() {
               </select>
             </label>
           )}
+          {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&
@@ -716,6 +749,7 @@ export function MethodOfMixturesScreen() {
                   onRun={results.run}
                   onFillReadings={tableAssist ? fillReadings : undefined}
                   onCommit={() => undefined}
+                  uncertainties={uncertainties}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
@@ -738,6 +772,7 @@ export function MethodOfMixturesScreen() {
                   showChecks={graphMarks && !graphAssist}
                   onRun={plot.run}
                   latest={plot.now}
+                  bars={bars}
                   below={
                     advice.length > 0 || (graphMarks && mixturesGraphFindings.length > 0) ? (
                       <div className="flex flex-col gap-3">
@@ -816,6 +851,21 @@ export function MethodOfMixturesScreen() {
                               flagged={analysisFlags("W")}
                               onWrite={write("W")}
                             />
+                            {lineUncertainty && (
+                              <div className="flex flex-col gap-2">
+                                <span className="font-mono text-sm text-soft">
+                                  {t("lab.analyse.uncertainty.slope", {
+                                    u: showUncertainty(lineUncertainty.slope),
+                                  })}
+                                </span>
+                                <QuoteLine
+                                  symbol="W"
+                                  unit="cm³"
+                                  worked={lineUncertainty.W.worked}
+                                  percent={lineUncertainty.W.percent}
+                                />
+                              </div>
+                            )}
                           </>
                         )}
                         {analysisAssist && (

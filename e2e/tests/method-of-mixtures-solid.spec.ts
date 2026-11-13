@@ -200,3 +200,57 @@ test("at Auto the whole hot-solid lab runs: a run read every minute, θ against 
   await expect(paper.getByText(/^I moved the solid into the calorimeter quickly/)).toBeVisible();
   await expect(paper.getByText(/^Read every minute, the highest reading can miss/)).toBeVisible();
 });
+
+test("with the uncertainty layer on, the table, the curve's error bars, c and the report carry uncertainties", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(120_000);
+  await page.goto(SOLID);
+  await page.getByRole("switch", { name: "Uncertainties" }).click();
+  await toBuild(page);
+  await page.getByLabel("Help level").selectOption("auto");
+  await weighAll(page);
+  await page.getByRole("button", { name: "Finish building" }).click();
+  await page.getByRole("button", { name: "Continue to Measure" }).click();
+  await moveAcross(page, { shake: true });
+  for (let m = 1; m <= 3; m += 1) {
+    await page.clock.fastForward("01:00");
+    await page.getByRole("button", { name: "Read it now" }).click();
+    await expect(page.locator("tbody tr")).toHaveCount(m + 1);
+  }
+  await page.getByRole("button", { name: "Take this reading" }).click();
+  await finish(page, "Finish measuring", "Step 6 of 10 · Tabulate");
+  await page.getByRole("button", { name: "Standard" }).click();
+  await page.getByRole("button", { name: "Fill in my readings" }).click();
+  // θ on the thermometer, ± half its 0.1 °C.
+  await expect(
+    page.getByRole("region", { name: "Results table" }).locator('[data-uncertainty="theta"]'),
+  ).toHaveText("± 0.05");
+  await finish(page, "Finish tabulating", "Step 7 of 10 · Plot");
+
+  // A curve: error bars, but no worst lines to draw.
+  await expect(page.locator('[data-graph="error-bars"]')).toHaveCount(1);
+  await expect(
+    page.getByLabel("Draw the steepest and least steep lines through the error bars"),
+  ).toHaveCount(0);
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
+
+  await expect(page.getByLabel("c, your value")).toBeVisible();
+  await page.getByLabel("c, your value").fill("390");
+  await page.getByLabel("The uncertainty in c").fill("200");
+  await expect(page.getByRole("status").filter({ hasText: "more than twice" })).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.clock.resume();
+  expect(await serious(page)).toEqual([]);
+
+  await page.goto(`${SOLID}/report`);
+  await page
+    .getByRole("navigation", { name: "Sections" })
+    .getByRole("button", { name: "University", exact: true })
+    .click();
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText(/^c = [\d.]+ ± [\d.]+ J kg⁻¹ K⁻¹, worked through the book's equation/),
+  ).toBeVisible();
+});
