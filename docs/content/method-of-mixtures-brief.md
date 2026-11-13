@@ -156,3 +156,78 @@ sets (40 to 70 cm³, without the worked table's 80 cm³), and the room and tap w
    and covered (eight times that uncovered); mixing 5 s stirred, 2 minutes not; thermometer lag 8 s.
 4. The thermometer to 0.1 °C and the measuring cylinder to 1 cm³, as the book's least counts.
 5. The six mistakes above.
+
+## Experiment 64: a hot solid into water, proposed
+
+Experiment 62 is built (#52 to #58). This section proposes the second practical, on the same
+heat model, for review before anything is built.
+
+### What the student does
+
+The student weighs a solid metal on a balance, then the calorimeter with its stirrer, empty and
+again about half full of water at room temperature, so finding the water's mass. They read the
+water's temperature T₀. The solid hangs in a beaker of boiling water until it has been steady for
+some time, at T_s. It is moved quickly but gently into the lagged calorimeter, the lid goes on,
+and the water is stirred and read every minute until it is steady. The highest reading is T.
+The solid's specific heat capacity follows from the heat it gives up and the heat the water and
+calorimeter take in:
+
+m_s c_s (T_s − T) = (m_c c_c + m_w c_w)(T − T₀).
+
+The book's worked answer comes out near 400 J kg⁻¹ K⁻¹, and it names the solid as copper. It
+has no graph.
+
+### What the model shows
+
+The same lumped model (`calorimetry.ts`), with the solid as the hot body and the time the solid
+takes to share its heat with the stirred water in place of the waters' mixing time. Taking a
+100 g solid from boiling water (100 °C) into 50 g of water at 28 °C in the approved 50 g copper
+calorimeter, lagged and covered, stirred, with the thermometer 8 s behind:
+
+| Solid     | c, J kg⁻¹ K⁻¹ | T with no loss, °C | Highest T, °C | c worked from it |
+| --------- | ------------- | ------------------ | ------------- | ---------------- |
+| Copper    | 390           | 38.46              | 38.32         | 384              |
+| Brass     | 380           | 38.23              | 38.09         | 374              |
+| Iron      | 450           | 39.80              | 39.65         | 443              |
+| Aluminium | 900           | 48.28              | 48.01         | 883              |
+
+The highest comes about 79 s after the solid goes in, so the readings every minute show it at 1
+and 2 minutes, then falling slowly. Done carefully, c comes out 1 to 2% low. The rise is only
+about 10 °C for copper, so a 0.1 °C least count is worth about 1% of c.
+
+Each mistake's effect on c for copper:
+
+| Mistake                                            | c worked out | Off by |
+| -------------------------------------------------- | ------------ | ------ |
+| Transfer taking 30 s, the solid cooling in the air | 373          | −4%    |
+| 1 g of boiling water carried in on the solid       | 425          | +9%    |
+| 3 g of water splashed out as the solid goes in     | 406          | +4%    |
+| Not stirred (2 minutes to share the heat)          | 348          | −11%   |
+| The lid off                                        | 356          | −9%    |
+
+Not stirred, the highest comes at about 8 minutes, so readings stopped at 5 minutes miss it.
+
+### For the physics reviewer to decide, Experiment 64
+
+Approved by Mortey on 2026-11-13: decision 7 as chosen below, and 6, 8, 9 and 10 as proposed.
+
+6. Experiment 64 as the book sets it: a 100 g solid from boiling water (100 °C) into about 50 g
+   of water at room temperature, in the same 50 g copper calorimeter at 28 °C as Experiment 62;
+   readings every minute until steady; c_s worked out from the equation, with c_c = 390 and
+   c_w = 4200 J kg⁻¹ K⁻¹ given. Masses on a balance read to 0.1 g (a new instrument).
+7. Decided (Mortey, 2026-11-13): the solid is one of copper, brass, iron and aluminium, chosen
+   for each attempt and named only when the student has found c, so the answer cannot be known
+   before it is measured.
+8. Two new constants until the UEW data: the solid shares its heat with the stirred water in
+   10 s (2 minutes unstirred, as for Experiment 62's water), and in the air between the beaker
+   and the calorimeter it cools at 5% of its excess a minute.
+9. The steps: as Experiment 62's, with Plot showing T against time from the minute readings, to
+   find the highest; Analyse works c_s from the equation (the book's calculation, with no
+   graph to find a slope from).
+10. Five mistakes, from the table above: a slow transfer, boiling water carried in, water
+    splashed out, not stirring, and the lid off; and, as for Experiment 62, reading before the
+    highest and reading a scale at an angle.
+
+Then, one pull request each: the physics (the solid's transfer and the carried water), the bench
+and the mistakes, the board, the lab, the table, graph and analysis, and the report, sheets and
+exam.
