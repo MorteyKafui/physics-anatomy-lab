@@ -251,8 +251,8 @@ careful run (copper):
 | The lid off                 | not covered                     | −7%                         |
 | The thermometer at an angle | more than 5° off square-on      | 0.2 °C at 20°               |
 
-One assumption, for the reviewer: a transfer of more than 10 s is slow, as a pour of more than
-10 s is for Experiment 62.
+One assumption, approved by Mortey (physics reviewer) on 2026-11-13: a transfer of more than
+10 s is slow, as a pour of more than 10 s is for Experiment 62.
 
 Then, one pull request each: the physics (the solid's transfer and the carried water), the bench
 and the mistakes, the board, the lab, the table, graph and analysis, and the report, sheets and
