@@ -11,7 +11,11 @@ import { lensPinsReport } from "../report-content";
 export function ConvergingLensPinsReportScreen() {
   return (
     <ReportScreen
-      experiment={{ id: lensPins.id, title: t("experiments.converging-lens-pins.title") }}
+      experiment={{
+        id: lensPins.id,
+        title: t("experiments.converging-lens-pins.title"),
+        check: true,
+      }}
       build={lensPinsReport}
     />
   );
