@@ -449,3 +449,11 @@ export {
   mixturesModelRise,
 } from "./method-of-mixtures-check";
 export type { MixturesResult } from "./method-of-mixtures-check";
+export {
+  SOLID_CHECK_COLUMNS,
+  SOLID_DATA_TEMPLATE,
+  solidCarefulSpread,
+  solidCheck,
+  solidExample,
+} from "./method-of-mixtures-solid-check";
+export type { SolidResult } from "./method-of-mixtures-solid-check";

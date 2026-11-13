@@ -52,6 +52,8 @@ export interface CheckExperiment {
   example: readonly LabRow[];
   /** The apparatus values the example data was taken with, where the model needs some. */
   exampleValues?: Readonly<Record<string, number>>;
+  /** Where the legend sits, clear of the points: a curve that rises at once wants it low. */
+  legendAt?: "top-left" | "bottom-right";
   /** The graph's axes: the symbols with units, as the lab's graph writes them. */
   axes: { x: string; y: string };
   copy: {
@@ -438,41 +440,19 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
                     Physics Anatomy · Fig. 1
                   </text>
                 </g>
-                <g fontFamily="Geist, sans-serif" fontSize={12} fill={tone("label")}>
-                  <rect
-                    x={14}
-                    y={14}
-                    width={220}
-                    height={E.copy.legendModel ? 70 : 50}
-                    fill={tone("paper")}
-                    stroke={tone("frame")}
-                    strokeWidth={0.8}
-                  />
-                  <path d="M26 26 l8 8 M34 26 l-8 8" stroke={tone("point")} strokeWidth={2} />
-                  <text x={46} y={34}>
-                    {t("labData.check.legend.points")}
-                  </text>
-                  <line x1={22} y1={50} x2={40} y2={50} stroke={tone("fit")} strokeWidth={1.8} />
-                  <text x={46} y={54}>
-                    {t("labData.check.legend.fit")}
-                  </text>
-                  {E.copy.legendModel && (
-                    <>
-                      <line
-                        x1={22}
-                        y1={70}
-                        x2={40}
-                        y2={70}
-                        stroke={tone("triangle")}
-                        strokeWidth={1.8}
-                        strokeDasharray="8 5"
-                      />
-                      <text x={46} y={74}>
-                        {E.copy.legendModel}
-                      </text>
-                    </>
-                  )}
-                </g>
+                <Legend
+                  tone={tone}
+                  at={E.legendAt ?? "top-left"}
+                  rows={[
+                    { kind: "points", label: t("labData.check.legend.points") },
+                    ...(check?.fit
+                      ? [{ kind: "fit" as const, label: t("labData.check.legend.fit") }]
+                      : []),
+                    ...(E.copy.legendModel
+                      ? [{ kind: "model" as const, label: E.copy.legendModel }]
+                      : []),
+                  ]}
+                />
               </svg>
             </div>
           </section>
@@ -560,6 +540,62 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
         </div>
       </div>
     </main>
+  );
+}
+
+/** The graph's key, one row for each thing drawn. */
+function Legend({
+  tone,
+  at,
+  rows,
+}: {
+  tone: (part: string) => string;
+  at: "top-left" | "bottom-right";
+  rows: { kind: "points" | "fit" | "model"; label: string }[];
+}) {
+  const width = 220;
+  const height = 14 + rows.length * 20;
+  const x0 = at === "top-left" ? 14 : PLOT.width - 14 - width;
+  const y0 = at === "top-left" ? 14 : PLOT.height - 14 - height;
+  return (
+    <g fontFamily="Geist, sans-serif" fontSize={12} fill={tone("label")}>
+      <rect
+        x={x0}
+        y={y0}
+        width={width}
+        height={height}
+        fill={tone("paper")}
+        stroke={tone("frame")}
+        strokeWidth={0.8}
+      />
+      {rows.map((r, i) => {
+        const y = y0 + 16 + i * 20;
+        return (
+          <g key={r.kind}>
+            {r.kind === "points" ? (
+              <path
+                d={`M${x0 + 12} ${y - 4} l8 8 M${x0 + 20} ${y - 4} l-8 8`}
+                stroke={tone("point")}
+                strokeWidth={2}
+              />
+            ) : (
+              <line
+                x1={x0 + 8}
+                y1={y}
+                x2={x0 + 26}
+                y2={y}
+                stroke={tone(r.kind === "fit" ? "fit" : "triangle")}
+                strokeWidth={1.8}
+                {...(r.kind === "model" ? { strokeDasharray: "8 5" } : {})}
+              />
+            )}
+            <text x={x0 + 32} y={y + 4}>
+              {r.label}
+            </text>
+          </g>
+        );
+      })}
+    </g>
   );
 }
 

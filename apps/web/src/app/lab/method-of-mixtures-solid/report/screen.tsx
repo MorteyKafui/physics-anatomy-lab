@@ -11,7 +11,11 @@ import { solidReport } from "../report-content";
 export function MethodOfMixturesSolidReportScreen() {
   return (
     <ReportScreen
-      experiment={{ id: hotSolid.id, title: t("experiments.method-of-mixtures-solid.title") }}
+      experiment={{
+        id: hotSolid.id,
+        title: t("experiments.method-of-mixtures-solid.title"),
+        check: true,
+      }}
       build={solidReport}
     />
   );

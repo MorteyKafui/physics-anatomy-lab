@@ -33,7 +33,11 @@ const figures: SheetFigures = {
 export function MethodOfMixturesSolidSheetsScreen() {
   return (
     <SheetsScreen
-      experiment={{ id: hotSolid.id, title: t("experiments.method-of-mixtures-solid.title") }}
+      experiment={{
+        id: hotSolid.id,
+        title: t("experiments.method-of-mixtures-solid.title"),
+        check: true,
+      }}
       content={content}
       figures={figures}
     />
