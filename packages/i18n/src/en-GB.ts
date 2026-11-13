@@ -978,8 +978,6 @@ export const enGB = {
   "labData.template.version": "Template version",
   "labData.template.values": "Your apparatus",
   "labData.template.readings": "Your readings",
-  "experiments.simple-pendulum.check.title": "Check your own lab readings",
-  "experiments.simple-pendulum.check.link": "Check your own lab readings",
   "experiments.simple-pendulum.check.note":
     "Time {swings} swings twice at each length. Change or add lengths if you like.",
   "experiments.simple-pendulum.check.template.body":
@@ -1026,6 +1024,8 @@ export const enGB = {
     "Time {swings} swings twice at each length, and start and stop the stopwatch as the bob passes the centre of its swing.",
   "experiments.simple-pendulum.check.g": "g from your slope: {g} N kg⁻¹. Lab data is not marked.",
   "experiments.simple-pendulum.check.legend.model": "The model, g = {g} N kg⁻¹",
+  "labData.check.title": "Check your own lab readings",
+  "labData.check.link": "Check your own lab readings",
   "labData.check.template": "1. Get the data template",
   "labData.check.downloadCsv": "Download CSV",
   "labData.check.downloadXlsx": "Download XLSX",

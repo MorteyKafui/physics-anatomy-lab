@@ -3,10 +3,12 @@ import { describe, expect, test } from "bun:test";
 import fixtures from "../../../validation/fixtures/model-check.json";
 import {
   combineSpreads,
+  fitLine,
   leastCountSpread,
   modelCheck,
   MODEL_CHECK_FACTOR,
   type ModelCheckInput,
+  xIntercept,
 } from "../src";
 
 const close = (a: number, b: number, rel = 1e-9) =>
@@ -126,5 +128,23 @@ describe("the verdict over many runs", () => {
   test("the spread of a least count, and spreads combined", () => {
     expect(leastCountSpread(0.01)).toBeCloseTo(0.01 / Math.sqrt(12), 15);
     expect(combineSpreads(3, 4)).toBe(5);
+  });
+});
+
+describe("where a line meets the x axis agrees with NumPy's covariance", () => {
+  for (const c of fixtures.xIntercepts) {
+    test(c.name, () => {
+      const got = xIntercept(fitLine(c.x.map((x, i) => ({ x, y: c.y[i]! }))));
+      expect(close(got.value, c.xIntercept.value)).toBe(true);
+      expect(close(got.error, c.xIntercept.error)).toBe(true);
+    });
+  }
+  test("a flat line never meets it", () => {
+    const flat = fitLine([
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 2, y: 1 },
+    ]);
+    expect(() => xIntercept(flat)).toThrow(RangeError);
   });
 });

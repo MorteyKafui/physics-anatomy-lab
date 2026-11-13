@@ -16,6 +16,8 @@ export interface TemplateColumn {
   unit: string;
   /** A setting is filled in from the book; a reading is the student's. */
   role: "setting" | "reading";
+  /** A setting that may be left empty: Ohm's law's PJ, for the reading with no contact. */
+  optional?: boolean;
 }
 
 export interface TemplateValue {
@@ -37,7 +39,7 @@ export interface DataTemplate {
   values: readonly TemplateValue[];
   columns: readonly TemplateColumn[];
   /** The settings the book uses, one row each, in the setting columns' units. */
-  settings: readonly (readonly number[])[];
+  settings: readonly (readonly (number | undefined)[])[];
 }
 
 /** One row of lab data, every value in the template's units; absent where the cell had a problem. */

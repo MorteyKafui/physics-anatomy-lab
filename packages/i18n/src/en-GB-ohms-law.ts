@@ -340,4 +340,45 @@ export const enGBOhmsLaw = {
     "The key will not close: the current would push the ammeter past its 1 A full scale.",
   "lab.ohmsLaw.unsafe.voltmeter-over-range":
     "The key will not close: the voltage would push the voltmeter past its 3 V full scale.",
+  // The model check (data templates brief, decision 4).
+  "experiments.ohms-law.check.note":
+    "Leave PJ empty for the reading with the jockey off the wire. Read the ammeter and the voltmeter twice at each position.",
+  "experiments.ohms-law.check.marked": "Marked e.m.f. of the cells E",
+  "experiments.ohms-law.check.agrees": "Your readings lie on one straight line",
+  "experiments.ohms-law.check.template.body":
+    "Fill it in during your lab. The positions are set as the book has them, with the first row for the reading with the jockey off the wire; read I and V twice at each. Add the e.m.f. marked on your cells if you know it.",
+  "experiments.ohms-law.check.table.note":
+    "I and V are worked out here as the means of your two readings of each.",
+  "experiments.ohms-law.check.graph.title": "Fig. 1  I against V: your readings and your line",
+  "experiments.ohms-law.check.graph.label":
+    "{n} readings of I against V, and your best line through them, out to where it meets the V axis.",
+  "experiments.ohms-law.check.shift.on":
+    "Your line meets the V axis at the e.m.f. marked on the cells, within its error.",
+  "experiments.ohms-law.check.shift.unmarked":
+    "Add the e.m.f. marked on your cells to compare E with it.",
+  "experiments.ohms-law.check.shift.found.below":
+    "Your line meets the V axis below the e.m.f. marked on the cells.",
+  "experiments.ohms-law.check.shift.found.above":
+    "Your line meets the V axis above the e.m.f. marked on the cells.",
+  "experiments.ohms-law.check.shift.figure": "E = {E} V, marked {marked} V, {errors} errors",
+  "experiments.ohms-law.check.shift.figure.unmarked": "E = {E} V",
+  "experiments.ohms-law.check.spread.on":
+    "Your points spread as much as the meters' least counts give, no more.",
+  "experiments.ohms-law.check.spread.found":
+    "Your points spread {times} times more than the meters' least counts give.",
+  "experiments.ohms-law.check.spread.figure": "{value} A, {ratio} ×",
+  "experiments.ohms-law.check.shift.below":
+    "Your line gives E = {E} V, below the {marked} V marked on the cells. Cells that have been used a lot give less than their marking, and a voltmeter that reads low from a zero error moves the whole line to the left.",
+  "experiments.ohms-law.check.shift.above":
+    "Your line gives E = {E} V, above the {marked} V marked on the cells. New dry cells often give a little more than their marking, and a voltmeter that reads high from a zero error moves the whole line to the right.",
+  "experiments.ohms-law.check.shift.precaution":
+    "Check that both meters read zero before you connect them.",
+  "experiments.ohms-law.check.spread":
+    "Your points spread either side of your line by about {times} times what the meters' least counts give.",
+  "experiments.ohms-law.check.spread.precaution":
+    "Read the ammeter and the voltmeter square-on with their needles still, and open the key as soon as each reading is taken, so the cell does not run down.",
+  "experiments.ohms-law.check.result":
+    "From your line: E = {E} V and r = {r} Ω. Lab data is not marked.",
+  "experiments.ohms-law.check.result.none":
+    "Your line does not slope down, so it gives no E or r. Lab data is not marked.",
 } as const;

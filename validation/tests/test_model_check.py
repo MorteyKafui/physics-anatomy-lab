@@ -75,3 +75,11 @@ def test_careful_runs_are_rarely_called_shifted_or_scattered() -> None:
     assert tilted / runs < 0.05
     assert scattered / runs < 0.01
     assert FACTOR == 2
+
+
+def test_x_intercept_of_an_exact_line_has_no_error() -> None:
+    from pa_validation.model_check import x_intercept
+
+    got = x_intercept([1.0, 2.0, 3.0, 4.0], [-2.0, -4.0, -6.0, -8.0 + 1e-12])
+    assert got["value"] == pytest.approx(0, abs=1e-9)
+    assert got["error"] == pytest.approx(0, abs=1e-9)
