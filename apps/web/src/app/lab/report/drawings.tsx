@@ -2,6 +2,7 @@
 
 import {
   BENCH_VIEWBOX,
+  Calorimeter,
   CIRCUIT_FIGURE,
   CircuitBench,
   OPTICAL_VIEWBOX,
@@ -44,12 +45,18 @@ export function BenchDrawing({
   ref?: Ref<SVGSVGElement>;
 }) {
   const d = scene.drawing;
-  if (d.kind !== "bench" && d.kind !== "circuit" && d.kind !== "optical" && d.kind !== "pins")
+  if (
+    d.kind !== "bench" &&
+    d.kind !== "circuit" &&
+    d.kind !== "optical" &&
+    d.kind !== "pins" &&
+    d.kind !== "calorimeter"
+  )
     return null;
   const size =
     d.kind === "bench"
       ? BENCH_SIZE
-      : d.kind === "optical" || d.kind === "pins"
+      : d.kind === "optical" || d.kind === "pins" || d.kind === "calorimeter"
         ? OPTICAL_SIZE
         : CIRCUIT_SIZE;
   return (
@@ -83,6 +90,15 @@ export function BenchDrawing({
             offAxis={d.offAxis}
             objectHalfHeight={d.objectHalfHeight}
             image={d.image}
+          />
+        ) : d.kind === "calorimeter" ? (
+          <Calorimeter
+            calorimeterWater={d.water}
+            beakerWater={0}
+            covered={d.covered}
+            stirring={d.stirring}
+            thermometer={d.thermometer}
+            layered={0}
           />
         ) : d.kind === "pins" ? (
           <PinsBench
