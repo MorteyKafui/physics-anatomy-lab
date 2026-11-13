@@ -14,7 +14,8 @@ before anything is built. The plan says:
 Importing from Tracker and sensor CSVs is a later feature (feature table) and is not in this item.
 The advanced uncertainty layer is the next item and is not in this one either.
 
-- **Status:** approved by Mortey (physics reviewer) on 2026-11-13: decisions 1 to 9, as proposed.
+- **Status:** approved by Mortey (physics reviewer) on 2026-11-13: decisions 1 to 9, as proposed;
+  decision 5 amended the same day, before anything was built (below).
 
 ## Who it is for
 
@@ -96,7 +97,7 @@ values from the lab's simulated bench, because the student's real lab is not tha
 
 | Experiment         | Graph           | The model's line                                         | The student enters                         |
 | ------------------ | --------------- | -------------------------------------------------------- | ------------------------------------------ |
-| Simple pendulum    | T² against l    | T² = 4π²l ⁄ g, at the lab's local g                      | Nothing                                    |
+| Simple pendulum    | T² against l    | T² from the exact period at the lab's swing, local g     | Nothing                                    |
 | Ohm's law          | I against V     | The line through E and r fitted to their points          | The cells' marked e.m.f. (optional)        |
 | Converging lens    | 1/v against 1/u | Slope −1, both intercepts 1/f                            | The lens's marked f                        |
 | Lens and pins      | xy against x+y  | Slope f, through the origin                              | The lens's marked f                        |
@@ -109,36 +110,48 @@ r the line gives; with a marked e.m.f. entered it also compares E with it.
 
 ### 5. The verdict
 
-The student's points are fitted with `fitLine` (`@pa/analysis`), which already gives the slope's
-and intercept's standard errors and the residual scatter. The verdict has two separate parts,
-each true or false, so a run can have both, either or neither:
+The student's points are fitted with `fitLine` (`@pa/analysis`). The verdict has three separate
+parts, each true or false, so a run can have any of them or none:
 
-- **Systematic: the line is shifted or tilted.** The fitted intercept differs from the model's by
-  more than twice its standard error, or the slope by more than twice its own. For the hot solid,
-  whose graph is a curve, the shift is the mean of the readings' differences from the model's
-  curve, judged against its standard error in the same way.
-- **Random: the points scatter.** The spread of the points about their own line (`residualSd`) is
-  more than twice what the instruments' least counts alone would give, which is the least count
-  over √12 carried through the plotted quantity.
+- **Shifted: the points sit off the model's line.** The mean of the points' differences from the
+  model's line is more than twice its standard error (their spread over √n). For the hot solid,
+  whose graph is a curve, the differences are from the model's curve, in the same way.
+- **Tilted: the slope is not the model's.** The fitted slope differs from the model's by more than
+  twice its standard error. Ohm's law, with no model slope for a real bench, has no tilt part.
+- **Scattered: the points spread more than care allows.** The spread of the points about their own
+  line (`residualSd`) is more than twice what a careful student's readings give: the least count
+  over √12, combined with the experiment's known human spread where it has one (the reaction time
+  in hand timing, `ANTICIPATED_EVENT` in `packages/instruments`), both carried through the plotted
+  quantity.
+
+**Amended on 2026-11-13** (Mortey, before the board): the first rule judged a shift by the fitted
+intercept and the scatter by the least count alone. On the pendulum's own numbers that called
+every careful run scattered (the stopwatch's least count spreads T² by 0.0005 s², careful hand
+timing by about 0.012 s²), and missed a 1 cm end correction about half the time (it moves T² by
+0.04 s², and the fitted intercept's error with six points is 0.024 to 0.034 s²). Judged against
+the model's line, the same correction stands 5 to 11 errors clear. The model's line for the
+pendulum uses the exact period at the lab's swing, as its right way does, so a careful run does
+not read as shifted by the small-angle approximation.
 
 Each part names its cause and the precaution, written per experiment, for example:
 
-- **Pendulum, systematic:** a line that misses the origin means the length was not measured to the
-  centre of the bob. Precaution: measure from the point of suspension to the centre of the bob.
-- **Pendulum, random:** scatter in T² comes from starting and stopping the stopwatch. Precaution:
+- **Pendulum, shifted:** points above the model's line mean every length was short, measured to
+  the top of the bob instead of its centre. Precaution: measure from the point of suspension to the centre of the bob.
+- **Pendulum, scattered:** scatter in T² comes from starting and stopping the stopwatch. Precaution:
   time more swings, and start and stop as the bob passes the centre.
-- **Method of mixtures, systematic:** a slope lower than the model's means heat was lost while
+- **Method of mixtures, tilted:** a slope lower than the model's means heat was lost while
   pouring, or the highest temperature was missed. Precaution: pour quickly, stir, and read the
   highest temperature.
 
-The full list, two causes for each part for each experiment, is written in the pull request that
+The full list, the causes for each part for each experiment, is written in the pull request that
 builds that experiment's model check, for Mortey's approval as physics reviewer. With neither part
 true the verdict says the readings agree with the model within their scatter. The verdict never
 gives a mark: lab data is not an attempt.
 
-Factor 2 means a run with no real error is called systematic about one time in twenty. The tests
-check that: synthetic data from the model with an offset added is called systematic, data with
-only noise of the least count's size is not, over many seeds.
+Factor 2 means a run with no real error is called shifted or tilted about one time in twenty
+each. The tests check that over many seeds: readings from the model with careful hand timing are
+called none of the three, the same with a 1 cm end correction are called shifted, and with poor
+timing are called scattered.
 
 ### 6. Physics checks
 
