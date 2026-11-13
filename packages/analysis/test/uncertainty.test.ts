@@ -3,6 +3,8 @@ import { describe, expect, test } from "bun:test";
 import fixtures from "../../../validation/fixtures/uncertainty.json";
 import {
   checkQuote,
+  fitLine,
+  interceptSum,
   parseFormula,
   quotedUncertainty,
   readingUncertainty,
@@ -79,4 +81,14 @@ describe("a result quoted with its uncertainty", () => {
     expect(checkQuote({ value: "9.78", uncertainty: "0.14" }, 0.14).figures).toBe(true);
     expect(checkQuote({ value: "9.8", uncertainty: "0.1" }, 0.14).figures).toBe(false);
   });
+});
+
+describe("m₁ + m₂ with its error agrees with NumPy's covariance", () => {
+  for (const c of fixtures.interceptSums) {
+    test(c.name, () => {
+      const got = interceptSum(fitLine(c.x.map((x, i) => ({ x, y: c.y[i]! }))));
+      expect(close(got.value, c.sum.value)).toBe(true);
+      expect(close(got.error, c.sum.error)).toBe(true);
+    });
+  }
 });
