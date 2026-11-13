@@ -32,7 +32,7 @@ describe("an uncertainty as it is quoted agrees with the Python model", () => {
     test(`± ${q.u}`, () => {
       const got = quotedUncertainty(q.u);
       expect(close(got.value, q.value)).toBe(true);
-      expect(got.figures).toBe(q.figures);
+      expect(got.figures).toBe(q.figures as 1 | 2);
       expect(got.decimals).toBe(q.decimals);
     });
   }

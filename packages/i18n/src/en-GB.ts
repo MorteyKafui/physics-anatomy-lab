@@ -597,6 +597,7 @@ export const enGB = {
   "lab.graph.tool.triangle": "Slope triangle",
   "lab.graph.rubOut": "Rub out",
   "lab.graph.colours": "Graph colours",
+  "lab.uncertainties": "Uncertainties",
   "lab.graph.colour": "Colour",
   "lab.graph.mono": "Black and white",
   "lab.graph.axes": "Axes and scales",
