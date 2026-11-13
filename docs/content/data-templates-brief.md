@@ -14,7 +14,7 @@ before anything is built. The plan says:
 Importing from Tracker and sensor CSVs is a later feature (feature table) and is not in this item.
 The advanced uncertainty layer is the next item and is not in this one either.
 
-- **Status:** proposed, for Mortey's decision (physics reviewer): decisions 1 to 9.
+- **Status:** approved by Mortey (physics reviewer) on 2026-11-13: decisions 1 to 9, as proposed.
 
 ## Who it is for
 
