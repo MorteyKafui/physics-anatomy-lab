@@ -430,3 +430,12 @@ export {
   lensModelInvV,
 } from "./converging-lens-check";
 export type { LensResult } from "./converging-lens-check";
+export {
+  PINS_CHECK_COLUMNS,
+  PINS_DATA_TEMPLATE,
+  pinsCarefulSpread,
+  pinsCheck,
+  pinsExample,
+  pinsModelLine,
+} from "./converging-lens-pins-check";
+export type { PinsResult } from "./converging-lens-pins-check";

@@ -678,4 +678,51 @@ export const enGBConvergingLens = {
     "From your line: m₁ = {m1} cm⁻¹, m₂ = {m2} cm⁻¹, and f = 2 ⁄ (m₁ + m₂) = {f} cm. Lab data is not marked.",
   "experiments.converging-lens.check.result.none":
     "Your line does not slope down, so it gives no f. Lab data is not marked.",
+  // The two pins' model check (data templates brief, decision 4).
+  "experiments.converging-lens-pins.check.note":
+    "Find no parallax twice at each x, moving the search pin in once from each side.",
+  "experiments.converging-lens-pins.check.marked": "Marked focal length of the lens f",
+  "experiments.converging-lens-pins.check.template.body":
+    "Fill it in during your lab. The object distances are set as the book has them; find no parallax twice at each, moving the search pin in once from each side. Add the focal length marked on your lens if you know it.",
+  "experiments.converging-lens-pins.check.table.note":
+    "y is worked out here as the mean of y₁ and y₂, then xy and (x + y).",
+  "experiments.converging-lens-pins.check.graph.title":
+    "Fig. 1  xy against (x + y): your readings and the model",
+  "experiments.converging-lens-pins.check.graph.label":
+    "{n} readings of xy against (x + y), your best line through them, and the model's dashed line from the origin.",
+  "experiments.converging-lens-pins.check.legend.model": "The model, xy = f (x + y)",
+  "experiments.converging-lens-pins.check.shift.on":
+    "Your line passes through the origin, as xy = f (x + y) says, within its error.",
+  "experiments.converging-lens-pins.check.shift.found": "Your line misses the origin.",
+  "experiments.converging-lens-pins.check.shift.figure": "{value} cm², {errors} errors",
+  "experiments.converging-lens-pins.check.tilt.unmarked":
+    "Add the focal length marked on your lens to compare your slope, f, with it.",
+  "experiments.converging-lens-pins.check.tilt.on":
+    "Your slope, f, is the marked lens's, within its error.",
+  "experiments.converging-lens-pins.check.tilt.found.longer":
+    "Your slope gives a longer focal length than the lens is marked with.",
+  "experiments.converging-lens-pins.check.tilt.found.shorter":
+    "Your slope gives a shorter focal length than the lens is marked with.",
+  "experiments.converging-lens-pins.check.tilt.figure": "f = {f} cm",
+  "experiments.converging-lens-pins.check.spread.on":
+    "Your points spread as much as finding no parallax carefully gives, no more.",
+  "experiments.converging-lens-pins.check.spread.found":
+    "Your points spread {times} times more than finding no parallax carefully gives.",
+  "experiments.converging-lens-pins.check.spread.figure": "{value} cm², {ratio} ×",
+  "experiments.converging-lens-pins.check.shift":
+    "Your line meets the xy axis at {intercept} cm², not at the origin. Reading x and y at the holders' edges, not their centre marks, moves every point and the line with them.",
+  "experiments.converging-lens-pins.check.shift.precaution":
+    "Read each holder at its centre mark, square-on to the rule.",
+  "experiments.converging-lens-pins.check.tilt.longer":
+    "Your slope gives f = {f} cm, longer than the {marked} cm marked on the lens, by more than lenses differ from their marking.",
+  "experiments.converging-lens-pins.check.tilt.shorter":
+    "Your slope gives f = {f} cm, shorter than the {marked} cm marked on the lens, by more than lenses differ from their marking.",
+  "experiments.converging-lens-pins.check.tilt.precaution":
+    "Check that the lens you used is the one whose marking you entered, and read x and y at the holders' centre marks.",
+  "experiments.converging-lens-pins.check.spread":
+    "Your points spread either side of your line by about {times} times what finding no parallax carefully gives.",
+  "experiments.converging-lens-pins.check.spread.precaution":
+    "Move your head from side to side, and move the search pin until its tip and the image's tip move together; then read it.",
+  "experiments.converging-lens-pins.check.result":
+    "From your line: f = {f} cm, the slope. Lab data is not marked.",
 } as const;
