@@ -83,7 +83,7 @@ describe("reading a file", () => {
     expect(readCells("a.xlsm", enc("x"))).toEqual({ ok: false, problem: { code: "macros" } });
     expect(readCells("a.xlsx", enc("not a zip"))).toEqual({
       ok: false,
-      problem: { code: "unreadable", kind: "XLSX" },
+      problem: { code: "unreadable", kind: ".xlsx" },
     });
   });
 
@@ -114,7 +114,7 @@ describe("reading a file", () => {
     expect(big.byteLength).toBeLessThan(MAX_FILE_BYTES);
     expect(readCells("big.xlsx", big)).toEqual({
       ok: false,
-      problem: { code: "unreadable", kind: "XLSX" },
+      problem: { code: "unreadable", kind: ".xlsx" },
     });
   });
 });

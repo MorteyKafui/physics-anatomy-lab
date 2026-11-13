@@ -59,7 +59,7 @@ def test_too_few_points_give_no_verdict() -> None:
 
 
 def test_careful_runs_are_rarely_called_shifted_or_scattered() -> None:
-    """With noise at the careful spread, a shift is found about 1 run in 20, a scatter almost never."""
+    """At the careful spread, a shift is found under 1 run in 20, a scatter almost never."""
     rng = np.random.default_rng(7)
     runs = 4000
     shifted = tilted = scattered = 0
