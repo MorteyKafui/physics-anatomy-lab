@@ -377,10 +377,9 @@ export const enGBMethodOfMixtures = {
   "findings.mixtures.cylinderAtAngle.demonstrate":
     "Stand the cylinder on the bench and read the bottom of the curved surface with your eye level with it.",
   "experiments.method-of-mixtures-solid.title": "The method of mixtures: a hot solid",
-  "experiments.method-of-mixtures-solid.inDevelopment":
-    "Being built: the table and graph come next",
+  "experiments.method-of-mixtures-solid.inDevelopment": "Being built: the report comes next",
   "experiments.method-of-mixtures-solid.next":
-    "Tabulating, plotting and the analysis come with the next part of this lab. Your readings are kept.",
+    "The report, the print sheets and the exam for the hot solid come with the next part of this lab. Your work is kept.",
   "experiments.method-of-mixtures-solid.question.title":
     "The specific heat capacity of a solid, by the method of mixtures",
   "experiments.method-of-mixtures-solid.question.text":
@@ -497,6 +496,30 @@ export const enGBMethodOfMixtures = {
     "I stirred the water all the time and read the highest temperature.",
   "experiments.method-of-mixtures-solid.tips.5":
     "I kept the lid on the lagged calorimeter to reduce heat lost to the room.",
+  "experiments.method-of-mixtures-solid.tabulate.title": "Tabulate your readings",
+  "experiments.method-of-mixtures-solid.tabulate.why":
+    "Record the time t since the solid went in and the temperature θ read then, every minute, from the start.",
+  "experiments.method-of-mixtures-solid.plot.title": "Plot θ against t",
+  "experiments.method-of-mixtures-solid.plot.why":
+    "Put t along the bottom and θ up the side, and plot your readings. The graph rises to its highest, then falls slowly: the highest point is T. There is no straight line to draw.",
+  "experiments.method-of-mixtures-solid.analyse.title": "Find c from the heat given and taken",
+  "experiments.method-of-mixtures-solid.analyse.why":
+    "The heat the solid gives up cooling from 100 °C to T is the heat the water and calorimeter take in warming from T₀ to T: m_s c_s (100 − T) = (m_c c_c + m_w c_w)(T − T₀).",
+  "experiments.method-of-mixtures-solid.analyse.tLead":
+    "T, the highest temperature on your graph =",
+  "experiments.method-of-mixtures-solid.analyse.cLead":
+    "c_s = (m_c c_c + m_w c_w)(T − T₀) ⁄ (m_s (100 − T)) = ({mc} × {cc} + {mw} × {cw})({t} − {t0}) ⁄ ({ms} × (100 − {t})) =",
+  "experiments.method-of-mixtures-solid.analyse.otherGraph":
+    "Your graph is {y} against {x}. The question reads T from θ against t. Go back to Plot to change the axes.",
+  "experiments.method-of-mixtures-solid.conclude.text":
+    "The specific heat capacity of the solid is {c}. The solid S is {metal}, whose specific heat capacity is {true} J kg⁻¹ K⁻¹. The solid's temperature fell much more than the water's rose.",
+  "lab.analyse.name.T": "T",
+  "lab.analyse.name.c": "c",
+  "findings.mixturesSolid.wrongGraph.title": "Plot θ against t",
+  "findings.mixturesSolid.wrongGraph.detail":
+    "Your graph is {y} against {x}. θ against t shows the temperature rising to its highest and then falling, which is how the question finds T.",
+  "findings.mixturesSolid.wrongGraph.demonstrate":
+    "Choose t for the axis along the bottom and θ for the axis up the side.",
   "experiments.method-of-mixtures-solid.metal.copper": "copper",
   "experiments.method-of-mixtures-solid.metal.brass": "brass",
   "experiments.method-of-mixtures-solid.metal.iron": "iron",

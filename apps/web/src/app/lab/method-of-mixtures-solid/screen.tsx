@@ -1,8 +1,20 @@
 "use client";
 
 import { HotSolidBench } from "@pa/apparatus";
-import { runRules, type Finding, type Skill } from "@pa/analysis";
 import {
+  fillDerived,
+  formatQuantity,
+  GRAPH_RULES,
+  parseTable,
+  pointsFor,
+  runRules,
+  TABLE_RULES,
+  toTableView,
+  type Finding,
+  type Skill,
+} from "@pa/analysis";
+import {
+  answersProjection,
   coach,
   coachIsOn,
   frontier,
@@ -10,6 +22,7 @@ import {
   helpLevelFor,
   replay,
   STEPS,
+  writeAnswer,
   type Advice,
   type HelpLevel,
   type Step,
@@ -20,7 +33,18 @@ import {
   hotSolid,
   methodOfMixtures,
   MIXTURES_THERMOMETER,
+  metalOf,
+  plotsThetaAgainstT,
+  SOLID_ANALYSIS_RULES,
+  SOLID_GRAPH_RULES,
+  SOLID_INSTRUMENTS,
+  SOLID_PLOT,
   SOLID_PROCEDURE_RULES,
+  SOLID_STANDARD_TABLE,
+  SOLID_TEMPLATES,
+  solidExpected,
+  solidReadingsIntoTable,
+  tabulatedRun,
   solidProjection,
   solidReadingData,
   solidThermometer,
@@ -40,7 +64,10 @@ import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
+import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
 import { CheckItem, Rail, StepStrip } from "../parts";
+import { flagsFor, useTable } from "../table-builder";
 import { useAttempt } from "../use-attempt";
 
 const H = hotSolid;
@@ -67,7 +94,9 @@ const pressed = (on: boolean) =>
  * The method of mixtures with a hot solid (the approved board "The method of mixtures: a hot solid,
  * read every minute"): the same lab as the others, with the balance, the beaker of boiling water and
  * the calorimeter, and a clock that runs on the events' own times, so the move across and the
- * minutes since the solid went in carry on across a reload. Steps 1 to 5 are built here.
+ * minutes since the solid went in carry on across a reload; then the shared table builder and
+ * graph sheet (θ against t, read for its highest point), and c from the book's equation, with the
+ * metal named once c is found (decision 7). The report, sheets and exam come next.
  */
 export function MethodOfMixturesSolidScreen() {
   const handle = useAttempt(H.id);
@@ -92,6 +121,12 @@ export function MethodOfMixturesSolidScreen() {
   }, [handle]);
   // Since the calorimeter was last emptied: when the solid was lifted out, when it went in, and
   // the readings taken since, from the events.
+  const results = useTable(handle);
+  const plot = useGraph(handle);
+  const answers = useMemo(
+    () => (handle ? replay(answersProjection, handle.attempt, handle.events) : {}),
+    [handle],
+  );
   const run = useMemo(() => {
     const events = handle?.events ?? [];
     const since = events.findLastIndex((e) => e.kind === "calorimeter.empty");
@@ -183,6 +218,111 @@ export function MethodOfMixturesSolidScreen() {
   const levelFor = (skill: Skill): HelpLevel =>
     coachIsOn(state) ? helpLevelFor(state, skill) : "on-my-own";
   const measureMarks = levelFor("measurement") !== "on-my-own";
+  const tableAssist = levelFor("tabulation") === "auto";
+  const tableMarks = levelFor("tabulation") !== "on-my-own";
+  const graphAssist = levelFor("graph") === "auto";
+  const graphMarks = levelFor("graph") !== "on-my-own";
+  const analysisAssist = levelFor("analysis") === "auto";
+  const analysisMarks = levelFor("analysis") !== "on-my-own";
+
+  // The table (step 6): the last run's readings, t and θ. The graph is a curve, so the table's
+  // range and straight-line outlier checks do not apply; its headings and decimals do.
+  const tabulated = tabulatedRun(readings);
+  const table = results.table;
+  const shownTable = tableAssist ? fillDerived(table) : table;
+  const tableFindings = table.layout
+    ? runRules(TABLE_RULES, { table: parseTable(toTableView(shownTable)) })
+    : [];
+  const tableFlags = flagsFor(
+    tableMarks
+      ? tableFindings.filter((f) => f.severity !== "good")
+      : advice.map((a) => a.finding).filter((f) => f.skill === "tabulation"),
+  );
+  const fillReadings = () => {
+    const current = results.now();
+    const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
+    const cells = solidReadingsIntoTable(current, tabulated, newRowId);
+    const newRows = [...new Set(cells.map((c) => c.row))].filter(
+      (id) => !current.rows.some((r) => r.id === id),
+    );
+    void results.run([
+      ...newRows.map((id) => ({ type: "add-row" as const, id })),
+      ...cells.map((c) => ({ type: "set-cell" as const, ...c })),
+    ]);
+  };
+
+  // The graph (step 7): θ against t, a curve read for its highest point.
+  const numericColumns = table.columns.filter((c) => c.role !== "notes");
+  const graphColumns = graphColumnsFor(plot.graph, table.columns, SOLID_PLOT);
+  const columnFor = (id: string) => table.columns.find((c) => c.id === id);
+  const symbols = {
+    x: columnFor(graphColumns.x)?.symbol ?? graphColumns.x,
+    y: columnFor(graphColumns.y)?.symbol ?? graphColumns.y,
+  };
+  const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
+  const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist, "points");
+  const rightGraph = plotsThetaAgainstT(graphColumns);
+  const graphFindings =
+    graphData.length >= 2
+      ? runRules(GRAPH_RULES, {
+          sheet: graphShown.sheet,
+          symbols,
+          data: graphData,
+          plotted: graphShown.plotted,
+          line: graphShown.line,
+          triangle: graphShown.triangle,
+        })
+      : [];
+  const solidGraphFindings = runRules(SOLID_GRAPH_RULES, { columns: graphColumns, symbols });
+  const graphPart = (rule: string) =>
+    rule === "graph-scale-small" || rule === "graph-off-sheet"
+      ? "scale"
+      : rule.startsWith("graph-line")
+        ? "line"
+        : rule.startsWith("graph-triangle")
+          ? "triangle"
+          : "points";
+  const partFindings = { scale: [], points: [], line: [], triangle: [] } as Record<
+    "scale" | "points" | "line" | "triangle",
+    Finding[]
+  >;
+  for (const f of graphFindings) partFindings[graphPart(f.rule)].push(f);
+  const graphFlagged = new Set(
+    (graphMarks ? graphFindings : advice.map((a) => a.finding).filter((f) => f.skill === "graph"))
+      .filter((f) => f.rule === "graph-misplotted" || f.rule === "graph-off-sheet")
+      .flatMap((f) => f.rows ?? []),
+  );
+
+  // The analysis (step 8): T, the highest on the graph, and c from the book's equation.
+  const expected = solidExpected(graphShown.plotted, graphColumns, tabulated, answers);
+  const analysisFindings = runRules(SOLID_ANALYSIS_RULES, { answers, expected });
+  const analysisFlags = (id: string) =>
+    analysisMarks ? analysisFindings.filter((f) => f.column === id) : [];
+  const write = (id: string) => (a: { value: string; unit: string }) => {
+    const e = writeAnswer(answers, id, a);
+    if (e) void handle.record([e]);
+  };
+  const answerText = (id: "T" | "c", unit: string) => {
+    const typed = answers[id];
+    if (typed?.value) return `${typed.value} ${typed.unit}`.trim();
+    const worked = expected[id];
+    return worked ? formatQuantity(worked, 3, unit) : id;
+  };
+  const metal = metalOf(bench.world.metal.c);
+
+  const finishPanelStep = async () => {
+    if (state.step === "tabulate") {
+      await finishChecked(tableFindings, `table:${JSON.stringify(shownTable)}`);
+    } else if (state.step === "plot") {
+      await finishChecked(
+        [...solidGraphFindings, ...graphFindings],
+        `graph:${JSON.stringify(plot.graph)}`,
+      );
+    } else {
+      await finishChecked(analysisFindings, `analysis:${JSON.stringify(answers)}`);
+    }
+  };
+  const panel = state.step === "tabulate" || state.step === "plot" || state.step === "analyse";
 
   // What the thermometer shows the student, read from where their eye is, to 0.1 °C.
   const shownAt = (b: SolidBench, at: number) =>
@@ -213,6 +353,7 @@ export function MethodOfMixturesSolidScreen() {
           highest: methodOfMixtures.room,
           t: 0,
           last: 0,
+          series: [],
           c: b.world.metal.c,
           water: b.water,
           covered: b.covered,
@@ -233,6 +374,7 @@ export function MethodOfMixturesSolidScreen() {
       highest: best.reading,
       t: Number(best.t.toFixed(1)),
       last: Number(Math.max(t0, ...run.reads.map((r) => r.t)).toFixed(1)),
+      series: [{ t: 0, reading: start }, ...run.reads],
       thermometerAngle: EYE[eye],
     });
     if (!data) {
@@ -550,39 +692,168 @@ export function MethodOfMixturesSolidScreen() {
         </header>
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
-            <div className="flex w-full max-w-[760px] flex-col">
-              <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
-              <span className="font-semibold">{t(`${P}.fig.${where}`)}</span>
-            </div>
-            <div className="w-full max-w-[760px]">
-              <HotSolidBench
-                className="block h-auto w-full"
-                label={description}
-                balance={balance}
-                solid={where}
-                wet={bench.transfer ? !bench.transfer.shaken : !shaken && run.lifted !== undefined}
-                water={bench.water ?? 0}
-                covered={bench.covered}
-                stirring={bench.stirring}
-                thermometer={solidThermometer(bench, t0)}
-              />
-            </div>
-            <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
-              {building && balanceCard}
-              {measuring && !inside && transferCard}
-              {measuring && inside && minutesCard}
-              {(building || measuring) && thermometerCard}
-            </div>
-            {refusal && (
-              <p
-                role="alert"
-                className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
-              >
-                {refusal}
-              </p>
-            )}
-          </section>
+          {panel ? (
+            <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+              {state.step === "tabulate" && (
+                <TableBuilder
+                  table={table}
+                  shown={shownTable}
+                  assist={tableAssist}
+                  marks={tableMarks}
+                  flags={tableFlags}
+                  spec={{
+                    standard: SOLID_STANDARD_TABLE,
+                    templates: SOLID_TEMPLATES,
+                    defaultTemplate: "single",
+                    instruments: SOLID_INSTRUMENTS,
+                    defaultKind: "temperature",
+                    rowsNeeded: Math.max(4, tabulated?.series.length ?? 0),
+                    readingsSummary: tabulated
+                      ? tabulated.series
+                          .map((p) => `${(p.t / 60).toFixed(1)} min: ${deg(p.reading)} °C`)
+                          .join(" · ")
+                      : undefined,
+                  }}
+                  onRun={results.run}
+                  onFillReadings={tableAssist ? fillReadings : undefined}
+                  onCommit={() => undefined}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+                    ) : null
+                  }
+                />
+              )}
+              {state.step === "plot" && (
+                <GraphPanel
+                  state={plot.graph}
+                  view={graphShown}
+                  data={graphData}
+                  headings={{
+                    x: headingFor(table.columns, graphColumns.x),
+                    y: headingFor(table.columns, graphColumns.y),
+                  }}
+                  numericColumns={numericColumns}
+                  flaggedRows={graphFlagged}
+                  partFindings={partFindings}
+                  showChecks={graphMarks && !graphAssist}
+                  onRun={plot.run}
+                  latest={plot.now}
+                  below={
+                    advice.length > 0 || (graphMarks && solidGraphFindings.length > 0) ? (
+                      <div className="flex flex-col gap-3">
+                        {advice.length > 0
+                          ? adviceCards
+                          : solidGraphFindings.map((f) => findingCard(f))}
+                      </div>
+                    ) : null
+                  }
+                />
+              )}
+              {state.step === "analyse" && (
+                <section
+                  aria-label={t("lab.analyse.label")}
+                  className="flex w-full min-w-0 flex-col gap-4"
+                >
+                  <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+                    {!rightGraph ? (
+                      <div className="flex flex-col items-start gap-3">
+                        <p className="text-soft">{t(`${P}.analyse.otherGraph`, symbols)}</p>
+                        <Button
+                          variant="outline"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
+                        >
+                          {t("lab.analyse.backToPlot")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+                        <AnswerLine
+                          id="T"
+                          unit="°C"
+                          lead={t(`${P}.analyse.tLead`)}
+                          written={answers.T}
+                          expected={expected.T}
+                          assist={analysisAssist}
+                          marks={analysisMarks && !analysisAssist}
+                          flagged={analysisFlags("T")}
+                          onWrite={write("T")}
+                        />
+                        {tabulated && (
+                          <AnswerLine
+                            id="c"
+                            unit="J kg⁻¹ K⁻¹"
+                            lead={t(`${P}.analyse.cLead`, {
+                              cc: H.given.calorimeter,
+                              cw: H.given.water,
+                              ms: (tabulated.solid / 1000).toFixed(4),
+                              mc: (tabulated.empty / 1000).toFixed(4),
+                              mw: ((tabulated.filled - tabulated.empty) / 1000).toFixed(4),
+                              t0: deg(tabulated.start),
+                              t: answerText("T", "°C").replace(" °C", ""),
+                            })}
+                            written={answers.c}
+                            expected={expected.c}
+                            assist={analysisAssist}
+                            marks={analysisMarks && !analysisAssist}
+                            flagged={analysisFlags("c")}
+                            onWrite={write("c")}
+                          />
+                        )}
+                        {analysisAssist && (
+                          <span className="font-sans text-xs text-muted-foreground">
+                            {t("lab.analyse.workedOut")}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+                    <Calculator />
+                  </div>
+                  {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
+                </section>
+              )}
+            </section>
+          ) : (
+            <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
+              <div className="flex w-full max-w-[760px] flex-col">
+                <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
+                <span className="font-semibold">{t(`${P}.fig.${where}`)}</span>
+              </div>
+              <div className="w-full max-w-[760px]">
+                <HotSolidBench
+                  className="block h-auto w-full"
+                  label={description}
+                  balance={balance}
+                  solid={where}
+                  wet={
+                    bench.transfer ? !bench.transfer.shaken : !shaken && run.lifted !== undefined
+                  }
+                  water={bench.water ?? 0}
+                  covered={bench.covered}
+                  stirring={bench.stirring}
+                  thermometer={solidThermometer(bench, t0)}
+                />
+              </div>
+              <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
+                {building && balanceCard}
+                {measuring && !inside && transferCard}
+                {measuring && inside && minutesCard}
+                {(building || measuring) && thermometerCard}
+              </div>
+              {refusal && (
+                <p
+                  role="alert"
+                  className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
+                >
+                  {refusal}
+                </p>
+              )}
+            </section>
+          )}
 
           <aside
             aria-label={t("lab.coach.label")}
@@ -798,12 +1069,40 @@ export function MethodOfMixturesSolidScreen() {
                     </Button>
                   </>
                 )}
-                {stepIndex > STEPS.indexOf("measure") && (
+                {panel && (
+                  <>
+                    <h2 className="font-display text-2xl leading-tight font-bold">
+                      {t(`${P}.${state.step}.title` as MessageKey)}
+                    </h2>
+                    <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
+                    <Button onClick={() => void finishPanelStep()}>
+                      {state.step === "tabulate"
+                        ? t("lab.steps.finishTabulating")
+                        : state.step === "plot"
+                          ? t("lab.steps.finishPlotting")
+                          : t("lab.steps.finishAnalysing")}
+                    </Button>
+                  </>
+                )}
+                {(state.step === "conclude" || state.step === "report") && (
                   <>
                     <h2 className="font-display text-2xl leading-tight font-bold">
                       {stepName(state.step)}
                     </h2>
-                    <p className="text-soft">{t(`${P}.next`)}</p>
+                    <p className="text-soft">
+                      {state.step === "conclude"
+                        ? t(`${P}.conclude.text`, {
+                            c: answerText("c", "J kg⁻¹ K⁻¹"),
+                            metal: t(`${P}.metal.${metal?.id ?? "copper"}` as MessageKey),
+                            true: metal?.c ?? 0,
+                          })
+                        : t(`${P}.next`)}
+                    </p>
+                    {state.step === "conclude" && next && (
+                      <Button className="self-start" onClick={() => void finishStep()}>
+                        {t("lab.steps.continue", { step: stepName(next) })}
+                      </Button>
+                    )}
                   </>
                 )}
                 {(state.step === "question" ||
@@ -852,10 +1151,7 @@ export function MethodOfMixturesSolidScreen() {
         <StepStrip
           current={state.step}
           completed={state.completed}
-          // Steps 6 to 10 come with the next pull request; until then the lab stops at Measure.
-          open={(s) =>
-            STEPS.indexOf(s) <= Math.min(STEPS.indexOf("measure"), STEPS.indexOf(frontier(state)))
-          }
+          open={(s) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state))}
           onGo={(s) => void handle.dispatch({ type: "go-to-step", step: s })}
         />
       </div>

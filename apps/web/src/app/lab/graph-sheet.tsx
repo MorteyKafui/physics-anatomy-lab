@@ -156,8 +156,10 @@ export function graphView(
    * to the other and the worked sheet reaches both. "y-axis": it is read where the line meets the
    * y axis, x = 0 (the method of mixtures: V where 1/T = 0, below zero), so the worked line is
    * carried back to that axis, the worked sheet reaches it, and its slope is asked for too.
+   * "points": the graph is a curve read for its highest point (the method of mixtures with a hot
+   * solid, θ against t), so the worked sheet fits the points and no line or triangle is drawn.
    */
-  fromOrigin: boolean | "both-axes" | "y-axis" = false,
+  fromOrigin: boolean | "both-axes" | "y-axis" | "points" = false,
 ): GraphView {
   const fitted = referenceLine(data)?.line;
   const across = fromOrigin === "both-axes" && fitted ? lineAcrossAxes(fitted) : undefined;
@@ -171,7 +173,7 @@ export function graphView(
           ? [...data, back.from, back.to]
           : data,
       columns,
-      assist && !fromOrigin,
+      assist && (!fromOrigin || fromOrigin === "points"),
     );
   if (!assist)
     return {
@@ -184,11 +186,13 @@ export function graphView(
   const plotted = state.plotted.length ? state.plotted : [...data];
   // Read where it meets the V axis: the worked line is carried on to the axis, as on paper.
   const line =
-    state.line ?? across ?? back ?? (fitted && fromOrigin ? lineToXAxis(fitted) : fitted);
+    fromOrigin === "points"
+      ? state.line
+      : (state.line ?? across ?? back ?? (fitted && fromOrigin ? lineToXAxis(fitted) : fitted));
   // Read at both axes, the graph's slope is not asked for, so no triangle is drawn for it.
   const triangle =
     state.triangle ??
-    (line && data.length >= 2 && fromOrigin !== "both-axes"
+    (line && data.length >= 2 && fromOrigin !== "both-axes" && fromOrigin !== "points"
       ? suggestTriangle(sheet, line, data)
       : undefined);
   return {

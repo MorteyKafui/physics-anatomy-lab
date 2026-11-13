@@ -373,3 +373,23 @@ export type {
   Transfer,
   Weighing,
 } from "./method-of-mixtures-solid";
+export {
+  metalOf,
+  plotsThetaAgainstT,
+  SOLID_ANALYSIS_RULES,
+  SOLID_ANSWERS,
+  SOLID_GRAPH_RULES,
+  SOLID_INSTRUMENTS,
+  SOLID_PLOT,
+  SOLID_STANDARD_TABLE,
+  SOLID_TEMPLATES,
+  solidExpected,
+  solidReadingsIntoTable,
+  tabulatedRun,
+  wrongSolidGraph,
+} from "./method-of-mixtures-solid-table";
+export type {
+  SolidAnalysisContext,
+  SolidAnswer,
+  SolidGraphContext,
+} from "./method-of-mixtures-solid-table";
