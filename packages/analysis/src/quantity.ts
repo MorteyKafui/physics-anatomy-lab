@@ -46,6 +46,9 @@ export const UNIT_SYMBOLS: Readonly<Record<string, Quantity>> = {
   Ω: { value: 1, dims: d(2, 1, -3, -2) },
   kΩ: { value: 1e3, dims: d(2, 1, -3, -2) },
   K: { value: 1, dims: d(0, 0, 0, 0, 1) },
+  // In a unit, °C is a step of temperature: 1 °C of change is 1 K (a slope in cm³ °C, a rise in
+  // °C). Matched whole, before "°" alone, so it is not read as degrees of angle times coulombs.
+  "°C": { value: 1, dims: d(0, 0, 0, 0, 1) },
   // Angles have no dimension in SI; a degree is π ⁄ 180 of a radian.
   rad: { value: 1, dims: d() },
   "°": { value: Math.PI / 180, dims: d() },

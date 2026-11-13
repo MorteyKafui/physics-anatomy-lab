@@ -28,6 +28,14 @@ describe("units", () => {
     expect(parseUnit("bananas")).toBeUndefined();
   });
 
+  test("read °C as a step of temperature, 1 K, and ° alone as an angle", () => {
+    expect(parseUnit("°C")).toEqual(parseUnit("K"));
+    expect(parseUnit("°C⁻¹")?.dims).toEqual([0, 0, 0, 0, -1]);
+    expect(parseUnit("cm³ °C")).toEqual(parseUnit("cm³ K"));
+    expect(parseUnit("J kg⁻¹ °C⁻¹")).toEqual(parseUnit("J kg⁻¹ K⁻¹"));
+    expect(parseUnit("°")?.value).toBeCloseTo(Math.PI / 180, 15);
+  });
+
   test("are written back in the book's order: positive powers first", () => {
     expect(formatDims([1, 0, -2, 0, 0])).toBe("m s⁻²");
     expect(formatDims([-1, 0, 2, 0, 0])).toBe("s² m⁻¹");

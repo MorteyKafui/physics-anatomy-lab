@@ -95,6 +95,27 @@ export const enGBMethodOfMixtures = {
   "experiments.method-of-mixtures.measure.V": "V",
   "experiments.method-of-mixtures.measure.starting": "Starting",
   "experiments.method-of-mixtures.measure.now": "Now",
+  "experiments.method-of-mixtures.tabulate.title": "Tabulate your readings",
+  "experiments.method-of-mixtures.tabulate.why":
+    "Record V and the rise T for each volume, and work out 1/T in °C⁻¹.",
+  "experiments.method-of-mixtures.plot.title": "Plot V against 1/T",
+  "experiments.method-of-mixtures.plot.why":
+    "Put 1/T along the bottom and V up the side, with room below zero for V: the line goes on to meet the V axis there. Draw the best straight line through your points, carry it back to the V axis, and draw a large triangle on it to find its slope.",
+  "experiments.method-of-mixtures.analyse.title": "Find W from where the line meets the V axis",
+  "experiments.method-of-mixtures.analyse.why":
+    "V = 50 (65 − θ₀) ⁄ T − (50 + W). Where 1/T = 0, V = −(50 + W), so the calorimeter's water equivalent W is minus the intercept, less the 50 cm³ of hot water.",
+  "experiments.method-of-mixtures.analyse.slopeLead":
+    "slope = CB ⁄ AC = {rise} {yu} ⁄ {run} {xu} =",
+  "experiments.method-of-mixtures.analyse.interceptLead":
+    "V where your line meets the V axis, 1/T = 0, =",
+  "experiments.method-of-mixtures.analyse.wLead":
+    "W = −(intercept) − 50 cm³ = −({intercept}) − 50 cm³ =",
+  "experiments.method-of-mixtures.analyse.needLine":
+    "Draw your best straight line on the graph and carry it back to the V axis, then read where it meets it.",
+  "experiments.method-of-mixtures.analyse.otherGraph":
+    "Your graph is {y} against {x}. The question asks for V against 1/T: only that line meets the V axis at −(50 + W). Go back to Plot to change the axes.",
+  "experiments.method-of-mixtures.conclude.text":
+    "The water equivalent of the calorimeter is {W}: it takes in as much heat as that much water would. The more cold water there was, the smaller the rise.",
   "experiments.method-of-mixtures.axes.time": "t / s",
   "experiments.method-of-mixtures.axes.temperature": "θ / °C",
   "experiments.method-of-mixtures.fig.label": "Fig. 1",
@@ -125,8 +146,8 @@ export const enGBMethodOfMixtures = {
   "experiments.method-of-mixtures.tips.5":
     "I kept the lid on the lagged calorimeter to reduce heat lost to the room.",
   "experiments.method-of-mixtures.next":
-    "Tabulating, plotting and the analysis come with the next part of this lab. Your readings are kept.",
-  "experiments.method-of-mixtures.inDevelopment": "Being built: the table and graph come next",
+    "The report, the print sheets and the exam for the method of mixtures come with the next part of this lab. Your work is kept.",
+  "experiments.method-of-mixtures.inDevelopment": "Being built: the report comes next",
   "experiments.method-of-mixtures.refused.cylinder-holds":
     "The measuring cylinder holds up to 100 cm³.",
   "experiments.method-of-mixtures.refused.already-poured":
@@ -134,6 +155,13 @@ export const enGBMethodOfMixtures = {
   "experiments.method-of-mixtures.refused.fill-both":
     "Measure the cold water into the calorimeter and the hot water into the beaker first.",
   "experiments.method-of-mixtures.refused.not-a-number": "That is not something the bench can do.",
+  "lab.analyse.name.intercept": "the intercept",
+  "lab.analyse.name.W": "W",
+  "findings.mixtures.wrongGraph.title": "Plot V against 1/T",
+  "findings.mixtures.wrongGraph.detail":
+    "Your graph is {y} against {x}. V against T is a curve. V against 1/T is a straight line, and where it meets the V axis, V = −(50 + W): that is how the question finds the calorimeter's water equivalent.",
+  "findings.mixtures.wrongGraph.demonstrate":
+    "Choose 1/T for the axis along the bottom and V for the axis up the side.",
   "findings.mixtures.readBeforePeak.title": "You read the thermometer before it stopped rising",
   "findings.mixtures.readBeforePeak.detail":
     "In {count} reading(s) the thermometer was still rising. You read it {seconds} s after pouring; it went on rising for {peakSeconds} s and reached {celsius} °C more.",

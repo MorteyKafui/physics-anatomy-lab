@@ -17,6 +17,7 @@ export type QuantityKind =
   | "angle"
   | "temperature"
   | "temperature-difference"
+  | "inverse-temperature-difference"
   | "current"
   | "voltage"
   | "resistance"
@@ -85,6 +86,11 @@ export const UNITS: Readonly<Record<QuantityKind, readonly UnitDef[]>> = {
   "temperature-difference": [
     { symbol: "°C", toSI: 1 },
     { symbol: "K", toSI: 1 },
+  ],
+  // 1/T for the method of mixtures' graph of V against 1/T.
+  "inverse-temperature-difference": [
+    { symbol: "°C⁻¹", toSI: 1 },
+    { symbol: "K⁻¹", toSI: 1 },
   ],
   current: [
     { symbol: "A", toSI: 1 },

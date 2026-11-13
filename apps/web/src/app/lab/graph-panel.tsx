@@ -27,6 +27,13 @@ import { useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactN
 import { fmt, GraphDrawing, read, svgY, VIEW, type GraphView } from "./graph-sheet";
 
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
+/**
+ * An axis heading "symbol/unit" split at its last slash, so a symbol with a slash in it keeps it:
+ * "1/T/°C⁻¹" is 1/T in °C⁻¹. A heading with no slash is a symbol with no unit.
+ */
+const splitAt = (h: string) => h.lastIndexOf("/");
+const symbolOf = (h: string) => (splitAt(h) > 0 ? h.slice(0, splitAt(h)) : h);
+const unitOf = (h: string) => (splitAt(h) > 0 ? h.slice(splitAt(h) + 1) : "");
 
 type Tool = "plot" | "line" | "triangle";
 
@@ -351,14 +358,14 @@ export function GraphPanel({
         >
           <figcaption className="flex flex-wrap justify-between gap-2 text-[13px]">
             <span className="font-semibold">
-              {t("lab.graph.title", { x: headings.x.split("/")[0]!, y: headings.y.split("/")[0]! })}
+              {t("lab.graph.title", { x: symbolOf(headings.x), y: symbolOf(headings.y) })}
             </span>
             <span className="font-mono">
               {t("lab.graph.scale", {
-                x: `${sheet.x.per2cm} ${headings.x.split("/")[1] ?? ""}`.trim(),
-                xs: headings.x.split("/")[0]!,
-                y: `${sheet.y.per2cm} ${headings.y.split("/")[1] ?? ""}`.trim(),
-                ys: headings.y.split("/")[0]!,
+                x: `${sheet.x.per2cm} ${unitOf(headings.x)}`.trim(),
+                xs: symbolOf(headings.x),
+                y: `${sheet.y.per2cm} ${unitOf(headings.y)}`.trim(),
+                ys: symbolOf(headings.y),
               })}
             </span>
           </figcaption>
@@ -419,8 +426,8 @@ export function GraphPanel({
           <p className="sr-only" aria-live="polite">
             {showCursor
               ? t("lab.graph.cross", {
-                  x: `${headings.x.split("/")[0]} = ${fmt(sheet.x, cursorValue.x)}`,
-                  y: `${headings.y.split("/")[0]} = ${fmt(sheet.y, cursorValue.y)}`,
+                  x: `${symbolOf(headings.x)} = ${fmt(sheet.x, cursorValue.x)}`,
+                  y: `${symbolOf(headings.y)} = ${fmt(sheet.y, cursorValue.y)}`,
                 })
               : ""}
           </p>

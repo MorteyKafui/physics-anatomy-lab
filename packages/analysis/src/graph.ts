@@ -110,6 +110,19 @@ export function lineToXAxis(line: DrawnLine): DrawnLine {
   return Math.abs(from.y) < Math.abs(to.y) ? { from: end, to } : { from, to: end };
 }
 
+/**
+ * The same straight line carried back to the y axis (x = 0), as a student extends a line on paper
+ * to read where it meets that axis (the method of mixtures: V where 1/T = 0). The end nearer the
+ * axis moves there; the slope does not change. A vertical line is returned as it is.
+ */
+export function lineToYAxis(line: DrawnLine): DrawnLine {
+  const { from, to } = line;
+  const dx = to.x - from.x;
+  if (dx === 0) return line;
+  const end = { x: 0, y: from.y - (from.x * (to.y - from.y)) / dx };
+  return Math.abs(from.x) < Math.abs(to.x) ? { from: end, to } : { from, to: end };
+}
+
 /** The value at the end of each axis. */
 export const axisEnd = (axis: Axis, divisions: number) => axis.start + divisions * axis.per2cm;
 
