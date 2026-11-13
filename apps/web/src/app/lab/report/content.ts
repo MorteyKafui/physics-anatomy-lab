@@ -5,6 +5,7 @@ import {
   fitLine,
   formatQuantity,
   heading,
+  largestPercentUncertainty,
   pointsFor,
   quotedUncertainty,
   readingDecimals,
@@ -303,19 +304,12 @@ export function reportContent(
     const q = quotedUncertainty(u);
     return `${v.toFixed(q.decimals)} ± ${q.value.toFixed(q.decimals)}`;
   };
-  let largest: { symbol: string; percent: number } | undefined;
-  if (worked) {
-    const us = tableUncertainties(worked, { timing: 2 * ANTICIPATED_EVENT.delaySd });
-    for (const row of worked.rows) {
-      for (const c of worked.columns) {
-        const u = us.get(row.id)?.[c.id];
-        const v = Number(row.cells[c.id]);
-        if (u === undefined || !Number.isFinite(v) || v === 0) continue;
-        const percent = (100 * u) / Math.abs(v);
-        if (!largest || percent > largest.percent) largest = { symbol: c.symbol, percent };
-      }
-    }
-  }
+  const largest = worked
+    ? largestPercentUncertainty(
+        worked,
+        tableUncertainties(worked, { timing: 2 * ANTICIPATED_EVENT.delaySd }),
+      )
+    : undefined;
   const uncertaintyWorking =
     fit && gU
       ? lines(

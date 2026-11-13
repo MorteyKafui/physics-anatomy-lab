@@ -19,7 +19,7 @@ import { Button } from "@pa/ui/components/button";
 import { CheckIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import { useState, type ReactNode } from "react";
 
-import { showUncertainty } from "./table-panel";
+import { showUncertainty } from "./uncertainty-format";
 
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 
@@ -282,7 +282,19 @@ export function AnalysePanel({
                 {t("lab.analyse.workedOut")}
               </span>
             )}
-            {uncertainty && forG && <QuoteWithUncertainty uncertainty={uncertainty} />}
+            {uncertainty && forG && (
+              <div className="flex flex-col gap-2">
+                <span className="font-mono text-sm text-soft">
+                  {t("lab.analyse.uncertainty.slope", { u: showUncertainty(uncertainty.slope) })}
+                </span>
+                <QuoteLine
+                  symbol="g"
+                  unit="m s⁻²"
+                  worked={uncertainty.g}
+                  percent={uncertainty.percent}
+                />
+              </div>
+            )}
           </div>
         )}
         <p className="text-sm text-soft">{t("lab.analyse.hidden")}</p>
@@ -297,28 +309,36 @@ export function AnalysePanel({
 }
 
 /**
- * g quoted with its uncertainty, and the checks on it (decision 6). The accepted value stays hidden
- * until the student has read their feedback, as it does for g itself, so agreement with it is
- * left to the report.
+ * A result quoted with its uncertainty, and the checks on it (decision 6): g for the pendulum, E and
+ * r for Ohm's law. The accepted value stays hidden until the student has read their feedback, as
+ * the result itself does, so agreement with it is left to the report.
  */
-function QuoteWithUncertainty({
-  uncertainty,
+export function QuoteLine({
+  symbol,
+  unit,
+  worked,
+  percent,
 }: {
-  uncertainty: { slope: number; g: number; percent: number };
+  symbol: string;
+  unit: string;
+  /** The uncertainty worked from the readings, in the unit shown. */
+  worked: number;
+  percent: number;
 }) {
   const [value, setValue] = useState("");
   const [u, setU] = useState("");
   const typed = value.trim() !== "" && u.trim() !== "";
-  const check = typed ? checkQuote({ value, uncertainty: u }, uncertainty.g) : undefined;
+  const check = typed ? checkQuote({ value, uncertainty: u }, worked) : undefined;
   const lines: { ok: boolean; text: string }[] = check
     ? [
         {
           ok: check.uncertainty,
           text: check.uncertainty
-            ? t("lab.analyse.uncertainty.right", { percent: uncertainty.percent.toFixed(2) })
+            ? t("lab.analyse.uncertainty.right", { percent: percent.toFixed(2) })
             : t("lab.analyse.uncertainty.wrong", {
-                worked: showUncertainty(uncertainty.g).replace("± ", ""),
-                percent: uncertainty.percent.toFixed(2),
+                worked: showUncertainty(worked).replace("± ", ""),
+                percent: percent.toFixed(2),
+                symbol,
               }),
         },
         {
@@ -332,14 +352,11 @@ function QuoteWithUncertainty({
       ]
     : [];
   return (
-    <div className="flex flex-col gap-2 font-sans" data-uncertainty="g">
-      <span className="font-mono text-sm text-soft">
-        {t("lab.analyse.uncertainty.slope", { u: showUncertainty(uncertainty.slope) })}
-      </span>
+    <div className="flex flex-col gap-2 font-sans" data-uncertainty={symbol}>
       <div className="flex flex-wrap items-center gap-2 font-mono">
-        <span>g =</span>
+        <span>{symbol} =</span>
         <input
-          aria-label={t("lab.analyse.uncertainty.value")}
+          aria-label={t("lab.analyse.uncertainty.value", { symbol })}
           inputMode="decimal"
           className="h-9 w-24 border border-input bg-background px-2 text-right"
           value={value}
@@ -347,13 +364,13 @@ function QuoteWithUncertainty({
         />
         <span>±</span>
         <input
-          aria-label={t("lab.analyse.uncertainty.label")}
+          aria-label={t("lab.analyse.uncertainty.label", { symbol })}
           inputMode="decimal"
           className="h-9 w-20 border border-input bg-background px-2 text-right"
           value={u}
           onChange={(e) => setU(e.target.value)}
         />
-        <span>m s⁻²</span>
+        <span>{unit}</span>
       </div>
       {lines.map((l) => (
         <span key={l.text} role="status" className="flex items-baseline gap-2 text-sm">

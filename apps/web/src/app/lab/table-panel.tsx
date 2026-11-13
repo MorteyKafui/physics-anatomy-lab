@@ -8,7 +8,6 @@ import {
   heading,
   newColumnId,
   parseFormula,
-  quotedUncertainty,
   repeatsOf,
   toSIText,
   UNITS,
@@ -24,6 +23,7 @@ import { Button } from "@pa/ui/components/button";
 import { CheckIcon, PlusIcon, SigmaIcon, Trash2Icon, TriangleAlertIcon } from "@pa/ui/icons";
 import { useState, type ReactNode } from "react";
 
+import { showUncertainty } from "./uncertainty-format";
 import { newRowId, startTable, type Flags, type TableSpec } from "./table-builder";
 
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
@@ -626,12 +626,6 @@ export function TableBuilder({
     </section>
   );
 }
-
-/** An uncertainty as it is shown: rounded as it is quoted, "± 0.008". */
-export const showUncertainty = (u: number) => {
-  const q = quotedUncertainty(u);
-  return `± ${q.value.toFixed(q.decimals)}`;
-};
 
 const plusMinus = (
   uncertainties: ReadonlyMap<string, Readonly<Record<string, number>>> | undefined,
