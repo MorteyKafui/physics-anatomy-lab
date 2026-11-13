@@ -65,3 +65,17 @@ def model_check(
             "found": bool(abs(errors) > FACTOR),
         }
     return out
+
+
+def x_intercept(xs: Sequence[float], ys: Sequence[float]) -> dict[str, float]:
+    """Where the least-squares line meets y = 0, with its error from NumPy's covariance matrix."""
+    x = np.asarray(xs, dtype=float)
+    y = np.asarray(ys, dtype=float)
+    (b, a), cov = np.polyfit(x, y, 1, cov="unscaled")
+    n = len(x)
+    s2 = float(np.sum((y - (b * x + a)) ** 2) / (n - 2))
+    cov = cov * s2
+    x0 = -a / b
+    # The gradient of −a/b with respect to (b, a).
+    grad = np.array([a / b**2, -1 / b])
+    return {"value": float(x0), "error": float(np.sqrt(grad @ cov @ grad))}

@@ -112,3 +112,18 @@ export function percentDifference(measured: number, accepted: number): number {
   if (accepted === 0) throw new RangeError("percentDifference needs a non-zero accepted value");
   return ((measured - accepted) / accepted) * 100;
 }
+
+/**
+ * Where a fitted line meets the x axis (y = 0), x₀ = −intercept ⁄ slope, with its standard error
+ * from the slope's and intercept's errors and their covariance (−x̄ times the slope's variance):
+ * σ² = (σₐ² + x₀² σ_b² + 2 x₀ cov(a, b)) ⁄ b². For Ohm's law, the cell's emf E where I against V
+ * meets the V axis. Checked against NumPy's covariance in validation (model-check.json).
+ */
+export function xIntercept(fit: LineFit): { value: number; error: number } {
+  if (fit.slope === 0) throw new RangeError("A flat line never meets the x axis");
+  const value = -fit.intercept / fit.slope;
+  const cov = -fit.centroid.x * fit.slopeError ** 2;
+  const variance =
+    (fit.interceptError ** 2 + value ** 2 * fit.slopeError ** 2 + 2 * value * cov) / fit.slope ** 2;
+  return { value, error: Math.sqrt(Math.max(0, variance)) };
+}

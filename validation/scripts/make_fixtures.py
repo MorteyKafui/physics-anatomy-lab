@@ -37,7 +37,7 @@ from pa_validation.lens_exact import (
 )
 from pa_validation.lens_parallax import ARCMIN, View, no_parallax, separation
 from pa_validation.mixtures import final_temperature, solid_specific_heat
-from pa_validation.model_check import model_check
+from pa_validation.model_check import model_check, x_intercept
 from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
 from pa_validation.pendulum import period_exact
 from pa_validation.review import reading_error_percent, right_way
@@ -622,7 +622,24 @@ def build_model_check() -> dict[str, object]:
     )
     case("a curve, scattered", ts, noisy(1, cooling, 0.3), cooling, 0.05, curve=True)
     case("too few points", xs[:2], line[:2], line[:2], careful, k)
-    return {"model": "NumPy least squares, decision 5 as amended", "factor": 2, "cases": cases}
+    intercepts = [
+        {"name": name, "x": x, "y": y, "xIntercept": x_intercept(x, y)}
+        for name, x, y in [
+            (
+                "Ohm's law: I against V",
+                [2.30, 2.10, 2.00, 1.90, 1.80, 1.70],
+                [0.46, 0.60, 0.66, 0.72, 0.78, 0.86],
+            ),
+            ("a line far from its x intercept", [1.0, 2.0, 3.0, 4.0], [10.2, 11.9, 14.1, 15.8]),
+            ("a falling line", [0.1, 0.2, 0.3, 0.4, 0.5], [4.9, 4.1, 2.95, 2.1, 1.0]),
+        ]
+    ]
+    return {
+        "model": "NumPy least squares, decision 5 as amended",
+        "factor": 2,
+        "cases": cases,
+        "xIntercepts": intercepts,
+    }
 
 
 def write(name: str, data: dict[str, object]) -> None:

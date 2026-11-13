@@ -5,7 +5,7 @@ export { findUnit, fromSI, suspectedUnitSlip, toSI, UNITS } from "./units";
 export type { QuantityKind, UnitDef } from "./units";
 export { decimalsForResolution, formatSigFigs, parseFigure, toSigFigs } from "./sigfigs";
 export type { ParsedFigure } from "./sigfigs";
-export { fitLine, fitThroughOrigin, mean, percentDifference, residuals } from "./fit";
+export { fitLine, fitThroughOrigin, mean, percentDifference, residuals, xIntercept } from "./fit";
 export type { LineFit, Point } from "./fit";
 export { incompleteBeta, logGamma, studentTCdf, studentTQuantile } from "./student-t";
 export { deletedResiduals, findOutlier, outlierCriticalValue } from "./outliers";
