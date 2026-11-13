@@ -230,6 +230,14 @@ export function solidReport(attempt: Attempt, events: readonly LabEvent[]): Repo
               t: tText.replace(" °C", ""),
               c: cText,
             }),
+          // Named once c is found (decision 7): every format has the calculation; WASSCE's has no
+          // conclusion.
+          cText &&
+            metal &&
+            t(`${R}.calcMetal`, {
+              metal: t(`${P}.metal.${metal.id}` as MessageKey),
+              true: metal.c,
+            }),
         )
       : "";
 

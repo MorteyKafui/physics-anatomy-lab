@@ -568,6 +568,8 @@ export const enGBMethodOfMixtures = {
     "T, the highest temperature on the graph = {T}",
   "experiments.method-of-mixtures-solid.report.calcC":
     "c_s = (m_c c_c + m_w c_w)(T − T₀) ⁄ (m_s (100 − T)) = ({mc} × {cc} + {mw} × {cw})({t} − {t0}) ⁄ ({ms} × (100 − {t})) = {c}",
+  "experiments.method-of-mixtures-solid.report.calcMetal":
+    "The solid is {metal}, whose specific heat capacity is {true} J kg⁻¹ K⁻¹.",
   "experiments.method-of-mixtures-solid.report.precaution.quick":
     "I moved the solid into the calorimeter quickly, to reduce heat lost on the way.",
   "experiments.method-of-mixtures-solid.report.precaution.shake":
@@ -702,6 +704,7 @@ export const enGBMethodOfMixtures = {
     "The readings stopped before the highest temperature.",
   "experiments.method-of-mixtures-solid.exam.lost.thermometerDecimals":
     "Temperatures off the thermometer's least count: {n}.",
+  "experiments.method-of-mixtures-solid.exam.lost.noRun": "No run was made.",
   "experiments.method-of-mixtures-solid.exam.lost.axesSolid": "The graph is not θ against t.",
   "experiments.method-of-mixtures-solid.exam.q.heat-capacity":
     "What is meant by the heat capacity of a body?",

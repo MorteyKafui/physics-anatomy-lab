@@ -58,6 +58,14 @@ describe("the hot-solid rubric", () => {
     expect(m.got).toBe(22);
   });
 
+  test("gives no transfer marks when nothing was moved across", () => {
+    const m = markSolidScript({ ...perfect, minutes: 0, transfer: 0 });
+    expect(m.sections[1]!.items.find((i) => i.id === "transfer")).toMatchObject({
+      got: 0,
+      lost: { key: "noRun" },
+    });
+  });
+
   test("marks stopping before the highest, and a missing weighing", () => {
     const m = markSolidScript({ ...perfect, pastHighest: false, minutes: 1, weighed: 2 });
     const tab = m.sections[1]!.items;

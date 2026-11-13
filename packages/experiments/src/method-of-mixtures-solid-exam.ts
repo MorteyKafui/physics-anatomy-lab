@@ -93,7 +93,10 @@ export function markSolidScript(f: SolidExamFacts): {
               of: 2,
               lost: { key: "weighed", params: { n: f.weighed } },
             },
-        twoLess("transfer", f.transfer, "transfer"),
+        // With no run, there was no transfer to mark.
+        f.minutes === 0
+          ? { id: "transfer", got: 0, of: 2, lost: { key: "noRun" } }
+          : twoLess("transfer", f.transfer, "transfer"),
         ...(!f.tabulated
           ? [noTable("minutes", 2), noTable("headings", 2), noTable("decimals", 2)]
           : [
