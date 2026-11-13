@@ -609,6 +609,9 @@ export const enGB = {
     "g = {g} m s⁻² does not agree with the accepted {accepted} m s⁻²: they are {away} uncertainties apart, so an error not counted in the uncertainty remains.",
   "report.gen.uncertainty.e": "E, where the line meets the V axis, is {E} {unit}.",
   "report.gen.uncertainty.r": "r has the slope's percentage uncertainty: r = {r} Ω.",
+  "report.gen.uncertainty.sum":
+    "By least squares, the two intercepts add to m₁ + m₂ = {sum} {unit}.",
+  "report.gen.uncertainty.f": "f = {f} {unit}, an uncertainty of {percent} %.",
   "report.gen.uncertainty.largest":
     "The largest percentage uncertainty in the table is in {symbol}: {percent} %.",
   "lab.table.uncertainty.mean": "± half the range",

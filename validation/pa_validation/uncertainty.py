@@ -51,3 +51,18 @@ def worst_lines(
     steep = slope(x[0] + dx[0], y[0] - up * dy[0], x[-1] - dx[-1], y[-1] + up * dy[-1])
     least = slope(x[0] - dx[0], y[0] + up * dy[0], x[-1] + dx[-1], y[-1] - up * dy[-1])
     return {"steepest": steep, "leastSteep": least, "half": abs(steep - least) / 2}
+
+
+def intercept_sum(xs: Sequence[float], ys: Sequence[float]) -> dict[str, float]:
+    """m1 + m2, where the least-squares line meets the y and x axes, with its error from NumPy's
+    covariance matrix of the slope and intercept."""
+    x = np.asarray(xs, dtype=float)
+    y = np.asarray(ys, dtype=float)
+    (b, a), cov = np.polyfit(x, y, 1, cov="unscaled")
+    n = len(x)
+    s2 = float(np.sum((y - (b * x + a)) ** 2) / (n - 2))
+    cov = cov * s2
+    value = a - a / b
+    # The gradient of a - a/b with respect to (b, a).
+    grad = np.array([a / b**2, 1 - 1 / b])
+    return {"value": float(value), "error": float(np.sqrt(grad @ cov @ grad))}

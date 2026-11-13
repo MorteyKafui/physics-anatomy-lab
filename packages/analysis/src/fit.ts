@@ -127,3 +127,22 @@ export function xIntercept(fit: LineFit): { value: number; error: number } {
     (fit.interceptError ** 2 + value ** 2 * fit.slopeError ** 2 + 2 * value * cov) / fit.slope ** 2;
   return { value, error: Math.sqrt(Math.max(0, variance)) };
 }
+
+/**
+ * The sum of where a fitted line meets the y axis and the x axis, m₁ + m₂ = a − a ⁄ b, with its
+ * standard error from the slope's and intercept's errors and their covariance (−x̄ times the
+ * slope's variance). For the converging lens, 1/v against 1/u, f = 2 ⁄ (m₁ + m₂). Checked against
+ * NumPy's covariance in validation (uncertainty.json).
+ */
+export function interceptSum(fit: LineFit): { value: number; error: number } {
+  if (fit.slope === 0) throw new RangeError("A flat line never meets the x axis");
+  const a = fit.intercept;
+  const b = fit.slope;
+  const value = a - a / b;
+  const dA = 1 - 1 / b;
+  const dB = a / b ** 2;
+  const cov = -fit.centroid.x * fit.slopeError ** 2;
+  const variance =
+    dA ** 2 * fit.interceptError ** 2 + dB ** 2 * fit.slopeError ** 2 + 2 * dA * dB * cov;
+  return { value, error: Math.sqrt(Math.max(0, variance)) };
+}

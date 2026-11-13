@@ -2,6 +2,8 @@
 
 import { EyeView, PinsBench } from "@pa/apparatus";
 import {
+  fitLine,
+  tableUncertainties,
   fillDerived,
   formatQuantity,
   formulaUnitFindings,
@@ -69,7 +71,10 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
-import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
+import { UncertaintySwitch } from "../uncertainty-switch";
+import { showUncertainty } from "../uncertainty-format";
+import { useUncertainties } from "../use-uncertainties";
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
 import { ExamBar } from "../exam/bar";
@@ -95,6 +100,7 @@ const PIN_STEP = MM;
  */
 export function ConvergingLensPinsScreen() {
   const handle = useAttempt(E.id);
+  const [uncertain, setUncertain] = useUncertainties();
   const router = useRouter();
   // Exam mode: the clock, from the attempt's own events.
   const exam = useMemo(
@@ -332,6 +338,30 @@ export function ConvergingLensPinsScreen() {
   };
   // xy over (x + y): cm² over cm is cm.
   const slopeUnit = graphUnits.x || "cm";
+
+  // The uncertainty layer (docs/content/uncertainty-brief.md): each cell's uncertainty, error bars
+  // on the graph, and the result from the least-squares line with its uncertainty.
+  const uncertainties = uncertain ? tableUncertainties(fillDerived(table)) : undefined;
+  const bars = uncertainties
+    ? new Map(
+        [...uncertainties].map(([row, u]) => [
+          row,
+          { dx: u[graphColumns.x] ?? 0, dy: u[graphColumns.y] ?? 0 },
+        ]),
+      )
+    : undefined;
+  const fit =
+    uncertain && rightGraph && graphData.length >= 3 && new Set(graphData.map((p) => p.x)).size >= 2
+      ? fitLine(graphData)
+      : undefined;
+  // f is the slope itself: its uncertainty is the slope's.
+  const lineUncertainty =
+    fit && fit.slope > 0
+      ? {
+          slope: fit.slopeError,
+          f: { worked: fit.slopeError, percent: (100 * fit.slopeError) / fit.slope },
+        }
+      : undefined;
   const expected = pinsExpected(graphShown.triangle, graphColumns, graphUnits, answers);
   const analysisFindings = runRules(PINS_ANALYSIS_RULES, { answers, expected });
   const slope = graphShown.triangle && slopeOf(graphShown.triangle, graphUnits);
@@ -548,6 +578,7 @@ export function ConvergingLensPinsScreen() {
               </select>
             </label>
           )}
+          {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&
@@ -594,6 +625,7 @@ export function ConvergingLensPinsScreen() {
                   onRun={results.run}
                   onFillReadings={tableAssist ? fillReadings : undefined}
                   onCommit={() => undefined}
+                  uncertainties={uncertainties}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
@@ -616,6 +648,7 @@ export function ConvergingLensPinsScreen() {
                   showChecks={graphMarks && !graphAssist}
                   onRun={plot.run}
                   latest={plot.now}
+                  bars={bars}
                   below={
                     advice.length > 0 || (graphMarks && pinsGraphFindings.length > 0) ? (
                       <div className="flex flex-col gap-3">
@@ -663,17 +696,34 @@ export function ConvergingLensPinsScreen() {
                           onWrite={write("slope")}
                         />
                         {rightGraph ? (
-                          <AnswerLine
-                            id="f"
-                            unit={slopeUnit}
-                            lead={t(`${P}.analyse.fLead`)}
-                            written={answers.f}
-                            expected={expected.f}
-                            assist={analysisAssist}
-                            marks={analysisMarks && !analysisAssist}
-                            flagged={analysisFlags("f")}
-                            onWrite={write("f")}
-                          />
+                          <>
+                            <AnswerLine
+                              id="f"
+                              unit={slopeUnit}
+                              lead={t(`${P}.analyse.fLead`)}
+                              written={answers.f}
+                              expected={expected.f}
+                              assist={analysisAssist}
+                              marks={analysisMarks && !analysisAssist}
+                              flagged={analysisFlags("f")}
+                              onWrite={write("f")}
+                            />
+                            {lineUncertainty && (
+                              <div className="flex flex-col gap-2">
+                                <span className="font-mono text-sm text-soft">
+                                  {t("lab.analyse.uncertainty.slope", {
+                                    u: showUncertainty(lineUncertainty.slope),
+                                  })}
+                                </span>
+                                <QuoteLine
+                                  symbol="f"
+                                  unit={slopeUnit}
+                                  worked={lineUncertainty.f.worked}
+                                  percent={lineUncertainty.f.percent}
+                                />
+                              </div>
+                            )}
+                          </>
                         ) : (
                           <p className="font-sans text-sm text-soft">
                             {t(`${P}.analyse.otherGraph`, symbols)}

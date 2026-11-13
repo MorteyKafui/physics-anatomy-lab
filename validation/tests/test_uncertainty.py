@@ -41,3 +41,13 @@ def test_worst_lines_bracket_the_least_squares_slope() -> None:
     xs, ys = [0.6, 0.7, 0.8, 0.9, 1.0], [2.415, 2.835, 3.218, 3.640, 4.032]
     got = worst_lines(xs, ys, [0.0005] * 5, [0.008] * 5)
     assert got["leastSteep"] < 4.04 < got["steepest"]
+
+
+def test_intercept_sum_of_an_exact_line() -> None:
+    from pa_validation.uncertainty import intercept_sum
+
+    # y = 0.0674 - x, as an exact lens line: m1 = m2 = 0.0674, so the sum is twice it, no error.
+    xs = [0.025, 0.03, 0.035, 0.04, 0.05]
+    got = intercept_sum(xs, [0.0674 - x for x in xs])
+    assert got["value"] == pytest.approx(2 * 0.0674)
+    assert got["error"] == pytest.approx(0, abs=1e-9)
