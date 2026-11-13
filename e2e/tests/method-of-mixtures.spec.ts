@@ -117,10 +117,15 @@ test("not stirred, the hot water stays on top and the coach says what it costs",
 test("the mixtures bench has no serious accessibility issues, building and measuring", async ({
   page,
 }) => {
+  // Buttons fade between colours as they are pressed; with reduced motion they change at once, so
+  // axe measures the colours a student sees, not one caught halfway through a fade.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await toBuild(page);
   await fill(page);
   expect(await serious(page)).toEqual([]);
   await page.getByRole("button", { name: "Put the lid on" }).first().click();
+  // The lid's toggle, pressed and still enabled, keeps its contrast.
+  expect(await serious(page)).toEqual([]);
   await page.getByRole("button", { name: "Finish building" }).click();
   await page.getByRole("button", { name: "Continue to Measure" }).click();
   await page.getByRole("button", { name: "Stir", exact: true }).click();

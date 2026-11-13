@@ -193,6 +193,19 @@ describe("the seven mistakes, each with its effect on c", () => {
     expect(f?.params?.celsius).toBe(0.2);
   });
 
+  test("read every minute as the book asks, the highest minute reading is no mistake", () => {
+    // Aluminium's highest comes between the 1- and 2-minute readings, 0.1 °C above both.
+    const b = correctSolidBench({ metal: H.metals[3] });
+    const minute = [60, 120, 180].map((t) => ({ t, at: solidThermometer(b, t) }));
+    const best = minute.reduce((x, m) => (m.at > x.at ? m : x));
+    const data = solidReadingData(
+      { ...b, weighed: { solid: 100, empty: 50, filled: 100 } },
+      { start: 28, highest: Math.round(best.at * 10) / 10, t: best.t, last: 180 },
+    )!;
+    const r = asSolidReading({ id: "r1", data })!;
+    expect(runRules(SOLID_PROCEDURE_RULES, { readings: [r] })).toEqual([]);
+  });
+
   test("a few seconds to move it, shaken and lowered in, is no mistake", () => {
     const b = { ...careful(), transfer: { after: 5, shaken: true, gently: true } };
     expect(caught(b)).toEqual([]);

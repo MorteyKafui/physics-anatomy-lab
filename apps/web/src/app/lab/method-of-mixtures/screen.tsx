@@ -93,7 +93,9 @@ type Eye = keyof typeof EYE;
 const EYES = Object.keys(EYE) as Eye[];
 /** A toggle pressed in is drawn light, as on the board. */
 const pressed = (on: boolean) =>
-  on ? "flex-1 border-foreground bg-foreground text-background hover:bg-foreground/90" : "flex-1";
+  on
+    ? "flex-1 border-foreground bg-foreground text-background hover:bg-foreground/90 hover:text-background dark:border-foreground dark:bg-foreground dark:hover:bg-foreground/90"
+    : "flex-1";
 /** The thermometer has no noise: one generator serves every reading. */
 const rng = createRng(1);
 
