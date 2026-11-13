@@ -17,6 +17,9 @@ import {
   answersProjection,
   coach,
   coachIsOn,
+  decideExam,
+  EMPTY_EXAM,
+  examProjection,
   frontier,
   HELP_LEVELS,
   helpLevelFor,
@@ -62,13 +65,15 @@ import { Button } from "@pa/ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
 import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
-import { useAttempt } from "../use-attempt";
+import { ExamBar } from "../exam/bar";
+import { backToPractice, useAttempt } from "../use-attempt";
 
 const H = hotSolid;
 const P = "experiments.method-of-mixtures-solid";
@@ -96,7 +101,7 @@ const pressed = (on: boolean) =>
  * the calorimeter, and a clock that runs on the events' own times, so the move across and the
  * minutes since the solid went in carry on across a reload; then the shared table builder and
  * graph sheet (θ against t, read for its highest point), and c from the book's equation, with the
- * metal named once c is found (decision 7). The report, sheets and exam come next.
+ * metal named once c is found (decision 7). Exam mode runs the same lab with the coach off.
  */
 export function MethodOfMixturesSolidScreen() {
   const handle = useAttempt(H.id);
@@ -122,6 +127,22 @@ export function MethodOfMixturesSolidScreen() {
   // Since the calorimeter was last emptied: when the solid was lifted out, when it went in, and
   // the readings taken since, from the events.
   const results = useTable(handle);
+  const router = useRouter();
+  // Exam mode: the clock, from the attempt's own events.
+  const exam = useMemo(
+    () => (handle ? replay(examProjection, handle.attempt, handle.events) : EMPTY_EXAM),
+    [handle],
+  );
+  const handIn = useCallback(
+    async (auto: boolean) => {
+      if (!handle) return;
+      const now = replay(examProjection, handle.attempt, handle.events);
+      const d = decideExam(handle.attempt.mode, now, { type: "hand-in", auto });
+      if (d.ok) await handle.record(d.events);
+      router.push(`/lab/${H.id}/exam`);
+    },
+    [handle, router],
+  );
   const plot = useGraph(handle);
   const answers = useMemo(
     () => (handle ? replay(answersProjection, handle.attempt, handle.events) : {}),
@@ -670,26 +691,49 @@ export function MethodOfMixturesSolidScreen() {
             </div>
           </div>
           <span className="hidden flex-1 md:block" />
-          <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-            <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
-            <select
-              className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
-              value={state.helpLevel}
-              onChange={(e) =>
-                void handle.dispatch({ type: "set-help-level", level: e.target.value as HelpLevel })
-              }
-            >
-              {HELP_LEVELS.map((lvl) => (
-                <option key={lvl} value={lvl}>
-                  {t(`lab.helpLevel.${lvl}` as MessageKey)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <span className="border border-border px-2.5 py-1 text-xs text-muted-foreground">
-            {t(`${P}.inDevelopment`)}
-          </span>
+          {/* In an exam the coach is off: no help level to choose. */}
+          {state.mode !== "exam" && (
+            <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
+              <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
+              <select
+                className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
+                value={state.helpLevel}
+                onChange={(e) =>
+                  void handle.dispatch({
+                    type: "set-help-level",
+                    level: e.target.value as HelpLevel,
+                  })
+                }
+              >
+                {HELP_LEVELS.map((lvl) => (
+                  <option key={lvl} value={lvl}>
+                    {t(`lab.helpLevel.${lvl}` as MessageKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </header>
+        {handle.attempt.mode === "exam" &&
+          exam.startedAt !== undefined &&
+          exam.handedInAt === undefined && (
+            <ExamBar startedAt={exam.startedAt} onHandIn={(auto) => void handIn(auto)} />
+          )}
+        {handle.attempt.mode === "exam" && exam.handedInAt !== undefined && (
+          <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
+            <span>{exam.auto ? t("exam.timeUp") : t("exam.handedIn")}</span>
+            <Link href={`/lab/${H.id}/exam`} className="font-semibold underline underline-offset-2">
+              {t("exam.seeScript")}
+            </Link>
+            <button
+              type="button"
+              className="underline underline-offset-2"
+              onClick={() => void backToPractice(H.id).then(() => window.location.reload())}
+            >
+              {t("exam.backToPractice")}
+            </button>
+          </div>
+        )}
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           {panel ? (
@@ -1096,8 +1140,16 @@ export function MethodOfMixturesSolidScreen() {
                             metal: t(`${P}.metal.${metal?.id ?? "copper"}` as MessageKey),
                             true: metal?.c ?? 0,
                           })
-                        : t(`${P}.next`)}
+                        : t("report.openHint")}
                     </p>
+                    {state.step === "report" && (
+                      <Link
+                        href={`/lab/${H.id}/report`}
+                        className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                      >
+                        {t("report.open")}
+                      </Link>
+                    )}
                     {state.step === "conclude" && next && (
                       <Button className="self-start" onClick={() => void finishStep()}>
                         {t("lab.steps.continue", { step: stepName(next) })}
@@ -1132,6 +1184,20 @@ export function MethodOfMixturesSolidScreen() {
                   </span>
                 </div>
                 <p className="text-soft">{t(`${P}.explain.given`)}</p>
+                <Link
+                  href={`/lab/${H.id}/sheets`}
+                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("sheets.link")}
+                </Link>
+                {handle.attempt.mode !== "exam" && (
+                  <Link
+                    href={`/lab/${H.id}/exam`}
+                    className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                  >
+                    {t("exam.try")}
+                  </Link>
+                )}
               </TabsContent>
 
               <TabsContent value="tips" className="flex flex-col gap-3 p-5">

@@ -377,9 +377,6 @@ export const enGBMethodOfMixtures = {
   "findings.mixtures.cylinderAtAngle.demonstrate":
     "Stand the cylinder on the bench and read the bottom of the curved surface with your eye level with it.",
   "experiments.method-of-mixtures-solid.title": "The method of mixtures: a hot solid",
-  "experiments.method-of-mixtures-solid.inDevelopment": "Being built: the report comes next",
-  "experiments.method-of-mixtures-solid.next":
-    "The report, the print sheets and the exam for the hot solid come with the next part of this lab. Your work is kept.",
   "experiments.method-of-mixtures-solid.question.title":
     "The specific heat capacity of a solid, by the method of mixtures",
   "experiments.method-of-mixtures-solid.question.text":
@@ -520,6 +517,204 @@ export const enGBMethodOfMixtures = {
     "Your graph is {y} against {x}. θ against t shows the temperature rising to its highest and then falling, which is how the question finds T.",
   "findings.mixturesSolid.wrongGraph.demonstrate":
     "Choose t for the axis along the bottom and θ for the axis up the side.",
+  "experiments.method-of-mixtures-solid.report.title":
+    "{experiment}: the specific heat capacity of a solid by the method of mixtures",
+  "experiments.method-of-mixtures-solid.report.aim":
+    "To find the specific heat capacity of a solid by putting it, hot from boiling water, into water in a lagged calorimeter.",
+  "experiments.method-of-mixtures-solid.report.apparatus.solid":
+    "A solid S of about {grams} g on a thread",
+  "experiments.method-of-mixtures-solid.report.apparatus.balance": "A balance reading to {grams} g",
+  "experiments.method-of-mixtures-solid.report.apparatus.calorimeter":
+    "A {grams} g copper calorimeter with its stirrer, in a lagging jacket with a lid",
+  "experiments.method-of-mixtures-solid.report.apparatus.thermometer":
+    "A thermometer reading to {celsius} °C",
+  "experiments.method-of-mixtures-solid.report.apparatus.heater":
+    "A beaker of boiling water on a tripod over a heater",
+  "experiments.method-of-mixtures-solid.report.benchCaption":
+    "The solid S in the water in the calorimeter C, with the thermometer T, beside the balance B",
+  "experiments.method-of-mixtures-solid.report.benchAlt":
+    "{caption}: a balance, a beaker of boiling water over a heater, and a lagged copper calorimeter with the solid on a thread in its water.",
+  "experiments.method-of-mixtures-solid.report.letter.B": "B",
+  "experiments.method-of-mixtures-solid.report.letter.S": "S",
+  "experiments.method-of-mixtures-solid.report.letter.C": "C",
+  "experiments.method-of-mixtures-solid.report.letter.T": "T",
+  "experiments.method-of-mixtures-solid.report.legend.B": "Balance",
+  "experiments.method-of-mixtures-solid.report.legend.S": "Solid",
+  "experiments.method-of-mixtures-solid.report.legend.C": "Lagged calorimeter",
+  "experiments.method-of-mixtures-solid.report.legend.T": "Thermometer",
+  "experiments.method-of-mixtures-solid.report.values.bench":
+    "Solid {solid} g into {water} g of water; highest {highest} °C",
+  "experiments.method-of-mixtures-solid.report.theory":
+    "The heat the solid gives up cooling from the boiling water's temperature T_s to T is the heat the water and the calorimeter take in warming from T₀ to T: m_s c_s (T_s − T) = (m_c c_c + m_w c_w)(T − T₀), if no heat goes to the room.",
+  "experiments.method-of-mixtures-solid.report.method.weigh":
+    "I weighed the solid, then the calorimeter with its stirrer, empty and with water about half full, and put the lid on.",
+  "experiments.method-of-mixtures-solid.report.method.transfer":
+    "I heated the solid in boiling water, moved it quickly into the calorimeter, stirred, and read the temperature every minute until it fell.",
+  "experiments.method-of-mixtures-solid.report.method.analyse":
+    "I tabulated t and θ, plotted θ against t, read the highest temperature T from the graph, and worked out c from the equation.",
+  "experiments.method-of-mixtures-solid.report.method.analyseOther":
+    "I tabulated my readings and plotted {y} against {x}.",
+  "experiments.method-of-mixtures-solid.report.observations.readings": "I took {n} runs.",
+  "experiments.method-of-mixtures-solid.report.observations.one": "I took one run.",
+  "experiments.method-of-mixtures-solid.report.observations.change":
+    "The water rose from {t0} °C to {T} °C, by {rise} °C, while the solid fell from 100 °C to {T} °C, by {fall} °C.",
+  "experiments.method-of-mixtures-solid.report.observations.peak":
+    "The thermometer rose quickly, was highest within two minutes, then fell slowly.",
+  "experiments.method-of-mixtures-solid.report.table":
+    "The table shows the temperature every minute after the solid went in.",
+  "experiments.method-of-mixtures-solid.report.graph":
+    "Fig. 2 {caption} The temperature rises to its highest, T, then falls slowly.",
+  "experiments.method-of-mixtures-solid.report.calcT":
+    "T, the highest temperature on the graph = {T}",
+  "experiments.method-of-mixtures-solid.report.calcC":
+    "c_s = (m_c c_c + m_w c_w)(T − T₀) ⁄ (m_s (100 − T)) = ({mc} × {cc} + {mw} × {cw})({t} − {t0}) ⁄ ({ms} × (100 − {t})) = {c}",
+  "experiments.method-of-mixtures-solid.report.precaution.quick":
+    "I moved the solid into the calorimeter quickly, to reduce heat lost on the way.",
+  "experiments.method-of-mixtures-solid.report.precaution.shake":
+    "I shook the solid before moving it, so no boiling water went in with it.",
+  "experiments.method-of-mixtures-solid.report.precaution.gently":
+    "I lowered the solid in gently, so no water splashed out.",
+  "experiments.method-of-mixtures-solid.report.precaution.stir":
+    "I stirred the water all the time.",
+  "experiments.method-of-mixtures-solid.report.precaution.lid":
+    "I kept the lid on the lagged calorimeter to reduce heat lost to the room.",
+  "experiments.method-of-mixtures-solid.report.precaution.highest":
+    "I read the temperature every minute until it fell, and took the highest.",
+  "experiments.method-of-mixtures-solid.report.precaution.eye":
+    "I read the thermometer with my eye level with the top of the mercury.",
+  "experiments.method-of-mixtures-solid.report.source.early":
+    "Some readings stopped before the temperature had reached its highest, so T is too small.",
+  "experiments.method-of-mixtures-solid.report.source.slow":
+    "The solid took too long to move across, so it went in below 100 °C.",
+  "experiments.method-of-mixtures-solid.report.source.carried":
+    "Boiling water went in with the solid, so its heat was counted as the solid's.",
+  "experiments.method-of-mixtures-solid.report.source.splashed":
+    "Water splashed out as the solid went in, so less water took the heat than was weighed.",
+  "experiments.method-of-mixtures-solid.report.source.unstirred":
+    "The water was not stirred, so the solid shared its heat slowly and more went to the room.",
+  "experiments.method-of-mixtures-solid.report.source.uncovered":
+    "The lid was off, so more heat went to the room.",
+  "experiments.method-of-mixtures-solid.report.source.angle":
+    "Some temperatures were read at an angle, so they are shifted by parallax.",
+  "experiments.method-of-mixtures-solid.report.source.leastCount":
+    "The balance reads to {grams} g and the thermometer to {celsius} °C.",
+  "experiments.method-of-mixtures-solid.report.source.air":
+    "In the {seconds} s the solid was in the air, it cooled to about {entry} °C before it went in.",
+  "experiments.method-of-mixtures-solid.report.source.minutes":
+    "Read every minute, the highest reading can miss the true highest, which falls between two minutes, by about {celsius} °C.",
+  "experiments.method-of-mixtures-solid.report.conclusion":
+    "The specific heat capacity of the solid S is {c}.",
+  "experiments.method-of-mixtures-solid.report.conclusionNamed":
+    "The specific heat capacity of the solid S is {c}. The solid is {metal}, whose specific heat capacity is {true} J kg⁻¹ K⁻¹.",
+  "experiments.method-of-mixtures-solid.sheet.drawingTitle": "The hot solid, explained",
+  "experiments.method-of-mixtures-solid.sheet.style":
+    "A metal from boiling water into a lagged calorimeter",
+  "experiments.method-of-mixtures-solid.sheet.question": "How much heat does a metal hold?",
+  "experiments.method-of-mixtures-solid.sheet.lead":
+    "A solid from boiling water gives its heat to cooler water. Weigh everything, read the highest temperature, and the heat given equals the heat taken tells you the metal's specific heat capacity.",
+  "experiments.method-of-mixtures-solid.sheet.n.c":
+    "J kg⁻¹ K⁻¹: c for copper, read every minute (true {cTrue})",
+  "experiments.method-of-mixtures-solid.sheet.n.T":
+    "°C: the highest reading for copper, from {room} °C",
+  "experiments.method-of-mixtures-solid.sheet.n.at":
+    "s after the solid goes in, when the temperature is highest",
+  "experiments.method-of-mixtures-solid.sheet.n.al":
+    "J kg⁻¹ K⁻¹: c for aluminium, with a highest of {alT} °C",
+  "experiments.method-of-mixtures-solid.sheet.n.count": "metals the solid may be: {list}",
+  "experiments.method-of-mixtures-solid.sheet.part.B":
+    "Weighs to {balance} g: the solid, the calorimeter empty, and with its water.",
+  "experiments.method-of-mixtures-solid.sheet.part.S":
+    "Heated in boiling water at {boiling} °C. In the air it cools at about {air}% of its excess a minute, so move it quickly.",
+  "experiments.method-of-mixtures-solid.sheet.part.C":
+    "Copper, lagged and covered. Its heat capacity counts too, with c = {cc} J kg⁻¹ K⁻¹ given.",
+  "experiments.method-of-mixtures-solid.sheet.part.T":
+    "Reads to {thermometer} °C. Read it every minute until it falls.",
+  "experiments.method-of-mixtures-solid.sheet.spec.solid": "Solid",
+  "experiments.method-of-mixtures-solid.sheet.spec.solidValue":
+    "{solid} g of copper, brass, iron or aluminium, named when c is found",
+  "experiments.method-of-mixtures-solid.sheet.spec.masses": "Masses",
+  "experiments.method-of-mixtures-solid.sheet.spec.massesValue":
+    "Calorimeter {calorimeter} g; water {water} g, at {room} °C",
+  "experiments.method-of-mixtures-solid.sheet.spec.scales": "Scales",
+  "experiments.method-of-mixtures-solid.sheet.spec.scalesValue":
+    "Balance to {balance} g, thermometer to {thermometer} °C",
+  "experiments.method-of-mixtures-solid.sheet.spec.model": "Heat sharing",
+  "experiments.method-of-mixtures-solid.sheet.spec.modelValue":
+    "The solid shares its heat with the stirred water in {sharing} s; it cools {air}% a minute in the air",
+  "experiments.method-of-mixtures-solid.sheet.spec.result": "Result",
+  "experiments.method-of-mixtures-solid.sheet.spec.resultValue":
+    "Copper read every minute: T = {T} °C, c = {c} J kg⁻¹ K⁻¹",
+  "experiments.method-of-mixtures-solid.sheet.step.weigh.title": "Weigh everything",
+  "experiments.method-of-mixtures-solid.sheet.step.weigh.text":
+    "The solid, the calorimeter empty, then with {water} g of water.",
+  "experiments.method-of-mixtures-solid.sheet.step.heat.title": "Heat the solid",
+  "experiments.method-of-mixtures-solid.sheet.step.heat.text":
+    "In boiling water at {boiling} °C, until it has been steady for some time.",
+  "experiments.method-of-mixtures-solid.sheet.step.move.title": "Move it across",
+  "experiments.method-of-mixtures-solid.sheet.step.move.text":
+    "Shake it, carry it across in a few seconds, and lower it in. Lid on.",
+  "experiments.method-of-mixtures-solid.sheet.step.read.title": "Read every minute",
+  "experiments.method-of-mixtures-solid.sheet.step.read.text":
+    "Stir, and read the temperature every minute until it falls. The highest is T: {T} °C for copper.",
+  "experiments.method-of-mixtures-solid.sheet.step.plot.title": "Plot θ against t",
+  "experiments.method-of-mixtures-solid.sheet.step.plot.text":
+    "The curve rises to its highest, T, then falls slowly. No line to draw.",
+  "experiments.method-of-mixtures-solid.sheet.why.title": "Why the heat balances",
+  "experiments.method-of-mixtures-solid.sheet.why.text":
+    "The solid gives up m_s c_s (100 − T); the water and calorimeter take in (m_c c_c + m_w c_w)(T − T₀). Set them equal and c_s is the only unknown: {c} J kg⁻¹ K⁻¹ for copper read every minute, against {cTrue}.",
+  "experiments.method-of-mixtures-solid.sheet.motto": "Heat given is heat taken.",
+  "experiments.method-of-mixtures-solid.exam.question.meta":
+    "Question 1 · The method of mixtures: a hot solid · {minutes} minutes",
+  "experiments.method-of-mixtures-solid.exam.question.lead":
+    "Find the specific heat capacity of the solid S by the method of mixtures.",
+  "experiments.method-of-mixtures-solid.exam.question.1":
+    "Weigh the solid S, and the calorimeter with its stirrer, empty.",
+  "experiments.method-of-mixtures-solid.exam.question.2":
+    "Fill the calorimeter about half full of water at room temperature, weigh it again, and read the water's temperature T₀.",
+  "experiments.method-of-mixtures-solid.exam.question.3":
+    "Heat S in boiling water until it has been steady for some time. Record the boiling water's temperature T_s.",
+  "experiments.method-of-mixtures-solid.exam.question.4":
+    "Move S quickly but gently into the lagged calorimeter, cover it, stir, and read the temperature every minute until it is steady. Tabulate your readings.",
+  "experiments.method-of-mixtures-solid.exam.question.5":
+    "Plot the temperature against time, and find the highest temperature T. Given c_c = {cc} and c_w = {cw} J kg⁻¹ K⁻¹, find the specific heat capacity of S.",
+  "experiments.method-of-mixtures-solid.exam.question.6": "State two precautions you took.",
+  "experiments.method-of-mixtures-solid.exam.item.covered": "Lid on the lagged calorimeter",
+  "experiments.method-of-mixtures-solid.exam.item.stirred": "Water stirred",
+  "experiments.method-of-mixtures-solid.exam.item.weighed":
+    "The solid and the calorimeter, empty and with water, weighed",
+  "experiments.method-of-mixtures-solid.exam.item.transfer":
+    "The solid moved quickly, shaken and lowered in",
+  "experiments.method-of-mixtures-solid.exam.item.minutes":
+    "Read every minute until the temperature fell",
+  "experiments.method-of-mixtures-solid.exam.item.decimals":
+    "Temperatures to the thermometer's least count",
+  "experiments.method-of-mixtures-solid.exam.item.axes": "θ plotted against t, axes labelled",
+  "experiments.method-of-mixtures-solid.exam.item.T": "T, the highest temperature, with its unit",
+  "experiments.method-of-mixtures-solid.exam.item.c":
+    "c from the equation, to 3 significant figures, with its unit",
+  "experiments.method-of-mixtures-solid.exam.lost.covered": "The lid was off.",
+  "experiments.method-of-mixtures-solid.exam.lost.stirred": "The water was not stirred.",
+  "experiments.method-of-mixtures-solid.exam.lost.weighed": "Weighings done: {n} of 3.",
+  "experiments.method-of-mixtures-solid.exam.lost.transfer":
+    "Slips in moving the solid across: {n}.",
+  "experiments.method-of-mixtures-solid.exam.lost.minutes": "Readings after the start: {n}.",
+  "experiments.method-of-mixtures-solid.exam.lost.stoppedEarly":
+    "The readings stopped before the highest temperature.",
+  "experiments.method-of-mixtures-solid.exam.lost.thermometerDecimals":
+    "Temperatures off the thermometer's least count: {n}.",
+  "experiments.method-of-mixtures-solid.exam.lost.axesSolid": "The graph is not θ against t.",
+  "experiments.method-of-mixtures-solid.exam.q.heat-capacity":
+    "What is meant by the heat capacity of a body?",
+  "experiments.method-of-mixtures-solid.exam.a.heat-capacity":
+    "The heat energy needed to raise the temperature of the whole body by 1 K. It is its mass times its specific heat capacity, m c.",
+  "experiments.method-of-mixtures-solid.exam.q.meaning":
+    "The specific heat capacity of copper is {c} J kg⁻¹ K⁻¹. What does this mean?",
+  "experiments.method-of-mixtures-solid.exam.a.meaning":
+    "It takes {c} J of heat energy to raise the temperature of 1 kg of copper by 1 K.",
+  "experiments.method-of-mixtures-solid.exam.q.aluminium":
+    "How much heat energy is taken in when a piece of aluminium of mass {m} kg, specific heat capacity {c} J kg⁻¹ K⁻¹, is warmed from {from} °C to {to} °C?",
+  "experiments.method-of-mixtures-solid.exam.a.aluminium":
+    "Q = m c (θ₂ − θ₁) = {m} × {c} × {rise} = {q} J.",
   "experiments.method-of-mixtures-solid.metal.copper": "copper",
   "experiments.method-of-mixtures-solid.metal.brass": "brass",
   "experiments.method-of-mixtures-solid.metal.iron": "iron",

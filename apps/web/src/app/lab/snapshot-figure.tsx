@@ -5,6 +5,8 @@ import {
   BENCH_VIEWBOX,
   Calorimeter,
   CALORIMETER_VIEWBOX,
+  HOT_SOLID_VIEWBOX,
+  HotSolidBench,
   CIRCUIT_FIGURE,
   CircuitBench,
   OPTICAL_VIEWBOX,
@@ -102,6 +104,15 @@ export type FigureDrawing =
   | {
       /** The method of mixtures: the water in the calorimeter, cm³, the lid, the stirrer, °C. */
       kind: "calorimeter";
+      water: number;
+      covered: boolean;
+      stirring: boolean;
+      thermometer: number;
+    }
+  | {
+      /** The method of mixtures with a hot solid: the solid in the water, the lid, °C. */
+      kind: "hot-solid";
+      balance: number | undefined;
       water: number;
       covered: boolean;
       stirring: boolean;
@@ -265,7 +276,8 @@ function drawingHeight(d: FigureDrawing): number {
     d.kind === "circuit" ||
     d.kind === "optical" ||
     d.kind === "pins" ||
-    d.kind === "calorimeter"
+    d.kind === "calorimeter" ||
+    d.kind === "hot-solid"
   )
     return 400;
   if (d.kind === "graph") return 440;
@@ -351,7 +363,8 @@ export function SnapshotSheet({
           d.kind === "circuit" ||
           d.kind === "optical" ||
           d.kind === "pins" ||
-          d.kind === "calorimeter"
+          d.kind === "calorimeter" ||
+          d.kind === "hot-solid"
             ? "var(--pa-ink-950)"
             : "var(--pa-bg)"
         }
@@ -443,6 +456,24 @@ export function SnapshotSheet({
             stirring={d.stirring}
             thermometer={d.thermometer}
             layered={0}
+          />
+        </svg>
+      )}
+      {d.kind === "hot-solid" && (
+        <svg
+          x={PAD + 20}
+          y={TOP + (boxH - ((boxW - 40) * HOT_SOLID_VIEWBOX.height) / HOT_SOLID_VIEWBOX.width) / 2}
+          width={boxW - 40}
+          height={((boxW - 40) * HOT_SOLID_VIEWBOX.height) / HOT_SOLID_VIEWBOX.width}
+        >
+          <HotSolidBench
+            balance={d.balance}
+            solid="calorimeter"
+            wet={false}
+            water={d.water}
+            covered={d.covered}
+            stirring={d.stirring}
+            thermometer={d.thermometer}
           />
         </svg>
       )}
