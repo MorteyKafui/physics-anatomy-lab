@@ -321,6 +321,8 @@ export interface SolidReading {
   highest: number;
   t: number;
   last: number;
+  /** Every reading the student took, s after the solid went in and °C as read, the start first. */
+  series: { t: number; reading: number }[];
   /** The metal's true specific heat capacity, J kg⁻¹ K⁻¹ (kept from the student until the end). */
   c: number;
   /** The water truly in the calorimeter, g, and how the run went. */
@@ -339,8 +341,15 @@ export interface SolidReading {
  */
 export function solidReadingData(
   b: SolidBench,
-  read: { start: number; highest: number; t: number; last?: number; thermometerAngle?: number },
-): Record<string, string | number | boolean> | undefined {
+  read: {
+    start: number;
+    highest: number;
+    t: number;
+    last?: number;
+    series?: readonly { t: number; reading: number }[];
+    thermometerAngle?: number;
+  },
+): Record<string, Json> | undefined {
   const { solid, empty, filled } = b.weighed;
   if (b.transfer === null || b.water === null) return undefined;
   if (solid === undefined || empty === undefined || filled === undefined) return undefined;
@@ -352,6 +361,10 @@ export function solidReadingData(
     highest: read.highest,
     t: read.t,
     last: Math.max(read.t, read.last ?? read.t),
+    series: (read.series ?? [{ t: read.t, reading: read.highest }]).map((p) => ({
+      t: p.t,
+      reading: p.reading,
+    })),
     c: b.world.metal.c,
     water: b.water,
     covered: b.covered,
@@ -393,6 +406,14 @@ export function asSolidReading(r: { id: string; data: Json }): SolidReading | un
     highest: n("highest"),
     t: n("t"),
     last: n("last"),
+    series: Array.isArray(d.series)
+      ? d.series.flatMap((p) => {
+          const q = (p ?? {}) as Record<string, Json>;
+          return typeof q.t === "number" && typeof q.reading === "number"
+            ? [{ t: q.t, reading: q.reading }]
+            : [];
+        })
+      : [],
     c: n("c"),
     water: n("water"),
     covered: f("covered"),
