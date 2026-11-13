@@ -147,6 +147,15 @@
       "title": "The method of mixtures: reading the highest temperature (Phase 2, approved)",
       "expand": "fill",
       "is_interactive": true
+    },
+    "MixturesSolid.dc.html": {
+      "x": 6240,
+      "y": 4080,
+      "w": 1440,
+      "h": 900,
+      "title": "The method of mixtures: a hot solid, read every minute (Phase 2, approved)",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -195,7 +204,8 @@
     "Admin.dc.html",
     "Logo.dc.html",
     "Pins.dc.html",
-    "Mixtures.dc.html"
+    "Mixtures.dc.html",
+    "MixturesSolid.dc.html"
   ],
   "pages": [],
   "title": "Physics Anatomy Mockups"

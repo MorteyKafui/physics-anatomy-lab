@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lab: the method of mixtures with a hot solid, read every minute</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+.cl-f:focus-visible{outline:2px solid #FF8A6E;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; background: #0D0D0D; color: #F0F0F0; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="App" style="flex: 0 0 64px; background: #111110; border-right: 1px solid #242322; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0">
+    <svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true" style="margin-bottom: 14px"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F0F0F0" stroke-width="18"/><line x1="84" y1="26" x2="98" y2="60" stroke="#F0F0F0" stroke-width="5"/><circle cx="100" cy="68" r="12" fill="#F0482A"/></svg>
+    <a href="#home" aria-label="Home" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="#experiments" aria-label="Experiments" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #F0F0F0; background: #1E1D1D; border-left: 2px solid #F0482A"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></a>
+    <a href="#notebook" aria-label="Notebook" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></a>
+    <a href="#reference" aria-label="Reference" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></a>
+    <span style="flex: 1"></span>
+    <a href="#help" aria-label="Help" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></a>
+    <a href="#settings" aria-label="Settings" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #A3A19B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></a>
+  </nav>
+
+  <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 20px; border-bottom: 1px solid #242322">
+      <div style="display: flex; align-items: center; gap: 12px; background: #161616; border: 1px solid #2A2928; padding: 8px 14px">
+        <span style="width: 10px; height: 10px; background: #FF7A3D" aria-hidden="true"></span>
+        <div style="display: flex; flex-direction: column">
+          <span style="font-weight: 600">The method of mixtures: a hot solid</span>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #A3A19B">Step 5 of 10 · Measure</span>
+        </div>
+        <div style="width: 120px; height: 4px; background: #2A2928" aria-label="40% complete"><div style="height: 4px; width: 40%; background: #F0482A"></div></div>
+      </div>
+      <div role="group" aria-label="Board state (mockup only)" style="display: flex; gap: 2px; background: #161616; border: 1px solid #2A2928; padding: 3px">
+        <button type="button" class="cl-f" onClick="{{showMoving}}" aria-pressed="{{isMoving}}" style="{{movingBtn}}">Moving it across</button>
+        <button type="button" class="cl-f" onClick="{{showReading}}" aria-pressed="{{isReading}}" style="{{readingBtn}}">Every minute</button>
+        <button type="button" class="cl-f" onClick="{{showWet}}" aria-pressed="{{isWet}}" style="{{wetBtn}}">Not shaken</button>
+      </div>
+      <span style="flex: 1"></span>
+      <label for="assist" style="display: flex; align-items: center; gap: 8px; color: #A3A19B; font-size: 13px">Help level
+        <select id="assist" style="background: #161616; color: #F0F0F0; border: 1px solid #2A2928; padding: 8px 10px; font: 500 13px Geist, sans-serif"><option>Auto</option><option selected="selected">Check my work</option><option>On my own</option></select>
+      </label>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+      <div style="flex: 999 1 560px; min-width: 0; position: relative; background: #0D0D0D; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 56px 24px 96px">
+        <div style="position: absolute; left: 24px; top: 18px; display: flex; flex-direction: column">
+          <span style="font-size: 12px; color: #8F8D88">Fig. 1</span>
+          <span style="font-weight: 600">{{figTitle}}</span>
+        </div>
+
+        <svg viewBox="0 0 600 300" style="width: 100%; max-width: 760px; height: auto; display: block" role="img" aria-label="{{benchLabel}}">
+          <defs>
+            <pattern id="felt" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="6" height="6" fill="#1B1A19"/><line x1="0" y1="0" x2="0" y2="6" stroke="#3A3936" stroke-width="2"/>
+            </pattern>
+          </defs>
+
+          <!-- Bench top -->
+          <polygon points="20,250 580,250 600,290 0,290" fill="#121211" stroke="#2A2928"/>
+
+          <!-- The balance, showing the last mass weighed -->
+          <g data-part="balance">
+            <rect x="34" y="214" width="96" height="36" fill="#1E1D1D" stroke="#55534F"/>
+            <rect x="44" y="204" width="76" height="8" fill="#55534F"/>
+            <rect x="52" y="224" width="60" height="18" fill="#141414" stroke="#3A3936"/>
+            <text x="108" y="238" fill="#C9C6BF" font-family="Geist Mono, monospace" font-size="12" text-anchor="end">100.0 g</text>
+            <text x="82" y="270" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">Balance</text>
+          </g>
+
+          <!-- The beaker of boiling water on its tripod, over the heater -->
+          <g data-part="beaker">
+            <line x1="170" y1="250" x2="182" y2="200" stroke="#77746E" stroke-width="2"/>
+            <line x1="258" y1="250" x2="246" y2="200" stroke="#77746E" stroke-width="2"/>
+            <line x1="176" y1="200" x2="252" y2="200" stroke="#77746E" stroke-width="3"/>
+            <path d="M206,250 Q214,226 214,214 Q222,232 222,250 Z" fill="#F5A524" fill-opacity="0.7"/>
+            <path d="M182,118 L182,198 L246,198 L246,118" fill="none" stroke="#9CC6DD" stroke-width="1.5"/>
+            <rect x="183" y="138" width="62" height="59" fill="#6FA8C9" fill-opacity="0.3"/>
+            <sc-for list="{{bubbles}}" as="u" hint-placeholder-count="5"><circle cx="{{u.x}}" cy="{{u.y}}" r="2" fill="none" stroke="#9CC6DD" stroke-opacity="0.8"/></sc-for>
+            <text x="214" y="270" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">Boiling water, 100 °C</text>
+          </g>
+
+          <!-- The solid S on its thread: in the air between the beaker and the calorimeter, or in -->
+          <g data-part="solid">
+            <line x1="{{solidX}}" y1="20" x2="{{solidX}}" y2="{{threadEnd}}" stroke="#C9C6BF" stroke-width="1"/>
+            <rect x="{{solidLeft}}" y="{{solidTop}}" width="20" height="26" fill="#9A9690" stroke="#C9C6BF"/>
+            <sc-for list="{{drops}}" as="d" hint-placeholder-count="2"><circle cx="{{d.x}}" cy="{{d.y}}" r="2" fill="#6FA8C9"/></sc-for>
+            <text x="{{labelX}}" y="{{labelY}}" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11">S</text>
+          </g>
+
+          <!-- The lagged calorimeter with its lid, thermometer and stirrer -->
+          <g data-part="jacket"><rect x="370" y="116" width="170" height="134" fill="url(#felt)" stroke="#55534F"/></g>
+          <g data-part="calorimeter">
+            <rect x="394" y="128" width="122" height="112" fill="#121211" stroke="#B87333" stroke-width="3"/>
+            <rect x="396" y="172" width="118" height="66" fill="#6FA8C9" fill-opacity="0.35"/>
+            <line x1="396" y1="172" x2="514" y2="172" stroke="#9CC6DD" stroke-opacity="0.6"/>
+          </g>
+          <g data-part="lid"><rect x="388" y="118" width="134" height="8" fill="#55534F" opacity="{{lidOpacity}}"/></g>
+          <g data-part="stirrer">
+            <line x1="496" y1="60" x2="496" y2="228" stroke="#C9C6BF" stroke-width="2"/>
+            <rect x="404" y="226" width="96" height="5" fill="none" stroke="#C9C6BF" stroke-width="2"/>
+          </g>
+          <g data-part="thermometer">
+            <rect x="412" y="40" width="12" height="190" fill="#121211" stroke="#8F8D88"/>
+            <circle cx="418" cy="232" r="8" fill="#E8E4DC"/>
+            <rect x="415" y="{{mercuryTop}}" width="6" height="{{mercuryHeight}}" fill="#E8E4DC"/>
+            <text x="406" y="52" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="end">Thermometer</text>
+          </g>
+          <text x="455" y="270" fill="#A3A19B" font-family="Geist, sans-serif" font-size="11" text-anchor="middle">Lagged calorimeter</text>
+        </svg>
+
+        <div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px; width: 100%; max-width: 760px">
+          <div style="flex: 1 1 280px; min-width: 0; background: #161616; border: 1px solid #2A2928; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="font-size: 12px; color: #A3A19B">{{leftTitle}}</span>
+            <sc-if value="{{isMoving}}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; justify-content: space-between; font-size: 13px; color: #A3A19B">In the air <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">4 s</span></div>
+              <div style="display: flex; gap: 8px">
+                <button type="button" class="cl-f" aria-pressed="true" style="flex: 1; height: 36px; background: #F0F0F0; border: 0; color: #141414; font: 500 13px Geist, sans-serif">Shaken</button>
+                <button type="button" class="cl-f" aria-pressed="true" style="flex: 1; height: 36px; background: #F0F0F0; border: 0; color: #141414; font: 500 13px Geist, sans-serif">Lower it in</button>
+              </div>
+              <button type="button" class="cl-f" style="height: 38px; background: #F0482A; border: 0; color: #141414; font: 600 13px Geist, sans-serif">Put it in the calorimeter</button>
+              <span style="font-size: 12px; color: #8F8D88">Shake it over the beaker so no boiling water goes in with it, and lower it in gently on its thread.</span>
+            </sc-if>
+            <sc-if value="{{notMoving}}" hint-placeholder-val="{{ false }}">
+              <table style="border-collapse: collapse; font-family: 'Geist Mono', monospace; font-size: 13px">
+                <thead><tr><th scope="col" style="text-align: left; font: 500 12px Geist, sans-serif; color: #A3A19B; padding: 4px 8px; border-bottom: 1px solid #2A2928">t / min</th><th scope="col" style="text-align: right; font: 500 12px Geist, sans-serif; color: #A3A19B; padding: 4px 8px; border-bottom: 1px solid #2A2928">θ / °C</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{minutes}}" as="m" hint-placeholder-count="4"><tr style="{{m.style}}"><td style="padding: 4px 8px">{{m.t}}</td><td style="padding: 4px 8px; text-align: right">{{m.reading}}</td></tr></sc-for>
+                </tbody>
+              </table>
+              <button type="button" class="cl-f" style="align-self: flex-start; height: 36px; padding: 0 14px; background: transparent; border: 1px solid #2A2928; color: #F0F0F0; font: 500 13px Geist, sans-serif">Read it now</button>
+            </sc-if>
+          </div>
+          <div style="flex: 1 1 260px; min-width: 0; background: #161616; border: 1px solid #2A2928; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline">
+              <span style="font-size: 13px; color: #A3A19B">Thermometer</span>
+              <span style="font-family: 'Geist Mono', monospace; font-size: 28px; line-height: 1">{{reading}}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: #A3A19B">{{clockLabel}} <span style="font-family: 'Geist Mono', monospace; color: #F0F0F0">{{clock}}</span></div>
+            <div style="display: flex; gap: 8px">
+              <button type="button" class="cl-f" aria-pressed="true" style="flex: 1; height: 36px; background: #F0F0F0; border: 0; color: #141414; font: 500 13px Geist, sans-serif">Stirring</button>
+              <button type="button" class="cl-f" aria-pressed="true" style="flex: 1; height: 36px; background: #F0F0F0; border: 0; color: #141414; font: 500 13px Geist, sans-serif">Lid on</button>
+            </div>
+            <span style="font-size: 12px; color: #8F8D88">Read with your eye level with the top of the mercury. The thermometer reads to 0.1 °C.</span>
+          </div>
+        </div>
+      </div>
+
+      <aside aria-label="Coach" style="flex: 1 1 380px; min-width: 0; background: #161616; border-left: 1px solid #242322; display: flex; flex-direction: column">
+        <div role="tablist" aria-label="Coach" style="display: flex; gap: 22px; padding: 0 20px; border-bottom: 1px solid #2A2928">
+          <button type="button" role="tab" aria-selected="true" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #F0F0F0; border-bottom: 2px solid #F0482A">Instructions</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Explanation</button>
+          <button type="button" role="tab" aria-selected="false" style="background: transparent; border: 0; padding: 14px 0; font: 500 14px Geist, sans-serif; color: #A3A19B; border-bottom: 2px solid transparent">Tips</button>
+        </div>
+
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">{{coachTitle}}</span>
+          <span style="color: #C9C6BF">{{coachText}}</span>
+
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+              <div style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span>{{s.text}}</span></div>
+            </sc-for>
+          </div>
+
+          <div style="background: #0D0D0D; border: 1px solid #2A2928; padding: 12px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; font-family: 'Geist Mono', monospace">
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">Solid S</span>100.0 g</span>
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">Calorimeter</span>50.0 g</span>
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">With water</span>100.0 g</span>
+            <span style="display: flex; flex-direction: column"><span style="font-family: Geist, sans-serif; font-size: 12px; color: #A3A19B">Water at</span>28.0 °C</span>
+          </div>
+
+          <sc-if value="{{isReading}}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="background: #1B1A19; border: 1px solid #2A2928; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="font-weight: 600">It has started to fall</span>
+            <span style="color: #E8E4DC">38.2 °C at 1 and 2 minutes, then 38.1 °C at 3. The highest you read is 38.2 °C: that is T. Take this reading.</span>
+          </div>
+          <button type="button" class="cl-f" style="align-self: flex-start; height: 38px; padding: 0 16px; background: #F0482A; border: 0; color: #141414; font: 600 13px Geist, sans-serif">Take this reading</button>
+          </sc-if>
+
+          <sc-if value="{{isWet}}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="background: #2B2112; border: 1px solid #F5A524; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #F5C46B"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Boiling water went in with the solid</span>
+            <span style="color: #E8E4DC">About 1 g of boiling water clung to the solid and went in too: the highest is 39.2 °C, not 38.2 °C. Its heat counts as the solid's, so c will come out about 11% too large.</span>
+            <span style="color: #A3A19B">Lift the solid out and give it a quick shake over the beaker before moving it across. Empty the calorimeter and try again.</span>
+          </div>
+          </sc-if>
+
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 13px; color: #A3A19B">Runs so far</span>
+            <span style="font-size: 13px; color: #8F8D88">None yet. The solid's metal is named when you have found c.</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <nav aria-label="Stages" style="border-top: 1px solid #242322; background: #111110; padding: 10px 20px; display: flex; gap: 8px; overflow-x: auto">
+      <sc-for list="{{stages}}" as="s" hint-placeholder-count="10">
+        <a href="#stage" style="{{s.style}}"><span style="{{s.markStyle}}">{{s.mark}}</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #8F8D88">{{s.n}}</span><span>{{s.name}}</span></span></a>
+      </sc-for>
+    </nav>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mode: 'moving' }; }
+  renderVals() {
+    const mode = this.state.mode;
+    const moving = mode === 'moving', reading = mode === 'reading', wet = mode === 'wet';
+    const btn = (on) => 'height: 32px; padding: 0 12px; border: 0; font: 500 13px Geist, sans-serif; cursor: pointer; background: ' + (on ? '#F0F0F0' : 'transparent') + '; color: ' + (on ? '#141414' : '#C9C6BF');
+
+    // Experiment 64 as approved (brief decisions 6 to 10), from solidThermometer and solidPeak in
+    // packages/experiments on the heat model in packages/physics: a 100 g solid (copper on this
+    // board, not named to the student) from boiling water into 50 g of water at 28 °C in the
+    // 50 g copper calorimeter, lid on, stirred, moved across in 4 s (in at 99.8 °C).
+    //   Shaken: every minute 28.0, 38.2, 38.2, 38.1, 38.0 °C; the highest is 38.28 °C at 79 s.
+    //   Not shaken (1 g of boiling water carried in): 28.0, 39.2, 39.2, 39.1, 38.9 °C; c 423
+    //   from the readings, against 383 shaken: 11% too large.
+    const shaken = ['28.0', '38.2', '38.2', '38.1', '38.0'];
+    const unshaken = ['28.0', '39.2', '39.2', '39.1', '38.9'];
+    const series = wet ? unshaken : shaken;
+    const highest = 2;
+    const shown = moving ? 28.0 : Number(series[3]);
+    const minutes = series.slice(0, 4).map((r, i) => ({
+      t: String(i),
+      reading: r,
+      style: i === highest - 1 || i === highest ? 'background: #1E1D1D' : ''
+    }));
+
+    // The solid in the air above the gap between the beaker and the calorimeter, or in the water.
+    const solidX = moving ? 314 : 456;
+    const solidTop = moving ? 90 : 196;
+    const drops = wet ? [{ x: solidX - 4, y: solidTop + 30 }, { x: solidX + 5, y: solidTop + 34 }] : moving ? [] : [];
+    const bubbles = [{ x: 196, y: 186 }, { x: 210, y: 170 }, { x: 226, y: 182 }, { x: 236, y: 160 }, { x: 202, y: 152 }];
+
+    // The thermometer's stem: 20 °C just above the bulb, 3.3 px to a degree.
+    const mercuryTop = 224 - (shown - 20) * 3.3;
+
+    const current = 4;
+    const names = ['Question', 'Predict', 'Build', 'Check', 'Measure', 'Tabulate', 'Plot', 'Analyse', 'Conclude', 'Report'];
+    const stages = names.map((name, i) => {
+      const done = i < current, cur = i === current;
+      return {
+        name, n: String(i + 1).padStart(2, '0'),
+        mark: done ? '✓' : cur ? '●' : '',
+        style: 'flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 8px 14px; text-decoration: none; color: ' + (cur ? '#F0F0F0' : done ? '#C9C6BF' : '#8F8D88') + '; background: ' + (cur ? '#1E1D1D' : 'transparent') + '; border: 1px solid ' + (cur ? '#F0482A' : '#242322'),
+        markStyle: 'width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (done ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (done ? '#6CC25A' : cur ? '#F0482A' : '#55534F')
+      };
+    });
+    const step = (text, state) => ({
+      text,
+      mark: state === 'done' ? '✓' : state === 'now' ? '●' : '',
+      style: 'display: flex; align-items: center; gap: 10px; padding: 8px 10px; color: ' + (state === 'done' ? '#8F8D88' : state === 'now' ? '#F0F0F0' : '#A3A19B') + '; background: ' + (state === 'now' ? '#2A1914' : 'transparent') + '; border: 1px solid ' + (state === 'now' ? '#F0482A' : 'transparent'),
+      markStyle: 'width: 22px; height: 22px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; color: ' + (state === 'done' ? '#6CC25A' : '#F0482A') + '; border: 1.5px solid ' + (state === 'done' ? '#6CC25A' : state === 'now' ? '#F0482A' : '#55534F')
+    });
+    const steps = [
+      step('Weigh the solid, the calorimeter, and the calorimeter with water', 'done'),
+      step('Move the solid from the boiling water into the calorimeter, quickly', moving ? 'now' : 'done'),
+      step('Stir, and read the thermometer every minute until it falls', moving ? 'later' : 'now')
+    ];
+
+    return {
+      isMoving: moving, isReading: reading, isWet: wet, notMoving: !moving,
+      movingBtn: btn(moving), readingBtn: btn(reading), wetBtn: btn(wet),
+      showMoving: () => this.setState({ mode: 'moving' }), showReading: () => this.setState({ mode: 'reading' }), showWet: () => this.setState({ mode: 'wet' }),
+      figTitle: moving ? 'Moving the solid across' : 'The solid in the water',
+      benchLabel: 'A balance showing 100.0 g; a beaker of boiling water on a tripod over a heater; the solid S on a thread ' + (moving ? 'in the air between the beaker and the calorimeter' : 'in the water in the lagged calorimeter') + (wet ? ', wet with boiling water' : '') + '. The thermometer reads ' + shown.toFixed(1) + ' °C.',
+      solidX, solidLeft: solidX - 10, solidTop, threadEnd: solidTop, labelX: solidX + 14, labelY: solidTop + 16,
+      drops, bubbles,
+      lidOpacity: moving ? 0.35 : 1,
+      mercuryTop, mercuryHeight: 232 - mercuryTop,
+      leftTitle: moving ? 'Moving it across' : 'Every minute since it went in',
+      minutes,
+      reading: shown.toFixed(1) + ' °C',
+      clockLabel: moving ? 'Out of the boiling water' : 'Since it went in',
+      clock: moving ? '4 s' : '3 min',
+      coachTitle: moving ? 'Move it across quickly' : wet ? 'Boiling water went in' : 'Read the highest',
+      coachText: moving
+        ? 'The solid has been in the boiling water long enough to be at 100 °C. Shake it, carry it across in a few seconds, and lower it in.'
+        : 'Stir all the time and read the thermometer every minute. It rises to its highest within two minutes, then falls slowly.',
+      steps, stages
+    };
+  }
+}
+</script>
+</body>
+</html>
