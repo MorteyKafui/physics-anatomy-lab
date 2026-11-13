@@ -30,6 +30,7 @@ import { reportDocx } from "./docx";
 import { BenchDrawing, GraphFigure } from "./drawings";
 import { makeReportPdf, reportImages } from "./make";
 import type { Paper } from "./pdf";
+import { tableJson } from "../lab-data/json";
 import { tableXlsx } from "./xlsx";
 
 const KINDS = ["pdf", "docx", "figures", "data"] as const;
@@ -183,6 +184,8 @@ export function ReportScreen({
         setToast(t("report.made.docx", { colours }));
       } else if (kind === "figures") {
         const files: Record<string, Uint8Array | string> = {};
+        // Each figure also on its own A4 page, as the notebook makes them; loaded only when asked.
+        const { pdfBytes } = await import("../snapshot-pdf");
         for (const [el, scene, stem] of [
           [benchSheet.current, content.bench, `fig-1-${E.id}-bench`],
           [graphSheet.current, content.graph, `fig-2-${E.id}-graph`],
@@ -191,7 +194,9 @@ export function ReportScreen({
           const svg = svgText(el);
           const { width, height } = sheetSize(scene);
           files[`${stem}.svg`] = svg;
-          files[`${stem}.png`] = await pngBytes(svg, width, height);
+          const png = await pngBytes(svg, width, height);
+          files[`${stem}.png`] = png;
+          files[`${stem}.pdf`] = await pdfBytes(png, width, height, `${E.title} · ${stem}`);
         }
         save(zipBytes(files), `${E.id}-figures.zip`, "application/zip");
         setToast(t("report.made.figures", { colours }));
@@ -201,6 +206,7 @@ export function ReportScreen({
           zipBytes({
             "table-1.csv": csvText(headings, rows),
             "table-1.xlsx": tableXlsx(t("report.table"), headings, rows),
+            "table-1.json": tableJson(E.id, headings, rows),
           }),
           `${E.id}-data.zip`,
           "application/zip",
