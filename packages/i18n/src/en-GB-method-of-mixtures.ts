@@ -145,9 +145,6 @@ export const enGBMethodOfMixtures = {
     "I read the highest temperature, when the thermometer stopped rising.",
   "experiments.method-of-mixtures.tips.5":
     "I kept the lid on the lagged calorimeter to reduce heat lost to the room.",
-  "experiments.method-of-mixtures.next":
-    "The report, the print sheets and the exam for the method of mixtures come with the next part of this lab. Your work is kept.",
-  "experiments.method-of-mixtures.inDevelopment": "Being built: the report comes next",
   "experiments.method-of-mixtures.report.title":
     "{experiment}: the water equivalent of a calorimeter by the method of mixtures",
   "experiments.method-of-mixtures.report.aim":
@@ -194,7 +191,7 @@ export const enGBMethodOfMixtures = {
     "Each time the thermometer rose quickly, stopped about a minute after pouring, then fell slowly.",
   "experiments.method-of-mixtures.report.table": "The table shows V, T and 1/T for each mixture.",
   "experiments.method-of-mixtures.report.graph":
-    "{caption}. The points lie on a straight line, carried back to meet the V axis below zero.",
+    "Fig. 2 {caption} The points lie on a straight line, carried back to meet the V axis below zero; the slope is found from triangle ABC.",
   "experiments.method-of-mixtures.report.calcSlope":
     "slope = CB ⁄ AC = {rise} {yu} ⁄ {run} {xu} = {slope}",
   "experiments.method-of-mixtures.report.calcIntercept":
@@ -287,11 +284,12 @@ export const enGBMethodOfMixtures = {
   "experiments.method-of-mixtures.sheet.why.text":
     "Heat lost by the hot water is heat gained by the cold water and the can: 50 (65 − θ₀ − T) = (V + W) T. So V = 50 (65 − θ₀) ⁄ T − (50 + W), a straight line in 1/T. Its slope here is {slope} cm³ °C, and where 1/T = 0, V = −(50 + W).",
   "experiments.method-of-mixtures.sheet.motto": "The can takes heat too.",
-  "experiments.method-of-mixtures.exam.question.meta": "Practical, {minutes} minutes",
+  "experiments.method-of-mixtures.exam.question.meta":
+    "Question 1 · The method of mixtures · {minutes} minutes",
   "experiments.method-of-mixtures.exam.question.lead":
-    "You are provided with a lagged calorimeter with a stirrer and a lid, a thermometer, a measuring cylinder, a beaker and a heater.",
+    "Find the water equivalent of the calorimeter by the method of mixtures.",
   "experiments.method-of-mixtures.exam.question.1":
-    "Heat {hot} cm³ of water in the beaker to {hotT} °C.",
+    "You are given a lagged calorimeter with a stirrer and a lid, a thermometer, a measuring cylinder, a beaker and a heater. Heat {hot} cm³ of water in the beaker to {hotT} °C.",
   "experiments.method-of-mixtures.exam.question.2":
     "Measure V = {first} cm³ of cold water into the calorimeter and read its temperature θ₁.",
   "experiments.method-of-mixtures.exam.question.3":

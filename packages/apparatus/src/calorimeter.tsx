@@ -119,7 +119,7 @@ export function Calorimeter({
           y={CAN.y}
           width={CAN.w}
           height={CAN.h}
-          fill={tone("ink")}
+          fill={tone("floor")}
           stroke={tone("copper")}
           strokeWidth="3"
         />
@@ -171,7 +171,7 @@ export function Calorimeter({
           y={STEM.top}
           width="12"
           height="196"
-          fill={tone("ink")}
+          fill={tone("floor")}
           stroke={tone("rod")}
         />
         <circle cx={STEM.x + 6} cy={STEM.bulb} r="8" fill={tone("mercury")} />
