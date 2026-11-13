@@ -819,4 +819,66 @@ export const enGBMethodOfMixtures = {
     "Read the cylinder at the bottom of the meniscus and the thermometer square-on, at the highest temperature each time.",
   "experiments.method-of-mixtures.check.result":
     "From your line: slope {slope} cm³ °C, meeting the V axis at {intercept} cm³, so W = {W} cm³. Lab data is not marked.",
+  // The hot solid's model check (data templates brief, decision 4).
+  "experiments.method-of-mixtures-solid.check.note":
+    "Read the water's temperature as the solid goes in (t = 0), then every minute. Change the masses and the boiling water's temperature if yours differ.",
+  "experiments.method-of-mixtures-solid.check.solid": "Mass of the solid",
+  "experiments.method-of-mixtures-solid.check.empty": "Mass of the calorimeter, empty",
+  "experiments.method-of-mixtures-solid.check.filled": "Mass of the calorimeter with water",
+  "experiments.method-of-mixtures-solid.check.boiling": "Temperature of the boiling water",
+  "experiments.method-of-mixtures-solid.check.c": "Specific heat capacity of the metal c",
+  "experiments.method-of-mixtures-solid.check.needs":
+    "Give the masses and the boiling water's temperature to check your readings against the model.",
+  "experiments.method-of-mixtures-solid.check.template.body":
+    "Fill it in during your lab. The masses are set as the book has them; weigh yours and change them. Read the water's temperature as the solid goes in, then every minute until it has turned. Add the metal's specific heat capacity if you know which metal it is.",
+  "experiments.method-of-mixtures-solid.check.table.note":
+    "The first reading, at t = 0, is the water's temperature as the solid goes in.",
+  "experiments.method-of-mixtures-solid.check.graph.title":
+    "Fig. 1  θ against t: your readings and the model",
+  "experiments.method-of-mixtures-solid.check.graph.label":
+    "{n} readings of θ against t, and the model's dashed curve for your masses.",
+  "experiments.method-of-mixtures-solid.check.legend.model": "The model, for your masses",
+  "experiments.method-of-mixtures-solid.check.shift.unmarked":
+    "Add the metal's specific heat capacity to compare your readings' level with the model's.",
+  "experiments.method-of-mixtures-solid.check.shift.on":
+    "Your readings sit on the model's curve, within their error.",
+  "experiments.method-of-mixtures-solid.check.shift.found.below":
+    "Your readings sit below the model's curve.",
+  "experiments.method-of-mixtures-solid.check.shift.found.above":
+    "Your readings sit above the model's curve.",
+  "experiments.method-of-mixtures-solid.check.shift.figure": "{value} °C, {errors} errors",
+  "experiments.method-of-mixtures-solid.check.tilt.on":
+    "Your readings rise and fall as the model's do.",
+  "experiments.method-of-mixtures-solid.check.tilt.found.falls":
+    "Your readings fall away faster than the model's.",
+  "experiments.method-of-mixtures-solid.check.tilt.found.late":
+    "Your readings reach their highest later than the model's.",
+  "experiments.method-of-mixtures-solid.check.tilt.figure": "{value} °C a minute, {errors} errors",
+  "experiments.method-of-mixtures-solid.check.spread.on":
+    "Your readings spread as much as the thermometer's least count gives, no more.",
+  "experiments.method-of-mixtures-solid.check.spread.found":
+    "Your readings spread {times} times more than the thermometer's least count gives.",
+  "experiments.method-of-mixtures-solid.check.spread.figure": "{value} °C, {ratio} ×",
+  "experiments.method-of-mixtures-solid.check.shift.below":
+    "Your readings sit {by} °C below the model's curve for c = {given} J kg⁻¹ K⁻¹, so c from your highest reading, {c}, comes out low. Heat was lost on the way: a solid moved across slowly cools in the air.",
+  "experiments.method-of-mixtures-solid.check.shift.below.precaution":
+    "Move the solid from the boiling water into the calorimeter in a few seconds.",
+  "experiments.method-of-mixtures-solid.check.shift.above":
+    "Your readings sit {by} °C above the model's curve for c = {given} J kg⁻¹ K⁻¹, so c from your highest reading, {c}, comes out high. Boiling water carried in on the solid adds heat, and water splashed out leaves less to warm.",
+  "experiments.method-of-mixtures-solid.check.shift.above.precaution":
+    "Shake the solid before you move it, and lower it in gently.",
+  "experiments.method-of-mixtures-solid.check.tilt.falls":
+    "Your readings fall away by about {rate} °C a minute more than the model's: heat is leaving the calorimeter, as it does with the lid off.",
+  "experiments.method-of-mixtures-solid.check.tilt.falls.precaution":
+    "Keep the lid on from the moment the solid is in.",
+  "experiments.method-of-mixtures-solid.check.tilt.late":
+    "Your readings reach their highest later than the model's: the solid shared its heat slowly, as it does when the water is not stirred.",
+  "experiments.method-of-mixtures-solid.check.tilt.late.precaution":
+    "Stir all the time until you have read the highest temperature.",
+  "experiments.method-of-mixtures-solid.check.spread":
+    "Your readings spread either side of the model's curve by about {times} times what the thermometer's least count gives.",
+  "experiments.method-of-mixtures-solid.check.spread.precaution":
+    "Read the thermometer square-on, on the minute, each time.",
+  "experiments.method-of-mixtures-solid.check.result":
+    "From your highest reading, {highest} °C: c = {c} J kg⁻¹ K⁻¹ by the book's equation. Lab data is not marked.",
 } as const;

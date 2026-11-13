@@ -1190,6 +1190,12 @@ export function MethodOfMixturesSolidScreen() {
                 >
                   {t("sheets.link")}
                 </Link>
+                <Link
+                  href={`/lab/${H.id}/check`}
+                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("labData.check.link")}
+                </Link>
                 {handle.attempt.mode !== "exam" && (
                   <Link
                     href={`/lab/${H.id}/exam`}
