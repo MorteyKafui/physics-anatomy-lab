@@ -24,6 +24,15 @@ async function toBuild(page: Page) {
   await expect(page.getByText("Step 3 of 10 · Build")).toBeVisible();
 }
 
+/**
+ * Pour, and wait until the lab shows the mixture poured: the pour's time is when its event is
+ * saved, so the clock is moved on only after that.
+ */
+async function pour(page: Page) {
+  await page.getByRole("button", { name: "Pour the hot water in" }).click();
+  await expect(page.getByRole("button", { name: "Take this reading" })).toBeVisible();
+}
+
 /** Measure the water as the question sets it: 40 cm³ cold, 50 cm³ hot, eye level, lid on. */
 async function fill(page: Page, eye: "Above" | "Level" = "Level") {
   await page.getByRole("button", { name: eye, exact: true }).first().click();
@@ -48,7 +57,7 @@ test("the student measures the water, the check passes, and the thermometer rise
   // Stir, heat and pour at once; then watch.
   await page.getByRole("button", { name: "Stir", exact: true }).click();
   await page.getByRole("button", { name: "Heat the beaker to 65 °C" }).click();
-  await page.getByRole("button", { name: "Pour the hot water in" }).click();
+  await pour(page);
   await expect(page.getByText("Mixing hot and cold water")).toBeVisible();
 
   await page.clock.fastForward("00:30");
@@ -94,7 +103,7 @@ test("not stirred, the hot water stays on top and the coach says what it costs",
   await page.getByRole("button", { name: "Finish building" }).click();
   await page.getByRole("button", { name: "Continue to Measure" }).click();
   await page.getByRole("button", { name: "Heat the beaker to 65 °C" }).click();
-  await page.getByRole("button", { name: "Pour the hot water in" }).click();
+  await pour(page);
   await page.clock.fastForward("01:01");
   await expect(page.getByText("Not stirred: the hot water stays on top")).toBeVisible();
   const warning = coach(page)
@@ -116,7 +125,7 @@ test("the mixtures bench has no serious accessibility issues, building and measu
   await page.getByRole("button", { name: "Continue to Measure" }).click();
   await page.getByRole("button", { name: "Stir", exact: true }).click();
   await page.getByRole("button", { name: "Heat the beaker to 65 °C" }).click();
-  await page.getByRole("button", { name: "Pour the hot water in" }).click();
+  await pour(page);
   await page.clock.fastForward("00:30");
   await expect(page.getByText("Still rising", { exact: true })).toBeVisible();
   expect(await serious(page)).toEqual([]);
@@ -160,7 +169,7 @@ async function measureAll(page: Page, volumes: number[]) {
       await page.getByRole("button", { name: "Pour into the beaker" }).click();
     }
     await page.getByRole("button", { name: "Heat the beaker to 65 °C" }).click();
-    await page.getByRole("button", { name: "Pour the hot water in" }).click();
+    await pour(page);
     await page.clock.fastForward("01:01");
     await expect(page.getByText("Stopped rising", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Take this reading" }).click();
