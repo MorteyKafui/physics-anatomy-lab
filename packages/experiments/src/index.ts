@@ -332,3 +332,7 @@ export type {
   MixturesGraphContext,
   MixturesTemplate,
 } from "./method-of-mixtures-table";
+export { MIXTURES_SHEET_NUMBER, mixturesSheet } from "./method-of-mixtures-sheets";
+export type { MixturesSheet } from "./method-of-mixtures-sheets";
+export { markMixturesScript, mixturesFollowUps } from "./method-of-mixtures-exam";
+export type { MixturesExamFacts } from "./method-of-mixtures-exam";
