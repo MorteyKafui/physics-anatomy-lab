@@ -213,7 +213,7 @@ Not stirred, the highest comes at about 8 minutes, so readings stopped at 5 minu
    of water at room temperature, in the same 50 g copper calorimeter at 28 °C as Experiment 62;
    readings every minute until steady; c_s worked out from the equation, with c_c = 390 and
    c_w = 4200 J kg⁻¹ K⁻¹ given. Masses on a balance read to 0.1 g (a new instrument).
-7. The solid: copper, as the book's answer, or one of copper, brass, iron and aluminium chosen
+7. Decided (Mortey, 2026-11-13): the solid is one of copper, brass, iron and aluminium, chosen
    for each attempt and named only when the student has found c, so the answer cannot be known
    before it is measured.
 8. Two new constants until the UEW data: the solid shares its heat with the stirred water in
