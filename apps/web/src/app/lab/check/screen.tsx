@@ -31,6 +31,8 @@ import { save } from "../snapshot-export";
 export interface CheckPart {
   part: "shift" | "tilt" | "spread";
   found: boolean;
+  /** Nothing to judge yet (Ohm's law with no marking): shown without a tick. */
+  neutral?: boolean;
   text: string;
   figure: string;
 }
@@ -55,6 +57,8 @@ export interface CheckExperiment {
     tableNote: string;
     graphTitle: string;
     graphLabel: (n: number) => string;
+    /** The title when nothing is found, where "agree with the model" does not fit. */
+    agrees?: string;
     /** The model's line in the legend; left out where there is no model line (Ohm's law). */
     legendModel?: string;
     parts: (check: NonNullable<LabCheck["check"]>) => CheckPart[];
@@ -162,7 +166,7 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
   const verdictTitle = !check
     ? t("labData.check.verdict.few", { n: 3 })
     : found.length === 0
-      ? t("labData.check.verdict.agrees")
+      ? (E.copy.agrees ?? t("labData.check.verdict.agrees"))
       : found.length > 1
         ? t("labData.check.verdict.several", { n: found.length })
         : t(`labData.check.verdict.${found[0]!}` as MessageKey);
@@ -491,10 +495,14 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
                         aria-hidden
                         className={cn(
                           "inline-flex size-5 items-center justify-center border-[1.5px] text-xs font-semibold",
-                          p.found ? "border-warn text-warn" : "border-ok text-ok",
+                          p.neutral
+                            ? "border-input text-muted-foreground"
+                            : p.found
+                              ? "border-warn text-warn"
+                              : "border-ok text-ok",
                         )}
                       >
-                        {p.found ? "!" : "✓"}
+                        {p.neutral ? "–" : p.found ? "!" : "✓"}
                       </span>
                       <span className="w-[82px] font-semibold">
                         {t(`labData.check.part.${p.part}` as MessageKey)}

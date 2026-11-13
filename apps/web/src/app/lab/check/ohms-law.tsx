@@ -37,6 +37,7 @@ const experiment: CheckExperiment = {
     tableNote: t(`${M}.table.note`),
     graphTitle: t(`${M}.graph.title`),
     graphLabel: (n) => t(`${M}.graph.label`, { n }),
+    agrees: t(`${M}.agrees`),
     parts: (c) => {
       const E = c.fit && c.fit.slope < 0 ? -c.fit.intercept / c.fit.slope : undefined;
       const marked = E !== undefined && c.shift.error > 0 ? E - c.shift.value : undefined;
@@ -44,6 +45,7 @@ const experiment: CheckExperiment = {
         {
           part: "shift",
           found: c.shift.found,
+          neutral: marked === undefined,
           text:
             marked === undefined
               ? t(`${M}.shift.unmarked`)

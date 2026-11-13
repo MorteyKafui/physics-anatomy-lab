@@ -344,6 +344,7 @@ export const enGBOhmsLaw = {
   "experiments.ohms-law.check.note":
     "Leave PJ empty for the reading with the jockey off the wire. Read the ammeter and the voltmeter twice at each position.",
   "experiments.ohms-law.check.marked": "Marked e.m.f. of the cells E",
+  "experiments.ohms-law.check.agrees": "Your readings lie on one straight line",
   "experiments.ohms-law.check.template.body":
     "Fill it in during your lab. The positions are set as the book has them, with the first row for the reading with the jockey off the wire; read I and V twice at each. Add the e.m.f. marked on your cells if you know it.",
   "experiments.ohms-law.check.table.note":
