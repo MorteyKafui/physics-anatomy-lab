@@ -14,7 +14,7 @@ Model limits (where a formula stops holding, such as the small-angle approximati
 part of the advanced layer and are not in this item. The scanned lab manual is private (ADR 0012);
 this brief paraphrases what school error analysis teaches and quotes nothing.
 
-- **Status:** proposed, for Mortey's decision (physics reviewer): decisions 1 to 9.
+- **Status:** approved by Mortey (physics reviewer) on 2026-11-13: decisions 1 to 9, as proposed.
 
 ## Who it is for
 
