@@ -383,6 +383,7 @@ export {
   SOLID_PLOT,
   SOLID_STANDARD_TABLE,
   SOLID_TEMPLATES,
+  cWithUncertainty,
   solidExpected,
   solidReadingsIntoTable,
   tabulatedRun,
