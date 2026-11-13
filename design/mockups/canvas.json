@@ -165,6 +165,15 @@
       "title": "Model check: your own lab readings against the model (Phase 2, approved)",
       "expand": "fill",
       "is_interactive": true
+    },
+    "Uncertainty.dc.html": {
+      "x": 7800,
+      "y": 1120,
+      "w": 1440,
+      "h": 960,
+      "title": "Uncertainties: the advanced layer, with the pendulum (Phase 2, for approval)",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -215,7 +224,8 @@
     "Pins.dc.html",
     "Mixtures.dc.html",
     "MixturesSolid.dc.html",
-    "ModelCheck.dc.html"
+    "ModelCheck.dc.html",
+    "Uncertainty.dc.html"
   ],
   "pages": [],
   "title": "Physics Anatomy Mockups"
