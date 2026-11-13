@@ -59,7 +59,9 @@ type Eye = keyof typeof EYE;
 const EYES = Object.keys(EYE) as Eye[];
 /** A toggle pressed in is drawn light, as on the board. */
 const pressed = (on: boolean) =>
-  on ? "flex-1 border-foreground bg-foreground text-background hover:bg-foreground/90" : "flex-1";
+  on
+    ? "flex-1 border-foreground bg-foreground text-background hover:bg-foreground/90 hover:text-background dark:border-foreground dark:bg-foreground dark:hover:bg-foreground/90"
+    : "flex-1";
 
 /**
  * The method of mixtures with a hot solid (the approved board "The method of mixtures: a hot solid,
@@ -210,6 +212,7 @@ export function MethodOfMixturesSolidScreen() {
           start: methodOfMixtures.room,
           highest: methodOfMixtures.room,
           t: 0,
+          last: 0,
           c: b.world.metal.c,
           water: b.water,
           covered: b.covered,
@@ -229,6 +232,7 @@ export function MethodOfMixturesSolidScreen() {
       start,
       highest: best.reading,
       t: Number(best.t.toFixed(1)),
+      last: Number(Math.max(t0, ...run.reads.map((r) => r.t)).toFixed(1)),
       thermometerAngle: EYE[eye],
     });
     if (!data) {

@@ -309,13 +309,18 @@ export const solidProjection: Projection<SolidBench> = {
 /** One run the student recorded: the masses and temperatures as read, and how it truly went. */
 export interface SolidReading {
   id: string;
-  /** As the student recorded them: g, g, g, °C, °C; and when they read the highest, s after. */
+  /**
+   * As the student recorded them: g, g, g, °C, °C; when they read the highest, s after, and when
+   * they took their last reading, s after (read every minute, the highest is the one before the
+   * readings fall).
+   */
   solid: number;
   empty: number;
   filled: number;
   start: number;
   highest: number;
   t: number;
+  last: number;
   /** The metal's true specific heat capacity, J kg⁻¹ K⁻¹ (kept from the student until the end). */
   c: number;
   /** The water truly in the calorimeter, g, and how the run went. */
@@ -334,7 +339,7 @@ export interface SolidReading {
  */
 export function solidReadingData(
   b: SolidBench,
-  read: { start: number; highest: number; t: number; thermometerAngle?: number },
+  read: { start: number; highest: number; t: number; last?: number; thermometerAngle?: number },
 ): Record<string, string | number | boolean> | undefined {
   const { solid, empty, filled } = b.weighed;
   if (b.transfer === null || b.water === null) return undefined;
@@ -346,6 +351,7 @@ export function solidReadingData(
     start: read.start,
     highest: read.highest,
     t: read.t,
+    last: Math.max(read.t, read.last ?? read.t),
     c: b.world.metal.c,
     water: b.water,
     covered: b.covered,
@@ -367,6 +373,7 @@ export function asSolidReading(r: { id: string; data: Json }): SolidReading | un
     "start",
     "highest",
     "t",
+    "last",
     "c",
     "water",
     "after",
@@ -385,6 +392,7 @@ export function asSolidReading(r: { id: string; data: Json }): SolidReading | un
     start: n("start"),
     highest: n("highest"),
     t: n("t"),
+    last: n("last"),
     c: n("c"),
     water: n("water"),
     covered: f("covered"),
@@ -460,7 +468,11 @@ const finding = (
   rows: string[],
 ): Finding => ({ rule, severity, skill, key, params, rows });
 
-/** The thermometer read before it stopped rising: still more than a division below its highest. */
+/**
+ * Stopping before the highest: the last reading was taken while the thermometer was still rising,
+ * and more than a division below its highest. Read every minute as the book asks, the highest
+ * reading can fall between two minutes; that is the method's own limit, not this mistake.
+ */
 export const solidReadBeforePeak: Rule<SolidProcedureContext> = {
   id: "solid-read-before-peak",
   skill: "measurement",
@@ -471,7 +483,7 @@ export const solidReadBeforePeak: Rule<SolidProcedureContext> = {
         const peak = solidPeak(b);
         return { r, peak, short: peak.temperature - solidThermometer(b, r.t) };
       })
-      .filter(({ r, peak, short }) => r.t < peak.at && short > MIXTURES_THERMOMETER.resolution);
+      .filter(({ r, peak, short }) => r.last < peak.at && short > MIXTURES_THERMOMETER.resolution);
     if (!early.length) return [];
     const worst = early.reduce((a, e) => (e.short > a.short ? e : a));
     return [

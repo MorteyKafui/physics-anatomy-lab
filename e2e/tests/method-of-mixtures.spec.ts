@@ -121,6 +121,8 @@ test("the mixtures bench has no serious accessibility issues, building and measu
   await fill(page);
   expect(await serious(page)).toEqual([]);
   await page.getByRole("button", { name: "Put the lid on" }).first().click();
+  // The lid's toggle, pressed and still enabled, keeps its contrast.
+  expect(await serious(page)).toEqual([]);
   await page.getByRole("button", { name: "Finish building" }).click();
   await page.getByRole("button", { name: "Continue to Measure" }).click();
   await page.getByRole("button", { name: "Stir", exact: true }).click();
