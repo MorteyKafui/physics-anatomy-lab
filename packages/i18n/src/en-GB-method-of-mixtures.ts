@@ -766,4 +766,57 @@ export const enGBMethodOfMixtures = {
     "You read the thermometer {angle}° off square-on. The mercury sits behind the scale, so the reading is out by {celsius} °C.",
   "findings.mixturesSolid.thermometerAtAngle.demonstrate":
     "Bring your eye level with the top of the mercury, so the scale's mark is straight in front of it.",
+  // The model check (data templates brief, decision 4).
+  "experiments.method-of-mixtures.check.note":
+    "Read θ₁ just before you pour and θ₂ at the highest. Change the hot water's volume and temperature if yours differ.",
+  "experiments.method-of-mixtures.check.hotVolume": "Hot water volume V₀",
+  "experiments.method-of-mixtures.check.hotTemperature": "Hot water temperature θₕ",
+  "experiments.method-of-mixtures.check.W": "Water equivalent of the calorimeter W",
+  "experiments.method-of-mixtures.check.needs":
+    "Give the hot water's volume and temperature to check your readings against the model.",
+  "experiments.method-of-mixtures.check.template.body":
+    "Fill it in during your lab. The volumes are set as the book has them, and the hot water as 50 cm³ at 65 °C; change those if yours differ. Read θ₁ just before you pour and θ₂ at the highest. Add the calorimeter's water equivalent W if you know it.",
+  "experiments.method-of-mixtures.check.table.note":
+    "T = θ₂ − θ₁ and 1/T are worked out here, as in the lab.",
+  "experiments.method-of-mixtures.check.graph.title":
+    "Fig. 1  V against 1/T: your readings and the model",
+  "experiments.method-of-mixtures.check.graph.label":
+    "{n} readings of V against 1/T, your best line through them, and the model's dashed line.",
+  "experiments.method-of-mixtures.check.legend.model": "The model, V₀ (θₕ − θ₁) ⁄ T − (V₀ + W)",
+  "experiments.method-of-mixtures.check.shift.unmarked":
+    "Add the calorimeter's water equivalent W to compare where your line meets the V axis.",
+  "experiments.method-of-mixtures.check.shift.on":
+    "Your line meets the V axis at −(V₀ + W), within its error.",
+  "experiments.method-of-mixtures.check.shift.found":
+    "Your line meets the V axis away from −(V₀ + W).",
+  "experiments.method-of-mixtures.check.shift.figure": "W = {W} cm³",
+  "experiments.method-of-mixtures.check.tilt.on":
+    "Your slope is V₀ (θₕ − θ₁), within its error and what even a careful run loses.",
+  "experiments.method-of-mixtures.check.tilt.found.lower": "Your slope is lower than V₀ (θₕ − θ₁).",
+  "experiments.method-of-mixtures.check.tilt.found.higher":
+    "Your slope is higher than V₀ (θₕ − θ₁).",
+  "experiments.method-of-mixtures.check.tilt.figure": "{value} cm³ °C, {errors} errors",
+  "experiments.method-of-mixtures.check.spread.on":
+    "Your points spread as much as the cylinder and the thermometer allow, no more.",
+  "experiments.method-of-mixtures.check.spread.found":
+    "Your points spread {times} times more than the cylinder and the thermometer allow.",
+  "experiments.method-of-mixtures.check.spread.figure": "{value} cm³, {ratio} ×",
+  "experiments.method-of-mixtures.check.tilt.lower":
+    "Your slope is {percent}% lower than the hot water could give: heat was lost before the highest temperature was read, so every T came out low. Heat leaves while the hot water waits to be poured, with the lid off, and while the water is not stirred.",
+  "experiments.method-of-mixtures.check.tilt.lower.precaution":
+    "Pour as soon as the hot water reaches its temperature, keep the lid on, and stir until you have read the highest temperature.",
+  "experiments.method-of-mixtures.check.tilt.higher":
+    "Your slope is {percent}% higher than the hot water could give. The hot water may have been hotter, or more of it, than you entered.",
+  "experiments.method-of-mixtures.check.tilt.higher.precaution":
+    "Read the hot water's temperature just before you pour, and measure its volume square-on in the cylinder.",
+  "experiments.method-of-mixtures.check.shift":
+    "Your line gives W = {W} cm³, not the {given} cm³ you entered.",
+  "experiments.method-of-mixtures.check.shift.precaution":
+    "Check the W you entered, and keep the lid on and stir, so that heat lost does not move the line.",
+  "experiments.method-of-mixtures.check.spread":
+    "Your points spread either side of your line by about {times} times what the cylinder and the thermometer allow.",
+  "experiments.method-of-mixtures.check.spread.precaution":
+    "Read the cylinder at the bottom of the meniscus and the thermometer square-on, at the highest temperature each time.",
+  "experiments.method-of-mixtures.check.result":
+    "From your line: slope {slope} cm³ °C, meeting the V axis at {intercept} cm³, so W = {W} cm³. Lab data is not marked.",
 } as const;

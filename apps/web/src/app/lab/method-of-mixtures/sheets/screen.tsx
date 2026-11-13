@@ -33,7 +33,11 @@ const figures: SheetFigures = {
 export function MethodOfMixturesSheetsScreen() {
   return (
     <SheetsScreen
-      experiment={{ id: methodOfMixtures.id, title: t("experiments.method-of-mixtures.title") }}
+      experiment={{
+        id: methodOfMixtures.id,
+        title: t("experiments.method-of-mixtures.title"),
+        check: true,
+      }}
       content={content}
       figures={figures}
     />
