@@ -311,3 +311,24 @@ export type {
   MixturesReading,
   MixturesRefusal,
 } from "./method-of-mixtures";
+export {
+  MIXTURES_ANALYSIS_RULES,
+  MIXTURES_ANSWERS,
+  MIXTURES_GRAPH_RULES,
+  MIXTURES_INSTRUMENTS,
+  MIXTURES_PLOT,
+  MIXTURES_ROWS,
+  MIXTURES_STANDARD_TABLE,
+  MIXTURES_TEMPLATES,
+  mixturesExpected,
+  mixturesReadingsIntoTable,
+  plotsVAgainstInverseT,
+  waterEquivalentFrom,
+  wrongMixturesGraph,
+} from "./method-of-mixtures-table";
+export type {
+  MixturesAnalysisContext,
+  MixturesAnswer,
+  MixturesGraphContext,
+  MixturesTemplate,
+} from "./method-of-mixtures-table";

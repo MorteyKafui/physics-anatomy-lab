@@ -7,6 +7,7 @@ import {
   DIVISIONS,
   GRAPH_RULES,
   lineToXAxis,
+  lineToYAxis,
   mmBetween,
   mmFromLine,
   ON_POINT_MM,
@@ -195,6 +196,38 @@ test("a point half a small square from its place is within the tolerance (found 
     plotted: [{ row: "a", x: 0.8, y: 1.992 }, halfSquare.plotted[1]!],
   };
   expect(fired(twoSteps)).toContain("graph-misplotted");
+});
+
+describe("lineToYAxis", () => {
+  // V = 1850 / T − 54.6: the method of mixtures' line, meeting the V axis at −54.6 cm³.
+  const line = { from: { x: 0.05, y: 1850 * 0.05 - 54.6 }, to: { x: 0.07, y: 1850 * 0.07 - 54.6 } };
+
+  test("carries the end nearer the axis to x = 0, where the line meets it", () => {
+    const out = lineToYAxis(line);
+    expect(out.to).toEqual(line.to);
+    expect(out.from.x).toBe(0);
+    expect(out.from.y).toBeCloseTo(-54.6, 9);
+  });
+
+  test("keeps the slope, whichever way the line was drawn", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -10, max: 10, noNaN: true }),
+        fc.double({ min: -10, max: 10, noNaN: true }),
+        fc.double({ min: 0.1, max: 5, noNaN: true }),
+        (slope, c, x) => {
+          const a = { x, y: slope * x + c };
+          const b = { x: x + 1, y: slope * (x + 1) + c };
+          const out = lineToYAxis({ from: b, to: a });
+          const s = (out.to.y - out.from.y) / (out.to.x - out.from.x);
+          return (
+            Math.abs(s - slope) <= 1e-9 * Math.max(1, Math.abs(slope)) &&
+            Math.min(Math.abs(out.from.x), Math.abs(out.to.x)) === 0
+          );
+        },
+      ),
+    );
+  });
 });
 
 describe("lineToXAxis", () => {

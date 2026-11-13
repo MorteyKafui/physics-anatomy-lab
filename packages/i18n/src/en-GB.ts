@@ -745,6 +745,7 @@ export const enGB = {
   "quantity.angle": "Angle",
   "quantity.temperature": "Temperature",
   "quantity.temperature-difference": "Temperature change",
+  "quantity.inverse-temperature-difference": "Inverse temperature change",
   "quantity.current": "Current",
   "quantity.voltage": "Potential difference",
   "quantity.resistance": "Resistance",

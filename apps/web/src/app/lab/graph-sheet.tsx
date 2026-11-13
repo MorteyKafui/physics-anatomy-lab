@@ -5,6 +5,7 @@ import {
   DIVISIONS,
   heading,
   lineToXAxis,
+  lineToYAxis,
   onPaper,
   readingDecimals,
   referenceLine,
@@ -152,16 +153,23 @@ export function graphView(
    * The graph is read where its line meets an axis (Ohm's law: E where I = 0), so even the worked
    * sheet at Auto starts both axes from zero, as the question asks. "both-axes": it is read where
    * the line meets each axis (the lens's two intercepts), so the worked line runs from one axis
-   * to the other and the worked sheet reaches both.
+   * to the other and the worked sheet reaches both. "y-axis": it is read where the line meets the
+   * y axis, x = 0 (the method of mixtures: V where 1/T = 0, below zero), so the worked line is
+   * carried back to that axis, the worked sheet reaches it, and its slope is asked for too.
    */
-  fromOrigin: boolean | "both-axes" = false,
+  fromOrigin: boolean | "both-axes" | "y-axis" = false,
 ): GraphView {
   const fitted = referenceLine(data)?.line;
   const across = fromOrigin === "both-axes" && fitted ? lineAcrossAxes(fitted) : undefined;
+  const back = fromOrigin === "y-axis" && fitted ? lineToYAxis(fitted) : undefined;
   const sheet =
     state.sheet ??
     startingSheet(
-      across && assist ? [...data, across.from, across.to] : data,
+      across && assist
+        ? [...data, across.from, across.to]
+        : back && assist
+          ? [...data, back.from, back.to]
+          : data,
       columns,
       assist && !fromOrigin,
     );
@@ -175,7 +183,8 @@ export function graphView(
     };
   const plotted = state.plotted.length ? state.plotted : [...data];
   // Read where it meets the V axis: the worked line is carried on to the axis, as on paper.
-  const line = state.line ?? across ?? (fitted && fromOrigin ? lineToXAxis(fitted) : fitted);
+  const line =
+    state.line ?? across ?? back ?? (fitted && fromOrigin ? lineToXAxis(fitted) : fitted);
   // Read at both axes, the graph's slope is not asked for, so no triangle is drawn for it.
   const triangle =
     state.triangle ??
