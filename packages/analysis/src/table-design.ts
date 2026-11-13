@@ -41,7 +41,7 @@ export interface DesignColumn {
   /** For a derived column: a formula in the other columns' symbols ("t / 20"). */
   formula?: string;
   /** Least count of the instrument a given, measured or repeat column is read with. */
-  leastCount?: { value: number; unit: string };
+  leastCount?: { value: number; unit: string; digital?: boolean };
   /** What the column is, in the student's words or the experiment's ("repeat 1, 20 swings"). */
   note?: string;
 }

@@ -70,7 +70,11 @@ const timingColumn: DesignColumn = {
   kind: "time",
   unit: "s",
   role: "measured",
-  leastCount: { value: simplePendulum.stopwatch.resolution, unit: simplePendulum.stopwatch.unit },
+  leastCount: {
+    value: simplePendulum.stopwatch.resolution,
+    unit: simplePendulum.stopwatch.unit,
+    digital: true,
+  },
 };
 const periodColumn: DesignColumn = {
   id: "T",
@@ -118,7 +122,11 @@ export const PENDULUM_INSTRUMENTS: Partial<
   Record<DesignColumn["kind"], NonNullable<DesignColumn["leastCount"]>>
 > = {
   length: { value: METRE_RULE.resolution, unit: METRE_RULE.unit },
-  time: { value: simplePendulum.stopwatch.resolution, unit: simplePendulum.stopwatch.unit },
+  time: {
+    value: simplePendulum.stopwatch.resolution,
+    unit: simplePendulum.stopwatch.unit,
+    digital: true,
+  },
 };
 
 /** What the graph plots: T² against l. */
