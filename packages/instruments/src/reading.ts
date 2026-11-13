@@ -22,6 +22,11 @@ export interface InstrumentSpec {
    * A value beyond an end pins the needle against its stop.
    */
   scale?: readonly [min: number, max: number];
+  /**
+   * A digital display, read to its last digit, not a scale read by eye to half a division (the
+   * uncertainty layer, docs/content/uncertainty-brief.md, decision 2).
+   */
+  digital?: boolean;
 }
 
 export interface Reading {

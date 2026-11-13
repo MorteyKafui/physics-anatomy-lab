@@ -18,6 +18,7 @@ export const STOPWATCH: Readonly<InstrumentSpec> = {
   id: "stopwatch",
   resolution: 0.01,
   unit: "s",
+  digital: true,
 };
 
 /** A liquid-in-glass thermometer with 1 °C divisions, read to half a division. */
@@ -33,6 +34,7 @@ export const BALANCE: Readonly<InstrumentSpec> = {
   id: "balance",
   resolution: 0.1,
   unit: "g",
+  digital: true,
 };
 
 /**

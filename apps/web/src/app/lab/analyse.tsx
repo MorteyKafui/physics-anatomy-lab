@@ -3,6 +3,7 @@
 import {
   calculate,
   checkAnswer,
+  checkQuote,
   formatQuantity,
   readingDecimals,
   type Finding,
@@ -17,6 +18,8 @@ import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import { CheckIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import { useState, type ReactNode } from "react";
+
+import { showUncertainty } from "./table-panel";
 
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 
@@ -190,6 +193,7 @@ export function AnalysePanel({
   onWrite,
   onBackToPlot,
   below,
+  uncertainty,
 }: {
   triangle: SlopeTriangle | undefined;
   sheet: Sheet;
@@ -205,6 +209,12 @@ export function AnalysePanel({
   onWrite: (id: PendulumAnswer, answer: WrittenAnswer) => void;
   onBackToPlot: () => void;
   below: ReactNode;
+  /**
+   * The uncertainty layer (docs/content/uncertainty-brief.md, decision 6): the slope's
+   * least-squares uncertainty and g's, worked from the plotted points, for the student to quote g
+   * with its uncertainty.
+   */
+  uncertainty?: { slope: number; g: number; percent: number } | undefined;
 }) {
   const s = triangle && slopeOf(triangle, units);
   const dx = readingDecimals(sheet.x);
@@ -272,6 +282,7 @@ export function AnalysePanel({
                 {t("lab.analyse.workedOut")}
               </span>
             )}
+            {uncertainty && forG && <QuoteWithUncertainty uncertainty={uncertainty} />}
           </div>
         )}
         <p className="text-sm text-soft">{t("lab.analyse.hidden")}</p>
@@ -282,5 +293,82 @@ export function AnalysePanel({
       </div>
       {below}
     </section>
+  );
+}
+
+/**
+ * g quoted with its uncertainty, and the checks on it (decision 6). The accepted value stays hidden
+ * until the student has read their feedback, as it does for g itself, so agreement with it is
+ * left to the report.
+ */
+function QuoteWithUncertainty({
+  uncertainty,
+}: {
+  uncertainty: { slope: number; g: number; percent: number };
+}) {
+  const [value, setValue] = useState("");
+  const [u, setU] = useState("");
+  const typed = value.trim() !== "" && u.trim() !== "";
+  const check = typed ? checkQuote({ value, uncertainty: u }, uncertainty.g) : undefined;
+  const lines: { ok: boolean; text: string }[] = check
+    ? [
+        {
+          ok: check.uncertainty,
+          text: check.uncertainty
+            ? t("lab.analyse.uncertainty.right", { percent: uncertainty.percent.toFixed(2) })
+            : t("lab.analyse.uncertainty.wrong", {
+                worked: showUncertainty(uncertainty.g).replace("± ", ""),
+                percent: uncertainty.percent.toFixed(2),
+              }),
+        },
+        {
+          ok: check.figures && check.decimals,
+          text: t(
+            check.figures && check.decimals
+              ? "lab.analyse.uncertainty.quoted"
+              : "lab.analyse.uncertainty.figures",
+          ),
+        },
+      ]
+    : [];
+  return (
+    <div className="flex flex-col gap-2 font-sans" data-uncertainty="g">
+      <span className="font-mono text-sm text-soft">
+        {t("lab.analyse.uncertainty.slope", { u: showUncertainty(uncertainty.slope) })}
+      </span>
+      <div className="flex flex-wrap items-center gap-2 font-mono">
+        <span>g =</span>
+        <input
+          aria-label={t("lab.analyse.uncertainty.value")}
+          inputMode="decimal"
+          className="h-9 w-24 border border-input bg-background px-2 text-right"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <span>±</span>
+        <input
+          aria-label={t("lab.analyse.uncertainty.label")}
+          inputMode="decimal"
+          className="h-9 w-20 border border-input bg-background px-2 text-right"
+          value={u}
+          onChange={(e) => setU(e.target.value)}
+        />
+        <span>m s⁻²</span>
+      </div>
+      {lines.map((l) => (
+        <span key={l.text} role="status" className="flex items-baseline gap-2 text-sm">
+          <span
+            aria-hidden
+            className={cn(
+              "inline-flex size-5 items-center justify-center border-[1.5px] text-xs font-semibold",
+              l.ok ? "border-ok text-ok" : "border-warn text-warn",
+            )}
+          >
+            {l.ok ? "✓" : "!"}
+          </span>
+          <span className="text-soft">{l.text}</span>
+        </span>
+      ))}
+    </div>
   );
 }

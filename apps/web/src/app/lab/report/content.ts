@@ -1,6 +1,15 @@
 "use client";
 
-import { formatQuantity, heading, readingDecimals } from "@pa/analysis";
+import {
+  fillDerived,
+  fitLine,
+  formatQuantity,
+  heading,
+  pointsFor,
+  quotedUncertainty,
+  readingDecimals,
+  tableUncertainties,
+} from "@pa/analysis";
 import {
   replay,
   reportProjection,
@@ -19,7 +28,7 @@ import {
   typedQuantity,
 } from "@pa/experiments";
 import { t, type MessageKey } from "@pa/i18n";
-import { DEFAULT_ENVIRONMENT, METRE_RULE } from "@pa/instruments";
+import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT, METRE_RULE } from "@pa/instruments";
 
 import { reviewRun, type RunReview } from "../run-review";
 import { figureDate, figureScene, type FigureScene } from "../snapshot-figure";
@@ -272,6 +281,75 @@ export function reportContent(
       )
     : "";
 
+  // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7):
+  // the least-squares uncertainty in the slope and so in g, the agreement with the accepted value
+  // once it has been shown, and which reading's uncertainty is largest.
+  const university = report.format === "university";
+  const worked = university ? fillDerived(table) : undefined;
+  const points = worked ? pointsFor(worked, columns.x, columns.y) : [];
+  const fit =
+    forG && points.length >= 3 && new Set(points.map((p) => p.x)).size >= 2
+      ? fitLine(points)
+      : undefined;
+  const gU =
+    fit && fit.slope > 0
+      ? {
+          g: (4 * Math.PI ** 2) / fit.slope,
+          u: ((4 * Math.PI ** 2) / fit.slope) * (fit.slopeError / fit.slope),
+          percent: (100 * fit.slopeError) / fit.slope,
+        }
+      : undefined;
+  const quote = (v: number, u: number) => {
+    const q = quotedUncertainty(u);
+    return `${v.toFixed(q.decimals)} ± ${q.value.toFixed(q.decimals)}`;
+  };
+  let largest: { symbol: string; percent: number } | undefined;
+  if (worked) {
+    const us = tableUncertainties(worked, { timing: 2 * ANTICIPATED_EVENT.delaySd });
+    for (const row of worked.rows) {
+      for (const c of worked.columns) {
+        const u = us.get(row.id)?.[c.id];
+        const v = Number(row.cells[c.id]);
+        if (u === undefined || !Number.isFinite(v) || v === 0) continue;
+        const percent = (100 * u) / Math.abs(v);
+        if (!largest || percent > largest.percent) largest = { symbol: c.symbol, percent };
+      }
+    }
+  }
+  const uncertaintyWorking =
+    fit && gU
+      ? lines(
+          t("report.gen.uncertainty.rules"),
+          t("report.gen.uncertainty.slope", {
+            slope: quote(fit.slope, fit.slopeError),
+            unit: units.y && units.x ? `${units.y} ${units.x}⁻¹` : "",
+            percent: gU.percent.toFixed(2),
+          }),
+          t("report.gen.uncertainty.g", { g: quote(gU.g, gU.u) }),
+        )
+      : "";
+  const discussion = university
+    ? lines(
+        gU &&
+          state.acceptedValueShown &&
+          t(
+            Math.abs(gU.g - g) <= gU.u
+              ? "report.gen.uncertainty.agrees"
+              : "report.gen.uncertainty.differs",
+            {
+              g: quote(gU.g, gU.u),
+              accepted: g.toFixed(2),
+              away: (Math.abs(gU.g - g) / gU.u).toFixed(1),
+            },
+          ),
+        largest &&
+          t("report.gen.uncertainty.largest", {
+            symbol: largest.symbol,
+            percent: largest.percent.toFixed(2),
+          }),
+      )
+    : "";
+
   const generated: Record<string, string> = {
     "date-title": `${date}. ${title}`,
     aim: t("report.gen.aim"),
@@ -282,8 +360,8 @@ export function reportContent(
     observations,
     table: shownTable.columns.length ? t("report.gen.table") : "",
     graph: view.plotted.length ? t("report.gen.graph", { caption: graphCaption }) : "",
-    calculation,
-    discussion: "",
+    calculation: lines(calculation || undefined, uncertaintyWorking || undefined),
+    discussion,
     // In an exam the precautions and sources of error are the candidate's own to write.
     precautions: attempt.mode === "exam" ? "" : precautions,
     sources: attempt.mode === "exam" ? "" : sources,

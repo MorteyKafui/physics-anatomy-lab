@@ -2,7 +2,9 @@
 
 import {
   fillDerived,
+  fitLine,
   formulaUnitFindings,
+  tableUncertainties,
   parseTable,
   runRules,
   TABLE_RULES,
@@ -138,6 +140,8 @@ import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
 import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
 import { newSnapshotId, useSnapshots } from "./use-snapshots";
+import { UncertaintySwitch } from "./uncertainty-switch";
+import { useUncertainties } from "./use-uncertainties";
 
 const E = simplePendulum;
 const msg = (key: string, params?: Record<string, string | number>) =>
@@ -170,6 +174,7 @@ export const snapshotKindFor = (step: Step): SnapshotKind =>
 
 export function LabScreen() {
   const handle = useAttempt(E.id);
+  const [uncertain, setUncertain] = useUncertainties();
   const router = useRouter();
   // Exam mode: the clock, from the attempt's own events.
   const exam = useMemo(
@@ -754,6 +759,34 @@ export function LabScreen() {
   }
   const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
   const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist);
+
+  // The uncertainty layer (docs/content/uncertainty-brief.md): every cell's uncertainty, worked
+  // from the table with its values filled in, so a worked column follows from its inputs whether
+  // or not the student has written it yet. One timing alone takes the two presses' reaction time,
+  // each ± its spread, added as the worst case: ± 0.1 s.
+  const uncertainties = uncertain
+    ? tableUncertainties(fillDerived(table), { timing: 2 * ANTICIPATED_EVENT.delaySd })
+    : undefined;
+  const bars = uncertainties
+    ? new Map(
+        [...uncertainties].map(([row, u]) => [
+          row,
+          { dx: u[graphColumns.x] ?? 0, dy: u[graphColumns.y] ?? 0 },
+        ]),
+      )
+    : undefined;
+  const gUncertainty = (() => {
+    if (!uncertain || graphData.length < 3 || new Set(graphData.map((p) => p.x)).size < 2)
+      return undefined;
+    const f = fitLine(graphData);
+    if (!(f.slope > 0)) return undefined;
+    const g = (4 * Math.PI ** 2) / f.slope;
+    return {
+      slope: f.slopeError,
+      g: (g * f.slopeError) / f.slope,
+      percent: (100 * f.slopeError) / f.slope,
+    };
+  })();
   const graphFindings =
     graphData.length >= 2
       ? runRules(GRAPH_RULES, {
@@ -1008,6 +1041,8 @@ export function LabScreen() {
             voices={audio.voices}
             onReset={onReset}
             onSnapshot={onSnapshot}
+            uncertain={uncertain}
+            setUncertain={setUncertain}
           />
           {handle.attempt.mode === "exam" &&
             exam.startedAt !== undefined &&
@@ -1058,6 +1093,7 @@ export function LabScreen() {
                     if (e) void handle.record([e]);
                   }}
                   onBackToPlot={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
+                  uncertainty={gUncertainty}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3">{adviceCards}</div>
@@ -1081,6 +1117,7 @@ export function LabScreen() {
                   showChecks={graphMarks && !graphAssist}
                   onRun={plot.run}
                   latest={plot.now}
+                  bars={bars}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3">{adviceCards}</div>
@@ -1108,6 +1145,7 @@ export function LabScreen() {
                   onRun={results.run}
                   onFillReadings={tableAssist ? fillReadings : undefined}
                   onCommit={tableCommitted}
+                  uncertainties={uncertainties}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
@@ -1741,6 +1779,8 @@ const LabHeader = memo(function LabHeader({
   voices,
   onReset,
   onSnapshot,
+  uncertain,
+  setUncertain,
 }: {
   handle: AttemptHandle;
   labels: boolean;
@@ -1757,6 +1797,8 @@ const LabHeader = memo(function LabHeader({
   voices: Audio["voices"];
   onReset: () => void;
   onSnapshot: () => void;
+  uncertain: boolean;
+  setUncertain: (on: boolean) => void;
 }) {
   const state = handle.state;
   const stepIndex = STEPS.indexOf(state.step);
@@ -1868,6 +1910,7 @@ const LabHeader = memo(function LabHeader({
           </select>
         </label>
       )}
+      {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
       <Popover>
         <PopoverTrigger
           aria-label={t("lab.audio.label")}
@@ -1878,7 +1921,9 @@ const LabHeader = memo(function LabHeader({
           ) : (
             <VolumeXIcon className="size-4" aria-hidden />
           )}
-          <span className="hidden md:inline">{t("lab.audio.label")}</span>
+          {/* The word gives way below 1320 px, as the help level's does, so the Uncertainties
+            switch fits on the header's one row; the button keeps its name. */}
+          <span className="hidden min-[1320px]:inline">{t("lab.audio.label")}</span>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-80">
           <PopoverTitle>{t("lab.audio.title")}</PopoverTitle>

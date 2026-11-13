@@ -73,7 +73,12 @@ function asColumn(v: Json): DesignColumn | undefined {
       return undefined;
     const lc = leastCount as Record<string, Json>;
     if (typeof lc.value !== "number" || !(lc.value > 0) || !str(lc.unit, 20)) return undefined;
-    column.leastCount = { value: lc.value, unit: lc.unit };
+    // A digital display is read to its last digit (the uncertainty layer); a scale by eye.
+    column.leastCount = {
+      value: lc.value,
+      unit: lc.unit,
+      ...(lc.digital === true ? { digital: true } : {}),
+    };
   }
   return column;
 }
