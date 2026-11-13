@@ -10,6 +10,14 @@ export type { LineFit, Point } from "./fit";
 export { incompleteBeta, logGamma, studentTCdf, studentTQuantile } from "./student-t";
 export { deletedResiduals, findOutlier, outlierCriticalValue } from "./outliers";
 export type { DeletedResidual } from "./outliers";
+export {
+  combineSpreads,
+  leastCountSpread,
+  modelCheck,
+  MODEL_CHECK_FACTOR,
+  MODEL_CHECK_MIN_POINTS,
+} from "./model-check";
+export type { ModelCheck, ModelCheckInput } from "./model-check";
 export { runRules } from "./findings";
 export type { Finding, Rule, Severity, Skill } from "./findings";
 export { leastCountInColumnUnit, parseCell, parseTable } from "./table";

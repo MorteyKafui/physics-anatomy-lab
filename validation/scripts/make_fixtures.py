@@ -37,6 +37,7 @@ from pa_validation.lens_exact import (
 )
 from pa_validation.lens_parallax import ARCMIN, View, no_parallax, separation
 from pa_validation.mixtures import final_temperature, solid_specific_heat
+from pa_validation.model_check import model_check
 from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
 from pa_validation.pendulum import period_exact
 from pa_validation.review import reading_error_percent, right_way
@@ -563,6 +564,67 @@ def build_calorimetry() -> dict[str, object]:
     return {"cases": cases}
 
 
+def build_model_check() -> dict[str, object]:
+    """The model check's verdict on synthetic readings: a line like T² against l, and a curve."""
+    xs = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    k = 4.024
+    line = [k * x for x in xs]
+    careful = 0.012
+
+    def noisy(
+        seed: int, base: list[float], sd: float, offset: float = 0.0, scale: float = 1.0
+    ) -> list[float]:
+        rng = np.random.default_rng(seed)
+        return [round(scale * b + offset + float(rng.normal(0, sd)), 4) for b in base]
+
+    ts = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+    cooling = [28.0 + 12.0 * (1 - math.exp(-t / 0.4)) * math.exp(-t / 60) for t in ts]
+    cases = []
+
+    def case(
+        name: str,
+        x: list[float],
+        y: list[float],
+        model: list[float],
+        careful: float,
+        slope: float | None = None,
+        curve: bool = False,
+    ) -> None:
+        entry: dict[str, object] = {
+            "name": name,
+            "x": x,
+            "y": y,
+            "model": model,
+            "careful": careful,
+            "curve": curve,
+        }
+        if slope is not None:
+            entry["modelSlope"] = slope
+        entry["check"] = model_check(x, y, model, careful, slope, curve)
+        cases.append(entry)
+
+    case("careful", xs, noisy(1, line, careful), line, careful, k)
+    case("shifted by an end correction", xs, noisy(1, line, careful, offset=0.04), line, careful, k)
+    case("tilted by a miscount", xs, noisy(1, line, careful, scale=1.05), line, careful, k)
+    case("scattered by poor timing", xs, noisy(1, line, 0.06), line, careful, k)
+    case(
+        "smoother than care allows, a small shift",
+        xs,
+        noisy(1, line, 0.002, offset=0.006),
+        line,
+        careful,
+        k,
+    )
+    case("no model slope", xs, noisy(1, line, careful, scale=1.05), line, careful)
+    case("a curve, careful", ts, noisy(1, cooling, 0.05), cooling, 0.05, curve=True)
+    case(
+        "a curve, shifted down", ts, noisy(1, cooling, 0.05, offset=-0.6), cooling, 0.05, curve=True
+    )
+    case("a curve, scattered", ts, noisy(1, cooling, 0.3), cooling, 0.05, curve=True)
+    case("too few points", xs[:2], line[:2], line[:2], careful, k)
+    return {"model": "NumPy least squares, decision 5 as amended", "factor": 2, "cases": cases}
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -585,3 +647,4 @@ if __name__ == "__main__":
     write("student_t.json", build_student_t())
     write("outliers.json", build_outliers())
     write("review.json", build_review())
+    write("model-check.json", build_model_check())
