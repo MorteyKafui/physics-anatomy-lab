@@ -18,7 +18,8 @@ import {
 
 const BOOK = { hotVolume: M.hot.volume, hotTemperature: M.hot.temperature };
 /** The copper calorimeter's water equivalent, cm³: its heat capacity over water's per cm³. */
-const W = ((M.calorimeter.mass * M.calorimeter.specificHeatCapacity) / 4200) * 1000;
+const W =
+  ((M.calorimeter.mass * M.calorimeter.specificHeatCapacity) / WATER_SPECIFIC_HEAT_CAPACITY) * 1000;
 
 /** A student's run at each of the book's volumes on the lab's heat model, read at the highest. */
 function lab(seed: number, bend: Partial<MixturesBench> = {}) {

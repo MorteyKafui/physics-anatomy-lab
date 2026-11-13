@@ -147,7 +147,6 @@ export function mixturesCheck(
   if (points.length < 3 || new Set(points.map((p) => p.x)).size < 2) return empty;
 
   const W = values.W;
-  const hot = { volume: V0, temperature: hotT };
   // The slope of V against 1/T for a reading that started at θ₁: the heat the hot water can give.
   const slopeAt = (theta1: number) => V0 * (hotT - theta1);
   const modelSlope = slopeAt(mean(starts));
