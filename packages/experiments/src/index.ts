@@ -439,3 +439,13 @@ export {
   pinsModelLine,
 } from "./converging-lens-pins-check";
 export type { PinsResult } from "./converging-lens-pins-check";
+export {
+  MIXTURES_CHECK_COLUMNS,
+  MIXTURES_DATA_TEMPLATE,
+  mixturesCarefulShortfall,
+  mixturesCarefulSpread,
+  mixturesCheck,
+  mixturesExample,
+  mixturesModelRise,
+} from "./method-of-mixtures-check";
+export type { MixturesResult } from "./method-of-mixtures-check";

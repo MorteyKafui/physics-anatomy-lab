@@ -47,7 +47,8 @@ export function templateRows(template: DataTemplate): string[][] {
   if (template.note) rows.push([template.note]);
   if (template.values.length) {
     rows.push([], [t("labData.template.values")]);
-    for (const v of template.values) rows.push([heading(v.label, v.unit), ""]);
+    for (const v of template.values)
+      rows.push([heading(v.label, v.unit), v.value !== undefined ? String(v.value) : ""]);
   }
   rows.push([], [t("labData.template.readings")]);
   rows.push(template.columns.map((c) => heading(c.symbol, c.unit)));

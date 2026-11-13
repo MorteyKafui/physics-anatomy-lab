@@ -11,7 +11,11 @@ import { mixturesReport } from "../report-content";
 export function MethodOfMixturesReportScreen() {
   return (
     <ReportScreen
-      experiment={{ id: methodOfMixtures.id, title: t("experiments.method-of-mixtures.title") }}
+      experiment={{
+        id: methodOfMixtures.id,
+        title: t("experiments.method-of-mixtures.title"),
+        check: true,
+      }}
       build={mixturesReport}
     />
   );

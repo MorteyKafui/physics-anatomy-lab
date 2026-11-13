@@ -50,6 +50,8 @@ export interface CheckExperiment {
     values: Readonly<Record<string, number | undefined>>,
   ) => LabCheck;
   example: readonly LabRow[];
+  /** The apparatus values the example data was taken with, where the model needs some. */
+  exampleValues?: Readonly<Record<string, number>>;
   /** The graph's axes: the symbols with units, as the lab's graph writes them. */
   axes: { x: string; y: string };
   copy: {
@@ -149,7 +151,7 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
   );
   const rows = data ? completeRows(data, T).map((r) => r.values) : E.example;
   const isExample = !data;
-  const values = useMemo(() => data?.values ?? {}, [data]);
+  const values = useMemo(() => (data ? data.values : (E.exampleValues ?? {})), [data, E]);
   const result = useMemo(() => E.check(rows, values), [E, rows, values]);
   const check = result.check;
 
@@ -164,7 +166,9 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
 
   const found = check ? (["shift", "tilt", "spread"] as const).filter((p) => check[p]?.found) : [];
   const verdictTitle = !check
-    ? t("labData.check.verdict.few", { n: 3 })
+    ? result.needs
+      ? t(result.needs as MessageKey)
+      : t("labData.check.verdict.few", { n: 3 })
     : found.length === 0
       ? (E.copy.agrees ?? t("labData.check.verdict.agrees"))
       : found.length > 1
@@ -537,7 +541,7 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
                   data ?? {
                     experiment: T.experiment,
                     version: T.version,
-                    values: {},
+                    values: { ...E.exampleValues },
                     rows: E.example.map((values, i) => ({ row: i + 1, values: { ...values } })),
                     problems: [],
                   },
@@ -631,7 +635,10 @@ function TypeIn({
         ),
   );
   const [vals, setVals] = useState<string[]>(() =>
-    labels.map((l) => start?.find((r) => r[0] === l)?.[1] ?? ""),
+    labels.map((l, i) => {
+      const v = template.values[i]!.value;
+      return start?.find((r) => r[0] === l)?.[1] ?? (v !== undefined ? String(v) : "");
+    }),
   );
   const emit = (r: string[][], v: string[]) =>
     onChange([...labels.map((l, i) => [l, v[i]!]), [], head, ...r]);

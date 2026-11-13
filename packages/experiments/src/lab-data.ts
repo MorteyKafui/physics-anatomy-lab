@@ -28,6 +28,8 @@ export interface TemplateValue {
   unit: string;
   /** The model can do without it (the calorimeter's water equivalent W). */
   optional?: boolean;
+  /** Filled in on the template from the book, for the student to change: 50 cm³ of hot water. */
+  value?: number;
 }
 
 export interface DataTemplate {
@@ -63,5 +65,7 @@ export interface LabCheck {
   /** The model's line across the graph, for drawing, from its first x to its last. */
   modelLine: readonly Point[];
   check: ModelCheck | undefined;
+  /** Why there is no check yet, other than too few rows: a message key (an apparatus value missing). */
+  needs?: string;
   findings: readonly CheckFinding[];
 }
