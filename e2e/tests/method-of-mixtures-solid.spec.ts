@@ -177,4 +177,26 @@ test("at Auto the whole hot-solid lab runs: a run read every minute, θ against 
   expect(Math.abs(c / C[metal] - 1)).toBeLessThan(0.04);
   await page.getByRole("button", { name: "Continue to Report" }).click();
   await expect(page.getByText("Step 10 of 10 · Report")).toBeVisible();
+
+  // Step 10: the report, written from this run, naming the metal.
+  await page.getByRole("link", { name: "Open your report" }).click();
+  await expect(page).toHaveURL(/\/lab\/method-of-mixtures-solid\/report$/);
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText(
+      "The method of mixtures: a hot solid: the specific heat capacity of a solid by the method of mixtures",
+    ),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^Fig\. 1 The solid S in the water in the calorimeter C/),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("img", { name: /a lagged copper calorimeter with the solid/ }),
+  ).toBeVisible();
+  await expect(paper.getByText(/^c_s = \(m_c c_c \+ m_w c_w\)/)).toBeVisible();
+  await expect(
+    paper.getByText(new RegExp(`^The solid is ${metal}, whose specific heat`)),
+  ).toBeVisible();
+  await expect(paper.getByText(/^I moved the solid into the calorimeter quickly/)).toBeVisible();
+  await expect(paper.getByText(/^Read every minute, the highest reading can miss/)).toBeVisible();
 });

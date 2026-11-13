@@ -3,6 +3,7 @@
 import {
   BENCH_VIEWBOX,
   Calorimeter,
+  HotSolidBench,
   CIRCUIT_FIGURE,
   CircuitBench,
   OPTICAL_VIEWBOX,
@@ -50,13 +51,17 @@ export function BenchDrawing({
     d.kind !== "circuit" &&
     d.kind !== "optical" &&
     d.kind !== "pins" &&
-    d.kind !== "calorimeter"
+    d.kind !== "calorimeter" &&
+    d.kind !== "hot-solid"
   )
     return null;
   const size =
     d.kind === "bench"
       ? BENCH_SIZE
-      : d.kind === "optical" || d.kind === "pins" || d.kind === "calorimeter"
+      : d.kind === "optical" ||
+          d.kind === "pins" ||
+          d.kind === "calorimeter" ||
+          d.kind === "hot-solid"
         ? OPTICAL_SIZE
         : CIRCUIT_SIZE;
   return (
@@ -90,6 +95,16 @@ export function BenchDrawing({
             offAxis={d.offAxis}
             objectHalfHeight={d.objectHalfHeight}
             image={d.image}
+          />
+        ) : d.kind === "hot-solid" ? (
+          <HotSolidBench
+            balance={d.balance}
+            solid="calorimeter"
+            wet={false}
+            water={d.water}
+            covered={d.covered}
+            stirring={d.stirring}
+            thermometer={d.thermometer}
           />
         ) : d.kind === "calorimeter" ? (
           <Calorimeter

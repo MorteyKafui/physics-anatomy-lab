@@ -393,3 +393,7 @@ export type {
   SolidAnswer,
   SolidGraphContext,
 } from "./method-of-mixtures-solid-table";
+export { SOLID_SHEET_NUMBER, solidSheet } from "./method-of-mixtures-solid-sheets";
+export type { SolidSheet, SolidSheetMetal } from "./method-of-mixtures-solid-sheets";
+export { markSolidScript, solidFollowUps } from "./method-of-mixtures-solid-exam";
+export type { SolidExamFacts } from "./method-of-mixtures-solid-exam";
