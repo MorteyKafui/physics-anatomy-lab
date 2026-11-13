@@ -76,7 +76,10 @@ describe("the pendulum's model check", () => {
   test("a careful student's spread in T² is a little over 0.01 s² with two timings", () => {
     expect(pendulumCarefulSpread(1.8, 2)).toBeGreaterThan(0.008);
     expect(pendulumCarefulSpread(1.8, 2)).toBeLessThan(0.012);
-    expect(pendulumCarefulSpread(1.8, 1)).toBeCloseTo(pendulumCarefulSpread(1.8, 2) * Math.SQRT2, 12);
+    expect(pendulumCarefulSpread(1.8, 1)).toBeCloseTo(
+      pendulumCarefulSpread(1.8, 2) * Math.SQRT2,
+      12,
+    );
   });
 
   test("lengths measured to the top of a 1 cm bob are found as points above the line, by 1 cm", () => {

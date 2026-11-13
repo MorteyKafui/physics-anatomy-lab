@@ -256,3 +256,23 @@ function book(sheet: string, shared: string) {
     "xl/sharedStrings.xml": strToU8(shared),
   });
 }
+
+test("a second timing not taken is not a problem: the row is kept with the one it has", () => {
+  const two: DataTemplate = {
+    ...TEMPLATE,
+    columns: [
+      { id: "l", symbol: "l", kind: "length", unit: "m", role: "setting" },
+      { id: "t1", symbol: "t₁", kind: "time", unit: "s", role: "reading" },
+      { id: "t2", symbol: "t₂", kind: "time", unit: "s", role: "reading" },
+    ],
+  };
+  const data = matchTemplate(
+    [
+      ["l / m", "t₁ / s", "t₂ / s"],
+      ["0.5", "28.42", ""],
+    ],
+    two,
+  );
+  expect(data.problems).toEqual([]);
+  expect(completeRows(data, two).map((r) => r.values)).toEqual([{ l: 0.5, t1: 28.42 }]);
+});
