@@ -36,8 +36,14 @@ export function tableUncertainties(
       if (c.role === "given" || c.role === "measured" || c.role === "repeat") {
         if (!c.leastCount || value[c.id] === undefined) continue;
         if (!findUnit(c.kind, c.leastCount.unit)) continue;
-        const lc = toSI(c.leastCount.value, c.kind, c.leastCount.unit);
-        u[c.id] = readingUncertainty(lc, c.leastCount.digital ? "digital" : "scale");
+        // A least count is a size, a step on the scale: converted without the scale's offset
+        // (0.1 °C is 0.1 K, not 273.25 K).
+        const lc =
+          toSI(c.leastCount.value, c.kind, c.leastCount.unit) - toSI(0, c.kind, c.leastCount.unit);
+        // A value written as the difference of several readings (a rise) carries each one's.
+        u[c.id] =
+          readingUncertainty(lc, c.leastCount.digital ? "digital" : "scale") *
+          (c.leastCount.readings ?? 1);
       } else if (c.role === "mean") {
         const repeats = repeatsOf(design, c).filter((r) => value[r.id] !== undefined);
         if (!repeats.length) continue;

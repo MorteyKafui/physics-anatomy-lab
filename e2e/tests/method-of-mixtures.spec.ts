@@ -250,3 +250,46 @@ test("plotting V against T is caught, and the analysis asks for V against 1/T", 
   await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
   await expect(page.getByText(/Your graph is V against T/)).toBeVisible();
 });
+
+test("with the uncertainty layer on, the table, graph, W and the report carry uncertainties", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(180_000);
+  // The switch is remembered on the device, so it is turned on before the walk begins.
+  await page.goto(MIXTURES);
+  await page.getByRole("switch", { name: "Uncertainties" }).click();
+  await measureAll(page, [40, 50, 60, 70]);
+
+  // V on the cylinder, ± half its 1 cm³; T the rise between two readings, ± 0.05 °C each.
+  await page
+    .getByRole("button", { name: /Tabulate/ })
+    .first()
+    .click();
+  const results = page.getByRole("region", { name: "Results table" });
+  await expect(results.locator('[data-uncertainty="V"]')).toHaveText("± 0.5");
+  await expect(results.locator('[data-uncertainty="T"]')).toHaveText("± 0.1");
+  await page.getByRole("button", { name: /Plot/ }).first().click();
+  await expect(page.locator('[data-graph="error-bars"]')).toHaveCount(1);
+  await page.getByLabel("Draw the steepest and least steep lines through the error bars").check();
+  await expect(page.locator('[data-graph="worst-lines"] line')).toHaveCount(2);
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
+
+  await expect(page.getByText(/^Least squares: the slope ± /)).toBeVisible();
+  await page.getByLabel("W, your value").fill("4.6");
+  await page.getByLabel("The uncertainty in W").fill("90");
+  await expect(page.getByRole("status").filter({ hasText: "more than twice" })).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(await serious(page)).toEqual([]);
+
+  await page.goto(`${MIXTURES}/report`);
+  await page
+    .getByRole("navigation", { name: "Sections" })
+    .getByRole("button", { name: "University", exact: true })
+    .click();
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText(/^By least squares, the line meets the V axis at −[\d.]+ ± [\d.]+ cm³\.$/),
+  ).toBeVisible();
+  await expect(paper.getByText(/^W = −\(intercept\) − V₀ = [\d.]+ ± [\d.]+ cm³: /)).toBeVisible();
+});

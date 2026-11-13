@@ -881,4 +881,11 @@ export const enGBMethodOfMixtures = {
     "Read the thermometer square-on, on the minute, each time.",
   "experiments.method-of-mixtures-solid.check.result":
     "From your highest reading, {highest} °C: c = {c} J kg⁻¹ K⁻¹ by the book's equation. Lab data is not marked.",
+  // The uncertainty layer's report working (docs/content/uncertainty-brief.md, decision 7).
+  "experiments.method-of-mixtures.report.uncertainty.intercept":
+    "By least squares, the line meets the V axis at {a} cm³.",
+  "experiments.method-of-mixtures.report.uncertainty.W":
+    "W = −(intercept) − V₀ = {W} cm³: the intercept's uncertainty, and the hot water's own reading of ± {hot} cm³ on the cylinder, added.",
+  "experiments.method-of-mixtures.report.uncertainty.c":
+    "c = {c} J kg⁻¹ K⁻¹, worked through the book's equation from each reading's uncertainty: {percent} %.",
 } as const;

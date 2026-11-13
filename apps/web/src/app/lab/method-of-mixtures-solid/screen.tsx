@@ -3,6 +3,7 @@
 import { HotSolidBench } from "@pa/apparatus";
 import {
   fillDerived,
+  tableUncertainties,
   formatQuantity,
   GRAPH_RULES,
   parseTable,
@@ -45,6 +46,7 @@ import {
   SOLID_PROCEDURE_RULES,
   SOLID_STANDARD_TABLE,
   SOLID_TEMPLATES,
+  cWithUncertainty,
   solidExpected,
   solidReadingsIntoTable,
   tabulatedRun,
@@ -69,7 +71,9 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
-import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
+import { UncertaintySwitch } from "../uncertainty-switch";
+import { useUncertainties } from "../use-uncertainties";
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
 import { ExamBar } from "../exam/bar";
@@ -105,6 +109,7 @@ const pressed = (on: boolean) =>
  */
 export function MethodOfMixturesSolidScreen() {
   const handle = useAttempt(H.id);
+  const [uncertain, setUncertain] = useUncertainties();
   const [tab, setTab] = useState("instructions");
   const [refusal, setRefusal] = useState<string>();
   const [advice, setAdvice] = useState<Advice[]>([]);
@@ -283,6 +288,17 @@ export function MethodOfMixturesSolidScreen() {
   const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
   const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist, "points");
   const rightGraph = plotsThetaAgainstT(graphColumns);
+  // The uncertainty layer (docs/content/uncertainty-brief.md): each cell's uncertainty and the
+  // graph's error bars.
+  const uncertainties = uncertain ? tableUncertainties(fillDerived(table)) : undefined;
+  const bars = uncertainties
+    ? new Map(
+        [...uncertainties].map(([row, u]) => [
+          row,
+          { dx: u[graphColumns.x] ?? 0, dy: u[graphColumns.y] ?? 0 },
+        ]),
+      )
+    : undefined;
   const graphFindings =
     graphData.length >= 2
       ? runRules(GRAPH_RULES, {
@@ -713,6 +729,7 @@ export function MethodOfMixturesSolidScreen() {
               </select>
             </label>
           )}
+          {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&
@@ -761,6 +778,7 @@ export function MethodOfMixturesSolidScreen() {
                   onRun={results.run}
                   onFillReadings={tableAssist ? fillReadings : undefined}
                   onCommit={() => undefined}
+                  uncertainties={uncertainties}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
@@ -783,6 +801,8 @@ export function MethodOfMixturesSolidScreen() {
                   showChecks={graphMarks && !graphAssist}
                   onRun={plot.run}
                   latest={plot.now}
+                  bars={bars}
+                  worstLinesOffered={false}
                   below={
                     advice.length > 0 || (graphMarks && solidGraphFindings.length > 0) ? (
                       <div className="flex flex-col gap-3">
@@ -845,6 +865,22 @@ export function MethodOfMixturesSolidScreen() {
                             onWrite={write("c")}
                           />
                         )}
+                        {uncertain &&
+                          tabulated &&
+                          expected.T &&
+                          (() => {
+                            const T = expected.T.value;
+                            if (!(T > tabulated.start && T < H.boiling)) return null;
+                            const c = cWithUncertainty(tabulated, T);
+                            return (
+                              <QuoteLine
+                                symbol="c"
+                                unit="J kg⁻¹ K⁻¹"
+                                worked={c.uncertainty}
+                                percent={(100 * c.uncertainty) / c.value}
+                              />
+                            );
+                          })()}
                         {analysisAssist && (
                           <span className="font-sans text-xs text-muted-foreground">
                             {t("lab.analyse.workedOut")}

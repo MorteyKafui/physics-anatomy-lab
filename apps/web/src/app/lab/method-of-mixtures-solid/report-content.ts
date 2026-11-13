@@ -2,6 +2,8 @@
 
 import {
   fillDerived,
+  largestPercentUncertainty,
+  tableUncertainties,
   formatQuantity,
   GRAPH_RULES,
   heading,
@@ -39,6 +41,7 @@ import {
   SOLID_GRAPH_RULES,
   SOLID_PLOT,
   solidAtEntry,
+  cWithUncertainty,
   solidExpected,
   solidProjection,
   solidSheet,
@@ -58,6 +61,7 @@ import {
   type ReportSection,
 } from "../report/content";
 import { figureDate, type FigureScene } from "../snapshot-figure";
+import { quoteWithUncertainty } from "../uncertainty-format";
 
 /**
  * The method of mixtures with a hot solid: its report (master plan, "Lab report"), in the WASSCE
@@ -343,6 +347,36 @@ export function solidReport(attempt: Attempt, events: readonly LabEvent[]): Repo
     t(`${R}.apparatus.heater`),
   );
 
+  // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7):
+  // c through the book's equation from each reading's own uncertainty, worst case.
+  const university = report.format === "university";
+  const worked = university ? fillDerived(table) : undefined;
+  const quote = quoteWithUncertainty;
+  const highest = expected.T?.value;
+  const uncertaintyWorking =
+    university && run && highest !== undefined && highest > run.start && highest < hotSolid.boiling
+      ? (() => {
+          const c = cWithUncertainty(run, highest);
+          return lines(
+            t("report.gen.uncertainty.rules"),
+            t("experiments.method-of-mixtures.report.uncertainty.c", {
+              c: quote(c.value, c.uncertainty),
+              percent: ((100 * c.uncertainty) / c.value).toFixed(2),
+            }),
+          );
+        })()
+      : "";
+  const largest = worked
+    ? largestPercentUncertainty(worked, tableUncertainties(worked))
+    : undefined;
+  const discussion =
+    university && largest
+      ? t("report.gen.uncertainty.largest", {
+          symbol: largest.symbol,
+          percent: largest.percent.toFixed(2),
+        })
+      : "";
+
   const generated: Record<string, string> = {
     "date-title": `${date}. ${title}`,
     aim: t(`${R}.aim`),
@@ -355,8 +389,8 @@ export function solidReport(attempt: Attempt, events: readonly LabEvent[]): Repo
     graph: view.plotted.length
       ? t(rightGraph ? `${R}.graph` : "report.gen.graph", { caption: graphCaption })
       : "",
-    calculation,
-    discussion: "",
+    calculation: lines(calculation, uncertaintyWorking),
+    discussion,
     // In an exam the precautions and sources of error are the candidate's own to write.
     precautions: attempt.mode === "exam" ? "" : precautions,
     sources: attempt.mode === "exam" ? "" : sources,

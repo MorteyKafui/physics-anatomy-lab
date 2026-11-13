@@ -1,11 +1,17 @@
 import {
+  evaluate,
+  parseFormula,
   parseUnit,
+  readingUncertainty,
+  worstCase,
   type DesignColumn,
   type Finding,
   type Point,
   type Quantity,
   type Rule,
 } from "@pa/analysis";
+
+import { BALANCE } from "@pa/instruments";
 
 import { MIXTURES_THERMOMETER } from "./method-of-mixtures";
 import { cFromReadings, hotSolid, type SolidReading } from "./method-of-mixtures-solid";
@@ -155,3 +161,49 @@ export const SOLID_ANALYSIS_RULES: Rule<SolidAnalysisContext>[] = [solidAnswerRu
 
 /** The metal the solid is, by its specific heat capacity: for naming it once c is found. */
 export const metalOf = (c: number) => hotSolid.metals.find((m) => m.c === c);
+
+/**
+ * c with its uncertainty (the uncertainty layer, docs/content/uncertainty-brief.md, decision 3):
+ * the book's equation, m_s c (T_s − T) = (m_c c_c + m_w c_w)(T − T₀), worked through by worst-case
+ * propagation from each reading's own uncertainty: the three masses on the balance to its last
+ * digit, the starting and highest temperatures to half the thermometer's least count. The boiling
+ * water's temperature and the given c's are the question's, with none.
+ */
+export function cWithUncertainty(
+  run: Pick<SolidReading, "solid" | "empty" | "filled" | "start">,
+  highest: number,
+): { value: number; uncertainty: number } {
+  const parsed = parseFormula("(e*k + (f - e)*w)*(h - a)/(s*(b - h))", [
+    "s",
+    "e",
+    "f",
+    "a",
+    "h",
+    "b",
+    "k",
+    "w",
+  ]);
+  if (!parsed.ok) throw new Error("the book's equation must parse");
+  const values = {
+    s: run.solid,
+    e: run.empty,
+    f: run.filled,
+    a: run.start,
+    h: highest,
+    b: hotSolid.boiling,
+    k: hotSolid.given.calorimeter,
+    w: hotSolid.given.water,
+  };
+  const balance = readingUncertainty(BALANCE.resolution, BALANCE.digital ? "digital" : "scale");
+  const thermometer = readingUncertainty(MIXTURES_THERMOMETER.resolution, "scale");
+  return {
+    value: evaluate(parsed.expr, values),
+    uncertainty: worstCase(parsed.expr, values, {
+      s: balance,
+      e: balance,
+      f: balance,
+      a: thermometer,
+      h: thermometer,
+    }),
+  };
+}

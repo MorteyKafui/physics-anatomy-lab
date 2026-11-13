@@ -52,6 +52,7 @@ export function GraphPanel({
   latest,
   below,
   bars,
+  worstLinesOffered = true,
 }: {
   state: GraphState;
   view: GraphView;
@@ -68,6 +69,8 @@ export function GraphPanel({
   below: ReactNode;
   /** The uncertainty layer's error bars by row, in the axes' units, drawn at true size. */
   bars?: ReadonlyMap<string, { dx: number; dy: number }> | undefined;
+  /** Whether the worst lines can be drawn: not on a curve (the hot solid's θ against t). */
+  worstLinesOffered?: boolean;
 }) {
   const [showWorst, setShowWorst] = useState(false);
   const [tool, setTool] = useState<Tool>("plot");
@@ -367,7 +370,7 @@ export function GraphPanel({
           </button>
         </div>
       </div>
-      {bars && (
+      {bars && worstLinesOffered && (
         <label className="flex items-center gap-2 text-sm text-soft">
           <input
             type="checkbox"

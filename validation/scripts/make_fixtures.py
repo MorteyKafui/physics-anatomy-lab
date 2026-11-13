@@ -660,6 +660,22 @@ def build_uncertainty() -> dict[str, object]:
         ("a product", "x * y", "x*y", {"x": 30.0, "y": 30.2}, {"x": 0.05, "y": 0.2}),
         ("a square root", "sqrt(l)", "sqrt(l)", {"l": 0.8}, {"l": 0.0005}),
         ("a logarithm", "ln(V)", "log(V)", {"V": 2.3}, {"V": 0.025}),
+        (
+            "the hot solid's c by the book's equation",
+            "(e*k + (f - e)*w)*(h - a)/(s*(b - h))",
+            "(e*k + (f - e)*w)*(h - a)/(s*(b - h))",
+            {
+                "s": 100.0,
+                "e": 50.0,
+                "f": 100.0,
+                "a": 28.0,
+                "h": 38.3,
+                "b": 100.0,
+                "k": 390.0,
+                "w": 4200.0,
+            },
+            {"s": 0.1, "e": 0.1, "f": 0.1, "a": 0.05, "h": 0.05},
+        ),
     ]
     out = []
     for name, ts, py, values, us in cases:

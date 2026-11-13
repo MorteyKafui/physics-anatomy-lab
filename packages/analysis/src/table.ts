@@ -18,7 +18,7 @@ export interface TableColumn {
    */
   source: "measured" | "given" | "derived";
   /** Least count of the instrument a measured column is read from, in that instrument's unit. */
-  leastCount?: { value: number; unit: string; digital?: boolean };
+  leastCount?: { value: number; unit: string; digital?: boolean; readings?: number };
   /** For a mean column: the columns it is the mean of (repeat timings t₁, t₂). */
   meanOf?: string[];
   /** For a derived column: its SI value from the row's other SI values and the table's constants. */

@@ -10,7 +10,6 @@ import {
   largestPercentUncertainty,
   parseTable,
   pointsFor,
-  quotedUncertainty,
   readingDecimals,
   runRules,
   tableUncertainties,
@@ -61,6 +60,7 @@ import {
   type ReportSection,
 } from "../report/content";
 import { figureDate, type FigureScene } from "../snapshot-figure";
+import { quoteWithUncertainty } from "../uncertainty-format";
 
 /**
  * The Ohm's law report (master plan, "Lab report"), in the WASSCE or university format, generated
@@ -344,10 +344,7 @@ export function ohmsLawReport(attempt: Attempt, events: readonly LabEvent[]): Re
   const points = worked && iAgainstV ? pointsFor(worked, columns.x, columns.y) : [];
   const fit =
     points.length >= 3 && new Set(points.map((p) => p.x)).size >= 2 ? fitLine(points) : undefined;
-  const quote = (v: number, u: number) => {
-    const q = quotedUncertainty(u);
-    return `${v.toFixed(q.decimals)} ± ${q.value.toFixed(q.decimals)}`;
-  };
+  const quote = quoteWithUncertainty;
   const largest = worked
     ? largestPercentUncertainty(worked, tableUncertainties(worked))
     : undefined;
