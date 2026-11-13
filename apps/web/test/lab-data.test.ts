@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { strToU8, zipSync } from "fflate";
 
-import { labDataJson, LAB_DATA_FORMAT } from "../src/app/lab/lab-data/json";
+import {
+  labDataJson,
+  LAB_DATA_FORMAT,
+  TABLE_FORMAT,
+  tableJson,
+} from "../src/app/lab/lab-data/json";
 import { completeRows, matchTemplate, MAX_ROWS, splitHeading } from "../src/app/lab/lab-data/match";
 import { problemText } from "../src/app/lab/lab-data/problems";
 import { csvCells, MAX_FILE_BYTES, readCells, xlsxCells } from "../src/app/lab/lab-data/read";
@@ -275,4 +280,28 @@ test("a second timing not taken is not a problem: the row is kept with the one i
   );
   expect(data.problems).toEqual([]);
   expect(completeRows(data, two).map((r) => r.values)).toEqual([{ l: 0.5, t1: 28.42 }]);
+});
+
+test("a report's table as JSON: symbols and units from its headings, numbers as numbers", () => {
+  const json = JSON.parse(
+    tableJson(
+      "simple-pendulum",
+      ["l/m", "T²/s²", "notes"],
+      [
+        ["0.850", "3.42", "repeat"],
+        ["", "", ""],
+      ],
+    ),
+  );
+  expect(json.format).toBe(TABLE_FORMAT);
+  expect(json.experiment).toBe("simple-pendulum");
+  expect(json.columns).toEqual([
+    { symbol: "l", unit: "m" },
+    { symbol: "T²", unit: "s²" },
+    { symbol: "notes", unit: "" },
+  ]);
+  expect(json.rows).toEqual([
+    [0.85, 3.42, "repeat"],
+    [null, null, null],
+  ]);
 });

@@ -150,6 +150,9 @@ test("the report downloads as a PDF with real text, a Word file, figures and dat
   const svg = unzip(figures.bytes, "fig-2-simple-pendulum-graph.svg");
   expect(svg).toContain("<svg");
   expect(svg).not.toContain("var(--");
+  const figurePdf = figures.bytes.toString("latin1");
+  expect(figurePdf).toContain("fig-1-simple-pendulum-bench.pdf");
+  expect(figurePdf).toContain("fig-2-simple-pendulum-graph.pdf");
 
   const data = await download(page, /^Data only/);
   expect(data.name).toBe("simple-pendulum-data.zip");
@@ -157,6 +160,9 @@ test("the report downloads as a PDF with real text, a Word file, figures and dat
   expect(csv).toContain("l/m,");
   expect(csv).toContain("0.850");
   expect(data.bytes.toString("latin1")).toContain("table-1.xlsx");
+  const json = JSON.parse(unzip(data.bytes, "table-1.json"));
+  expect(json.format).toBe("physics-anatomy/table");
+  expect(json.columns[0]).toEqual({ symbol: "l", unit: "m" });
 });
 
 test("the report has no serious accessibility issues", async ({ page }) => {

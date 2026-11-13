@@ -1,4 +1,4 @@
-import type { LabData } from "./match";
+import { splitHeading, type LabData } from "./match";
 import type { DataTemplate } from "./template";
 
 /**
@@ -28,6 +28,40 @@ export function labDataJson(data: LabData, template: DataTemplate): string {
           row: r.row,
           ...Object.fromEntries(template.columns.map((c) => [c.id, r.values[c.id] ?? null])),
         })),
+      },
+      null,
+      2,
+    ) + "\n"
+  );
+}
+
+/**
+ * A report's results table as JSON (the report board, data as JSON): the experiment, each column's
+ * symbol and unit from its heading ("T²/s²"), and the rows as the table shows them, numbers as
+ * numbers. Like lab data it is not an attempt file.
+ */
+export const TABLE_FORMAT = "physics-anatomy/table";
+
+export function tableJson(
+  experiment: string,
+  headings: readonly string[],
+  rows: readonly (readonly string[])[],
+): string {
+  const cell = (v: string) => {
+    const n = v.trim() === "" ? NaN : Number(v.trim());
+    return Number.isFinite(n) ? n : v === "" ? null : v;
+  };
+  return (
+    JSON.stringify(
+      {
+        format: TABLE_FORMAT,
+        formatVersion: 1,
+        experiment,
+        columns: headings.map((h) => {
+          const { name, unit } = splitHeading(h);
+          return { symbol: name, unit: unit ?? "" };
+        }),
+        rows: rows.map((r) => r.map(cell)),
       },
       null,
       2,
