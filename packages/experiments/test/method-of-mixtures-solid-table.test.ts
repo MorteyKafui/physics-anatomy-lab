@@ -14,11 +14,12 @@ import {
   solidReadingData,
   solidReadingsIntoTable,
   solidThermometer,
+  type Metal,
   type SolidReading,
 } from "../src";
 
 /** A careful run read every minute for three minutes, each to 0.1 °C, the highest as T. */
-function minuteRun(metal = H.metals[0]): SolidReading {
+function minuteRun(metal: Metal = H.metals[0]): SolidReading {
   const b = correctSolidBench({ metal });
   const round = (c: number) => Math.round(c * 10) / 10;
   const series = [0, 60, 120, 180].map((t) => ({
