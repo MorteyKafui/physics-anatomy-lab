@@ -151,8 +151,11 @@ export function matchTemplate(
       const raw = cellsInRow[index] ?? "";
       const n = NUMBER.safeParse(raw);
       if (n.success) values[column.id] = convert(n.data);
-      else if (raw.trim() === "") problems.push({ code: "missing", row, column: column.symbol });
-      else if (COMMA_DECIMAL.test(raw))
+      // An empty setting is a problem; an empty reading beside others is a repeat not taken.
+      else if (raw.trim() === "") {
+        if (column.role === "setting")
+          problems.push({ code: "missing", row, column: column.symbol });
+      } else if (COMMA_DECIMAL.test(raw))
         problems.push({
           code: "comma",
           row,
@@ -167,6 +170,10 @@ export function matchTemplate(
   return out;
 }
 
-/** The rows with every column read, the ones the graph and the verdict use. */
+/** The rows the graph and the verdict use: every setting, and at least one reading. */
 export const completeRows = (data: LabData, template: DataTemplate) =>
-  data.rows.filter((r) => template.columns.every((c) => r.values[c.id] !== undefined));
+  data.rows.filter(
+    (r) =>
+      template.columns.every((c) => c.role !== "setting" || r.values[c.id] !== undefined) &&
+      template.columns.some((c) => c.role === "reading" && r.values[c.id] !== undefined),
+  );

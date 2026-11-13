@@ -580,6 +580,14 @@ export function ReportScreen({
               {t(`report.do.${kind}` as MessageKey)}
             </Button>
             <span className="text-xs text-muted-foreground">{t("report.offline")}</span>
+            {E.check && (
+              <Link
+                href={`/lab/${E.id}/check`}
+                className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                {t("labData.check.templateLink")}
+              </Link>
+            )}
           </div>
         </aside>
       </div>

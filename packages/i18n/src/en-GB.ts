@@ -978,15 +978,94 @@ export const enGB = {
   "labData.template.version": "Template version",
   "labData.template.values": "Your apparatus",
   "labData.template.readings": "Your readings",
+  "experiments.simple-pendulum.check.title": "Check your own lab readings",
+  "experiments.simple-pendulum.check.link": "Check your own lab readings",
+  "experiments.simple-pendulum.check.note":
+    "Time {swings} swings twice at each length. Change or add lengths if you like.",
+  "experiments.simple-pendulum.check.template.body":
+    "Fill it in during your lab. The lengths are set as the print sheets have them; time {swings} swings twice at each, and change or add lengths if you like.",
+  "experiments.simple-pendulum.check.table.note":
+    "t, T and T² are worked out here with the lab's own formulas: t is the mean of t₁ and t₂, and T = t ⁄ {swings}.",
+  "experiments.simple-pendulum.check.graph.title":
+    "Fig. 1  T² against l: your readings and the model",
+  "experiments.simple-pendulum.check.graph.label":
+    "{n} readings of T² against l, your best line through them, and the model's dashed line.",
+  "experiments.simple-pendulum.check.shift.on": "Your points sit on the model's line.",
+  "experiments.simple-pendulum.check.shift.found.above":
+    "Your points sit above the model's line, all by about the same amount.",
+  "experiments.simple-pendulum.check.shift.found.below":
+    "Your points sit below the model's line, all by about the same amount.",
+  "experiments.simple-pendulum.check.shift.figure": "{value} s², {errors} errors",
+  "experiments.simple-pendulum.check.tilt.on": "Your slope is the model's, within its error.",
+  "experiments.simple-pendulum.check.tilt.found.steeper": "Your line is steeper than the model's.",
+  "experiments.simple-pendulum.check.tilt.found.shallower":
+    "Your line is less steep than the model's.",
+  "experiments.simple-pendulum.check.tilt.figure": "{value} s² m⁻¹, {errors} errors",
+  "experiments.simple-pendulum.check.spread.on":
+    "Your points spread as much as careful timing gives, no more.",
+  "experiments.simple-pendulum.check.spread.found":
+    "Your points spread {times} times more than careful timing gives.",
+  "experiments.simple-pendulum.check.spread.figure": "{value} s², {ratio} ×",
+  "experiments.simple-pendulum.check.shift.above":
+    "Every T² is {shift} s² too large for its length, as if each length were about {cm} cm short. That is what measuring to the top of the bob, not its centre, does.",
+  "experiments.simple-pendulum.check.shift.below":
+    "Every T² is {shift} s² too small for its length, as if each length were about {cm} cm long. That is what measuring to the bottom of the bob, not its centre, does.",
+  "experiments.simple-pendulum.check.shift.precaution":
+    "Measure the length from the point of suspension to the centre of the bob.",
+  "experiments.simple-pendulum.check.tilt.shallower":
+    "Your times grow more slowly with length than the model's. Starting the count at one, not zero, times only {counted} swings while you divide by {swings}.",
+  "experiments.simple-pendulum.check.tilt.shallower.precaution":
+    "Say “zero” as you start the stopwatch, and stop it on {swings}.",
+  "experiments.simple-pendulum.check.tilt.steeper":
+    "Your times grow faster with length than the model's. Wide swings take longer than small ones, so every T² comes out too large in proportion.",
+  "experiments.simple-pendulum.check.tilt.steeper.precaution":
+    "Keep the swing small, under 10° either side of the vertical.",
+  "experiments.simple-pendulum.check.spread":
+    "Your points spread either side of your line by about {times} times what careful timing gives.",
+  "experiments.simple-pendulum.check.spread.precaution":
+    "Time {swings} swings twice at each length, and start and stop the stopwatch as the bob passes the centre of its swing.",
+  "experiments.simple-pendulum.check.g": "g from your slope: {g} N kg⁻¹. Lab data is not marked.",
+  "experiments.simple-pendulum.check.legend.model": "The model, g = {g} N kg⁻¹",
+  "labData.check.template": "1. Get the data template",
+  "labData.check.downloadCsv": "Download CSV",
+  "labData.check.downloadXlsx": "Download XLSX",
+  "labData.check.readings": "2. Bring in your readings",
+  "labData.check.choose": "Choose a file",
+  "labData.check.drop":
+    "or drop it here. CSV or XLSX, up to 1 MB and 200 rows. It stays on this device.",
+  "labData.check.typeIn": "Type them in instead",
+  "labData.check.useFile": "Bring in a file instead",
+  "labData.check.typed": "Typed in",
+  "labData.check.row": "row {n}",
+  "labData.check.addRow": "Add a row",
+  "labData.check.rows": "{n} rows",
+  "labData.check.rowsLeft": "{n} rows · {left} left out",
+  "labData.check.table": "Table 1",
+  "labData.check.example": "Example data",
+  "labData.check.legend.points": "Your readings",
+  "labData.check.legend.fit": "Your best line",
+  "labData.check.verdict.agrees": "Your readings agree with the model",
+  "labData.check.verdict.shift": "Your readings are shifted from the model",
+  "labData.check.verdict.tilt": "Your slope is not the model's",
+  "labData.check.verdict.spread": "Your readings scatter more than they should",
+  "labData.check.verdict.several": "Your readings differ from the model in {n} ways",
+  "labData.check.verdict.few":
+    "Bring in at least {n} rows of readings to check them against the model.",
+  "labData.check.part.shift": "Shifted",
+  "labData.check.part.tilt": "Tilted",
+  "labData.check.part.spread": "Scattered",
+  "labData.check.why": "Why:",
+  "labData.check.next": "Next time:",
+  "labData.check.templateLink": "Download a data template for your own lab",
   "labData.export.title": "Export",
   "labData.export.readings": "Readings",
   "labData.export.graph": "Graph",
   "labData.export.colour": "In colour, as shown",
   "labData.export.mono": "In black and white, as shown",
   "labData.problem.too-large": "The file is larger than {limit} MB.",
-  "labData.problem.wrong-type": "Bring in a .csv or .xlsx file. {name} is neither.",
+  "labData.problem.wrong-type": "Bring in a CSV or XLSX file. {name} is neither.",
   "labData.problem.macros": "Save the workbook as .xlsx without macros, then bring it in again.",
-  "labData.problem.unreadable": "The file could not be read as a {kind} file.",
+  "labData.problem.unreadable": "The file could not be read as {kind}.",
   "labData.problem.no-headings":
     "No row has the headings {headings}. Start from the data template.",
   "labData.problem.unit": "{heading}: the unit {unit} is not one this column can take.",

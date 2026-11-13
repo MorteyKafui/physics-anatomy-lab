@@ -15,7 +15,7 @@ export type ReadProblem =
   | { code: "too-large"; limit: number }
   | { code: "wrong-type"; name: string }
   | { code: "macros" }
-  | { code: "unreadable"; kind: ".csv" | ".xlsx" };
+  | { code: "unreadable"; kind: "CSV" | "XLSX" };
 
 export type ReadResult = { ok: true; cells: string[][] } | { ok: false; problem: ReadProblem };
 
@@ -30,14 +30,14 @@ export function readCells(name: string, bytes: Uint8Array): ReadResult {
       const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
       return { ok: true, cells: csvCells(text) };
     } catch {
-      return { ok: false, problem: { code: "unreadable", kind: ".csv" } };
+      return { ok: false, problem: { code: "unreadable", kind: "CSV" } };
     }
   }
   if (ext === "xlsx") {
     try {
       return { ok: true, cells: xlsxCells(bytes) };
     } catch {
-      return { ok: false, problem: { code: "unreadable", kind: ".xlsx" } };
+      return { ok: false, problem: { code: "unreadable", kind: "XLSX" } };
     }
   }
   return { ok: false, problem: { code: "wrong-type", name } };

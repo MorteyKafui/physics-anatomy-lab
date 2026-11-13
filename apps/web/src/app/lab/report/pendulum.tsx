@@ -12,7 +12,11 @@ const build = (...args: Parameters<typeof reportContent>) => reportContent(args[
 export function PendulumReportScreen() {
   return (
     <ReportScreen
-      experiment={{ id: simplePendulum.id, title: t("experiments.simple-pendulum.title") }}
+      experiment={{
+        id: simplePendulum.id,
+        title: t("experiments.simple-pendulum.title"),
+        check: true,
+      }}
       build={build}
     />
   );

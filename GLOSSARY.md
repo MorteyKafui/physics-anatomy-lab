@@ -54,6 +54,12 @@ request that introduces it.
   an append-only list of events; everything else is rebuilt from it.
 - **Attempt file.** An attempt saved to a file with every one of its events, to move it to another
   device without an account or to hand it in. Importing it twice changes nothing.
+- **Data template.** A blank CSV or XLSX file for one experiment, with its columns, units and the
+  settings the book uses, to fill in during a real lab. Not the results table's starting layout.
+- **Lab data.** Readings a student took in a real lab and brought in from a data template. Lab data
+  is never an attempt: it has no events, no steps and no marks.
+- **Model check.** The page that draws lab data over the model's line and gives the verdict:
+  shifted, tilted or scattered, each with its cause and the precaution that would have helped.
 - **Projection.** In code, one view of an attempt (the bench, the table, the current step) rebuilt
   by replaying its events in order. The same events always give the same state.
 - **Results table.** The table of readings in the Tabulate step. The student starts from the

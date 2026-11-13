@@ -27,7 +27,11 @@ const figures: SheetFigures = {
 export function PendulumSheetsScreen() {
   return (
     <SheetsScreen
-      experiment={{ id: simplePendulum.id, title: t("experiments.simple-pendulum.title") }}
+      experiment={{
+        id: simplePendulum.id,
+        title: t("experiments.simple-pendulum.title"),
+        check: true,
+      }}
       content={content}
       figures={figures}
     />

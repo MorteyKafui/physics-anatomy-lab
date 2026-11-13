@@ -1,4 +1,4 @@
-import type { QuantityKind } from "@pa/analysis";
+import type { DataTemplate, TemplateColumn, TemplateValue } from "@pa/experiments";
 import { t } from "@pa/i18n";
 
 import { sheetXlsx } from "../report/xlsx";
@@ -23,38 +23,7 @@ import { sheetXlsx } from "../report/xlsx";
  *   <setting>, <blank>, ...                   one row for each setting the book uses
  */
 
-export interface TemplateColumn {
-  id: string;
-  /** As in the lab's table: l, t, θ₁. */
-  symbol: string;
-  kind: QuantityKind;
-  /** The unit the template is written in, and the column is kept in once read. */
-  unit: string;
-  /** A setting is filled in from the book; a reading is the student's. */
-  role: "setting" | "reading";
-}
-
-export interface TemplateValue {
-  id: string;
-  /** What the student sees: "Hot water volume V₀". */
-  label: string;
-  kind: QuantityKind;
-  unit: string;
-  /** The model can do without it (the calorimeter's water equivalent W). */
-  optional?: boolean;
-}
-
-export interface DataTemplate {
-  experiment: string;
-  version: number;
-  title: string;
-  /** One line for the top of the file: "Time 20 swings at each length." */
-  note?: string;
-  values: readonly TemplateValue[];
-  columns: readonly TemplateColumn[];
-  /** The settings the book uses, one row each, in the setting columns' units. */
-  settings: readonly (readonly number[])[];
-}
+export type { DataTemplate, TemplateColumn, TemplateValue };
 
 /** The heading a column or value carries in the file, as the lab's table writes it. */
 export const heading = (symbol: string, unit: string) => `${symbol} / ${unit}`;
