@@ -1,0 +1,219 @@
+{
+  "model": "SymPy partial derivatives, worst case",
+  "cases": [
+    {
+      "name": "T from t",
+      "formula": "t / 20",
+      "values": {
+        "t": 31.08
+      },
+      "uncertainties": {
+        "t": 0.05
+      },
+      "value": 1.554,
+      "uncertainty": 0.0025000000000000005
+    },
+    {
+      "name": "T squared",
+      "formula": "T²",
+      "values": {
+        "T": 1.554
+      },
+      "uncertainties": {
+        "T": 0.0025
+      },
+      "value": 2.4149160000000003,
+      "uncertainty": 0.00777
+    },
+    {
+      "name": "g from l and T",
+      "formula": "4π²l / T²",
+      "values": {
+        "l": 0.8,
+        "T": 1.794
+      },
+      "uncertainties": {
+        "l": 0.0005,
+        "T": 0.00125
+      },
+      "value": 9.813068858130455,
+      "uncertainty": 0.01980801315635725
+    },
+    {
+      "name": "a rise",
+      "formula": "θ₂ − θ₁",
+      "values": {
+        "θ₁": 28.0,
+        "θ₂": 45.5
+      },
+      "uncertainties": {
+        "θ₁": 0.05,
+        "θ₂": 0.05
+      },
+      "value": 17.5,
+      "uncertainty": 0.1
+    },
+    {
+      "name": "a reciprocal",
+      "formula": "1 / u",
+      "values": {
+        "u": 30.0
+      },
+      "uncertainties": {
+        "u": 0.05
+      },
+      "value": 0.03333333333333333,
+      "uncertainty": 5.555555555555556e-05
+    },
+    {
+      "name": "a product",
+      "formula": "x * y",
+      "values": {
+        "x": 30.0,
+        "y": 30.2
+      },
+      "uncertainties": {
+        "x": 0.05,
+        "y": 0.2
+      },
+      "value": 906.0,
+      "uncertainty": 7.51
+    },
+    {
+      "name": "a square root",
+      "formula": "sqrt(l)",
+      "values": {
+        "l": 0.8
+      },
+      "uncertainties": {
+        "l": 0.0005
+      },
+      "value": 0.8944271909999159,
+      "uncertainty": 0.00027950849718747374
+    },
+    {
+      "name": "a logarithm",
+      "formula": "ln(V)",
+      "values": {
+        "V": 2.3
+      },
+      "uncertainties": {
+        "V": 0.025
+      },
+      "value": 0.8329091229351039,
+      "uncertainty": 0.010869565217391306
+    }
+  ],
+  "quotes": [
+    {
+      "u": 0.082,
+      "value": 0.08,
+      "figures": 1,
+      "decimals": 2
+    },
+    {
+      "u": 0.0138,
+      "value": 0.014,
+      "figures": 2,
+      "decimals": 3
+    },
+    {
+      "u": 1.6,
+      "value": 1.6,
+      "figures": 2,
+      "decimals": 1
+    },
+    {
+      "u": 0.25,
+      "value": 0.3,
+      "figures": 1,
+      "decimals": 1
+    },
+    {
+      "u": 0.0049,
+      "value": 0.005,
+      "figures": 1,
+      "decimals": 3
+    },
+    {
+      "u": 12.0,
+      "value": 12.0,
+      "figures": 2,
+      "decimals": 0
+    }
+  ],
+  "lines": [
+    {
+      "name": "rising",
+      "x": [
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "y": [
+        2.415,
+        2.835,
+        3.218,
+        3.64,
+        4.032
+      ],
+      "dx": [
+        0.0005,
+        0.0005,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "dy": [
+        0.0078,
+        0.0025,
+        0.0045,
+        0.0153,
+        0.004
+      ],
+      "steepest": 4.082205513784459,
+      "leastSteep": 4.002992518703244,
+      "half": 0.03960649754060741
+    },
+    {
+      "name": "falling",
+      "x": [
+        1.65,
+        1.8,
+        1.9,
+        2.0,
+        2.1,
+        2.3
+      ],
+      "y": [
+        0.89,
+        0.8,
+        0.72,
+        0.66,
+        0.6,
+        0.46
+      ],
+      "dx": [
+        0.025,
+        0.025,
+        0.025,
+        0.025,
+        0.025,
+        0.025
+      ],
+      "dy": [
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01
+      ],
+      "steepest": -0.7499999999999999,
+      "leastSteep": -0.5857142857142859,
+      "half": 0.08214285714285702
+    }
+  ]
+}

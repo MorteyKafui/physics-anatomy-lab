@@ -42,6 +42,7 @@ from pa_validation.outliers import critical_value, deleted_residuals, find_outli
 from pa_validation.pendulum import period_exact
 from pa_validation.review import reading_error_percent, right_way
 from pa_validation.sigfigs import format_sig_figs, parse_figure
+from pa_validation.uncertainty import quoted, worst_case, worst_lines
 
 FIXTURES = Path(__file__).resolve().parent.parent / "fixtures"
 
@@ -642,6 +643,66 @@ def build_model_check() -> dict[str, object]:
     }
 
 
+def build_uncertainty() -> dict[str, object]:
+    """Worst-case propagation through the labs' own formulas, written both ways."""
+    cases = [
+        ("T from t", "t / 20", "t / 20", {"t": 31.08}, {"t": 0.05}),
+        ("T squared", "T²", "T**2", {"T": 1.554}, {"T": 0.0025}),
+        (
+            "g from l and T",
+            "4π²l / T²",
+            "4*pi**2*l/T**2",
+            {"l": 0.8, "T": 1.794},
+            {"l": 0.0005, "T": 0.00125},
+        ),
+        ("a rise", "θ₂ − θ₁", "b - a", {"a": 28.0, "b": 45.5}, {"a": 0.05, "b": 0.05}),
+        ("a reciprocal", "1 / u", "1/u", {"u": 30.0}, {"u": 0.05}),
+        ("a product", "x * y", "x*y", {"x": 30.0, "y": 30.2}, {"x": 0.05, "y": 0.2}),
+        ("a square root", "sqrt(l)", "sqrt(l)", {"l": 0.8}, {"l": 0.0005}),
+        ("a logarithm", "ln(V)", "log(V)", {"V": 2.3}, {"V": 0.025}),
+    ]
+    out = []
+    for name, ts, py, values, us in cases:
+        # θ₂ − θ₁ in the labs' syntax; SymPy gets plain names for the same symbols.
+        ts_values = {"θ₁": values["a"], "θ₂": values["b"]} if name == "a rise" else values
+        ts_us = {"θ₁": us["a"], "θ₂": us["b"]} if name == "a rise" else us
+        out.append(
+            {
+                "name": name,
+                "formula": ts,
+                "values": ts_values,
+                "uncertainties": ts_us,
+                **worst_case(py, values, us),
+            }
+        )
+    quotes = [{"u": u, **quoted(u)} for u in (0.082, 0.0138, 1.6, 0.25, 0.0049, 12.0)]
+    lines = [
+        {"name": name, "x": x, "y": y, "dx": dx, "dy": dy, **worst_lines(x, y, dx, dy)}
+        for name, x, y, dx, dy in [
+            (
+                "rising",
+                [0.6, 0.7, 0.8, 0.9, 1.0],
+                [2.415, 2.835, 3.218, 3.640, 4.032],
+                [0.0005] * 5,
+                [0.0078, 0.0025, 0.0045, 0.0153, 0.0040],
+            ),
+            (
+                "falling",
+                [1.65, 1.8, 1.9, 2.0, 2.1, 2.3],
+                [0.89, 0.8, 0.72, 0.66, 0.6, 0.46],
+                [0.025] * 6,
+                [0.01] * 6,
+            ),
+        ]
+    ]
+    return {
+        "model": "SymPy partial derivatives, worst case",
+        "cases": out,
+        "quotes": quotes,
+        "lines": lines,
+    }
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -665,3 +726,4 @@ if __name__ == "__main__":
     write("outliers.json", build_outliers())
     write("review.json", build_review())
     write("model-check.json", build_model_check())
+    write("uncertainty.json", build_uncertainty())

@@ -107,3 +107,14 @@ export {
   unitsOf,
 } from "./quantity";
 export type { AnswerCheck, CalcProblem, CalcResult, Dims, Quantity } from "./quantity";
+export {
+  checkQuote,
+  derivative,
+  percentUncertainty,
+  quotedUncertainty,
+  readingUncertainty,
+  repeatsUncertainty,
+  worstCase,
+  worstLines,
+} from "./uncertainty";
+export type { BarPoint, QuoteCheck, ReadingStyle } from "./uncertainty";

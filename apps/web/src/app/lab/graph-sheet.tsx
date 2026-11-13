@@ -237,6 +237,8 @@ export function GraphDrawing({
   mono,
   flaggedRows = new Set(),
   mark = true,
+  bars,
+  worst,
 }: {
   view: GraphView;
   headings: { x: string; y: string };
@@ -244,6 +246,16 @@ export function GraphDrawing({
   flaggedRows?: ReadonlySet<string>;
   /** The sheet's own mark; a labelled figure carries the mark in its footer instead. */
   mark?: boolean;
+  /**
+   * The uncertainty layer (docs/content/uncertainty-brief.md, decision 5): each plotted row's
+   * error bars, ± dx and ± dy in the axes' own units, drawn at true size.
+   */
+  bars?: ReadonlyMap<string, { dx: number; dy: number }>;
+  /** The steepest and least steep lines through the error bars, as y = slope x + intercept. */
+  worst?: {
+    steepest: { slope: number; intercept: number };
+    leastSteep: { slope: number; intercept: number };
+  };
 }) {
   const { sheet } = view;
   const tone = (part: string) => `var(--pa-graph-${mono ? "mono-" : ""}${part})`;
@@ -340,6 +352,49 @@ export function GraphDrawing({
               );
             })}
           </g>
+        </g>
+      )}
+      {worst && view.plotted.length > 1 && (
+        <g stroke={tone("triangle")} strokeWidth={0.5} data-graph="worst-lines">
+          {(
+            [
+              [worst.steepest, "3 2"],
+              [worst.leastSteep, "1 2"],
+            ] as const
+          ).map(([l, dash]) => {
+            const xs = view.plotted.map((p) => p.x);
+            const lo = Math.min(...xs);
+            const hi = Math.max(...xs);
+            const a = paperOf({ x: lo, y: l.slope * lo + l.intercept });
+            const b = paperOf({ x: hi, y: l.slope * hi + l.intercept });
+            return <line key={dash} x1={a.x} y1={a.y} x2={b.x} y2={b.y} strokeDasharray={dash} />;
+          })}
+        </g>
+      )}
+      {bars && (
+        <g stroke={tone("label")} strokeWidth={0.35} data-graph="error-bars">
+          {view.plotted.map((p) => {
+            const bar = bars.get(p.row);
+            if (!bar) return null;
+            const top = paperOf({ x: p.x, y: p.y + bar.dy });
+            const bottom = paperOf({ x: p.x, y: p.y - bar.dy });
+            const left = paperOf({ x: p.x - bar.dx, y: p.y });
+            const right = paperOf({ x: p.x + bar.dx, y: p.y });
+            return (
+              <g key={p.row}>
+                {bar.dy > 0 && (
+                  <path
+                    d={`M${top.x} ${top.y}V${bottom.y}M${top.x - 1} ${top.y}h2M${bottom.x - 1} ${bottom.y}h2`}
+                  />
+                )}
+                {bar.dx > 0 && (
+                  <path
+                    d={`M${left.x} ${left.y}H${right.x}M${left.x} ${left.y - 1}v2M${right.x} ${right.y - 1}v2`}
+                  />
+                )}
+              </g>
+            );
+          })}
         </g>
       )}
       <g stroke={tone("point")} strokeWidth={0.6} data-graph="points">
