@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Model check: your own lab readings against the model</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+.mc{--bg:#0D0D0D;--rail:#111110;--surface:#161616;--raised:#1E1D1D;--border:#2A2928;--line:#242322;--control:#66645E;--fg:#F2F0EA;--soft:#C9C6BF;--muted:#A3A19B;--accent:#F0482A;--accent-text:#FF8A6E;--ok:#8FD18A;--warn:#F5C46B;--accent-wash:#2A1914;--warn-wash:#2B2112}
+.mc[data-theme="bench"]{--bg:#F4EFE6;--rail:#FBF8F2;--surface:#FBF8F2;--raised:#FFFFFF;--border:#E6DFD2;--line:#E6DFD2;--control:#8C8579;--fg:#1F1D1A;--soft:#3D3B37;--muted:#5F5A51;--accent:#E2401F;--accent-text:#A8300F;--ok:#2F6B2A;--warn:#7A5200;--accent-wash:#F6DED4;--warn-wash:#F3E6CC}
+.mc a{color:var(--accent-text)}
+.mc .cl-f:focus-visible{outline:2px solid var(--accent-text);outline-offset:2px}
+.mc .seg{height:32px;padding:0 12px;border:0;font:500 13px Geist,sans-serif;cursor:pointer;background:transparent;color:var(--soft)}
+.mc .seg[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.mc .btn{height:36px;padding:0 14px;font:500 13px Geist,sans-serif;cursor:pointer;background:transparent;color:var(--fg);border:1px solid var(--control)}
+.mc .btn-main{height:36px;padding:0 14px;font:600 13px Geist,sans-serif;cursor:pointer;background:var(--accent);color:#0D0D0D;border:0}
+.mc .card{background:var(--surface);border:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px}
+.mc .mono{font-family:'Geist Mono',monospace}
+.mc table{border-collapse:collapse;width:100%;font-family:'Geist Mono',monospace;font-size:13px}
+.mc th{font:500 12px Geist,sans-serif;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--border)}
+.mc td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)}
+</style>
+</helmet>
+<div class="mc" data-theme="{{theme}}" style="width: 100%; min-height: 900px; background: var(--bg); color: var(--fg); font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; align-items: center">
+<div style="{{frameStyle}}">
+
+  <sc-if value="{{desktop}}" hint-placeholder-val="{{true}}">
+  <nav aria-label="App" style="flex: 0 0 64px; background: var(--rail); border-right: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0">
+    <svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true" style="margin-bottom: 14px"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="currentColor" stroke-width="18"/><line x1="84" y1="26" x2="98" y2="60" stroke="currentColor" stroke-width="5"/><circle cx="100" cy="68" r="12" fill="#F0482A"/></svg>
+    <a href="#home" aria-label="Home" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--muted)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="#experiments" aria-label="Experiments" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--fg); background: var(--raised); border-left: 2px solid var(--accent)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></a>
+    <a href="#notebook" aria-label="Notebook" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--muted)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></a>
+    <a href="#reference" aria-label="Reference" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--muted)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></a>
+  </nav>
+  </sc-if>
+
+  <div style="flex: 999 1 320px; min-width: 0; display: flex; flex-direction: column">
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 20px; border-bottom: 1px solid var(--line)">
+      <div style="display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); padding: 8px 14px">
+        <span style="width: 10px; height: 10px; background: #F0482A" aria-hidden="true"></span>
+        <div style="display: flex; flex-direction: column">
+          <span style="font-weight: 600">The simple pendulum</span>
+          <span class="mono" style="font-size: 12px; color: var(--muted)">Check your own lab readings</span>
+        </div>
+      </div>
+      <div role="group" aria-label="Board state (mockup only)" style="display: flex; flex-wrap: wrap; gap: 2px; background: var(--surface); border: 1px solid var(--border); padding: 3px">
+        <button type="button" class="seg cl-f" onClick="{{showAgrees}}" aria-pressed="{{isAgrees}}">Agrees</button>
+        <button type="button" class="seg cl-f" onClick="{{showShifted}}" aria-pressed="{{isShifted}}">Shifted</button>
+        <button type="button" class="seg cl-f" onClick="{{showScattered}}" aria-pressed="{{isScattered}}">Scattered</button>
+        <button type="button" class="seg cl-f" onClick="{{showProblem}}" aria-pressed="{{isProblem}}">A problem in the file</button>
+      </div>
+      <div role="group" aria-label="Theme and width (mockup only)" style="display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); padding: 3px">
+        <button type="button" class="seg cl-f" onClick="{{showDark}}" aria-pressed="{{isDark}}">Dark</button>
+        <button type="button" class="seg cl-f" onClick="{{showLight}}" aria-pressed="{{isLight}}">Light</button>
+        <button type="button" class="seg cl-f" onClick="{{showDesktop}}" aria-pressed="{{desktop}}">Desktop</button>
+        <button type="button" class="seg cl-f" onClick="{{showPhone}}" aria-pressed="{{phone}}">Phone</button>
+      </div>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 16px; padding: 20px; align-items: flex-start">
+
+      <div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section class="card" aria-labelledby="h-template">
+          <h2 id="h-template" style="margin: 0; font-size: 15px; font-weight: 600">1. Get the data template</h2>
+          <span style="color: var(--soft)">Fill it in during your lab. The lengths are set as the book has them; time {{swings}} swings at each, and change or add lengths if you like.</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <button type="button" class="btn cl-f">Download CSV</button>
+            <button type="button" class="btn cl-f">Download XLSX</button>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="h-readings">
+          <h2 id="h-readings" style="margin: 0; font-size: 15px; font-weight: 600">2. Bring in your readings</h2>
+          <div style="border: 1px dashed var(--control); padding: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+            <button type="button" class="btn-main cl-f">Choose a file</button>
+            <span style="color: var(--muted); font-size: 13px">or drop it here. CSV or XLSX, up to 1 MB and 200 rows. It stays on this device.</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px">
+            <span class="mono">pendulum-readings.csv</span>
+            <span style="color: var(--muted)">{{rowCount}}</span>
+            <span style="flex: 1"></span>
+            <a href="#type">Type them in instead</a>
+          </div>
+          <sc-if value="{{isProblem}}" hint-placeholder-val="{{false}}">
+            <div role="alert" style="background: var(--warn-wash); border-left: 3px solid var(--warn); padding: 10px 12px; font-size: 13px">
+              <b style="color: var(--warn)">Row 4, t: not a number.</b> It reads “35,98”: use a full stop for the decimal point, 35.98. The other five readings are kept.
+            </div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <span style="font-size: 13px; color: var(--muted)">Table 1</span>
+            <span style="flex: 1"></span>
+            <span style="font-size: 12px; border: 1px solid var(--control); padding: 1px 8px; color: var(--soft)">Example data</span>
+          </div>
+          <table>
+            <thead><tr><th scope="col">l / m</th><th scope="col">t / s</th><th scope="col">T / s</th><th scope="col">T² / s²</th></tr></thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+                <tr style="{{r.style}}"><td>{{r.l}}</td><td style="{{r.tStyle}}">{{r.t}}</td><td>{{r.T}}</td><td>{{r.T2}}</td></tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <span style="font-size: 12px; color: var(--muted)">T and T² are worked out here, with the lab's own formulas: T = t ⁄ {{swings}}.</span>
+        </section>
+      </div>
+
+      <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section aria-label="Graph" style="display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+            <span style="font-size: 13px; color: var(--muted)">Graph colours</span>
+            <div role="group" aria-label="Graph colours" style="display: inline-flex; border: 1px solid var(--border)">
+              <button type="button" class="seg cl-f" onClick="{{setColour}}" aria-pressed="{{colour}}">Colour</button>
+              <button type="button" class="seg cl-f" onClick="{{setMono}}" aria-pressed="{{mono}}">Black and white</button>
+            </div>
+          </div>
+          <div style="background: #FAFAF2; color: #141414; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 13px">
+              <span style="font-weight: 600">Fig. 1  T² against l: your readings and the model</span>
+              <span class="mono" style="color: #3D3B37">Example data</span>
+            </div>
+            <svg viewBox="-56 -16 560 480" style="width: 100%; height: auto; display: block" role="img" aria-label="{{graphLabel}}">
+              <rect x="0" y="0" width="480" height="400" fill="#FFFFFF"/>
+              <path d="{{minorGrid}}" stroke="{{gc.minor}}" stroke-width="0.6" fill="none"/>
+              <path d="{{majorGrid}}" stroke="{{gc.major}}" stroke-width="1" fill="none"/>
+              <rect x="0" y="0" width="480" height="400" fill="none" stroke="{{gc.frame}}" stroke-width="1.2"/>
+              <polyline points="{{modelLine}}" fill="none" stroke="{{gc.model}}" stroke-width="1.8" stroke-dasharray="8 5"/>
+              <line x1="{{fit.x1}}" y1="{{fit.y1}}" x2="{{fit.x2}}" y2="{{fit.y2}}" stroke="{{gc.fit}}" stroke-width="1.8"/>
+              <g stroke="{{gc.pt}}" stroke-width="2">
+                <sc-for list="{{points}}" as="p" hint-placeholder-count="6"><path d="{{p.d}}"/></sc-for>
+              </g>
+              <g font-family="Geist Mono, monospace" font-size="12" fill="#3D3B37">
+                <sc-for list="{{xTicks}}" as="k" hint-placeholder-count="7"><text x="{{k.x}}" y="420" text-anchor="middle">{{k.t}}</text></sc-for>
+                <sc-for list="{{yTicks}}" as="k" hint-placeholder-count="7"><text x="-8" y="{{k.y}}" text-anchor="end">{{k.t}}</text></sc-for>
+                <text x="240" y="446" text-anchor="middle">l/m</text>
+                <text x="-44" y="-4">T²/s²</text>
+                <text x="480" y="462" text-anchor="end" font-size="11" fill="#6B6963">Physics Anatomy · Fig. 1</text>
+              </g>
+              <g font-family="Geist, sans-serif" font-size="12" fill="#3D3B37">
+                <rect x="14" y="14" width="208" height="70" fill="#FFFFFF" stroke="{{gc.frame}}" stroke-width="0.8"/>
+                <path d="M26 26 l8 8 M34 26 l-8 8" stroke="{{gc.pt}}" stroke-width="2"/><text x="46" y="34">Your readings</text>
+                <line x1="22" y1="50" x2="40" y2="50" stroke="{{gc.fit}}" stroke-width="1.8"/><text x="46" y="54">Your best line</text>
+                <line x1="22" y1="70" x2="40" y2="70" stroke="{{gc.model}}" stroke-width="1.8" stroke-dasharray="8 5"/><text x="46" y="74">The model, g = {{g}} N kg⁻¹</text>
+              </g>
+            </svg>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="h-verdict" style="{{verdictStyle}}">
+          <h2 id="h-verdict" style="margin: 0; font-size: 15px; font-weight: 600">{{verdictTitle}}</h2>
+          <div style="display: flex; flex-direction: column">
+            <sc-for list="{{parts}}" as="v" hint-placeholder-count="3">
+              <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 8px 0; border-bottom: 1px solid var(--line)">
+                <span style="{{v.markStyle}}" aria-hidden="true">{{v.mark}}</span>
+                <span style="flex: 0 0 82px; font-weight: 600">{{v.name}}</span>
+                <span style="flex: 1 1 220px; color: var(--soft)">{{v.text}}</span>
+                <span class="mono" style="font-size: 12px; color: var(--muted)">{{v.figure}}</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{hasCause}}" hint-placeholder-val="{{true}}">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span><b>Why:</b> {{cause}}</span>
+              <span style="background: var(--accent-wash); padding: 8px 10px"><b>Next time:</b> {{precaution}}</span>
+            </div>
+          </sc-if>
+          <span style="font-size: 13px; color: var(--muted)">g from your slope: <span class="mono">{{gFromSlope}} N kg⁻¹</span>. Lab data is not marked.</span>
+        </section>
+
+        <section class="card" aria-labelledby="h-export">
+          <h2 id="h-export" style="margin: 0; font-size: 15px; font-weight: 600">Export</h2>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+            <span style="flex: 0 0 70px; color: var(--muted); font-size: 13px">Readings</span>
+            <button type="button" class="btn cl-f">CSV</button><button type="button" class="btn cl-f">XLSX</button><button type="button" class="btn cl-f">JSON</button>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+            <span style="flex: 0 0 70px; color: var(--muted); font-size: 13px">Graph</span>
+            <button type="button" class="btn cl-f">PNG</button><button type="button" class="btn cl-f">SVG</button><button type="button" class="btn cl-f">PDF</button>
+            <span style="font-size: 12px; color: var(--muted)">{{exportColours}}</span>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mode: 'agrees', theme: 'lab', phone: false, colour: true }; }
+  renderVals() {
+    const { mode, theme, phone, colour } = this.state;
+    const agrees = mode === 'agrees', shifted = mode === 'shifted', scattered = mode === 'scattered', problem = mode === 'problem';
+
+    // Example data, worked out by the packages (AGENTS.md rule 1): handTimedInterval with
+    // ANTICIPATED_EVENT reaction times (packages/instruments, seed 11) on benchPeriod, the exact
+    // period at the lab's 8° swing (packages/experiments), g = 9.81 N kg⁻¹, 20 swings, read on the
+    // 0.01 s stopwatch. "Shifted" measures every length to the top of a bob 1.0 cm in radius;
+    // "Scattered" times with a 0.25 s spread in each press. Times t in s.
+    const L = ['0.50', '0.60', '0.70', '0.80', '0.90', '1.00'];
+    const T_ = {
+      agrees: ['28.42', '31.03', '33.69', '35.98', '38.08', '40.09'],
+      shifted: ['28.70', '31.29', '33.93', '36.21', '38.29', '40.29'],
+      scattered: ['28.48', '30.95', '34.01', '36.20', '37.94', '39.76']
+    };
+    // The model's T², s², at each length: benchPeriod(9.81, l)².
+    const model = [2.0171, 2.4205, 2.8239, 3.2273, 3.6307, 4.0341];
+    // The verdict's figures, from fitLine (packages/analysis) on the same readings: the mean
+    // difference from the model's line and its standard error, the slope against the model's
+    // 4.024 s² m⁻¹, and the spread against a careful student's 0.012 s².
+    const V = {
+      agrees: { shift: '−0.002 s², 0.3 errors', tilt: '4.01 s² m⁻¹, 0.4 errors', spread: '0.013 s², 1.0 ×', g: '9.84' },
+      shifted: { shift: '+0.039 s², 7.3 errors', tilt: '4.01 s² m⁻¹, 0.3 errors', spread: '0.013 s², 1.1 ×', g: '9.84' },
+      scattered: { shift: '−0.002 s², 0.1 errors', tilt: '3.89 s² m⁻¹, 1.0 errors', spread: '0.055 s², 4.4 ×', g: '10.15' }
+    };
+    const set = problem ? 'agrees' : mode;
+    const swings = 20;
+    const left = problem ? 3 : -1;
+    const ts = T_[set];
+    const readings = L.map((l, i) => {
+      const t = Number(ts[i]), T = t / swings;
+      return { i, l: Number(l), t, T, T2: Number((T * T).toFixed(3)) };
+    });
+    const used = readings.filter((r) => r.i !== left);
+    const rows = readings.map((r) => r.i === left
+      ? { l: L[r.i], t: '35,98', T: '', T2: '', style: 'background: var(--warn-wash)', tStyle: 'color: var(--warn); font-weight: 600' }
+      : { l: L[r.i], t: ts[r.i], T: r.T.toFixed(3), T2: r.T2.toFixed(3), style: '', tStyle: '' });
+
+    // Least squares on the plotted points, as fitLine does.
+    const n = used.length, mx = used.reduce((s, r) => s + r.l, 0) / n, my = used.reduce((s, r) => s + r.T2, 0) / n;
+    const sxy = used.reduce((s, r) => s + (r.l - mx) * (r.T2 - my), 0), sxx = used.reduce((s, r) => s + (r.l - mx) ** 2, 0);
+    const slope = sxy / sxx, intercept = my - slope * mx;
+
+    // The graph sheet: l from 0.50 to 1.10 m (800 px a metre), T² from 1.80 to 4.20 s².
+    const X = (l) => (l - 0.5) * 800, Y = (t2) => 400 - (t2 - 1.8) * (400 / 2.4);
+    let minor = '', major = '';
+    for (let i = 0; i <= 30; i++) { const x = i * 16; (i % 5 === 0 ? (major += 'M' + x + ' 0V400') : (minor += 'M' + x + ' 0V400')); }
+    for (let j = 0; j <= 30; j++) { const y = (j * 400) / 30; (j % 5 === 0 ? (major += 'M0 ' + y + 'H480') : (minor += 'M0 ' + y + 'H480')); }
+    const points = used.map((r) => { const x = X(r.l), y = Y(r.T2); return { d: 'M' + (x - 6) + ' ' + (y - 6) + 'l12 12M' + (x + 6) + ' ' + (y - 6) + 'l-12 12' }; });
+    const fit = { x1: X(0.5), y1: Y(slope * 0.5 + intercept), x2: X(1.02), y2: Y(slope * 1.02 + intercept) };
+    const modelLine = model.map((t2, i) => X(Number(L[i])) + ',' + Y(t2)).join(' ');
+    const xTicks = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1].map((l) => ({ x: X(l), t: l.toFixed(2) }));
+    const yTicks = [2.0, 2.4, 2.8, 3.2, 3.6, 4.0].map((t2) => ({ y: Y(t2) + 4, t: t2.toFixed(2) }));
+    const gc = colour
+      ? { minor: '#CFE7C8', major: '#8FC98A', frame: '#4F8F4A', fit: '#F0482A', pt: '#B86E00', model: '#6D5BD8' }
+      : { minor: '#E3E3E3', major: '#BDBDBD', frame: '#555555', fit: '#141414', pt: '#141414', model: '#141414' };
+
+    const v = V[set];
+    const part = (name, on, text, figure) => ({
+      name, text, figure,
+      mark: on ? '!' : '✓',
+      markStyle: 'width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 1.5px solid ' + (on ? 'var(--warn)' : 'var(--ok)') + '; color: ' + (on ? 'var(--warn)' : 'var(--ok)')
+    });
+    const parts = [
+      part('Shifted', shifted, shifted ? 'Your points sit above the model’s line, all by about the same amount.' : 'Your points sit on the model’s line.', v.shift),
+      part('Tilted', false, 'Your slope is the model’s, within its error.', v.tilt),
+      part('Scattered', scattered, scattered ? 'Your points spread about four times more than careful timing gives.' : 'Your points spread as much as careful timing gives, no more.', v.spread)
+    ];
+
+    return {
+      theme, desktop: !phone, phone,
+      frameStyle: 'width: 100%; max-width: ' + (phone ? '390px' : '1440px') + '; display: flex; flex: 1; border-left: ' + (phone ? '1px solid var(--line)' : '0') + '; border-right: ' + (phone ? '1px solid var(--line)' : '0'),
+      isAgrees: agrees, isShifted: shifted, isScattered: scattered, isProblem: problem,
+      isDark: theme === 'lab', isLight: theme === 'bench',
+      showAgrees: () => this.setState({ mode: 'agrees' }), showShifted: () => this.setState({ mode: 'shifted' }),
+      showScattered: () => this.setState({ mode: 'scattered' }), showProblem: () => this.setState({ mode: 'problem' }),
+      showDark: () => this.setState({ theme: 'lab' }), showLight: () => this.setState({ theme: 'bench' }),
+      showDesktop: () => this.setState({ phone: false }), showPhone: () => this.setState({ phone: true }),
+      colour, mono: !colour, setColour: () => this.setState({ colour: true }), setMono: () => this.setState({ colour: false }),
+      swings, g: '9.81',
+      rowCount: problem ? '6 rows · 1 left out' : '6 rows',
+      rows, points, fit, modelLine, xTicks, yTicks, gc, minorGrid: minor, majorGrid: major,
+      graphLabel: used.length + ' readings of T² against l rising in a straight line, your best line through them, and the model’s dashed line' + (shifted ? ', which your points sit above' : scattered ? ', with your points scattered either side' : ', which your points lie on'),
+      verdictTitle: shifted ? 'Your readings are shifted from the model' : scattered ? 'Your readings scatter more than they should' : 'Your readings agree with the model',
+      verdictStyle: 'border-left: 3px solid ' + (shifted || scattered ? 'var(--warn)' : 'var(--ok)'),
+      parts,
+      hasCause: shifted || scattered,
+      cause: shifted
+        ? 'every T² is 0.039 s² too large for its length, as if each length were about 1.0 cm short. That is what measuring to the top of the bob, not its centre, does.'
+        : 'the points spread either side of your line by more than starting and stopping the stopwatch carefully allows.',
+      precaution: shifted
+        ? 'measure the length from the point of suspension to the centre of the bob.'
+        : 'time ' + swings + ' swings, and start and stop the stopwatch as the bob passes the centre of its swing.',
+      gFromSlope: v.g,
+      exportColours: colour ? 'In colour, as shown' : 'In black and white, as shown'
+    };
+  }
+}
+</script>
+</body>
+</html>

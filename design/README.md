@@ -20,6 +20,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Converging lens: two pins     | `Pins.dc.html`          | on the canvas only     | `apps/web` lens lab, pins     |
 | Method of mixtures            | `Mixtures.dc.html`      | on the canvas only     | `apps/web` mixtures lab       |
 | Mixtures, a hot solid         | `MixturesSolid.dc.html` | on the canvas only     | `apps/web` hot-solid lab      |
+| Model check, your lab data    | `ModelCheck.dc.html`    | on the canvas only     | `apps/web` `/lab/<id>/check`  |
 | First-run tour                | `Tour.dc.html`          | `screens/Tour.jpg`     | `apps/web` onboarding         |
 | Teacher live class            | `Teacher.dc.html`       | `screens/Teacher.jpg`  | `apps/web` teacher dashboard  |
 | Admin portal                  | `Admin.dc.html`         | `screens/Admin.jpg`    | `apps/admin`                  |
