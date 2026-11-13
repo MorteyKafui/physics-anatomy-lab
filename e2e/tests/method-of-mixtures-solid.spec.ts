@@ -107,6 +107,9 @@ test("not shaken, boiling water goes in with the solid and the coach says what i
 test("the hot-solid bench has no serious accessibility issues, weighing and measuring", async ({
   page,
 }) => {
+  // Buttons fade between colours as they are pressed; with reduced motion they change at once, so
+  // axe measures the colours a student sees, not one caught halfway through a fade.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await toBuild(page);
   await weighAll(page);
   expect(await serious(page)).toEqual([]);
