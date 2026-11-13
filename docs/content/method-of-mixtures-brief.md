@@ -209,6 +209,8 @@ Not stirred, the highest comes at about 8 minutes, so readings stopped at 5 minu
 
 ### For the physics reviewer to decide, Experiment 64
 
+Approved by Mortey on 2026-11-13: decision 7 as chosen below, and 6, 8, 9 and 10 as proposed.
+
 6. Experiment 64 as the book sets it: a 100 g solid from boiling water (100 °C) into about 50 g
    of water at room temperature, in the same 50 g copper calorimeter at 28 °C as Experiment 62;
    readings every minute until steady; c_s worked out from the equation, with c_c = 390 and
