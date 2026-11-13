@@ -1,8 +1,21 @@
 "use client";
 
 import { Calorimeter, ThermometerTrace } from "@pa/apparatus";
-import { runRules, type Finding, type Skill } from "@pa/analysis";
 import {
+  fillDerived,
+  formatQuantity,
+  formulaUnitFindings,
+  GRAPH_RULES,
+  parseTable,
+  pointsFor,
+  runRules,
+  TABLE_RULES,
+  toTableView,
+  type Finding,
+  type Skill,
+} from "@pa/analysis";
+import {
+  answersProjection,
   coach,
   coachIsOn,
   frontier,
@@ -10,6 +23,7 @@ import {
   helpLevelFor,
   replay,
   STEPS,
+  writeAnswer,
   type Advice,
   type HelpLevel,
   type Step,
@@ -20,7 +34,18 @@ import {
   cylinderRead,
   decideMixtures,
   methodOfMixtures,
+  MIXTURES_ANALYSIS_RULES,
+  MIXTURES_GRAPH_RULES,
+  MIXTURES_INSTRUMENTS,
+  MIXTURES_PLOT,
   MIXTURES_PROCEDURE_RULES,
+  MIXTURES_ROWS,
+  MIXTURES_STANDARD_TABLE,
+  MIXTURES_TEMPLATES,
+  mixturesExpected,
+  mixturesReadingsIntoTable,
+  plotsVAgainstInverseT,
+  slopeOf,
   mixturesAt,
   mixturesPeak,
   mixturesProjection,
@@ -41,7 +66,10 @@ import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
+import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
 import { CheckItem, Rail, StepStrip } from "../parts";
+import { flagsFor, useTable } from "../table-builder";
 import { useAttempt } from "../use-attempt";
 
 const E = methodOfMixtures;
@@ -68,7 +96,8 @@ const rng = createRng(1);
  * The method of mixtures (the approved board "The method of mixtures: reading the highest
  * temperature"): the same lab as the others, with the calorimeter, the thermometer's trace since
  * the pour, and a clock that runs on the pour's own time, so it carries on across a reload as the
- * real mixture would. Steps 1 to 5 are built here; tabulating, plotting and the analysis come next.
+ * real mixture would; then the shared table builder and graph sheet, and the experiment's own
+ * analysis (W from where V against 1/T meets the V axis). The report, sheets and exam come next.
  */
 export function MethodOfMixturesScreen() {
   const handle = useAttempt(E.id);
@@ -91,6 +120,12 @@ export function MethodOfMixturesScreen() {
     const choice = (e?.data as { choice?: string } | null)?.choice;
     return choice === "rise" || choice === "fall" || choice === "same" ? choice : undefined;
   }, [handle]);
+  const results = useTable(handle);
+  const plot = useGraph(handle);
+  const answers = useMemo(
+    () => (handle ? replay(answersProjection, handle.attempt, handle.events) : {}),
+    [handle],
+  );
   // When this mixture's hot water reached 65 °C, and when it was poured, from the events: the
   // last of each since the calorimeter was last emptied.
   const times = useMemo(() => {
@@ -206,6 +241,154 @@ export function MethodOfMixturesScreen() {
   const levelFor = (skill: Skill): HelpLevel =>
     coachIsOn(state) ? helpLevelFor(state, skill) : "on-my-own";
   const measureMarks = levelFor("measurement") !== "on-my-own";
+  const tableAssist = levelFor("tabulation") === "auto";
+  const tableMarks = levelFor("tabulation") !== "on-my-own";
+  const graphAssist = levelFor("graph") === "auto";
+  const graphMarks = levelFor("graph") !== "on-my-own";
+  const analysisAssist = levelFor("analysis") === "auto";
+  const analysisMarks = levelFor("analysis") !== "on-my-own";
+  const readingText = (r: MixturesReading) =>
+    t(`${P}.measure.reading`, {
+      v: r.volume,
+      start: deg(r.start),
+      highest: deg(r.highest),
+      rise: deg(r.highest - r.start),
+    });
+
+  // The table (step 6): V and T as measured, 1/T worked out.
+  const table = results.table;
+  const shownTable = tableAssist ? fillDerived(table) : table;
+  const tableFindings = table.layout
+    ? [
+        ...runRules(TABLE_RULES, {
+          table: parseTable(toTableView(shownTable)),
+          plot: MIXTURES_PLOT,
+          // The range the student chooses is V's, which the question sets; T follows from it.
+          spread: "V",
+        }),
+        ...formulaUnitFindings(table),
+      ]
+    : [];
+  const tableFlags = flagsFor(
+    tableMarks
+      ? tableFindings.filter((f) => f.severity !== "good")
+      : advice.map((a) => a.finding).filter((f) => f.skill === "tabulation"),
+  );
+  const fillReadings = () => {
+    const current = results.now();
+    const newRowId = () => `row-${globalThis.crypto.randomUUID().slice(0, 8)}`;
+    const cells = mixturesReadingsIntoTable(current, readings, newRowId);
+    const newRows = [...new Set(cells.map((c) => c.row))].filter(
+      (id) => !current.rows.some((r) => r.id === id),
+    );
+    void results.run([
+      ...newRows.map((id) => ({ type: "add-row" as const, id })),
+      ...cells.map((c) => ({ type: "set-cell" as const, ...c })),
+    ]);
+  };
+  const keepWorkedCells = () =>
+    results.run(
+      shownTable.rows.flatMap((row) => {
+        const typed = table.rows.find((r) => r.id === row.id)?.cells ?? {};
+        return table.columns
+          .filter((c) => c.role === "mean" || c.role === "derived")
+          .filter((c) => (row.cells[c.id] ?? "") !== (typed[c.id] ?? ""))
+          .map((c) => ({
+            type: "set-cell" as const,
+            row: row.id,
+            column: c.id,
+            value: row.cells[c.id] ?? "",
+          }));
+      }),
+    );
+
+  // The graph (step 7): V against 1/T by default, carried back to the V axis.
+  const numericColumns = table.columns.filter((c) => c.role !== "notes");
+  const graphColumns = graphColumnsFor(plot.graph, table.columns, MIXTURES_PLOT);
+  const columnFor = (id: string) => table.columns.find((c) => c.id === id);
+  const symbols = {
+    x: columnFor(graphColumns.x)?.symbol ?? graphColumns.x,
+    y: columnFor(graphColumns.y)?.symbol ?? graphColumns.y,
+  };
+  const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
+  const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist, "y-axis");
+  const rightGraph = plotsVAgainstInverseT(graphColumns);
+  const graphFindings =
+    graphData.length >= 2
+      ? runRules(GRAPH_RULES, {
+          sheet: graphShown.sheet,
+          symbols,
+          data: graphData,
+          plotted: graphShown.plotted,
+          line: graphShown.line,
+          triangle: graphShown.triangle,
+        })
+      : [];
+  const mixturesGraphFindings = runRules(MIXTURES_GRAPH_RULES, { columns: graphColumns, symbols });
+  const graphPart = (rule: string) =>
+    rule === "graph-scale-small" || rule === "graph-off-sheet"
+      ? "scale"
+      : rule.startsWith("graph-line")
+        ? "line"
+        : rule.startsWith("graph-triangle")
+          ? "triangle"
+          : "points";
+  const partFindings = { scale: [], points: [], line: [], triangle: [] } as Record<
+    "scale" | "points" | "line" | "triangle",
+    Finding[]
+  >;
+  for (const f of graphFindings) partFindings[graphPart(f.rule)].push(f);
+  const graphFlagged = new Set(
+    (graphMarks ? graphFindings : advice.map((a) => a.finding).filter((f) => f.skill === "graph"))
+      .filter((f) => f.rule === "graph-misplotted" || f.rule === "graph-off-sheet")
+      .flatMap((f) => f.rows ?? []),
+  );
+
+  // The analysis (step 8): the slope from the triangle, V where the line meets the V axis, and W.
+  const graphUnits = {
+    x: columnFor(graphColumns.x)?.unit ?? "",
+    y: columnFor(graphColumns.y)?.unit ?? "",
+  };
+  // V over 1/T: cm³ over °C⁻¹ is cm³ °C.
+  const slopeUnit = rightGraph ? "cm³ °C" : `${graphUnits.y} ${graphUnits.x}⁻¹`.trim();
+  const expected = mixturesExpected(
+    graphShown.triangle,
+    graphShown.line,
+    graphColumns,
+    graphUnits,
+    answers,
+  );
+  const analysisFindings = runRules(MIXTURES_ANALYSIS_RULES, { answers, expected });
+  const slope = graphShown.triangle && slopeOf(graphShown.triangle, graphUnits);
+  const analysisFlags = (id: string) =>
+    analysisMarks ? analysisFindings.filter((f) => f.column === id) : [];
+  const write = (id: string) => (a: { value: string; unit: string }) => {
+    const e = writeAnswer(answers, id, a);
+    if (e) void handle.record([e]);
+  };
+  /** An answer as the student wrote it, or as worked out from their graph. */
+  const answerText = (id: "intercept" | "W") => {
+    const typed = answers[id];
+    if (typed?.value) return `${typed.value} ${typed.unit}`.trim();
+    const worked = id === "intercept" ? expected.intercept : expected.W;
+    return worked ? formatQuantity(worked, 3, "cm³") : id;
+  };
+
+  const finishPanelStep = async () => {
+    if (state.step === "tabulate") {
+      // At Auto the worked-out cells were filled in for the student; finishing writes them in.
+      if (tableAssist) await keepWorkedCells();
+      await finishChecked(tableFindings, `table:${JSON.stringify(shownTable)}`);
+    } else if (state.step === "plot") {
+      await finishChecked(
+        [...mixturesGraphFindings, ...graphFindings],
+        `graph:${JSON.stringify(plot.graph)}`,
+      );
+    } else {
+      await finishChecked(analysisFindings, `analysis:${JSON.stringify(answers)}`);
+    }
+  };
+  const panel = state.step === "tabulate" || state.step === "plot" || state.step === "analyse";
 
   // What the thermometer shows the student, read from where their eye is, to 0.1 °C.
   const shownAt = (b: MixturesBench, at: number) =>
@@ -460,48 +643,194 @@ export function MethodOfMixturesScreen() {
         </header>
 
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
-            <div className="flex w-full max-w-[760px] flex-col">
-              <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
-              <span className="font-semibold">{t(figTitle)}</span>
-            </div>
-            <div className="w-full max-w-[760px]">
-              <Calorimeter
-                className="block h-auto w-full"
-                label={description}
-                calorimeterWater={(bench.cold ?? 0) + (poured ? (bench.hot ?? 0) : 0)}
-                beakerWater={poured ? 0 : (bench.hot ?? 0)}
-                covered={bench.covered}
-                stirring={bench.stirring}
-                thermometer={view.thermometer}
-                layered={view.layered}
-              />
-            </div>
-            <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
-              {poured ? (
-                <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-2 border border-border bg-surface p-3">
-                  <span className="text-xs text-muted-foreground">{t(`${P}.measure.trace`)}</span>
-                  <ThermometerTrace
-                    className="block h-auto w-full"
-                    points={trace}
-                    axes={{ time: t(`${P}.axes.time`), temperature: t(`${P}.axes.temperature`) }}
-                    label={t(`${P}.measure.traceLabel`, { t: second, reading: deg(shown) })}
-                  />
-                </div>
-              ) : (
-                (building || measuring) && cylinderCard
+          {panel ? (
+            <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+              {state.step === "tabulate" && (
+                <TableBuilder
+                  table={table}
+                  shown={shownTable}
+                  assist={tableAssist}
+                  marks={tableMarks}
+                  flags={tableFlags}
+                  spec={{
+                    standard: MIXTURES_STANDARD_TABLE,
+                    templates: MIXTURES_TEMPLATES,
+                    defaultTemplate: "single",
+                    instruments: MIXTURES_INSTRUMENTS,
+                    defaultKind: "temperature-difference",
+                    rowsNeeded: Math.max(
+                      MIXTURES_ROWS,
+                      new Set(readings.map((r) => r.volume)).size,
+                    ),
+                    readingsSummary: readings.length
+                      ? readings.map(readingText).join(" · ")
+                      : undefined,
+                  }}
+                  onRun={results.run}
+                  onFillReadings={tableAssist ? fillReadings : undefined}
+                  onCommit={() => undefined}
+                  below={
+                    advice.length > 0 ? (
+                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+                    ) : null
+                  }
+                />
               )}
-              {thermometerCard}
-            </div>
-            {refusal && (
-              <p
-                role="alert"
-                className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
-              >
-                {refusal}
-              </p>
-            )}
-          </section>
+              {state.step === "plot" && (
+                <GraphPanel
+                  state={plot.graph}
+                  view={graphShown}
+                  data={graphData}
+                  headings={{
+                    x: headingFor(table.columns, graphColumns.x),
+                    y: headingFor(table.columns, graphColumns.y),
+                  }}
+                  numericColumns={numericColumns}
+                  flaggedRows={graphFlagged}
+                  partFindings={partFindings}
+                  showChecks={graphMarks && !graphAssist}
+                  onRun={plot.run}
+                  latest={plot.now}
+                  below={
+                    advice.length > 0 || (graphMarks && mixturesGraphFindings.length > 0) ? (
+                      <div className="flex flex-col gap-3">
+                        {advice.length > 0
+                          ? adviceCards
+                          : mixturesGraphFindings.map((f) => findingCard(f))}
+                      </div>
+                    ) : null
+                  }
+                />
+              )}
+              {state.step === "analyse" && (
+                <section
+                  aria-label={t("lab.analyse.label")}
+                  className="flex w-full min-w-0 flex-col gap-4"
+                >
+                  <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+                    {!graphShown.triangle || !slope ? (
+                      <div className="flex flex-col items-start gap-3">
+                        <p className="text-soft">{t("lab.analyse.needTriangle")}</p>
+                        <Button
+                          variant="outline"
+                          onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
+                        >
+                          {t("lab.analyse.backToPlot")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+                        <AnswerLine
+                          id="slope"
+                          unit={slopeUnit}
+                          lead={t(`${P}.analyse.slopeLead`, {
+                            rise: slope.rise.toFixed(1),
+                            run: slope.run.toFixed(4),
+                            yu: graphUnits.y,
+                            xu: graphUnits.x,
+                          })}
+                          written={answers.slope}
+                          expected={expected.slope}
+                          assist={analysisAssist}
+                          marks={analysisMarks && !analysisAssist}
+                          flagged={analysisFlags("slope")}
+                          onWrite={write("slope")}
+                        />
+                        {!rightGraph ? (
+                          <p className="font-sans text-sm text-soft">
+                            {t(`${P}.analyse.otherGraph`, symbols)}
+                          </p>
+                        ) : !graphShown.line ? (
+                          <p className="font-sans text-sm text-soft">
+                            {t(`${P}.analyse.needLine`)}
+                          </p>
+                        ) : (
+                          <>
+                            <AnswerLine
+                              id="intercept"
+                              unit="cm³"
+                              lead={t(`${P}.analyse.interceptLead`)}
+                              written={answers.intercept}
+                              expected={expected.intercept}
+                              assist={analysisAssist}
+                              marks={analysisMarks && !analysisAssist}
+                              flagged={analysisFlags("intercept")}
+                              onWrite={write("intercept")}
+                            />
+                            <AnswerLine
+                              id="W"
+                              unit="cm³"
+                              lead={t(`${P}.analyse.wLead`, { intercept: answerText("intercept") })}
+                              written={answers.W}
+                              expected={expected.W}
+                              assist={analysisAssist}
+                              marks={analysisMarks && !analysisAssist}
+                              flagged={analysisFlags("W")}
+                              onWrite={write("W")}
+                            />
+                          </>
+                        )}
+                        {analysisAssist && (
+                          <span className="font-sans text-xs text-muted-foreground">
+                            {t("lab.analyse.workedOut")}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+                    <Calculator />
+                  </div>
+                  {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
+                </section>
+              )}
+            </section>
+          ) : (
+            <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
+              <div className="flex w-full max-w-[760px] flex-col">
+                <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
+                <span className="font-semibold">{t(figTitle)}</span>
+              </div>
+              <div className="w-full max-w-[760px]">
+                <Calorimeter
+                  className="block h-auto w-full"
+                  label={description}
+                  calorimeterWater={(bench.cold ?? 0) + (poured ? (bench.hot ?? 0) : 0)}
+                  beakerWater={poured ? 0 : (bench.hot ?? 0)}
+                  covered={bench.covered}
+                  stirring={bench.stirring}
+                  thermometer={view.thermometer}
+                  layered={view.layered}
+                />
+              </div>
+              <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
+                {poured ? (
+                  <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-2 border border-border bg-surface p-3">
+                    <span className="text-xs text-muted-foreground">{t(`${P}.measure.trace`)}</span>
+                    <ThermometerTrace
+                      className="block h-auto w-full"
+                      points={trace}
+                      axes={{ time: t(`${P}.axes.time`), temperature: t(`${P}.axes.temperature`) }}
+                      label={t(`${P}.measure.traceLabel`, { t: second, reading: deg(shown) })}
+                    />
+                  </div>
+                ) : (
+                  (building || measuring) && cylinderCard
+                )}
+                {thermometerCard}
+              </div>
+              {refusal && (
+                <p
+                  role="alert"
+                  className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
+                >
+                  {refusal}
+                </p>
+              )}
+            </section>
+          )}
 
           <aside
             aria-label={t("lab.coach.label")}
@@ -781,12 +1110,36 @@ export function MethodOfMixturesScreen() {
                     </Button>
                   </>
                 )}
-                {stepIndex > STEPS.indexOf("measure") && (
+                {panel && (
+                  <>
+                    <h2 className="font-display text-2xl leading-tight font-bold">
+                      {t(`${P}.${state.step}.title` as MessageKey)}
+                    </h2>
+                    <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
+                    <Button onClick={() => void finishPanelStep()}>
+                      {state.step === "tabulate"
+                        ? t("lab.steps.finishTabulating")
+                        : state.step === "plot"
+                          ? t("lab.steps.finishPlotting")
+                          : t("lab.steps.finishAnalysing")}
+                    </Button>
+                  </>
+                )}
+                {(state.step === "conclude" || state.step === "report") && (
                   <>
                     <h2 className="font-display text-2xl leading-tight font-bold">
                       {stepName(state.step)}
                     </h2>
-                    <p className="text-soft">{t(`${P}.next`)}</p>
+                    <p className="text-soft">
+                      {state.step === "conclude"
+                        ? t(`${P}.conclude.text`, { W: answerText("W") })
+                        : t(`${P}.next`)}
+                    </p>
+                    {state.step === "conclude" && next && (
+                      <Button className="self-start" onClick={() => void finishStep()}>
+                        {t("lab.steps.continue", { step: stepName(next) })}
+                      </Button>
+                    )}
                   </>
                 )}
                 {(state.step === "question" ||
@@ -843,10 +1196,7 @@ export function MethodOfMixturesScreen() {
         <StepStrip
           current={state.step}
           completed={state.completed}
-          // Steps 6 to 10 come with the next pull request; until then the lab stops at Measure.
-          open={(s) =>
-            STEPS.indexOf(s) <= Math.min(STEPS.indexOf("measure"), STEPS.indexOf(frontier(state)))
-          }
+          open={(s) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state))}
           onGo={(s) => void handle.dispatch({ type: "go-to-step", step: s })}
         />
       </div>
