@@ -108,6 +108,8 @@ export interface PendulumReport extends ReportContent {
 export interface ReportExperiment {
   id: string;
   title: string;
+  /** The experiment has a model check, so the report links to its data template. */
+  check?: boolean;
 }
 
 const P = "experiments.simple-pendulum";

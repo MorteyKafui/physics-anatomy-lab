@@ -36,7 +36,8 @@ export function SheetsScreen({
   content,
   figures,
 }: {
-  experiment: { id: string; title: string };
+  /** check: the experiment has a model check, so the sheets link to its data template. */
+  experiment: { id: string; title: string; check?: boolean };
   /** The sheets' words and numbers; made once, so it must keep its identity across renders. */
   content: SheetContent;
   figures: SheetFigures;
@@ -136,6 +137,14 @@ export function SheetsScreen({
           className="flex min-w-0 flex-[1_1_280px] flex-col gap-4 border border-border bg-[var(--pa-ink-900)] px-4 py-3.5 lg:max-w-[340px]"
         >
           <p className="text-sm text-soft">{t("sheets.intro")}</p>
+          {E.check && (
+            <Link
+              href={`/lab/${E.id}/check`}
+              className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {t("labData.check.templateLink")}
+            </Link>
+          )}
           <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0">
             <legend className="mb-1.5 text-xs text-muted-foreground">{t("sheets.formats")}</legend>
             {SHEET_KINDS.map((k) => (

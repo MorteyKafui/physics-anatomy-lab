@@ -1036,6 +1036,8 @@ export const enGB = {
   "labData.check.typeIn": "Type them in instead",
   "labData.check.useFile": "Bring in a file instead",
   "labData.check.typed": "Typed in",
+  "labData.check.row": "row {n}",
+  "labData.check.addRow": "Add a row",
   "labData.check.rows": "{n} rows",
   "labData.check.rowsLeft": "{n} rows · {left} left out",
   "labData.check.table": "Table 1",
