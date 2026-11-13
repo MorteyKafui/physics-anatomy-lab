@@ -810,7 +810,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 - [x] Ohm's law and potentiometer: circuit solver, real meters, mistake catalogue
 - [x] Converging lens: ray tracing, screen, pin parallax
 - [x] Method of mixtures: heat model, thermometer lag, heat loss
-- [ ] Data templates, import and compare
+- [x] Data templates, import and compare
 - [ ] Advanced uncertainty layer
 - [ ] Physical reference data collected in a UEW lab
 
