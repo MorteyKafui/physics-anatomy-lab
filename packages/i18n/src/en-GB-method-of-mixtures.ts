@@ -377,6 +377,126 @@ export const enGBMethodOfMixtures = {
   "findings.mixtures.cylinderAtAngle.demonstrate":
     "Stand the cylinder on the bench and read the bottom of the curved surface with your eye level with it.",
   "experiments.method-of-mixtures-solid.title": "The method of mixtures: a hot solid",
+  "experiments.method-of-mixtures-solid.inDevelopment":
+    "Being built: the table and graph come next",
+  "experiments.method-of-mixtures-solid.next":
+    "Tabulating, plotting and the analysis come with the next part of this lab. Your readings are kept.",
+  "experiments.method-of-mixtures-solid.question.title":
+    "The specific heat capacity of a solid, by the method of mixtures",
+  "experiments.method-of-mixtures-solid.question.text":
+    "Weigh the solid, then the calorimeter with its stirrer, empty and again about half full of water at room temperature, and read the water's temperature. Heat the solid in boiling water until it has been steady for some time. Move it quickly but gently into the lagged calorimeter, cover it, stir, and read the temperature every minute until it is steady. The highest reading is the final temperature. Find the solid's specific heat capacity, given those of the calorimeter and of water.",
+  "experiments.method-of-mixtures-solid.predict.title":
+    "Which changes more: the solid's temperature or the water's?",
+  "experiments.method-of-mixtures-solid.predict.text":
+    "The solid comes out of boiling water and goes into water at room temperature, until they share one temperature. Choose what you expect, then measure and see.",
+  "experiments.method-of-mixtures-solid.predict.solid": "The solid's temperature falls more",
+  "experiments.method-of-mixtures-solid.predict.water": "The water's temperature rises more",
+  "experiments.method-of-mixtures-solid.predict.same": "They change by about the same",
+  "experiments.method-of-mixtures-solid.predict.saved": "You said: {choice}. Measure and see.",
+  "experiments.method-of-mixtures-solid.build.title": "Weigh everything first",
+  "experiments.method-of-mixtures-solid.build.why":
+    "Weigh the solid, then the calorimeter with its stirrer while it is empty. Fill it about half full of water from the tap and weigh it again: the difference is the water. Put the lid on, so the mixture keeps its heat.",
+  "experiments.method-of-mixtures-solid.build.solid": "The solid weighed",
+  "experiments.method-of-mixtures-solid.build.empty": "The calorimeter weighed empty",
+  "experiments.method-of-mixtures-solid.build.filled": "The calorimeter weighed with its water",
+  "experiments.method-of-mixtures-solid.build.lid": "The lid on the calorimeter",
+  "experiments.method-of-mixtures-solid.balance.title": "Balance",
+  "experiments.method-of-mixtures-solid.balance.note":
+    "The balance reads to 0.1 g. Weigh the calorimeter empty before you fill it.",
+  "experiments.method-of-mixtures-solid.weigh.solid": "Weigh the solid",
+  "experiments.method-of-mixtures-solid.weigh.empty": "Weigh the calorimeter empty",
+  "experiments.method-of-mixtures-solid.weigh.filled": "Weigh it with the water",
+  "experiments.method-of-mixtures-solid.fill": "Fill it half full with water",
+  "experiments.method-of-mixtures-solid.empty": "Empty the calorimeter",
+  "experiments.method-of-mixtures-solid.mass.solid": "Solid S",
+  "experiments.method-of-mixtures-solid.mass.empty": "Calorimeter",
+  "experiments.method-of-mixtures-solid.mass.filled": "With water",
+  "experiments.method-of-mixtures-solid.mass.start": "Water at",
+  "experiments.method-of-mixtures-solid.check.title": "Check the set-up",
+  "experiments.method-of-mixtures-solid.check.weigh":
+    "Weigh the solid, the calorimeter empty, and the calorimeter with its water first.",
+  "experiments.method-of-mixtures-solid.check.right":
+    "The solid and the calorimeter are weighed, with {water} g of water in it, and the lid is on.",
+  "experiments.method-of-mixtures-solid.check.fix": "Back to the bench",
+  "experiments.method-of-mixtures-solid.measure.moveTitle": "Move it across quickly",
+  "experiments.method-of-mixtures-solid.measure.moveText":
+    "The solid has been in the boiling water long enough to be at 100 °C. Lift it out, shake it, carry it across in a few seconds, and lower it in.",
+  "experiments.method-of-mixtures-solid.measure.readTitle": "Read the highest",
+  "experiments.method-of-mixtures-solid.measure.wetTitle": "Boiling water went in",
+  "experiments.method-of-mixtures-solid.measure.readText":
+    "Stir all the time and read the thermometer every minute. It rises to its highest within two minutes, then falls slowly.",
+  "experiments.method-of-mixtures-solid.measure.step1":
+    "Weigh the solid, the calorimeter, and the calorimeter with water",
+  "experiments.method-of-mixtures-solid.measure.step2":
+    "Move the solid from the boiling water into the calorimeter, quickly",
+  "experiments.method-of-mixtures-solid.measure.step3":
+    "Stir, and read the thermometer every minute until it falls",
+  "experiments.method-of-mixtures-solid.measure.fallen.title": "It has started to fall",
+  "experiments.method-of-mixtures-solid.measure.fallen.detail":
+    "The highest you read is {highest} °C: that is T. Take this reading.",
+  "experiments.method-of-mixtures-solid.measure.wet.title": "Boiling water went in with the solid",
+  "experiments.method-of-mixtures-solid.measure.wet.detail":
+    "About {grams} g of boiling water clung to the solid and went in too. Its heat counts as the solid's, so c will come out about {percent}% too large.",
+  "experiments.method-of-mixtures-solid.measure.wet.demonstrate":
+    "Lift the solid out and give it a quick shake over the beaker before moving it across. Empty the calorimeter and try again.",
+  "experiments.method-of-mixtures-solid.measure.take": "Take this reading",
+  "experiments.method-of-mixtures-solid.measure.weighFirst":
+    "Weigh the solid, the calorimeter empty and with its water first.",
+  "experiments.method-of-mixtures-solid.measure.again": "Empty the calorimeter for another run",
+  "experiments.method-of-mixtures-solid.measure.runs": "Runs so far",
+  "experiments.method-of-mixtures-solid.measure.run": "Run {n}: from {start} °C to {highest} °C",
+  "experiments.method-of-mixtures-solid.measure.none":
+    "None yet. The solid's metal is named when you have found c.",
+  "experiments.method-of-mixtures-solid.move.title": "Moving it across",
+  "experiments.method-of-mixtures-solid.move.lift": "Lift it out of the boiling water",
+  "experiments.method-of-mixtures-solid.move.inAir": "In the air",
+  "experiments.method-of-mixtures-solid.move.shake": "Shake it",
+  "experiments.method-of-mixtures-solid.move.shaken": "Shaken",
+  "experiments.method-of-mixtures-solid.move.lower": "Lower it in",
+  "experiments.method-of-mixtures-solid.move.putIn": "Put it in the calorimeter",
+  "experiments.method-of-mixtures-solid.move.note":
+    "Shake it over the beaker so no boiling water goes in with it, and lower it in gently on its thread.",
+  "experiments.method-of-mixtures-solid.minutes.title": "Every minute since it went in",
+  "experiments.method-of-mixtures-solid.minutes.read": "Read it now",
+  "experiments.method-of-mixtures-solid.thermometer": "Thermometer",
+  "experiments.method-of-mixtures-solid.since": "Since it went in",
+  "experiments.method-of-mixtures-solid.clock": "{m} min {s} s",
+  "experiments.method-of-mixtures-solid.stir": "Stir",
+  "experiments.method-of-mixtures-solid.stirring": "Stirring",
+  "experiments.method-of-mixtures-solid.lid.on": "Lid on",
+  "experiments.method-of-mixtures-solid.lid.off": "Put the lid on",
+  "experiments.method-of-mixtures-solid.eye": "Your eye",
+  "experiments.method-of-mixtures-solid.eye.above": "Above",
+  "experiments.method-of-mixtures-solid.eye.level": "Level",
+  "experiments.method-of-mixtures-solid.eye.below": "Below",
+  "experiments.method-of-mixtures-solid.eyeLevel":
+    "Read with your eye level with the top of the mercury. The thermometer reads to 0.1 °C.",
+  "experiments.method-of-mixtures-solid.fig.label": "Fig. 1",
+  "experiments.method-of-mixtures-solid.fig.beaker": "The solid in the boiling water",
+  "experiments.method-of-mixtures-solid.fig.air": "Moving the solid across",
+  "experiments.method-of-mixtures-solid.fig.calorimeter": "The solid in the water",
+  "experiments.method-of-mixtures-solid.bench":
+    "A balance showing {balance} g; a beaker of boiling water on a tripod over a heater; the solid S on a thread {where}; the lagged calorimeter holding {water} g of water. The thermometer reads {reading} °C.",
+  "experiments.method-of-mixtures-solid.bench.beaker": "in the boiling water",
+  "experiments.method-of-mixtures-solid.bench.air":
+    "in the air between the beaker and the calorimeter",
+  "experiments.method-of-mixtures-solid.bench.calorimeter": "in the water in the calorimeter",
+  "experiments.method-of-mixtures-solid.explain.title": "Heat lost equals heat gained",
+  "experiments.method-of-mixtures-solid.explain.text":
+    "The solid cools from the boiling water's temperature T_s and the water and the calorimeter warm from T₀, until they share one temperature T. If no heat goes to the room, the heat the solid gives up is the heat the rest take in.",
+  "experiments.method-of-mixtures-solid.explain.given":
+    "The specific heat capacities of the calorimeter, 390 J kg⁻¹ K⁻¹, and of water, 4200 J kg⁻¹ K⁻¹, are given.",
+  "experiments.method-of-mixtures-solid.tips.title": "Precautions examiners look for",
+  "experiments.method-of-mixtures-solid.tips.1":
+    "I moved the solid into the calorimeter quickly, to reduce heat lost on the way.",
+  "experiments.method-of-mixtures-solid.tips.2":
+    "I shook the solid before moving it, so no boiling water went in with it.",
+  "experiments.method-of-mixtures-solid.tips.3":
+    "I lowered the solid in gently, so no water splashed out.",
+  "experiments.method-of-mixtures-solid.tips.4":
+    "I stirred the water all the time and read the highest temperature.",
+  "experiments.method-of-mixtures-solid.tips.5":
+    "I kept the lid on the lagged calorimeter to reduce heat lost to the room.",
   "experiments.method-of-mixtures-solid.metal.copper": "copper",
   "experiments.method-of-mixtures-solid.metal.brass": "brass",
   "experiments.method-of-mixtures-solid.metal.iron": "iron",
