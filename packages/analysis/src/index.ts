@@ -118,4 +118,4 @@ export {
   worstLines,
 } from "./uncertainty";
 export type { BarPoint, QuoteCheck, ReadingStyle } from "./uncertainty";
-export { tableUncertainties } from "./table-uncertainty";
+export { largestPercentUncertainty, tableUncertainties } from "./table-uncertainty";

@@ -607,21 +607,23 @@ export const enGB = {
     "g = {g} m s⁻² agrees with the accepted {accepted} m s⁻²: they are {away} uncertainties apart, within one.",
   "report.gen.uncertainty.differs":
     "g = {g} m s⁻² does not agree with the accepted {accepted} m s⁻²: they are {away} uncertainties apart, so an error not counted in the uncertainty remains.",
+  "report.gen.uncertainty.e": "E, where the line meets the V axis, is {E} {unit}.",
+  "report.gen.uncertainty.r": "r has the slope's percentage uncertainty: r = {r} Ω.",
   "report.gen.uncertainty.largest":
     "The largest percentage uncertainty in the table is in {symbol}: {percent} %.",
   "lab.table.uncertainty.mean": "± half the range",
   "lab.table.uncertainty.derived": "± worked through the formula",
   "lab.graph.worstLines": "Draw the steepest and least steep lines through the error bars",
   "lab.analyse.uncertainty.slope": "Least squares: the slope {u}",
-  "lab.analyse.uncertainty.value": "g, your value",
-  "lab.analyse.uncertainty.label": "The uncertainty in g",
+  "lab.analyse.uncertainty.value": "{symbol}, your value",
+  "lab.analyse.uncertainty.label": "The uncertainty in {symbol}",
   "lab.analyse.uncertainty.right": "Your uncertainty is the one your slope gives: {percent} %.",
   "lab.analyse.uncertainty.wrong":
-    "Your uncertainty is more than twice, or under half, the {worked} your slope gives. Work it from Δslope ⁄ slope: {percent} % of g.",
+    "Your uncertainty is more than twice, or under half, the {worked} your slope gives. Work it from the line: {percent} % of {symbol}.",
   "lab.analyse.uncertainty.quoted":
-    "Given to one significant figure, with g to the same decimal place.",
+    "Given to one significant figure, with the value to the same decimal place.",
   "lab.analyse.uncertainty.figures":
-    "Give the uncertainty to one significant figure (two if it starts with 1), and g to the same decimal place.",
+    "Give the uncertainty to one significant figure (two if it starts with 1), and the value to the same decimal place.",
   "lab.graph.colour": "Colour",
   "lab.graph.mono": "Black and white",
   "lab.graph.axes": "Axes and scales",

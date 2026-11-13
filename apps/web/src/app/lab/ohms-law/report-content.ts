@@ -2,14 +2,19 @@
 
 import {
   fillDerived,
+  fitLine,
   formatQuantity,
   formulaUnitFindings,
   GRAPH_RULES,
   heading,
+  largestPercentUncertainty,
   parseTable,
   pointsFor,
+  quotedUncertainty,
   readingDecimals,
   runRules,
+  tableUncertainties,
+  xIntercept,
   TABLE_RULES,
   toTableView,
   type Finding,
@@ -330,6 +335,48 @@ export function ohmsLawReport(attempt: Attempt, events: readonly LabEvent[]): Re
     t(`${R}.apparatus.leads`),
   );
 
+  // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7):
+  // the slope's least-squares uncertainty, E's where the line meets the V axis, r's the slope's
+  // percentage, and the largest percentage uncertainty in the table. A real cell's E and r are not
+  // known, so there is no accepted value to agree with.
+  const university = report.format === "university";
+  const worked = university ? fillDerived(table) : undefined;
+  const points = worked && iAgainstV ? pointsFor(worked, columns.x, columns.y) : [];
+  const fit =
+    points.length >= 3 && new Set(points.map((p) => p.x)).size >= 2 ? fitLine(points) : undefined;
+  const quote = (v: number, u: number) => {
+    const q = quotedUncertainty(u);
+    return `${v.toFixed(q.decimals)} ± ${q.value.toFixed(q.decimals)}`;
+  };
+  const largest = worked
+    ? largestPercentUncertainty(worked, tableUncertainties(worked))
+    : undefined;
+  const uncertaintyWorking =
+    fit && fit.slope < 0
+      ? (() => {
+          const e = xIntercept(fit);
+          const r = -1 / fit.slope;
+          const percent = (100 * fit.slopeError) / Math.abs(fit.slope);
+          return [
+            t("report.gen.uncertainty.rules"),
+            t("report.gen.uncertainty.slope", {
+              slope: quote(fit.slope, fit.slopeError),
+              unit: slopeUnit,
+              percent: percent.toFixed(2),
+            }),
+            t("report.gen.uncertainty.e", { E: quote(e.value, e.error), unit: units.x }),
+            t("report.gen.uncertainty.r", { r: quote(r, (r * percent) / 100) }),
+          ].join("\n");
+        })()
+      : "";
+  const discussion =
+    university && largest
+      ? t("report.gen.uncertainty.largest", {
+          symbol: largest.symbol,
+          percent: largest.percent.toFixed(2),
+        })
+      : "";
+
   const generated: Record<string, string> = {
     "date-title": `${date}. ${title}`,
     aim: t(`${R}.aim`),
@@ -342,8 +389,8 @@ export function ohmsLawReport(attempt: Attempt, events: readonly LabEvent[]): Re
     graph: view.plotted.length
       ? t(iAgainstV ? `${R}.graph` : "report.gen.graph", { caption: graphCaption })
       : "",
-    calculation,
-    discussion: "",
+    calculation: [calculation, uncertaintyWorking].filter(Boolean).join("\n"),
+    discussion,
     // In an exam the precautions and sources of error are the candidate's own to write.
     precautions: attempt.mode === "exam" ? "" : precautions,
     sources: attempt.mode === "exam" ? "" : sources,

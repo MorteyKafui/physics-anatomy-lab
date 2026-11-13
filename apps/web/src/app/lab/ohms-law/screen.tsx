@@ -3,6 +3,7 @@
 import { CIRCUIT_VIEWBOX, CircuitBench, terminalPoint, TERMINAL_POINTS } from "@pa/apparatus";
 import {
   fillDerived,
+  fitLine,
   formatQuantity,
   formulaUnitFindings,
   GRAPH_RULES,
@@ -10,6 +11,8 @@ import {
   pointsFor,
   referenceLine,
   runRules,
+  tableUncertainties,
+  xIntercept,
   TABLE_RULES,
   toTableView,
   type Finding,
@@ -86,7 +89,10 @@ import {
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
 import { CheckItem, Rail, StepStrip } from "../parts";
-import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
+import { showUncertainty } from "../uncertainty-format";
+import { UncertaintySwitch } from "../uncertainty-switch";
+import { useUncertainties } from "../use-uncertainties";
 import { flagsFor, useTable } from "../table-builder";
 import { ExamBar } from "../exam/bar";
 import { backToPractice, useAttempt } from "../use-attempt";
@@ -107,6 +113,7 @@ const leadKey = (l: Lead) => `${l[0]}~${l[1]}`;
  */
 export function OhmsLawScreen() {
   const handle = useAttempt(E.id);
+  const [uncertain, setUncertain] = useUncertainties();
   const router = useRouter();
   // Exam mode: the clock, from the attempt's own events.
   const exam = useMemo(
@@ -369,6 +376,33 @@ export function OhmsLawScreen() {
   };
   const graphData = pointsFor(shownTable, graphColumns.x, graphColumns.y);
   const graphShown = graphView(plot.graph, graphData, graphColumns, graphAssist, true);
+
+  // The uncertainty layer (docs/content/uncertainty-brief.md): each cell's uncertainty, error bars
+  // on I against V, and E and r from the least-squares line with theirs: E's where the line meets
+  // the V axis, r's the same percentage as the slope's.
+  const uncertainties = uncertain ? tableUncertainties(fillDerived(table)) : undefined;
+  const bars = uncertainties
+    ? new Map(
+        [...uncertainties].map(([row, u]) => [
+          row,
+          { dx: u[graphColumns.x] ?? 0, dy: u[graphColumns.y] ?? 0 },
+        ]),
+      )
+    : undefined;
+  const lineUncertainty = (() => {
+    if (!uncertain || graphData.length < 3 || new Set(graphData.map((p) => p.x)).size < 2)
+      return undefined;
+    const f = fitLine(graphData);
+    if (!(f.slope < 0)) return undefined;
+    const e = xIntercept(f);
+    const r = -1 / f.slope;
+    const rPercent = (100 * f.slopeError) / Math.abs(f.slope);
+    return {
+      slope: f.slopeError,
+      E: { worked: e.error, percent: (100 * e.error) / Math.abs(e.value) },
+      r: { worked: (r * rPercent) / 100, percent: rPercent },
+    };
+  })();
   // Where the line meets the V axis: the student's line, or the best fit before they draw one.
   const reachLine = graphShown.line ?? referenceLine(graphData)?.line;
   const intercept = reachLine && plotsIAgainstV(graphColumns) ? vInterceptOf(reachLine) : undefined;
@@ -554,6 +588,7 @@ export function OhmsLawScreen() {
               </select>
             </label>
           )}
+          {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&
@@ -600,6 +635,7 @@ export function OhmsLawScreen() {
                   onRun={results.run}
                   onFillReadings={tableAssist ? fillReadings : undefined}
                   onCommit={() => undefined}
+                  uncertainties={uncertainties}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
@@ -622,6 +658,7 @@ export function OhmsLawScreen() {
                   showChecks={graphMarks && !graphAssist}
                   onRun={plot.run}
                   latest={plot.now}
+                  bars={bars}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3">{adviceCards}</div>
@@ -690,6 +727,27 @@ export function OhmsLawScreen() {
                               flagged={analysisFlags("r")}
                               onWrite={write("r")}
                             />
+                            {lineUncertainty && (
+                              <div className="flex flex-col gap-2">
+                                <span className="font-mono text-sm text-soft">
+                                  {t("lab.analyse.uncertainty.slope", {
+                                    u: showUncertainty(lineUncertainty.slope),
+                                  })}
+                                </span>
+                                <QuoteLine
+                                  symbol="E"
+                                  unit={graphUnits.x}
+                                  worked={lineUncertainty.E.worked}
+                                  percent={lineUncertainty.E.percent}
+                                />
+                                <QuoteLine
+                                  symbol="r"
+                                  unit="Ω"
+                                  worked={lineUncertainty.r.worked}
+                                  percent={lineUncertainty.r.percent}
+                                />
+                              </div>
+                            )}
                           </>
                         ) : (
                           <p className="font-sans text-sm text-soft">

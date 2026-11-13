@@ -38,3 +38,4 @@ export const GraphPanel = lazyPanel(() => import("./graph-panel").then((m) => m.
 export const AnalysePanel = lazyPanel(() => import("./analyse").then((m) => m.AnalysePanel));
 export const AnswerLine = lazyPanel(() => import("./analyse").then((m) => m.AnswerLine), false);
 export const Calculator = lazyPanel(() => import("./analyse").then((m) => m.Calculator), false);
+export const QuoteLine = lazyPanel(() => import("./analyse").then((m) => m.QuoteLine), false);

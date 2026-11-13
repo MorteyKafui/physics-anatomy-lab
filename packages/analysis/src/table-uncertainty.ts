@@ -82,3 +82,24 @@ export function tableUncertainties(
   }
   return out;
 }
+
+/**
+ * The largest percentage uncertainty in a table (decision 7): which column, and how large, so a
+ * report can say which error dominates.
+ */
+export function largestPercentUncertainty(
+  design: TableDesign,
+  uncertainties: ReadonlyMap<string, Readonly<Record<string, number>>>,
+): { symbol: string; percent: number } | undefined {
+  let largest: { symbol: string; percent: number } | undefined;
+  for (const row of design.rows) {
+    for (const c of design.columns) {
+      const u = uncertainties.get(row.id)?.[c.id];
+      const v = Number(row.cells[c.id]);
+      if (u === undefined || !Number.isFinite(v) || v === 0) continue;
+      const percent = (100 * u) / Math.abs(v);
+      if (!largest || percent > largest.percent) largest = { symbol: c.symbol, percent };
+    }
+  }
+  return largest;
+}
