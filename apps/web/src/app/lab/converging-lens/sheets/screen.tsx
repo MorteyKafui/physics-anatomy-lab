@@ -33,7 +33,11 @@ const figures: SheetFigures = {
 export function ConvergingLensSheetsScreen() {
   return (
     <SheetsScreen
-      experiment={{ id: convergingLens.id, title: t("experiments.converging-lens.title") }}
+      experiment={{
+        id: convergingLens.id,
+        title: t("experiments.converging-lens.title"),
+        check: true,
+      }}
       content={content}
       figures={figures}
     />

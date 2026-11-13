@@ -421,3 +421,12 @@ export {
   ohmsLawExample,
 } from "./ohms-law-check";
 export type { OhmsLawResult } from "./ohms-law-check";
+export {
+  LENS_CHECK_COLUMNS,
+  LENS_DATA_TEMPLATE,
+  lensCarefulSpread,
+  lensCheck,
+  lensExample,
+  lensModelInvV,
+} from "./converging-lens-check";
+export type { LensResult } from "./converging-lens-check";
