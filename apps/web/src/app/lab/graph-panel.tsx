@@ -11,6 +11,7 @@ import {
   SHEET,
   snapMm,
   suggestAxis,
+  worstLines,
   type Axis,
   type DesignColumn,
   type Finding,
@@ -50,6 +51,7 @@ export function GraphPanel({
   onRun,
   latest,
   below,
+  bars,
 }: {
   state: GraphState;
   view: GraphView;
@@ -64,7 +66,10 @@ export function GraphPanel({
   /** The graph including changes still being saved, so quick changes build on each other. */
   latest: () => GraphState;
   below: ReactNode;
+  /** The uncertainty layer's error bars by row, in the axes' units, drawn at true size. */
+  bars?: ReadonlyMap<string, { dx: number; dy: number }> | undefined;
 }) {
+  const [showWorst, setShowWorst] = useState(false);
   const [tool, setTool] = useState<Tool>("plot");
   const [target, setTarget] = useState<string>();
   const [pending, setPending] = useState<Point>();
@@ -292,6 +297,18 @@ export function GraphPanel({
     );
   };
 
+  // The steepest and least steep lines through the error bars, when the student asks for them.
+  const barred = bars
+    ? view.plotted.flatMap((p) => {
+        const b = bars.get(p.row);
+        return b ? [{ x: p.x, y: p.y, dx: b.dx, dy: b.dy }] : [];
+      })
+    : [];
+  const worst =
+    showWorst && barred.length >= 2 && new Set(barred.map((p) => p.x)).size >= 2
+      ? worstLines(barred)
+      : undefined;
+
   const triangleC = view.triangle && { x: view.triangle.b.x, y: view.triangle.a.y };
   const paperOf = (p: Point) => {
     const q = onPaper(sheet, p);
@@ -350,6 +367,17 @@ export function GraphPanel({
           </button>
         </div>
       </div>
+      {bars && (
+        <label className="flex items-center gap-2 text-sm text-soft">
+          <input
+            type="checkbox"
+            className="size-4"
+            checked={showWorst}
+            onChange={(e) => setShowWorst(e.target.checked)}
+          />
+          {t("lab.graph.worstLines")}
+        </label>
+      )}
 
       <div className="flex flex-wrap items-start gap-4">
         <figure
@@ -399,7 +427,14 @@ export function GraphPanel({
               }
             }}
           >
-            <GraphDrawing view={view} headings={headings} mono={mono} flaggedRows={flaggedRows} />
+            <GraphDrawing
+              view={view}
+              headings={headings}
+              mono={mono}
+              flaggedRows={flaggedRows}
+              {...(bars ? { bars } : {})}
+              {...(worst ? { worst } : {})}
+            />
             {pending && (
               <circle
                 {...(() => {

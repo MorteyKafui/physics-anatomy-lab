@@ -3,10 +3,12 @@
 import {
   addRepeat,
   checkFormula,
+  decimalsForResolution,
   formulaUnitFindings,
   heading,
   newColumnId,
   parseFormula,
+  quotedUncertainty,
   repeatsOf,
   toSIText,
   UNITS,
@@ -260,6 +262,7 @@ export function TableBuilder({
   onFillReadings,
   onCommit,
   below,
+  uncertainties,
 }: {
   table: TableState;
   /** The table with worked-out cells filled in when the help level fills them. */
@@ -274,6 +277,12 @@ export function TableBuilder({
   onFillReadings: (() => void) | undefined;
   onCommit: () => void;
   below: ReactNode;
+  /**
+   * The uncertainty layer: each row's uncertainties by column, in the column's unit
+   * (docs/content/uncertainty-brief.md, decision 4). A reading's is shown under its heading, a
+   * worked value's beside it.
+   */
+  uncertainties?: ReadonlyMap<string, Readonly<Record<string, number>>> | undefined;
 }) {
   const [template, setTemplate] = useState<string>(table.template ?? spec.defaultTemplate);
   const [editor, setEditor] = useState<{ id?: string; role: ColumnRole }>();
@@ -475,6 +484,14 @@ export function TableBuilder({
                             ? msg(`${flag.key}.title`, { ...flag.params, row: "" })
                             : roleNote(table, c)}
                         </span>
+                        {uncertainties && (
+                          <span
+                            className="font-sans text-[11px] text-muted-foreground"
+                            data-uncertainty={c.id}
+                          >
+                            {columnUncertainty(c, uncertainties)}
+                          </span>
+                        )}
                         {toSIText(c.kind, c.unit) && (
                           <span className="font-sans text-[11px] text-muted-foreground">
                             {toSIText(c.kind, c.unit)}
@@ -514,9 +531,14 @@ export function TableBuilder({
                         {worked ? (
                           <span
                             className="flex h-10 items-center gap-1.5 px-3 text-soft"
-                            aria-label={`${label}: ${value}`}
+                            aria-label={`${label}: ${value}${plusMinus(uncertainties, row.id, c.id)}`}
                           >
                             {value}
+                            {value !== "" && uncertainties?.get(row.id)?.[c.id] !== undefined && (
+                              <span className="text-xs text-muted-foreground">
+                                {plusMinus(uncertainties, row.id, c.id)}
+                              </span>
+                            )}
                           </span>
                         ) : (
                           <span className="flex items-center">
@@ -603,4 +625,38 @@ export function TableBuilder({
       {below}
     </section>
   );
+}
+
+/** An uncertainty as it is shown: rounded as it is quoted, "± 0.008". */
+export const showUncertainty = (u: number) => {
+  const q = quotedUncertainty(u);
+  return `± ${q.value.toFixed(q.decimals)}`;
+};
+
+const plusMinus = (
+  uncertainties: ReadonlyMap<string, Readonly<Record<string, number>>> | undefined,
+  row: string,
+  column: string,
+) => {
+  const u = uncertainties?.get(row)?.[column];
+  return u === undefined ? "" : ` ${showUncertainty(u)}`;
+};
+
+/**
+ * What a column's heading says about its uncertainty: a reading's, the same in every row, as a
+ * number; a mean's and a worked column's, which differ row by row, as how they are found.
+ */
+function columnUncertainty(
+  c: DesignColumn,
+  uncertainties: ReadonlyMap<string, Readonly<Record<string, number>>>,
+) {
+  if (c.role === "mean") return t("lab.table.uncertainty.mean");
+  if (c.role === "derived") return t("lab.table.uncertainty.derived");
+  for (const row of uncertainties.values()) {
+    // A reading's uncertainty is given as its instrument states it (± 0.01 s), not rounded as a
+    // result's is.
+    const u = row[c.id];
+    if (u !== undefined) return `± ${u.toFixed(decimalsForResolution(u))}`;
+  }
+  return "";
 }

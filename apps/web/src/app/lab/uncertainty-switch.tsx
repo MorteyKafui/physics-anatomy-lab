@@ -15,10 +15,11 @@ export function UncertaintySwitch({
     <button
       type="button"
       role="switch"
+      aria-label={t("lab.uncertainties")}
       aria-checked={on}
       onClick={() => onChange(!on)}
       className={cn(
-        "inline-flex h-[34px] items-center gap-2 border pr-3 pl-1.5 text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-ring",
+        "inline-flex h-9 items-center gap-2 border px-1.5 min-[1320px]:pr-3 text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-ring",
         on ? "border-accent-fill bg-accent-wash" : "border-input",
       )}
     >
@@ -36,7 +37,9 @@ export function UncertaintySwitch({
           )}
         />
       </span>
-      {t("lab.uncertainties")}
+      {/* On narrower screens the word gives way, as the help level's does, so the header stays on
+        one row; the switch keeps its name. */}
+      <span className="sr-only min-[1320px]:not-sr-only">{t("lab.uncertainties")}</span>
     </button>
   );
 }
