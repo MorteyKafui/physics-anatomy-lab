@@ -336,3 +336,40 @@ export { MIXTURES_SHEET_NUMBER, mixturesSheet } from "./method-of-mixtures-sheet
 export type { MixturesSheet } from "./method-of-mixtures-sheets";
 export { markMixturesScript, mixturesFollowUps } from "./method-of-mixtures-exam";
 export type { MixturesExamFacts } from "./method-of-mixtures-exam";
+export {
+  asSolidReading,
+  cFromReadings,
+  correctSolidBench,
+  decideSolid,
+  hotSolid,
+  initialSolidBench,
+  readBalance,
+  SOLID_PROCEDURE_RULES,
+  solidAtEntry,
+  solidCalorimeter,
+  solidNotCovered,
+  solidNotStirred,
+  solidPeak,
+  solidProjection,
+  solidReadBeforePeak,
+  solidReadingData,
+  solidSlowTransfer,
+  solidSplashed,
+  solidThermometer,
+  solidThermometerAtAngle,
+  solidWaterCarried,
+  solidWorld,
+  WEIGHINGS,
+} from "./method-of-mixtures-solid";
+export type {
+  Metal,
+  SolidBench,
+  SolidCommand,
+  SolidDecision,
+  SolidProcedureContext,
+  SolidReading,
+  SolidRefusal,
+  SolidWorld,
+  Transfer,
+  Weighing,
+} from "./method-of-mixtures-solid";

@@ -28,6 +28,13 @@ export const THERMOMETER: Readonly<InstrumentSpec> = {
   pointerHeight: 0.3,
 };
 
+/** A top-pan balance reading to 0.1 g on its display (Experiment 64, decision 6). */
+export const BALANCE: Readonly<InstrumentSpec> = {
+  id: "balance",
+  resolution: 0.1,
+  unit: "g",
+};
+
 /**
  * A 100 cm³ measuring cylinder with 1 cm³ divisions. The water's surface meets the glass behind
  * the marks, so read from above or below it seems shifted by about 1 cm³ × tan(angle) (assumed

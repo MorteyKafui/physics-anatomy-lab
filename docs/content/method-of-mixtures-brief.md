@@ -228,6 +228,32 @@ Approved by Mortey on 2026-11-13: decision 7 as chosen below, and 6, 8, 9 and 10
     splashed out, not stirring, and the lid off; and, as for Experiment 62, reading before the
     highest and reading a scale at an angle.
 
+### The bench and the mistakes, Experiment 64, for the physics reviewer
+
+`packages/experiments/src/method-of-mixtures-solid.ts` builds the bench from the attempt's events:
+the water put in the calorimeter, the three weighings on a balance reading to 0.1 g (the solid,
+the calorimeter empty, and with its water), the lid, the stirrer, and the solid moved across: how
+long it was in the air, whether it was shaken first, and whether it was lowered in or dropped.
+Each attempt's metal comes from its seed. c is worked from the student's own readings by the
+book's equation, with c_c = 390 and c_w = 4200 J kg⁻¹ K⁻¹ given.
+
+Done carefully and read at the highest, to 0.1 °C, c comes out 383 (copper, 390), 374 (brass,
+380), 441 (iron, 450) and 883 (aluminium, 900). Each mistake, with its effect on c against a
+careful run (copper):
+
+| Mistake                     | Caught when                     | Effect on c                 |
+| --------------------------- | ------------------------------- | --------------------------- |
+| Reading before the highest  | still more than 0.1 °C below it | low                         |
+| A slow transfer             | more than 10 s in the air       | at 30 s, in at 98.2 °C: −3% |
+| Boiling water carried in    | not shaken first: 1 g goes in   | +11%                        |
+| Water splashed out          | dropped, not lowered: 3 g lost  | +6%                         |
+| Not stirred                 | not stirred                     | highest at 8 minutes, −9%   |
+| The lid off                 | not covered                     | −7%                         |
+| The thermometer at an angle | more than 5° off square-on      | 0.2 °C at 20°               |
+
+One assumption, for the reviewer: a transfer of more than 10 s is slow, as a pour of more than
+10 s is for Experiment 62.
+
 Then, one pull request each: the physics (the solid's transfer and the carried water), the bench
 and the mistakes, the board, the lab, the table, graph and analysis, and the report, sheets and
 exam.
