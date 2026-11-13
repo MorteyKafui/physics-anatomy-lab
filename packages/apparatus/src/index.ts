@@ -29,3 +29,5 @@ export type {
   PinsBenchProps,
   ScreenFaceProps,
 } from "./optical-bench";
+export { CALORIMETER_VIEWBOX, Calorimeter, ThermometerTrace, TRACE_VIEWBOX } from "./calorimeter";
+export type { CalorimeterProps, ThermometerTraceProps } from "./calorimeter";
