@@ -624,4 +624,58 @@ export const enGBConvergingLens = {
     "Your graph is {y} against {x}. y against x is a curve. xy against (x + y) is a straight line whose slope is f, which is how the question finds f.",
   "findings.pins.wrongGraph.demonstrate":
     "Choose x + y for the axis along the bottom and xy for the axis up the side.",
+  // The model check (data templates brief, decision 4).
+  "experiments.converging-lens.check.note":
+    "Find the sharp image twice at each u, bringing the screen in once from each side.",
+  "experiments.converging-lens.check.marked": "Marked focal length of the lens f",
+  "experiments.converging-lens.check.template.body":
+    "Fill it in during your lab. The object distances are set as the book has them; find the sharp image twice at each, bringing the screen in once from each side. Add the focal length marked on your lens if you know it.",
+  "experiments.converging-lens.check.table.note":
+    "v is worked out here as the mean of v₁ and v₂, and u⁻¹ and v⁻¹ from u and v.",
+  "experiments.converging-lens.check.graph.title":
+    "Fig. 1  v⁻¹ against u⁻¹: your readings and the model",
+  "experiments.converging-lens.check.graph.label":
+    "{n} readings of v⁻¹ against u⁻¹, your best line through them, and the model's dashed line.",
+  "experiments.converging-lens.check.legend.model": "The model, 1/u + 1/v = 1/f",
+  "experiments.converging-lens.check.shift.on":
+    "Your line meets the axes at 1/f for the focal length marked on the lens, within its error.",
+  "experiments.converging-lens.check.shift.unmarked":
+    "Add the focal length marked on your lens to compare your line with it.",
+  "experiments.converging-lens.check.shift.found.longer":
+    "Your line gives a longer focal length than the lens is marked with.",
+  "experiments.converging-lens.check.shift.found.shorter":
+    "Your line gives a shorter focal length than the lens is marked with.",
+  "experiments.converging-lens.check.shift.figure":
+    "f = {f} cm, marked {marked} cm, {errors} errors",
+  "experiments.converging-lens.check.shift.figure.unmarked": "f = {f} cm",
+  "experiments.converging-lens.check.tilt.on":
+    "Your slope is −1, as 1/u + 1/v = 1/f says, within its error.",
+  "experiments.converging-lens.check.tilt.found.shallower": "Your line is less steep than −1.",
+  "experiments.converging-lens.check.tilt.found.steeper": "Your line is steeper than −1.",
+  "experiments.converging-lens.check.tilt.figure": "{value}, {errors} errors",
+  "experiments.converging-lens.check.spread.on":
+    "Your points spread as much as finding the sharp image carefully gives, no more.",
+  "experiments.converging-lens.check.spread.found":
+    "Your points spread {times} times more than finding the sharp image carefully gives.",
+  "experiments.converging-lens.check.spread.figure": "{value} cm⁻¹, {ratio} ×",
+  "experiments.converging-lens.check.tilt.shallower":
+    "Your slope is {slope}, less steep than −1. Reading the screen at the edge of its holder farther from the lens makes every v about {half} cm too long, and the line flattens; reading u from an edge does the same to u.",
+  "experiments.converging-lens.check.tilt.steeper":
+    "Your slope is {slope}, steeper than −1. Reading the screen at the edge of its holder nearer the lens makes every v about {half} cm too short, and the line steepens; reading u from an edge does the same to u.",
+  "experiments.converging-lens.check.tilt.precaution":
+    "Read each holder at its centre mark, square-on to the rule.",
+  "experiments.converging-lens.check.shift.longer":
+    "Your line gives f = {f} cm, longer than the {marked} cm marked on the lens, by more than lenses differ from their marking.",
+  "experiments.converging-lens.check.shift.shorter":
+    "Your line gives f = {f} cm, shorter than the {marked} cm marked on the lens, by more than lenses differ from their marking.",
+  "experiments.converging-lens.check.shift.precaution":
+    "Check that the lens you used is the one whose marking you entered, and read u and v at the holders' centre marks.",
+  "experiments.converging-lens.check.spread":
+    "Your points spread either side of your line by about {times} times what finding the sharp image carefully gives.",
+  "experiments.converging-lens.check.spread.precaution":
+    "Bring the screen in from each side to where the image just turns sharp, and take the mean of the two.",
+  "experiments.converging-lens.check.result":
+    "From your line: m₁ = {m1} cm⁻¹, m₂ = {m2} cm⁻¹, and f = 2 ⁄ (m₁ + m₂) = {f} cm. Lab data is not marked.",
+  "experiments.converging-lens.check.result.none":
+    "Your line does not slope down, so it gives no f. Lab data is not marked.",
 } as const;

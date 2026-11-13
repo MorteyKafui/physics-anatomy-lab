@@ -11,7 +11,11 @@ import { convergingLensReport } from "../report-content";
 export function ConvergingLensReportScreen() {
   return (
     <ReportScreen
-      experiment={{ id: convergingLens.id, title: t("experiments.converging-lens.title") }}
+      experiment={{
+        id: convergingLens.id,
+        title: t("experiments.converging-lens.title"),
+        check: true,
+      }}
       build={convergingLensReport}
     />
   );
