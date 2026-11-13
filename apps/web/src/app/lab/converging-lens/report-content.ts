@@ -2,6 +2,11 @@
 
 import {
   fillDerived,
+  fitLine,
+  interceptSum,
+  largestPercentUncertainty,
+  quotedUncertainty,
+  tableUncertainties,
   formatQuantity,
   formulaUnitFindings,
   GRAPH_RULES,
@@ -333,6 +338,44 @@ export function convergingLensReport(attempt: Attempt, events: readonly LabEvent
     t(`${R}.apparatus.bench`, { length: cm(E.benchLength) }),
   );
 
+  // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7).
+  // The lab never reveals the lens's own focal length, so there is no accepted value to agree with.
+  const university = report.format === "university";
+  const worked = university ? fillDerived(table) : undefined;
+  const points = worked && rightGraph ? pointsFor(worked, columns.x, columns.y) : [];
+  const fit =
+    points.length >= 3 && new Set(points.map((p) => p.x)).size >= 2 ? fitLine(points) : undefined;
+  const quote = (v: number, u: number) => {
+    const q = quotedUncertainty(u);
+    return `${v.toFixed(q.decimals)} ± ${q.value.toFixed(q.decimals)}`;
+  };
+  const largest = worked
+    ? largestPercentUncertainty(worked, tableUncertainties(worked))
+    : undefined;
+  const uncertaintyWorking = (() => {
+    if (!fit || !(fit.slope < 0)) return "";
+    const sum = interceptSum(fit);
+    if (!(sum.value > 0)) return "";
+    const f = 2 / sum.value;
+    const u = (2 * sum.error) / sum.value ** 2;
+    return lines(
+      t("report.gen.uncertainty.rules"),
+      t("report.gen.uncertainty.sum", { sum: quote(sum.value, sum.error), unit: units.x }),
+      t("report.gen.uncertainty.f", {
+        f: quote(f, u),
+        unit: fUnit,
+        percent: ((100 * u) / f).toFixed(2),
+      }),
+    );
+  })();
+  const discussion =
+    university && largest
+      ? t("report.gen.uncertainty.largest", {
+          symbol: largest.symbol,
+          percent: largest.percent.toFixed(2),
+        })
+      : "";
+
   const generated: Record<string, string> = {
     "date-title": `${date}. ${title}`,
     aim: t(`${R}.aim`),
@@ -345,8 +388,8 @@ export function convergingLensReport(attempt: Attempt, events: readonly LabEvent
     graph: view.plotted.length
       ? t(rightGraph ? `${R}.graph` : "report.gen.graph", { caption: graphCaption })
       : "",
-    calculation,
-    discussion: "",
+    calculation: lines(calculation, uncertaintyWorking),
+    discussion,
     // In an exam the precautions and sources of error are the candidate's own to write.
     precautions: attempt.mode === "exam" ? "" : precautions,
     sources: attempt.mode === "exam" ? "" : sources,
