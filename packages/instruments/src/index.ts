@@ -10,6 +10,7 @@ export { ANTICIPATED_EVENT, handTimedInterval, pressDelay } from "./timing";
 export type { ReactionTime } from "./timing";
 export {
   AMMETER,
+  BALANCE,
   MEASURING_CYLINDER,
   METRE_RULE,
   STOPWATCH,

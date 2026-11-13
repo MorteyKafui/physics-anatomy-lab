@@ -376,4 +376,53 @@ export const enGBMethodOfMixtures = {
     "You read the measuring cylinder {angle}° from level, so the water you measured is out by {cm3} cm³ from what you wrote down.",
   "findings.mixtures.cylinderAtAngle.demonstrate":
     "Stand the cylinder on the bench and read the bottom of the curved surface with your eye level with it.",
+  "experiments.method-of-mixtures-solid.title": "The method of mixtures: a hot solid",
+  "experiments.method-of-mixtures-solid.metal.copper": "copper",
+  "experiments.method-of-mixtures-solid.metal.brass": "brass",
+  "experiments.method-of-mixtures-solid.metal.iron": "iron",
+  "experiments.method-of-mixtures-solid.metal.aluminium": "aluminium",
+  "experiments.method-of-mixtures-solid.refused.already-in":
+    "The solid is already in. Empty the calorimeter to start again.",
+  "experiments.method-of-mixtures-solid.refused.fill-first":
+    "Put the water in the calorimeter first.",
+  "experiments.method-of-mixtures-solid.refused.not-on-the-balance":
+    "That is not on the balance as the bench stands.",
+  "experiments.method-of-mixtures-solid.refused.not-a-number":
+    "That is not something the bench can do.",
+  "findings.mixturesSolid.readBeforePeak.title":
+    "You read the thermometer before it stopped rising",
+  "findings.mixturesSolid.readBeforePeak.detail":
+    "In {count} run(s) the thermometer was still rising. You took the highest {seconds} s after the solid went in; it went on rising for {peakSeconds} s and reached {celsius} °C more.",
+  "findings.mixturesSolid.readBeforePeak.demonstrate":
+    "Keep stirring and reading every minute until the reading stops rising and starts to fall. The highest is the one before it falls.",
+  "findings.mixturesSolid.slowTransfer.title": "The solid took too long to move across",
+  "findings.mixturesSolid.slowTransfer.detail":
+    "In {count} run(s) the solid was in the air for up to {seconds} s, so it went in at {entry} °C, not 100 °C. That makes c {percent}% off.",
+  "findings.mixturesSolid.slowTransfer.demonstrate":
+    "Have the calorimeter ready beside the beaker, and move the solid across in a few seconds.",
+  "findings.mixturesSolid.waterCarried.title": "Boiling water went in with the solid",
+  "findings.mixturesSolid.waterCarried.detail":
+    "In {count} run(s) about {grams} g of boiling water clung to the solid and went in too. Its heat counts as the solid's, so c comes out {percent}% too large.",
+  "findings.mixturesSolid.waterCarried.demonstrate":
+    "Lift the solid out and give it a quick shake over the beaker before moving it across.",
+  "findings.mixturesSolid.splashed.title": "Water splashed out of the calorimeter",
+  "findings.mixturesSolid.splashed.detail":
+    "In {count} run(s) the solid was dropped in and about {grams} g of water splashed out. Less water took the heat than you weighed, so c comes out {percent}% off.",
+  "findings.mixturesSolid.splashed.demonstrate":
+    "Lower the solid in gently on its thread, so no water splashes out.",
+  "findings.mixturesSolid.notStirred.title": "The water was not stirred",
+  "findings.mixturesSolid.notStirred.detail":
+    "In {count} run(s) the solid shared its heat slowly, the highest came after about {minutes} minutes, and heat went to the room meanwhile. That makes c {percent}% off.",
+  "findings.mixturesSolid.notStirred.demonstrate":
+    "Stir gently all the time from the moment the solid goes in.",
+  "findings.mixturesSolid.notCovered.title": "The calorimeter was not covered",
+  "findings.mixturesSolid.notCovered.detail":
+    "In {count} run(s) the lid was off, so the mixture lost heat to the room eight times as fast. That makes c {percent}% off.",
+  "findings.mixturesSolid.notCovered.demonstrate":
+    "Put the lid on as soon as the solid is in, and stir through the hole in it.",
+  "findings.mixturesSolid.thermometerAtAngle.title": "The thermometer was read at an angle",
+  "findings.mixturesSolid.thermometerAtAngle.detail":
+    "You read the thermometer {angle}° off square-on. The mercury sits behind the scale, so the reading is out by {celsius} °C.",
+  "findings.mixturesSolid.thermometerAtAngle.demonstrate":
+    "Bring your eye level with the top of the mercury, so the scale's mark is straight in front of it.",
 } as const;
