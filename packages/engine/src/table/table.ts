@@ -78,6 +78,13 @@ function asColumn(v: Json): DesignColumn | undefined {
       value: lc.value,
       unit: lc.unit,
       ...(lc.digital === true ? { digital: true } : {}),
+      // A value written as the difference of readings: a whole number from 2 to 9.
+      ...(typeof lc.readings === "number" &&
+      Number.isInteger(lc.readings) &&
+      lc.readings >= 2 &&
+      lc.readings <= 9
+        ? { readings: lc.readings }
+        : {}),
     };
   }
   return column;

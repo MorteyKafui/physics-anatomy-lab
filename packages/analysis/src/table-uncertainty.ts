@@ -37,7 +37,10 @@ export function tableUncertainties(
         if (!c.leastCount || value[c.id] === undefined) continue;
         if (!findUnit(c.kind, c.leastCount.unit)) continue;
         const lc = toSI(c.leastCount.value, c.kind, c.leastCount.unit);
-        u[c.id] = readingUncertainty(lc, c.leastCount.digital ? "digital" : "scale");
+        // A value written as the difference of several readings (a rise) carries each one's.
+        u[c.id] =
+          readingUncertainty(lc, c.leastCount.digital ? "digital" : "scale") *
+          (c.leastCount.readings ?? 1);
       } else if (c.role === "mean") {
         const repeats = repeatsOf(design, c).filter((r) => value[r.id] !== undefined);
         if (!repeats.length) continue;

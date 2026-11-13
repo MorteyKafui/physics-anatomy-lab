@@ -38,7 +38,8 @@ const riseColumn: DesignColumn = {
   kind: "temperature-difference",
   unit: "°C",
   role: "measured",
-  leastCount: THERMOMETER,
+  // The rise is the highest reading less the starting one: two readings, whose uncertainties add.
+  leastCount: { ...THERMOMETER, readings: 2 },
 };
 const inverseColumn: DesignColumn = {
   id: "invT",
