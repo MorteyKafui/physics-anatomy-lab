@@ -254,3 +254,45 @@ test("no sideways scrolling at phone width in the two-pin lab", async ({ page },
     ),
   ).toBe(0);
 });
+
+test("with the uncertainty layer on, the table, graph, f and the report carry uncertainties", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(180_000);
+  // The switch is remembered on the device, so it is turned on before the walk begins.
+  await page.goto(PINS);
+  await page.getByRole("switch", { name: "Uncertainties" }).click();
+  await measureAll(page, [20, 30, 40, 50]);
+  await page
+    .getByRole("button", { name: /Tabulate/ })
+    .first()
+    .click();
+
+  // Each reading on the rule: ± half its 0.1 cm.
+  const results = page.getByRole("region", { name: "Results table" });
+  await expect(results.locator('[data-uncertainty="x"]')).toHaveText("± 0.05");
+  await page.getByRole("button", { name: /Plot/ }).first().click();
+  await expect(page.locator('[data-graph="error-bars"]')).toHaveCount(1);
+  await page.getByLabel("Draw the steepest and least steep lines through the error bars").check();
+  await expect(page.locator('[data-graph="worst-lines"] line')).toHaveCount(2);
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
+
+  await expect(page.getByText(/^Least squares: the slope ± /)).toBeVisible();
+  await page.getByLabel("f, your value").fill("15.0");
+  await page.getByLabel("The uncertainty in f").fill("9");
+  await expect(page.getByRole("status").filter({ hasText: "more than twice" })).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(await serious(page)).toEqual([]);
+
+  // The university report carries f with its uncertainty.
+  await page.goto(`${PINS}/report`);
+  await page
+    .getByRole("navigation", { name: "Sections" })
+    .getByRole("button", { name: "University", exact: true })
+    .click();
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText(/^f = [\d.]+ ± [\d.]+ cm, an uncertainty of [\d.]+ %\.$/),
+  ).toBeVisible();
+});

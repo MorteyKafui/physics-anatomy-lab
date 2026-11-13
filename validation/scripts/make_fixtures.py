@@ -42,7 +42,7 @@ from pa_validation.outliers import critical_value, deleted_residuals, find_outli
 from pa_validation.pendulum import period_exact
 from pa_validation.review import reading_error_percent, right_way
 from pa_validation.sigfigs import format_sig_figs, parse_figure
-from pa_validation.uncertainty import quoted, worst_case, worst_lines
+from pa_validation.uncertainty import intercept_sum, quoted, worst_case, worst_lines
 
 FIXTURES = Path(__file__).resolve().parent.parent / "fixtures"
 
@@ -695,11 +695,23 @@ def build_uncertainty() -> dict[str, object]:
             ),
         ]
     ]
+    sums = [
+        {"name": name, "x": x, "y": y, "sum": intercept_sum(x, y)}
+        for name, x, y in [
+            (
+                "the lens, 1/v against 1/u",
+                [0.05, 0.04, 0.0333, 0.0286, 0.025],
+                [0.0174, 0.0273, 0.0339, 0.0387, 0.0424],
+            ),
+            ("a steep falling line", [1.0, 2.0, 3.0, 4.0], [10.1, 7.9, 6.2, 3.8]),
+        ]
+    ]
     return {
         "model": "SymPy partial derivatives, worst case",
         "cases": out,
         "quotes": quotes,
         "lines": lines,
+        "interceptSums": sums,
     }
 
 

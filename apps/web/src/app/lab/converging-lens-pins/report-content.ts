@@ -2,6 +2,10 @@
 
 import {
   fillDerived,
+  fitLine,
+  largestPercentUncertainty,
+  quotedUncertainty,
+  tableUncertainties,
   formatQuantity,
   formulaUnitFindings,
   GRAPH_RULES,
@@ -324,6 +328,39 @@ export function lensPinsReport(attempt: Attempt, events: readonly LabEvent[]): R
     t(`${R}.apparatus.bench`, { length: cm(convergingLens.benchLength) }),
   );
 
+  // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7).
+  // The lab never reveals the lens's own focal length, so there is no accepted value to agree with.
+  const university = report.format === "university";
+  const worked = university ? fillDerived(table) : undefined;
+  const points = worked && rightGraph ? pointsFor(worked, columns.x, columns.y) : [];
+  const fit =
+    points.length >= 3 && new Set(points.map((p) => p.x)).size >= 2 ? fitLine(points) : undefined;
+  const quote = (v: number, u: number) => {
+    const q = quotedUncertainty(u);
+    return `${v.toFixed(q.decimals)} ± ${q.value.toFixed(q.decimals)}`;
+  };
+  const largest = worked
+    ? largestPercentUncertainty(worked, tableUncertainties(worked))
+    : undefined;
+  const uncertaintyWorking =
+    fit && fit.slope > 0
+      ? lines(
+          t("report.gen.uncertainty.rules"),
+          t("report.gen.uncertainty.f", {
+            f: quote(fit.slope, fit.slopeError),
+            unit: slopeUnit,
+            percent: ((100 * fit.slopeError) / fit.slope).toFixed(2),
+          }),
+        )
+      : "";
+  const discussion =
+    university && largest
+      ? t("report.gen.uncertainty.largest", {
+          symbol: largest.symbol,
+          percent: largest.percent.toFixed(2),
+        })
+      : "";
+
   const generated: Record<string, string> = {
     "date-title": `${date}. ${title}`,
     aim: t(`${R}.aim`),
@@ -336,8 +373,8 @@ export function lensPinsReport(attempt: Attempt, events: readonly LabEvent[]): R
     graph: view.plotted.length
       ? t(rightGraph ? `${R}.graph` : "report.gen.graph", { caption: graphCaption })
       : "",
-    calculation,
-    discussion: "",
+    calculation: lines(calculation, uncertaintyWorking),
+    discussion,
     // In an exam the precautions and sources of error are the candidate's own to write.
     precautions: attempt.mode === "exam" ? "" : precautions,
     sources: attempt.mode === "exam" ? "" : sources,

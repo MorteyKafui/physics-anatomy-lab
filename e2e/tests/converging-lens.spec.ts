@@ -276,3 +276,67 @@ test("no sideways scrolling at phone width in the lens lab", async ({ page }, in
     ),
   ).toBe(0);
 });
+
+test("with the uncertainty layer on, the table, graph, f and the report carry uncertainties", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "phone", "The help level is set on desktop");
+  test.setTimeout(180_000);
+  await page.goto(LENS);
+  await page.getByRole("switch", { name: "Uncertainties" }).click();
+  await toBuild(page);
+  await page.getByLabel("Help level").selectOption("auto");
+  await centreGauze(page);
+  await page.getByRole("button", { name: "Finish building" }).click();
+  await page.getByRole("button", { name: "Continue to Measure" }).click();
+  for (const u of [20, 25, 30, 35, 40]) {
+    await slide(page, "Lens position", 10 + u);
+    const [from, to] = LOOK[u]!;
+    let found = false;
+    for (let v = from; v <= to + 1e-9 && !found; v += 0.4) {
+      await slide(page, "Screen position", Number((10 + u + v).toFixed(1)));
+      found = (await chip(page).textContent()) === "Sharp";
+    }
+    expect(found, `a sharp image at u = ${u} cm`).toBe(true);
+    await page.getByRole("button", { name: "Take this reading" }).click();
+  }
+  await finish(page, "Finish measuring", "Step 6 of 10 · Tabulate");
+  await page.getByRole("button", { name: "Standard" }).click();
+  await page.getByRole("button", { name: "Fill in my readings" }).click();
+  await finish(page, "Finish tabulating", "Step 7 of 10 · Plot");
+  // Back to the table for its headings, then on to the graph again.
+  await page
+    .getByRole("button", { name: /Tabulate/ })
+    .first()
+    .click();
+
+  // Each reading on the rule: ± half its 0.1 cm.
+  const results = page.getByRole("region", { name: "Results table" });
+  await expect(results.locator('[data-uncertainty="u"]')).toHaveText("± 0.05");
+  await page.getByRole("button", { name: /Plot/ }).first().click();
+  await expect(page.locator('[data-graph="error-bars"]')).toHaveCount(1);
+  await page.getByLabel("Draw the steepest and least steep lines through the error bars").check();
+  await expect(page.locator('[data-graph="worst-lines"] line')).toHaveCount(2);
+  await finish(page, "Finish plotting", "Step 8 of 10 · Analyse");
+
+  await expect(page.getByText(/^Least squares: the slope ± /)).toBeVisible();
+  await page.getByLabel("f, your value").fill("15.0");
+  await page.getByLabel("The uncertainty in f").fill("9");
+  await expect(page.getByRole("status").filter({ hasText: "more than twice" })).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(await serious(page)).toEqual([]);
+
+  // The university report carries f with its uncertainty.
+  await page.goto(`${LENS}/report`);
+  await page
+    .getByRole("navigation", { name: "Sections" })
+    .getByRole("button", { name: "University", exact: true })
+    .click();
+  const paper = page.getByRole("region", { name: "Report preview" });
+  await expect(
+    paper.getByText(/^f = [\d.]+ ± [\d.]+ cm, an uncertainty of [\d.]+ %\.$/),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/^By least squares, the two intercepts add to m₁ \+ m₂ = /),
+  ).toBeVisible();
+});

@@ -2,6 +2,9 @@
 
 import { OpticalBench, ScreenFace } from "@pa/apparatus";
 import {
+  fitLine,
+  interceptSum,
+  tableUncertainties,
   fillDerived,
   formatQuantity,
   formulaUnitFindings,
@@ -68,7 +71,10 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, lineAcrossAxes, useGraph } from "../graph-sheet";
-import { AnswerLine, Calculator, GraphPanel, TableBuilder } from "../lazy-panels";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
+import { UncertaintySwitch } from "../uncertainty-switch";
+import { showUncertainty } from "../uncertainty-format";
+import { useUncertainties } from "../use-uncertainties";
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
 import { ExamBar } from "../exam/bar";
@@ -92,6 +98,7 @@ const MM = 0.001;
  */
 export function ConvergingLensScreen() {
   const handle = useAttempt(E.id);
+  const [uncertain, setUncertain] = useUncertainties();
   const router = useRouter();
   // Exam mode: the clock, from the attempt's own events.
   const exam = useMemo(
@@ -326,6 +333,32 @@ export function ConvergingLensScreen() {
   };
   // f is a length in the unit the axes are the reciprocal of: cm⁻¹ gives cm.
   const fUnit = graphUnits.x.replace("⁻¹", "") || "cm";
+
+  // The uncertainty layer (docs/content/uncertainty-brief.md): each cell's uncertainty, error bars
+  // on the graph, and the result from the least-squares line with its uncertainty.
+  const uncertainties = uncertain ? tableUncertainties(fillDerived(table)) : undefined;
+  const bars = uncertainties
+    ? new Map(
+        [...uncertainties].map(([row, u]) => [
+          row,
+          { dx: u[graphColumns.x] ?? 0, dy: u[graphColumns.y] ?? 0 },
+        ]),
+      )
+    : undefined;
+  const fit =
+    uncertain && rightGraph && graphData.length >= 3 && new Set(graphData.map((p) => p.x)).size >= 2
+      ? fitLine(graphData)
+      : undefined;
+  // f = 2 ⁄ (m₁ + m₂): its uncertainty from the sum's, the two intercepts' errors and their
+  // covariance (interceptSum), carried through the reciprocal.
+  const lineUncertainty = (() => {
+    if (!fit || !(fit.slope < 0)) return undefined;
+    const sum = interceptSum(fit);
+    if (!(sum.value > 0)) return undefined;
+    const f = 2 / sum.value;
+    const worked = (2 * sum.error) / sum.value ** 2;
+    return { slope: fit.slopeError, f: { worked, percent: (100 * worked) / f } };
+  })();
   const expected = lensExpected(graphShown.line, graphColumns, graphUnits, answers);
   const analysisFindings = runRules(LENS_ANALYSIS_RULES, { answers, expected });
   const analysisFlags = (id: string) =>
@@ -512,6 +545,7 @@ export function ConvergingLensScreen() {
               </select>
             </label>
           )}
+          {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&
@@ -558,6 +592,7 @@ export function ConvergingLensScreen() {
                   onRun={results.run}
                   onFillReadings={tableAssist ? fillReadings : undefined}
                   onCommit={() => undefined}
+                  uncertainties={uncertainties}
                   below={
                     advice.length > 0 ? (
                       <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
@@ -580,6 +615,7 @@ export function ConvergingLensScreen() {
                   showChecks={graphMarks && !graphAssist}
                   onRun={plot.run}
                   latest={plot.now}
+                  bars={bars}
                   below={
                     advice.length > 0 || (graphMarks && lensGraphFindings.length > 0) ? (
                       <div className="flex flex-col gap-3">
@@ -650,6 +686,21 @@ export function ConvergingLensScreen() {
                           flagged={analysisFlags("f")}
                           onWrite={write("f")}
                         />
+                        {lineUncertainty && (
+                          <div className="flex flex-col gap-2">
+                            <span className="font-mono text-sm text-soft">
+                              {t("lab.analyse.uncertainty.slope", {
+                                u: showUncertainty(lineUncertainty.slope),
+                              })}
+                            </span>
+                            <QuoteLine
+                              symbol="f"
+                              unit={fUnit}
+                              worked={lineUncertainty.f.worked}
+                              percent={lineUncertainty.f.percent}
+                            />
+                          </div>
+                        )}
                         {analysisAssist && (
                           <span className="font-sans text-xs text-muted-foreground">
                             {t("lab.analyse.workedOut")}
