@@ -77,7 +77,11 @@ export interface Completion {
 }
 
 export interface ShellProps {
-  readonly staff: { readonly email: string; readonly via: string; readonly initials: string } | null;
+  readonly staff: {
+    readonly email: string;
+    readonly via: string;
+    readonly initials: string;
+  } | null;
   readonly completion: readonly Completion[];
   readonly badges: Readonly<Record<string, number>>;
   readonly experiments: readonly { readonly id: string; readonly title: string }[];
@@ -112,7 +116,15 @@ export function Shell({ staff, completion, badges, experiments, children }: Shel
     <div className="ad-page">
       <nav aria-label="Admin" className="ad-side">
         <div style={{ display: "flex", alignItems: "center", padding: "0 6px" }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 600, fontSize: 16 }}>
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+          >
             <span
               style={{
                 width: 28,
@@ -191,7 +203,9 @@ export function Shell({ staff, completion, badges, experiments, children }: Shel
                   )}
                 </span>
                 {expanded && (
-                  <div style={{ display: "flex", flexDirection: "column", padding: "2px 0 4px 34px" }}>
+                  <div
+                    style={{ display: "flex", flexDirection: "column", padding: "2px 0 4px 34px" }}
+                  >
                     {item.kids!.map((k) => (
                       <Link key={k.href} className="ad-f ad-nav ad-subnav" href={k.href}>
                         {k.name}
@@ -223,7 +237,17 @@ export function Shell({ staff, completion, badges, experiments, children }: Shel
               }}
             >
               <Ring share={f.attempts ? f.reports / f.attempts : null} colour={f.colour} />
-              <span style={{ flex: 1 }}>{f.title}</span>
+              <span
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {f.title}
+              </span>
               <span className="ad-mono" style={{ fontSize: 12, color: "var(--pa-text-faint)" }}>
                 {f.attempts ? `${String(Math.round((f.reports / f.attempts) * 100))}%` : "–"}
               </span>
@@ -268,7 +292,12 @@ export function Shell({ staff, completion, badges, experiments, children }: Shel
             </span>
             <span style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
               <span
-                style={{ fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis" }}
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
               >
                 {staff.email}
               </span>
@@ -404,7 +433,9 @@ function Palette({
           <div style={{ maxHeight: 340, overflow: "auto", padding: 6 }}>
             {groups.map((g) => (
               <div key={g.name} style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ fontSize: 12, color: "var(--pa-text-faint)", padding: "8px 10px 4px" }}>
+                <span
+                  style={{ fontSize: 12, color: "var(--pa-text-faint)", padding: "8px 10px 4px" }}
+                >
                   {g.name}
                 </span>
                 {g.items.map((it) => (
@@ -438,7 +469,12 @@ function Palette({
             ))}
             {groups.length === 0 && (
               <span
-                style={{ display: "block", padding: "18px 10px", color: "var(--pa-text-muted)", fontSize: 14 }}
+                style={{
+                  display: "block",
+                  padding: "18px 10px",
+                  color: "var(--pa-text-muted)",
+                  fontSize: 14,
+                }}
               >
                 Nothing matches &ldquo;{q}&rdquo;. Try a class code, an experiment or a page name.
               </span>

@@ -324,12 +324,13 @@ async def database(db: AsyncSession) -> dict[str, Any]:
         await db.execute(
             text(
                 """
-                SELECT relname AS name, greatest(reltuples, 0)::bigint AS rows,
-                       pg_total_relation_size(oid) AS bytes
-                FROM pg_class
-                WHERE relkind = 'r' AND relnamespace = 'public'::regnamespace
-                  AND relname <> 'alembic_version'
-                ORDER BY relname
+                SELECT c.relname AS name, coalesce(st.n_live_tup, 0) AS rows,
+                       pg_total_relation_size(c.oid) AS bytes
+                FROM pg_class c
+                LEFT JOIN pg_stat_user_tables st ON st.relid = c.oid
+                WHERE c.relkind = 'r' AND c.relnamespace = 'public'::regnamespace
+                  AND c.relname <> 'alembic_version'
+                ORDER BY c.relname
                 """
             )
         )

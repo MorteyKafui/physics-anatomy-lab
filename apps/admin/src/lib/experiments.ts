@@ -53,8 +53,14 @@ export function titleOf(id: string): string {
 
 export const experiment = (id: string) => EXPERIMENTS.find((e) => e.id === id);
 
-/** A mistake's name, as the coach words it to students, or its key if it has no message yet. */
+/**
+ * A mistake's name, as the coach words it to students (the hint is the finding's message key), or
+ * the key itself if it has no message yet. Placeholders differ per student, so they show as "…".
+ */
 export function mistakeName(hint: string): string {
-  const key = `findings.${hint}.title`;
-  return hasMessage(key) ? t(key as MessageKey, {}).replace(/\*\*/g, "") : hint;
+  const key = `${hint}.title`;
+  if (!hasMessage(key)) return hint;
+  return t(key as MessageKey)
+    .replace(/\{\w+\}/g, "…")
+    .replace(/\*\*/g, "");
 }

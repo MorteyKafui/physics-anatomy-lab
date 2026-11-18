@@ -65,7 +65,16 @@ export function Attention({ flagged }: { flagged: readonly FlaggedName[] }) {
             color: "inherit",
           }}
         >
-          <span style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0, textAlign: "left" }}>
+          <span
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+              flex: 1,
+              minWidth: 0,
+              textAlign: "left",
+            }}
+          >
             <span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <span style={{ fontSize: 14, color: "var(--pa-text)" }}>
                 Display name that may be contact details
@@ -133,9 +142,19 @@ export function Attention({ flagged }: { flagged: readonly FlaggedName[] }) {
           <>
             <DrawerRows
               rows={[
-                ["Display name", <span key="n" className="ad-mono">{item.display_name}</span>],
+                [
+                  "Display name",
+                  <span key="n" className="ad-mono">
+                    {item.display_name}
+                  </span>,
+                ],
                 ["Class", item.class_name],
-                ["Class code", <span key="c" className="ad-mono">{item.class_code}</span>],
+                [
+                  "Class code",
+                  <span key="c" className="ad-mono">
+                    {item.class_code}
+                  </span>,
+                ],
                 ["Flagged by", "Display-name check"],
                 ["Joined", when(item.created_at)],
               ]}
@@ -161,8 +180,8 @@ export function Attention({ flagged }: { flagged: readonly FlaggedName[] }) {
               )}
             </label>
             <DrawerRule>
-              Children&rsquo;s data (ADR 0011): students give a display name and class code only.
-              A name that looks like a phone number, an email or a social handle is replaced. The
+              Children&rsquo;s data (ADR 0011): students give a display name and class code only. A
+              name that looks like a phone number, an email or a social handle is replaced. The
               audit log records that it was replaced and why, never the name.
             </DrawerRule>
           </>

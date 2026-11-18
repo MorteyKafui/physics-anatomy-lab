@@ -86,7 +86,9 @@
   text-align: left;
 }
 .ad-kbd {
-  font: 12px var(--font-geist-mono), monospace;
+  font:
+    12px var(--font-geist-mono),
+    monospace;
   border: 1px solid var(--pa-line);
   padding: 0 6px;
   color: var(--pa-text-muted);
@@ -193,7 +195,9 @@
   padding: 0 10px;
   border: 0;
   cursor: pointer;
-  font: 500 12px var(--font-geist), sans-serif;
+  font:
+    500 12px var(--font-geist),
+    sans-serif;
   background: transparent;
   color: var(--pa-text-soft);
   display: inline-flex;
@@ -211,7 +215,9 @@
   background: transparent;
   border: 1px solid var(--pa-line);
   color: var(--pa-text);
-  font: 13px var(--font-geist), sans-serif;
+  font:
+    13px var(--font-geist),
+    sans-serif;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -226,7 +232,9 @@
   background: var(--pa-text);
   color: var(--pa-ink-950);
   border: 0;
-  font: 600 13px var(--font-geist), sans-serif;
+  font:
+    600 13px var(--font-geist),
+    sans-serif;
   cursor: pointer;
 }
 .ad-primary:disabled,
@@ -240,7 +248,9 @@
   border: 1px solid var(--pa-line);
   color: var(--pa-text);
   padding: 0 8px;
-  font: 13px var(--font-geist), sans-serif;
+  font:
+    13px var(--font-geist),
+    sans-serif;
 }
 .ad-input {
   height: 36px;
@@ -248,7 +258,9 @@
   border: 1px solid var(--pa-line);
   color: var(--pa-text);
   padding: 0 10px;
-  font: 14px var(--font-geist), sans-serif;
+  font:
+    14px var(--font-geist),
+    sans-serif;
 }
 
 /* Chips: always words, never colour alone */

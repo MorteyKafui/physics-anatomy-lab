@@ -13,3 +13,16 @@ const STEP_NAMES: Readonly<Record<string, string>> = {
 };
 
 export const stepName = (step: string) => STEP_NAMES[step] ?? step;
+
+export const STEPS = [
+  "question",
+  "predict",
+  "build",
+  "check",
+  "measure",
+  "tabulate",
+  "plot",
+  "analyse",
+  "conclude",
+  "report",
+] as const;

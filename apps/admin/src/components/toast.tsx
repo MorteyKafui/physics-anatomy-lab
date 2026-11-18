@@ -2,7 +2,15 @@
 
 // The undo toast (D30): says what happened, offers Undo when the change can be undone.
 import { Check } from "@pa/ui/icons";
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 interface Toast {
   text: string;

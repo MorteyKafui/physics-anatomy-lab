@@ -121,16 +121,38 @@ export default async function OverviewPage({
             className="ad-narrow"
             title="System health"
             action={
-              <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--pa-text-muted)" }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 12,
+                  color: "var(--pa-text-muted)",
+                }}
+              >
                 <span className="ad-dot" style={{ background: "var(--pa-dash-quiet)" }} />
                 Monitoring not connected yet
               </span>
             }
           >
-            <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 14 }}>
-              <HealthRow label="API response, 95th percentile" value="Not measured yet" note="Arrives with Sentry." />
-              <HealthRow label="Errors in the last hour" value="Not measured yet" note="Arrives with Sentry." />
-              <HealthRow label="Live classes right now" value="Not built yet" note="Arrives with live classes." />
+            <div
+              style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 14 }}
+            >
+              <HealthRow
+                label="API response, 95th percentile"
+                value="Not measured yet"
+                note="Arrives with Sentry."
+              />
+              <HealthRow
+                label="Errors in the last hour"
+                value="Not measured yet"
+                note="Arrives with Sentry."
+              />
+              <HealthRow
+                label="Live classes right now"
+                value="Not built yet"
+                note="Arrives with live classes."
+              />
               <HealthRow label="Database storage" value={bytes(o.database_bytes)} mono />
               <HealthRow label="Snapshot storage (R2)" value="Not set up yet" />
             </div>

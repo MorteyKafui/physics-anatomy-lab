@@ -27,7 +27,12 @@ export function MistakesTable({ mistakes }: { mistakes: readonly Mistake[] }) {
     );
   return (
     <div style={{ overflowX: "auto" }}>
-      <div role="table" aria-label="Most common mistakes" className="ad-table" style={{ minWidth: 680 }}>
+      <div
+        role="table"
+        aria-label="Most common mistakes"
+        className="ad-table"
+        style={{ minWidth: 680 }}
+      >
         <div role="row" className="ad-tr ad-th" style={{ gridTemplateColumns: COLUMNS }}>
           <span role="columnheader">Mistake</span>
           <span role="columnheader">Experiment</span>
@@ -53,7 +58,12 @@ export function MistakesTable({ mistakes }: { mistakes: readonly Mistake[] }) {
               </span>
               <span
                 role="cell"
-                style={{ color: "var(--pa-text-soft)", display: "inline-flex", alignItems: "center", gap: 6 }}
+                style={{
+                  color: "var(--pa-text-soft)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
               >
                 <span
                   aria-hidden="true"

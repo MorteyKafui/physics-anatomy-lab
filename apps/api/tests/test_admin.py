@@ -233,7 +233,7 @@ def _events(attempt_id: str, created: int, steps: int, hints: int = 0) -> list[d
                 "at": created + n * 60_000,
                 "kind": "coach.hint",
                 "data": {
-                    "hint": "pendulum.countFromOne",
+                    "hint": "findings.pendulum.countFromOne",
                     "rule": "pendulum-count-from-one",
                     "skill": "measurement",
                     "level": "hint",

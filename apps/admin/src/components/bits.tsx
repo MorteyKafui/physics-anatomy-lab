@@ -121,9 +121,7 @@ export function SegBar({
         {total === 0 ? (
           <span style={{ flex: 1, background: "var(--pa-line-strong)" }} />
         ) : (
-          parts.map((p) => (
-            <span key={p.label} style={{ flex: p.value, background: p.colour }} />
-          ))
+          parts.map((p) => <span key={p.label} style={{ flex: p.value, background: p.colour }} />)
         )}
       </span>
       <span
@@ -169,7 +167,13 @@ export function Spark({ values }: { values: readonly number[] }) {
 }
 
 /** Small hatched bars, one per day: quiet when zero. */
-export function MiniBars({ values, tone = "ok" }: { values: readonly number[]; tone?: "ok" | "danger" }) {
+export function MiniBars({
+  values,
+  tone = "ok",
+}: {
+  values: readonly number[];
+  tone?: "ok" | "danger";
+}) {
   const max = Math.max(1, ...values);
   return (
     <div aria-hidden="true" style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 44 }}>

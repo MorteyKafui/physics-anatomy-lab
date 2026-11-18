@@ -8,7 +8,6 @@ import { stepName } from "@/lib/steps";
 
 import { Panel } from "./bits";
 
-
 export function StageChart({
   stages,
   title,

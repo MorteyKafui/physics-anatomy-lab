@@ -79,7 +79,10 @@ export function Drawer({
               borderTop: "1px solid var(--pa-ink-800)",
             }}
           >
-            <Dialog.Close className="ad-f ad-btn ad-button" style={{ height: 34, padding: "0 14px" }}>
+            <Dialog.Close
+              className="ad-f ad-btn ad-button"
+              style={{ height: 34, padding: "0 14px" }}
+            >
               Close
             </Dialog.Close>
             {action}
