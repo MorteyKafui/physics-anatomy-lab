@@ -39,6 +39,7 @@ from app.admin.schemas import (
     StageCount,
     StepTime,
     StudentCounts,
+    Summary,
     SystemInfo,
     TableSize,
     TeacherRow,
@@ -74,6 +75,17 @@ def staff_me(staff: CurrentStaff) -> StaffMe:
     return StaffMe(email=staff.email, via=staff.via, environment=get_settings().environment)
 
 
+@router.get("/summary")
+async def admin_summary(db: ReadDb) -> Summary:
+    """The sidebar's numbers, kept small because every page asks for them."""
+    w = q.window("30d")
+    flagged = await q.flagged_names(db, limit=100)
+    return Summary(
+        experiments=[ExperimentUse(**r) for r in await q.per_experiment(db, w)],
+        flagged_names=len(flagged),
+    )
+
+
 @router.get("/overview")
 async def admin_overview(db: ReadDb, range: RangeQuery = "7d") -> Overview:
     w = q.window(range)
@@ -90,7 +102,7 @@ async def admin_overview(db: ReadDb, range: RangeQuery = "7d") -> Overview:
         stages=[StageCount(**r) for r in await q.stages(db, DEFAULT_EXPERIMENT, w)],
         mistakes=[Mistake(**r) for r in await q.mistakes(db, w, limit=6)],
         flagged_names=[FlaggedName(**r) for r in await q.flagged_names(db)],
-        database_bytes=(await q.database(db))["bytes"],
+        database_bytes=await q.database_bytes(db),
     )
 
 
@@ -203,8 +215,8 @@ async def admin_set_class_ai(
         class_id,
         {"enabled": body.enabled, "was": was, "reason": body.reason},
     )
-    rows = await q.class_list(db, LIST_LIMIT)
-    return ClassRow(**next(r for r in rows if r["id"] == class_id))
+    [row] = await q.class_list(db, 1, class_id)
+    return ClassRow(**row)
 
 
 @router.post("/members/{member_id}/display-name")
@@ -221,9 +233,9 @@ async def admin_replace_display_name(
     )
     if member is None:
         raise HTTPException(404, "No student with that id.")
-    member.display_name = body.display_name
     try:
         async with db.begin_nested():
+            member.display_name = body.display_name
             await db.flush()
     except IntegrityError as error:
         raise HTTPException(409, "Someone in that class already has that name.") from error
@@ -234,13 +246,18 @@ async def admin_replace_display_name(
     return MemberRow(**next(r for r in rows if r["id"] == member_id))
 
 
+FORMULA_START = ("=", "+", "-", "@", chr(9), chr(13))  # chr(9) is a tab, chr(13) a carriage return
+
+
 def _csv(header: list[str], rows: list[list[Any]]) -> str:
     out = io.StringIO()
     writer = csv.writer(out, lineterminator="\n")
     writer.writerow(header)
     for row in rows:
-        # A cell starting with = + - @ would run as a formula in a spreadsheet.
-        writer.writerow(["'" + c if isinstance(c, str) and c[:1] in "=+-@" else c for c in row])
+        # A cell starting with = + - @, a tab or a carriage return runs as a spreadsheet formula.
+        writer.writerow(
+            ["'" + c if isinstance(c, str) and c.startswith(FORMULA_START) else c for c in row]
+        )
     return out.getvalue()
 
 

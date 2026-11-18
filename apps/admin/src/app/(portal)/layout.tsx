@@ -1,4 +1,4 @@
-import type { Overview } from "@pa/api-client";
+import type { Summary } from "@pa/api-client";
 import type { ReactNode } from "react";
 
 import { Shell } from "@/components/shell";
@@ -11,10 +11,7 @@ import { initials } from "@/lib/format";
 export const dynamic = "force-dynamic";
 
 export default async function PortalLayout({ children }: { children: ReactNode }) {
-  const [me, month] = await Promise.all([
-    staffMe(),
-    adminGet<Overview>("/admin/overview?range=30d"),
-  ]);
+  const [me, month] = await Promise.all([staffMe(), adminGet<Summary>("/admin/summary")]);
   const used = month.ok ? month.data.experiments : [];
   const completion = EXPERIMENTS.filter((e) => e.flagship).map((e) => {
     const rows = used.filter((u) => u.experiment_id === e.id);
@@ -31,7 +28,7 @@ export default async function PortalLayout({ children }: { children: ReactNode }
       <Shell
         staff={me.ok ? { ...me.data, initials: initials(me.data.email) } : null}
         completion={completion}
-        badges={{ "/people": month.ok ? month.data.flagged_names.length : 0 }}
+        badges={{ "/people": month.ok ? month.data.flagged_names : 0 }}
         experiments={EXPERIMENTS.map((e) => ({ id: e.id, title: e.title }))}
       >
         {children}

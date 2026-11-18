@@ -47,6 +47,7 @@ class ExperimentUse(BaseModel):
     students: int
     reports: int
     multi_device: int
+    hints: int
 
 
 class StageCount(BaseModel):
@@ -90,6 +91,13 @@ class Overview(BaseModel):
     mistakes: list[Mistake]
     flagged_names: list[FlaggedName]
     database_bytes: int
+
+
+class Summary(BaseModel):
+    """What the portal's sidebar shows on every page: the last 30 days, and open safeguarding."""
+
+    experiments: list[ExperimentUse]
+    flagged_names: int
 
 
 class StepTime(BaseModel):

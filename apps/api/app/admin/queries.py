@@ -147,7 +147,10 @@ async def per_experiment(db: AsyncSession, w: Window) -> list[dict[str, Any]]:
                            AND e.data->>'step' = 'report')) AS reports,
                        count(*) FILTER (WHERE (
                          SELECT count(DISTINCT e.device) FROM attempt_events e
-                         WHERE e.attempt_id = a.id) > 1) AS multi_device
+                         WHERE e.attempt_id = a.id) > 1) AS multi_device,
+                       coalesce(sum((
+                         SELECT count(*) FROM attempt_events e
+                         WHERE e.attempt_id = a.id AND e.kind = 'coach.hint')), 0) AS hints
                 FROM attempts a
                 WHERE a.created_at_ms >= :since AND a.created_at_ms < :until
                 GROUP BY 1, 2
@@ -308,6 +311,10 @@ async def flagged_names(db: AsyncSession, limit: int = 20) -> list[dict[str, Any
     return [dict(r._mapping) for r in rows]  # pyright: ignore[reportPrivateUsage]
 
 
+async def database_bytes(db: AsyncSession) -> int:
+    return int(await db.scalar(text("SELECT pg_database_size(current_database())")) or 0)
+
+
 async def database(db: AsyncSession) -> dict[str, Any]:
     row = (
         await db.execute(
@@ -385,7 +392,9 @@ async def teachers(db: AsyncSession, limit: int) -> list[dict[str, Any]]:
     return [dict(r._mapping) for r in rows]  # pyright: ignore[reportPrivateUsage]
 
 
-async def class_list(db: AsyncSession, limit: int) -> list[dict[str, Any]]:
+async def class_list(
+    db: AsyncSession, limit: int, class_id: uuid.UUID | None = None
+) -> list[dict[str, Any]]:
     rows = (
         await db.execute(
             text(
@@ -394,11 +403,12 @@ async def class_list(db: AsyncSession, limit: int) -> list[dict[str, Any]]:
                        u.display_name AS teacher_name,
                        (SELECT count(*) FROM class_members m WHERE m.class_id = c.id) AS members
                 FROM classes c JOIN users u ON u.id = c.teacher_id
+                WHERE CAST(:class_id AS uuid) IS NULL OR c.id = :class_id
                 ORDER BY c.created_at DESC
                 LIMIT :limit
                 """
             ),
-            {"limit": limit},
+            {"limit": limit, "class_id": class_id},
         )
     ).all()
     return [dict(r._mapping) for r in rows]  # pyright: ignore[reportPrivateUsage]

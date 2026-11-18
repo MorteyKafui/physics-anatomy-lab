@@ -411,3 +411,25 @@ async def test_admin_reads_cannot_write() -> None:
             await session.execute(text("CREATE TABLE nope (x int)"))
     finally:
         await reads.aclose()
+
+
+async def test_the_sidebar_summary_is_small_and_right(
+    staff: AsyncClient, outbox: LogSender
+) -> None:
+    await _a_class_with_work(outbox)
+    body = (await staff.get("/admin/summary")).json()
+    assert body["flagged_names"] == 0
+    [row] = body["experiments"]
+    assert (row["attempts"], row["reports"], row["hints"]) == (2, 1, 3)
+
+
+def test_an_export_cell_never_runs_as_a_formula() -> None:
+    import csv
+    import io
+
+    from app.routes.admin import _csv  # pyright: ignore[reportPrivateUsage]
+
+    cells = ["=1+1", "+1", "-1", "@SUM(A1)", chr(9) + "=1", chr(13) + "=1", "Kofi", 3]
+    [_, row] = list(csv.reader(io.StringIO(_csv(["x"] * len(cells), [cells]))))
+    assert all(cell.startswith("'") for cell in row[:6])
+    assert row[6:] == ["Kofi", "3"]

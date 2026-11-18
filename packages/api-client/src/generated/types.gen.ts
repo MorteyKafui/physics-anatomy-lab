@@ -355,6 +355,10 @@ export type ExperimentUse = {
    * Multi Device
    */
   multi_device: number;
+  /**
+   * Hints
+   */
+  hints: number;
 };
 
 /**
@@ -842,6 +846,22 @@ export type StudentMe = {
    */
   display_name: string;
   school_class: ClassSummary;
+};
+
+/**
+ * Summary
+ *
+ * What the portal's sidebar shows on every page: the last 30 days, and open safeguarding.
+ */
+export type Summary = {
+  /**
+   * Experiments
+   */
+  experiments: Array<ExperimentUse>;
+  /**
+   * Flagged Names
+   */
+  flagged_names: number;
 };
 
 /**
@@ -1629,6 +1649,22 @@ export type StaffMeResponses = {
 };
 
 export type StaffMeResponse = StaffMeResponses[keyof StaffMeResponses];
+
+export type AdminSummaryData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/admin/summary";
+};
+
+export type AdminSummaryResponses = {
+  /**
+   * Successful Response
+   */
+  200: Summary;
+};
+
+export type AdminSummaryResponse = AdminSummaryResponses[keyof AdminSummaryResponses];
 
 export type AdminOverviewData = {
   body?: never;

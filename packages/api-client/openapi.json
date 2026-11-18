@@ -837,6 +837,26 @@
         }
       }
     },
+    "/admin/summary": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Summary",
+        "description": "The sidebar's numbers, kept small because every page asks for them.",
+        "operationId": "adminSummary",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/overview": {
       "get": {
         "tags": ["admin"],
@@ -1835,10 +1855,22 @@
           "multi_device": {
             "type": "integer",
             "title": "Multi Device"
+          },
+          "hints": {
+            "type": "integer",
+            "title": "Hints"
           }
         },
         "type": "object",
-        "required": ["experiment_id", "mode", "attempts", "students", "reports", "multi_device"],
+        "required": [
+          "experiment_id",
+          "mode",
+          "attempts",
+          "students",
+          "reports",
+          "multi_device",
+          "hints"
+        ],
         "title": "ExperimentUse"
       },
       "ExportRequest": {
@@ -2478,6 +2510,25 @@
         "type": "object",
         "required": ["member_id", "display_name", "school_class"],
         "title": "StudentMe"
+      },
+      "Summary": {
+        "properties": {
+          "experiments": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentUse"
+            },
+            "type": "array",
+            "title": "Experiments"
+          },
+          "flagged_names": {
+            "type": "integer",
+            "title": "Flagged Names"
+          }
+        },
+        "type": "object",
+        "required": ["experiments", "flagged_names"],
+        "title": "Summary",
+        "description": "What the portal's sidebar shows on every page: the last 30 days, and open safeguarding."
       },
       "SyncEvent": {
         "properties": {

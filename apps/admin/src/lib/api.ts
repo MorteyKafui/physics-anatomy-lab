@@ -12,15 +12,21 @@ export type Loaded<T> =
   | { readonly ok: true; readonly data: T }
   | { readonly ok: false; readonly status: number; readonly detail: string };
 
-function apiUrl(): string {
-  return process.env.ADMIN_API_URL ?? "http://localhost:8000";
+/** The API's address. Required in a production build, so a missing setting is said plainly. */
+function apiUrl(): string | null {
+  const url = process.env.ADMIN_API_URL;
+  if (url) return url;
+  return process.env.NODE_ENV === "production" ? null : "http://localhost:8000";
 }
 
 async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<Loaded<T>> {
+  const base = apiUrl();
+  if (base === null)
+    return { ok: false, status: 0, detail: "ADMIN_API_URL is not set on the admin server." };
   const token = (await headers()).get(ACCESS_HEADER);
   let response: Response;
   try {
-    response = await fetch(`${apiUrl()}${path}`, {
+    response = await fetch(`${base}${path}`, {
       method,
       cache: "no-store",
       headers: {

@@ -60,7 +60,7 @@ export default async function LearningPage({
     return {
       id,
       attempts: rows.reduce((s, e) => s + e.attempts, 0),
-      hints: l.mistakes.filter((m) => m.experiment_id === id).reduce((s, m) => s + m.hints, 0),
+      hints: rows.reduce((s, e) => s + e.hints, 0),
       examAttempts: exam.reduce((s, e) => s + e.attempts, 0),
       examReports: exam.reduce((s, e) => s + e.reports, 0),
     };

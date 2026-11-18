@@ -22,9 +22,7 @@ export function ClassesPanel({
   classes: readonly ClassRow[];
   openId?: string;
 }) {
-  // The latest answer from the API for a class changed here, until the page refreshes.
-  const [changed, setChanged] = useState<Readonly<Record<string, ClassRow>>>({});
-  const rows = classes.map((c) => changed[c.id] ?? c);
+  const rows = classes;
   const [open, setOpen] = useState<string | null>(openId ?? null);
   const [members, setMembers] = useState<{ id: string; list: MemberRow[] } | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
@@ -57,7 +55,6 @@ export function ClassesPanel({
       toast({ text: r.detail, failed: true });
       return;
     }
-    setChanged((all) => ({ ...all, [c.id]: r.data }));
     router.refresh();
     toast({
       text: `AI ${enabled ? "on" : "off"} for ${c.code}.${undo ? "" : " Recorded in the audit log."}`,
