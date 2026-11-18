@@ -9,7 +9,7 @@ from app.auth.origin import OriginGuard
 from app.auth.policy import MAX_BODY_BYTES
 from app.body_limit import BodyLimit
 from app.config import get_settings
-from app.routes import auth, classes, sync
+from app.routes import auth, classes, load_test, sync
 
 settings = get_settings()
 
@@ -40,6 +40,8 @@ app.include_router(auth.router)
 app.include_router(classes.teacher_router)
 app.include_router(classes.join_router)
 app.include_router(sync.router)
+if settings.environment in load_test.TEST_ENVIRONMENTS:
+    app.include_router(load_test.router)
 
 
 class Health(BaseModel):
