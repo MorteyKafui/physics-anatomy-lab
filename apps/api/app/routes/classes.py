@@ -62,7 +62,7 @@ def class_out(row: SchoolClass) -> ClassOut:
     )
 
 
-async def _owned_class(
+async def owned_class(
     db: AsyncSession, teacher: CurrentTeacher, class_id: uuid.UUID
 ) -> SchoolClass:
     """The class, if this teacher owns it. Anyone else's class is simply not found."""
@@ -122,7 +122,7 @@ async def list_classes(teacher: CurrentTeacher, db: Db) -> list[ClassOut]:
 
 @teacher_router.get("/{class_id}", responses=NOT_FOUND)
 async def get_class(class_id: uuid.UUID, teacher: CurrentTeacher, db: Db) -> ClassOut:
-    return class_out(await _owned_class(db, teacher, class_id))
+    return class_out(await owned_class(db, teacher, class_id))
 
 
 @teacher_router.patch("/{class_id}", responses=NOT_FOUND)
@@ -130,7 +130,7 @@ async def update_class(
     class_id: uuid.UUID, body: ClassUpdate, teacher: CurrentTeacher, db: Db
 ) -> ClassOut:
     """Rename the class, open or close joining, or turn AI help on or off (ADR 0008)."""
-    row = await _owned_class(db, teacher, class_id)
+    row = await owned_class(db, teacher, class_id)
     if body.name is not None:
         row.name = body.name
     if body.joining_open is not None:
@@ -145,7 +145,7 @@ async def update_class(
 @teacher_router.post("/{class_id}/code", responses=NOT_FOUND)
 async def rotate_class_code(class_id: uuid.UUID, teacher: CurrentTeacher, db: Db) -> ClassOut:
     """Give the class a new code. The old one stops working; students already in stay in."""
-    row = await _owned_class(db, teacher, class_id)
+    row = await owned_class(db, teacher, class_id)
     row.code = await _unused_class_code(db)
     row.code_changed_at = datetime.now(UTC)
     await db.flush()
@@ -155,7 +155,7 @@ async def rotate_class_code(class_id: uuid.UUID, teacher: CurrentTeacher, db: Db
 
 @teacher_router.get("/{class_id}/members", responses=NOT_FOUND)
 async def list_members(class_id: uuid.UUID, teacher: CurrentTeacher, db: Db) -> list[MemberOut]:
-    row = await _owned_class(db, teacher, class_id)
+    row = await owned_class(db, teacher, class_id)
     members = await db.scalars(
         select(ClassMember).where(ClassMember.class_id == row.id).order_by(ClassMember.display_name)
     )
@@ -173,7 +173,7 @@ async def issue_rejoin_code(
     class_id: uuid.UUID, member_id: uuid.UUID, teacher: CurrentTeacher, db: Db
 ) -> RejoinCodeOut:
     """A one-time personal code for a student who lost their device. Replaces any earlier one."""
-    row = await _owned_class(db, teacher, class_id)
+    row = await owned_class(db, teacher, class_id)
     member = await db.scalar(
         select(ClassMember).where(ClassMember.id == member_id, ClassMember.class_id == row.id)
     )
