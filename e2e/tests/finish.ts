@@ -9,12 +9,11 @@ import { expect, type Page } from "@playwright/test";
  */
 export async function finish(page: Page, button: string, next: string) {
   const step = page.getByText(next);
-  const cards = page.getByRole("status");
-  const before = await cards.count();
+  // The coach's cards as text, so a card that replaces another (same count) still counts.
+  const cards = async () => (await page.getByRole("status").allTextContents()).join("\n");
+  const before = await cards();
   await page.getByRole("button", { name: button }).click();
-  await expect
-    .poll(async () => (await step.isVisible()) || (await cards.count()) > before)
-    .toBe(true);
+  await expect.poll(async () => (await step.isVisible()) || (await cards()) !== before).toBe(true);
   if (!(await step.isVisible())) await page.getByRole("button", { name: button }).click();
   await expect(step).toBeVisible();
 }
