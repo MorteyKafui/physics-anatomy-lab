@@ -818,6 +818,493 @@
         }
       }
     },
+    "/admin/me": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Staff Me",
+        "operationId": "staffMe",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMe"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/overview": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Overview",
+        "operationId": "adminOverview",
+        "parameters": [
+          {
+            "name": "range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["24h", "7d", "30d"],
+              "type": "string",
+              "default": "7d",
+              "title": "Range"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/usage": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Usage",
+        "operationId": "adminUsage",
+        "parameters": [
+          {
+            "name": "range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["24h", "7d", "30d"],
+              "type": "string",
+              "default": "7d",
+              "title": "Range"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/learning": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Learning",
+        "operationId": "adminLearning",
+        "parameters": [
+          {
+            "name": "range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["24h", "7d", "30d"],
+              "type": "string",
+              "default": "7d",
+              "title": "Range"
+            }
+          },
+          {
+            "name": "experiment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "default": "simple-pendulum",
+              "title": "Experiment"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Learning"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/content": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Content",
+        "operationId": "adminContent",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExperimentTotal"
+                  },
+                  "type": "array",
+                  "title": "Response Admincontent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/people/teachers": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Teachers",
+        "operationId": "adminTeachers",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TeacherRow"
+                  },
+                  "type": "array",
+                  "title": "Response Adminteachers"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/people/classes": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Classes",
+        "operationId": "adminClasses",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ClassRow"
+                  },
+                  "type": "array",
+                  "title": "Response Adminclasses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/people/classes/{class_id}/members": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Class Members",
+        "operationId": "adminClassMembers",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MemberRow"
+                  },
+                  "title": "Response Adminclassmembers"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/system": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin System",
+        "operationId": "adminSystem",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/audit": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Audit",
+        "operationId": "adminAudit",
+        "parameters": [
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/classes/{class_id}/ai": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Set Class Ai",
+        "description": "Turn AI on or off for one class. Undo is the same call the other way.",
+        "operationId": "adminSetClassAi",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassAiChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassRow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/members/{member_id}/display-name": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Replace Display Name",
+        "description": "Replace a student's display name (safeguarding). The student keeps all their work.\n\nThe audit entry records that the name was replaced and why, never the old or new name: an old\nname flagged as contact details must not be kept anywhere.",
+        "operationId": "adminReplaceDisplayName",
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisplayNameChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberRow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/exports": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Export",
+        "description": "Download a table as CSV. Counts and class details only; never student names.",
+        "operationId": "adminExport",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": ["system"],
@@ -915,6 +1402,140 @@
         ],
         "title": "AttemptHeader"
       },
+      "AuditEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "actor_email": {
+            "type": "string",
+            "title": "Actor Email"
+          },
+          "actor_via": {
+            "type": "string",
+            "title": "Actor Via"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "target_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Type"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          },
+          "detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "at",
+          "actor_email",
+          "actor_via",
+          "action",
+          "target_type",
+          "target_id",
+          "detail"
+        ],
+        "title": "AuditEntry"
+      },
+      "AuditPage": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "next_before": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Before"
+          }
+        },
+        "type": "object",
+        "required": ["entries", "next_before"],
+        "title": "AuditPage"
+      },
+      "ClassAiChange": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": ["enabled"],
+        "title": "ClassAiChange"
+      },
+      "ClassCounts": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "ai_on": {
+            "type": "integer",
+            "title": "Ai On"
+          },
+          "joining_open": {
+            "type": "integer",
+            "title": "Joining Open"
+          }
+        },
+        "type": "object",
+        "required": ["total", "ai_on", "joining_open"],
+        "title": "ClassCounts"
+      },
       "ClassCreate": {
         "properties": {
           "name": {
@@ -980,6 +1601,63 @@
         ],
         "title": "ClassOut"
       },
+      "ClassRow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "ai_enabled": {
+            "type": "boolean",
+            "title": "Ai Enabled"
+          },
+          "joining_open": {
+            "type": "boolean",
+            "title": "Joining Open"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "teacher_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Name"
+          },
+          "members": {
+            "type": "integer",
+            "title": "Members"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "code",
+          "ai_enabled",
+          "joining_open",
+          "created_at",
+          "teacher_name",
+          "members"
+        ],
+        "title": "ClassRow"
+      },
       "ClassSummary": {
         "properties": {
           "id": {
@@ -1040,6 +1718,29 @@
         "type": "object",
         "title": "ClassUpdate"
       },
+      "DisplayNameChange": {
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": ["display_name"],
+        "title": "DisplayNameChange"
+      },
       "EmailLinkRequest": {
         "properties": {
           "email": {
@@ -1077,6 +1778,139 @@
         "type": "object",
         "required": ["token"],
         "title": "EmailLinkVerify"
+      },
+      "ExperimentTotal": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "students": {
+            "type": "integer",
+            "title": "Students"
+          },
+          "last_used_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used Ms"
+          }
+        },
+        "type": "object",
+        "required": ["experiment_id", "attempts", "students", "last_used_ms"],
+        "title": "ExperimentTotal"
+      },
+      "ExperimentUse": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["guided", "exam", "own-data"],
+            "title": "Mode"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "students": {
+            "type": "integer",
+            "title": "Students"
+          },
+          "reports": {
+            "type": "integer",
+            "title": "Reports"
+          },
+          "multi_device": {
+            "type": "integer",
+            "title": "Multi Device"
+          }
+        },
+        "type": "object",
+        "required": ["experiment_id", "mode", "attempts", "students", "reports", "multi_device"],
+        "title": "ExperimentUse"
+      },
+      "ExportRequest": {
+        "properties": {
+          "report": {
+            "type": "string",
+            "enum": ["mistakes", "stages", "classes"],
+            "title": "Report"
+          },
+          "range": {
+            "type": "string",
+            "enum": ["24h", "7d", "30d"],
+            "title": "Range",
+            "default": "7d"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          }
+        },
+        "type": "object",
+        "required": ["report"],
+        "title": "ExportRequest"
+      },
+      "FlaggedName": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "class_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Class Id"
+          },
+          "class_code": {
+            "type": "string",
+            "title": "Class Code"
+          },
+          "class_name": {
+            "type": "string",
+            "title": "Class Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id",
+          "display_name",
+          "created_at",
+          "class_id",
+          "class_code",
+          "class_name"
+        ],
+        "title": "FlaggedName"
       },
       "HTTPValidationError": {
         "properties": {
@@ -1156,6 +1990,48 @@
         "title": "JoinRequest"
       },
       "JsonValue": {},
+      "Learning": {
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/RangeInfo"
+          },
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/StageCount"
+            },
+            "type": "array",
+            "title": "Stages"
+          },
+          "mistakes": {
+            "items": {
+              "$ref": "#/components/schemas/Mistake"
+            },
+            "type": "array",
+            "title": "Mistakes"
+          },
+          "skills": {
+            "items": {
+              "$ref": "#/components/schemas/SkillSeries"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "experiments": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentUse"
+            },
+            "type": "array",
+            "title": "Experiments"
+          }
+        },
+        "type": "object",
+        "required": ["window", "experiment_id", "stages", "mistakes", "skills", "experiments"],
+        "title": "Learning"
+      },
       "MemberOut": {
         "properties": {
           "id": {
@@ -1176,6 +2052,150 @@
         "type": "object",
         "required": ["id", "display_name", "created_at"],
         "title": "MemberOut"
+      },
+      "MemberRow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          }
+        },
+        "type": "object",
+        "required": ["id", "display_name", "created_at", "attempts"],
+        "title": "MemberRow"
+      },
+      "Mistake": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "hint": {
+            "type": "string",
+            "title": "Hint"
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule"
+          },
+          "skill": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill"
+          },
+          "students": {
+            "type": "integer",
+            "title": "Students"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "hints": {
+            "type": "integer",
+            "title": "Hints"
+          }
+        },
+        "type": "object",
+        "required": ["experiment_id", "hint", "rule", "skill", "students", "attempts", "hints"],
+        "title": "Mistake"
+      },
+      "Overview": {
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/RangeInfo"
+          },
+          "students": {
+            "$ref": "#/components/schemas/StudentCounts"
+          },
+          "classes": {
+            "$ref": "#/components/schemas/ClassCounts"
+          },
+          "reports": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Reports"
+          },
+          "experiments": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentUse"
+            },
+            "type": "array",
+            "title": "Experiments"
+          },
+          "stages_experiment": {
+            "type": "string",
+            "title": "Stages Experiment"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/StageCount"
+            },
+            "type": "array",
+            "title": "Stages"
+          },
+          "mistakes": {
+            "items": {
+              "$ref": "#/components/schemas/Mistake"
+            },
+            "type": "array",
+            "title": "Mistakes"
+          },
+          "flagged_names": {
+            "items": {
+              "$ref": "#/components/schemas/FlaggedName"
+            },
+            "type": "array",
+            "title": "Flagged Names"
+          },
+          "database_bytes": {
+            "type": "integer",
+            "title": "Database Bytes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "window",
+          "students",
+          "classes",
+          "reports",
+          "experiments",
+          "stages_experiment",
+          "stages",
+          "mistakes",
+          "flagged_names",
+          "database_bytes"
+        ],
+        "title": "Overview"
       },
       "PullResult": {
         "properties": {
@@ -1262,6 +2282,32 @@
         "required": ["id", "newEvents", "status"],
         "title": "PushedAttempt"
       },
+      "RangeInfo": {
+        "properties": {
+          "range": {
+            "type": "string",
+            "enum": ["24h", "7d", "30d"],
+            "title": "Range"
+          },
+          "since": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Since"
+          },
+          "until": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Until"
+          },
+          "bucket_minutes": {
+            "type": "integer",
+            "title": "Bucket Minutes"
+          }
+        },
+        "type": "object",
+        "required": ["range", "since", "until", "bucket_minutes"],
+        "title": "RangeInfo"
+      },
       "RejoinCodeOut": {
         "properties": {
           "code": {
@@ -1307,6 +2353,106 @@
         "type": "object",
         "required": ["email_link", "google"],
         "title": "SignInMethods"
+      },
+      "SkillSeries": {
+        "properties": {
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "hints": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Hints"
+          }
+        },
+        "type": "object",
+        "required": ["skill", "hints"],
+        "title": "SkillSeries"
+      },
+      "StaffMe": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "via": {
+            "type": "string",
+            "enum": ["access", "dev-bypass"],
+            "title": "Via"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          }
+        },
+        "type": "object",
+        "required": ["email", "via", "environment"],
+        "title": "StaffMe"
+      },
+      "StageCount": {
+        "properties": {
+          "step": {
+            "type": "string",
+            "title": "Step"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "students": {
+            "type": "integer",
+            "title": "Students"
+          }
+        },
+        "type": "object",
+        "required": ["step", "attempts", "students"],
+        "title": "StageCount"
+      },
+      "StepTime": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "step": {
+            "type": "string",
+            "title": "Step"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "minutes": {
+            "type": "number",
+            "title": "Minutes"
+          }
+        },
+        "type": "object",
+        "required": ["experiment_id", "step", "n", "minutes"],
+        "title": "StepTime"
+      },
+      "StudentCounts": {
+        "properties": {
+          "members": {
+            "type": "integer",
+            "title": "Members"
+          },
+          "active_30_days": {
+            "type": "integer",
+            "title": "Active 30 Days"
+          },
+          "teachers": {
+            "type": "integer",
+            "title": "Teachers"
+          }
+        },
+        "type": "object",
+        "required": ["members", "active_30_days", "teachers"],
+        "title": "StudentCounts",
+        "description": "Class members only: the lab works signed out, and signed-out students are not counted."
       },
       "StudentMe": {
         "properties": {
@@ -1380,6 +2526,86 @@
         "required": ["id", "attemptId", "seq", "device", "at", "kind", "data"],
         "title": "SyncEvent"
       },
+      "SystemInfo": {
+        "properties": {
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "api_version": {
+            "type": "string",
+            "title": "Api Version"
+          },
+          "database_bytes": {
+            "type": "integer",
+            "title": "Database Bytes"
+          },
+          "postgres": {
+            "type": "string",
+            "title": "Postgres"
+          },
+          "migration": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Migration"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/TableSize"
+            },
+            "type": "array",
+            "title": "Tables"
+          },
+          "attempts_synced_per_day": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Attempts Synced Per Day"
+          },
+          "replica": {
+            "type": "boolean",
+            "title": "Replica"
+          }
+        },
+        "type": "object",
+        "required": [
+          "environment",
+          "api_version",
+          "database_bytes",
+          "postgres",
+          "migration",
+          "tables",
+          "attempts_synced_per_day",
+          "replica"
+        ],
+        "title": "SystemInfo"
+      },
+      "TableSize": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "rows": {
+            "type": "integer",
+            "title": "Rows"
+          },
+          "bytes": {
+            "type": "integer",
+            "title": "Bytes"
+          }
+        },
+        "type": "object",
+        "required": ["name", "rows", "bytes"],
+        "title": "TableSize"
+      },
       "TeacherMe": {
         "properties": {
           "kind": {
@@ -1413,6 +2639,54 @@
         "required": ["id", "email", "display_name"],
         "title": "TeacherMe"
       },
+      "TeacherRow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "last_signed_in_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Signed In At"
+          },
+          "classes": {
+            "type": "integer",
+            "title": "Classes"
+          }
+        },
+        "type": "object",
+        "required": ["id", "email", "display_name", "created_at", "last_signed_in_at", "classes"],
+        "title": "TeacherRow"
+      },
       "TeacherUpdate": {
         "properties": {
           "display_name": {
@@ -1424,6 +2698,30 @@
         "type": "object",
         "required": ["display_name"],
         "title": "TeacherUpdate"
+      },
+      "Usage": {
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/RangeInfo"
+          },
+          "experiments": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentUse"
+            },
+            "type": "array",
+            "title": "Experiments"
+          },
+          "step_minutes": {
+            "items": {
+              "$ref": "#/components/schemas/StepTime"
+            },
+            "type": "array",
+            "title": "Step Minutes"
+          }
+        },
+        "type": "object",
+        "required": ["window", "experiments", "step_minutes"],
+        "title": "Usage"
       },
       "ValidationError": {
         "properties": {

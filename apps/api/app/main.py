@@ -9,7 +9,7 @@ from app.auth.origin import OriginGuard
 from app.auth.policy import MAX_BODY_BYTES
 from app.body_limit import BodyLimit
 from app.config import get_settings
-from app.routes import auth, classes, sync
+from app.routes import admin, auth, classes, sync
 
 settings = get_settings()
 
@@ -40,6 +40,8 @@ app.include_router(auth.router)
 app.include_router(classes.teacher_router)
 app.include_router(classes.join_router)
 app.include_router(sync.router)
+# Staff only, behind Cloudflare Access; reached from the admin portal's server (ADR 0040).
+app.include_router(admin.router)
 
 
 class Health(BaseModel):

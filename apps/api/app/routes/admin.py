@@ -1,0 +1,303 @@
+"""The admin API: staff only, behind Cloudflare Access (ADR 0040).
+
+Every route depends on `require_staff`, set once on the router, so a new route cannot forget it.
+Reads go through `ReadDb` (read-only, time-limited, the replica when there is one). Changes go
+through `Db`, and each writes its audit entry in the same transaction.
+"""
+
+import csv
+import io
+import uuid
+from datetime import UTC, datetime
+from typing import Annotated, Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from sqlalchemy import select, text
+from sqlalchemy.exc import IntegrityError
+
+from app.admin import queries as q
+from app.admin.access import CurrentStaff, require_staff
+from app.admin.audit import record
+from app.admin.db import ReadDb
+from app.admin.schemas import (
+    AuditEntry,
+    AuditPage,
+    ClassAiChange,
+    ClassRow,
+    DisplayNameChange,
+    ExperimentTotal,
+    ExperimentUse,
+    ExportRequest,
+    FlaggedName,
+    Learning,
+    MemberRow,
+    Mistake,
+    Overview,
+    RangeInfo,
+    SkillSeries,
+    StaffMe,
+    StageCount,
+    StepTime,
+    StudentCounts,
+    SystemInfo,
+    TableSize,
+    TeacherRow,
+    Usage,
+)
+from app.config import get_settings
+from app.db import Db
+from app.models import ClassMember, SchoolClass
+
+router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_staff)])
+
+RangeQuery = Annotated[q.Range, Query()]
+ExperimentQuery = Annotated[str, Query(min_length=1, max_length=200)]
+DEFAULT_EXPERIMENT = "simple-pendulum"
+LIST_LIMIT = 500
+
+
+def _dt(ms: int) -> datetime:
+    return datetime.fromtimestamp(ms / 1000, tz=UTC)
+
+
+def _info(range_: q.Range, w: q.Window) -> RangeInfo:
+    return RangeInfo(
+        range=range_,
+        since=_dt(w.since_ms),
+        until=_dt(w.until_ms),
+        bucket_minutes=w.bucket_ms // 60_000,
+    )
+
+
+@router.get("/me")
+def staff_me(staff: CurrentStaff) -> StaffMe:
+    return StaffMe(email=staff.email, via=staff.via, environment=get_settings().environment)
+
+
+@router.get("/overview")
+async def admin_overview(db: ReadDb, range: RangeQuery = "7d") -> Overview:
+    w = q.window(range)
+    s = await q.students(db, w.until_ms)
+    return Overview(
+        window=_info(range, w),
+        students=StudentCounts(
+            members=s["members"], active_30_days=s["active"], teachers=s["teachers"]
+        ),
+        classes=await q.classes(db),  # pyright: ignore[reportArgumentType]
+        reports=await q.reports_series(db, w),
+        experiments=[ExperimentUse(**r) for r in await q.per_experiment(db, w)],
+        stages_experiment=DEFAULT_EXPERIMENT,
+        stages=[StageCount(**r) for r in await q.stages(db, DEFAULT_EXPERIMENT, w)],
+        mistakes=[Mistake(**r) for r in await q.mistakes(db, w, limit=6)],
+        flagged_names=[FlaggedName(**r) for r in await q.flagged_names(db)],
+        database_bytes=(await q.database(db))["bytes"],
+    )
+
+
+@router.get("/usage")
+async def admin_usage(db: ReadDb, range: RangeQuery = "7d") -> Usage:
+    w = q.window(range)
+    return Usage(
+        window=_info(range, w),
+        experiments=[ExperimentUse(**r) for r in await q.per_experiment(db, w)],
+        step_minutes=[StepTime(**r) for r in await q.step_minutes(db, w)],
+    )
+
+
+@router.get("/learning")
+async def admin_learning(
+    db: ReadDb,
+    range: RangeQuery = "7d",
+    experiment: ExperimentQuery = DEFAULT_EXPERIMENT,
+) -> Learning:
+    w = q.window(range)
+    skills = await q.skills_series(db, w)
+    return Learning(
+        window=_info(range, w),
+        experiment_id=experiment,
+        stages=[StageCount(**r) for r in await q.stages(db, experiment, w)],
+        mistakes=[Mistake(**r) for r in await q.mistakes(db, w)],
+        skills=[SkillSeries(skill=k, hints=v) for k, v in skills.items()],
+        experiments=[ExperimentUse(**r) for r in await q.per_experiment(db, w)],
+    )
+
+
+@router.get("/content")
+async def admin_content(db: ReadDb) -> list[ExperimentTotal]:
+    return [ExperimentTotal(**r) for r in await q.experiment_totals(db)]
+
+
+@router.get("/people/teachers")
+async def admin_teachers(db: ReadDb) -> list[TeacherRow]:
+    return [TeacherRow(**r) for r in await q.teachers(db, LIST_LIMIT)]
+
+
+@router.get("/people/classes")
+async def admin_classes(db: ReadDb) -> list[ClassRow]:
+    return [ClassRow(**r) for r in await q.class_list(db, LIST_LIMIT)]
+
+
+@router.get("/people/classes/{class_id}/members")
+async def admin_class_members(class_id: uuid.UUID, db: ReadDb) -> list[MemberRow]:
+    return [MemberRow(**r) for r in await q.members(db, class_id)]
+
+
+@router.get("/system")
+async def admin_system(db: ReadDb) -> SystemInfo:
+    d = await q.database(db)
+    settings = get_settings()
+    return SystemInfo(
+        environment=settings.environment,
+        api_version="0.0.0",
+        database_bytes=d["bytes"],
+        postgres=d["postgres"],
+        migration=d["migration"],
+        tables=[TableSize(**t) for t in d["tables"]],
+        attempts_synced_per_day=await q.synced_per_day(db),
+        replica=settings.admin_database_url is not None,
+    )
+
+
+@router.get("/audit")
+async def admin_audit(
+    db: ReadDb,
+    before: uuid.UUID | None = None,
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> AuditPage:
+    rows = (
+        await db.execute(
+            text(
+                """
+                SELECT id, at, actor_email, actor_via, action, target_type, target_id, detail
+                FROM admin_audit
+                WHERE CAST(:before AS uuid) IS NULL
+                   OR (at, id) < (SELECT at, id FROM admin_audit WHERE id = :before)
+                ORDER BY at DESC, id DESC
+                LIMIT :limit
+                """
+            ),
+            {"before": before, "limit": limit + 1},
+        )
+    ).all()
+    entries = [AuditEntry(**r._mapping) for r in rows[:limit]]  # pyright: ignore[reportPrivateUsage]
+    return AuditPage(entries=entries, next_before=entries[-1].id if len(rows) > limit else None)
+
+
+@router.post("/classes/{class_id}/ai")
+async def admin_set_class_ai(
+    class_id: uuid.UUID, body: ClassAiChange, db: Db, staff: CurrentStaff
+) -> ClassRow:
+    """Turn AI on or off for one class. Undo is the same call the other way."""
+    school_class = await db.scalar(
+        select(SchoolClass).where(SchoolClass.id == class_id).with_for_update()
+    )
+    if school_class is None:
+        raise HTTPException(404, "No class with that id.")
+    was = school_class.ai_enabled
+    school_class.ai_enabled = body.enabled
+    await record(
+        db,
+        staff,
+        "class.ai.set",
+        "class",
+        class_id,
+        {"enabled": body.enabled, "was": was, "reason": body.reason},
+    )
+    rows = await q.class_list(db, LIST_LIMIT)
+    return ClassRow(**next(r for r in rows if r["id"] == class_id))
+
+
+@router.post("/members/{member_id}/display-name")
+async def admin_replace_display_name(
+    member_id: uuid.UUID, body: DisplayNameChange, db: Db, staff: CurrentStaff
+) -> MemberRow:
+    """Replace a student's display name (safeguarding). The student keeps all their work.
+
+    The audit entry records that the name was replaced and why, never the old or new name: an old
+    name flagged as contact details must not be kept anywhere.
+    """
+    member = await db.scalar(
+        select(ClassMember).where(ClassMember.id == member_id).with_for_update()
+    )
+    if member is None:
+        raise HTTPException(404, "No student with that id.")
+    member.display_name = body.display_name
+    try:
+        async with db.begin_nested():
+            await db.flush()
+    except IntegrityError as error:
+        raise HTTPException(409, "Someone in that class already has that name.") from error
+    await record(
+        db, staff, "member.display-name.replace", "member", member_id, {"reason": body.reason}
+    )
+    rows = await q.members(db, member.class_id)
+    return MemberRow(**next(r for r in rows if r["id"] == member_id))
+
+
+def _csv(header: list[str], rows: list[list[Any]]) -> str:
+    out = io.StringIO()
+    writer = csv.writer(out, lineterminator="\n")
+    writer.writerow(header)
+    for row in rows:
+        # A cell starting with = + - @ would run as a formula in a spreadsheet.
+        writer.writerow(["'" + c if isinstance(c, str) and c[:1] in "=+-@" else c for c in row])
+    return out.getvalue()
+
+
+@router.post("/exports", response_class=Response)
+async def admin_export(body: ExportRequest, read: ReadDb, db: Db, staff: CurrentStaff) -> Response:
+    """Download a table as CSV. Counts and class details only; never student names."""
+    w = q.window(body.range)
+    experiment = body.experiment_id or DEFAULT_EXPERIMENT
+    if body.report == "mistakes":
+        found = await q.mistakes(read, w, body.experiment_id, limit=500)
+        header = ["experiment", "hint", "rule", "skill", "students", "attempts", "hints"]
+        rows = [
+            [
+                m["experiment_id"],
+                m["hint"],
+                m["rule"],
+                m["skill"],
+                m["students"],
+                m["attempts"],
+                m["hints"],
+            ]
+            for m in found
+        ]
+    elif body.report == "stages":
+        header = ["experiment", "step", "attempts", "students"]
+        rows = [
+            [experiment, s["step"], s["attempts"], s["students"]]
+            for s in await q.stages(read, experiment, w)
+        ]
+    else:
+        header = ["class", "code", "teacher", "students", "ai_on", "joining_open", "created"]
+        rows = [
+            [
+                c["name"],
+                c["code"],
+                c["teacher_name"],
+                c["members"],
+                c["ai_enabled"],
+                c["joining_open"],
+                c["created_at"].isoformat(),
+            ]
+            for c in await q.class_list(read, LIST_LIMIT)
+        ]
+    await record(
+        db,
+        staff,
+        "export.create",
+        detail={
+            "report": body.report,
+            "range": body.range,
+            "experiment_id": body.experiment_id,
+            "rows": len(rows),
+        },
+    )
+    name = f"physics-anatomy-{body.report}-{body.range}.csv"
+    return Response(
+        _csv(header, rows),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{name}"'},
+    )

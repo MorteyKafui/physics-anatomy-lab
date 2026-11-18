@@ -35,15 +35,38 @@ class Settings(BaseSettings):
     email_delivery: Literal["log", "none"] = "log"
     email_from: str = "Physics Anatomy <sign-in@localhost>"
 
+    # The admin portal (ADR 0040). Staff reach it through Cloudflare Access; the API checks the
+    # Access token on every admin call. Both values come from the Access application and are
+    # never committed: the team domain ("<team>.cloudflareaccess.com") and its audience tag.
+    cf_access_team_domain: str | None = None
+    cf_access_audience: str | None = None
+    # Optional second check behind the Access policy: only these staff emails, if set.
+    admin_staff_emails: list[str] = []
+    # Local and test only: treat every admin call as this staff member, with no Access token.
+    # Refused anywhere else, so it can never open the admin API on a deployed server.
+    admin_dev_bypass_email: str | None = None
+    # A read-only replica for the admin portal's charts. Unset, they read the primary database,
+    # still in read-only transactions with a time limit.
+    admin_database_url: str | None = None
+    admin_statement_timeout_ms: int = 5000
+
     @model_validator(mode="after")
     def _deployed_settings(self) -> Self:
         if self.environment in ("preview", "staging", "production") and not self.client_ip_header:
             raise ValueError("Set CLIENT_IP_HEADER (cf-connecting-ip behind Cloudflare).")
+        if self.admin_dev_bypass_email and self.environment not in ("local", "test"):
+            raise ValueError("ADMIN_DEV_BYPASS_EMAIL works only in local and test.")
+        if bool(self.cf_access_team_domain) != bool(self.cf_access_audience):
+            raise ValueError("Set both CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUDIENCE, or neither.")
         return self
 
     @property
     def secure_cookies(self) -> bool:
         return self.web_origin.startswith("https://")
+
+    @property
+    def admin_access_configured(self) -> bool:
+        return bool(self.cf_access_team_domain and self.cf_access_audience)
 
     @property
     def google_enabled(self) -> bool:
