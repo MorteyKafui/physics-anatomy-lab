@@ -36,3 +36,13 @@ EMAIL_LINKS_PER_ADDRESS = Limit("email-link:ip", 30, timedelta(hours=1))
 GOOGLE_STARTS_PER_ADDRESS = Limit("google-start:ip", 30, timedelta(minutes=10))
 # Only wrong codes count: a whole school class often shares one network address.
 WRONG_CODES_PER_ADDRESS = Limit("wrong-code:ip", 20, timedelta(minutes=10))
+
+# Sync (ADR 0039).
+SYNC_MAX_ATTEMPTS = 20
+SYNC_MAX_EVENTS = 2000
+SYNC_MAX_EVENT_DATA_BYTES = 16 * 1024
+SYNC_PULL_PAGE = 500
+# A pull page stops early once its events' data reaches this many bytes.
+SYNC_PULL_MAX_BYTES = 2 * 1024 * 1024
+# No request body may be larger (sync pushes are the only big ones).
+MAX_BODY_BYTES = 2 * 1024 * 1024

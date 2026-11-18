@@ -817,7 +817,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 ### Phase 3: Accounts, sync and classrooms
 
 - [x] FastAPI auth: email link and Google for teachers; class codes for students
-- [ ] Event sync and adoption of signed-out work
+- [x] Event sync and adoption of signed-out work
 - [ ] Teacher and lecturer dashboards; live sessions over WebSockets
 - [ ] Admin portal: overview, usage, learning, content, support, people, system, audit
 - [ ] Consent, data export and deletion

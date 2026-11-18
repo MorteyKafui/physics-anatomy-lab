@@ -6,8 +6,10 @@ from fastapi.routing import APIRoute
 from pydantic import BaseModel
 
 from app.auth.origin import OriginGuard
+from app.auth.policy import MAX_BODY_BYTES
+from app.body_limit import BodyLimit
 from app.config import get_settings
-from app.routes import auth, classes
+from app.routes import auth, classes, sync
 
 settings = get_settings()
 
@@ -25,6 +27,7 @@ app = FastAPI(
     generate_unique_id_function=operation_id,
 )
 # Added last, runs first: CORS answers preflights before the origin guard sees the request.
+app.add_middleware(BodyLimit, max_bytes=MAX_BODY_BYTES)
 app.add_middleware(OriginGuard)
 app.add_middleware(
     CORSMiddleware,
@@ -36,6 +39,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(classes.teacher_router)
 app.include_router(classes.join_router)
+app.include_router(sync.router)
 
 
 class Health(BaseModel):

@@ -76,6 +76,24 @@ describe("api client", () => {
   });
 });
 
+describe("sync", () => {
+  test("pulls from the start, then after the cursor", async () => {
+    const seen: Seen[] = [];
+    const page = { attempts: [], events: [], cursor: "7", more: false };
+    const api = createApi({ fetch: fakeFetch(200, page, seen) });
+    expect(await api.sync.pull(null)).toEqual({ ok: true, data: page });
+    await api.sync.pull("7");
+    expect(seen.map((s) => s.url)).toEqual(["/api/sync/pull", "/api/sync/pull?after=7"]);
+  });
+
+  test("pushes attempts under one key", async () => {
+    const seen: Seen[] = [];
+    await createApi({ fetch: fakeFetch(200, { attempts: [] }, seen) }).sync.push([]);
+    expect(seen[0]?.init?.method).toBe("POST");
+    expect(seen[0]?.init?.body).toBe(JSON.stringify({ attempts: [] }));
+  });
+});
+
 describe("tokenFromFragment", () => {
   test("reads the token from the link's fragment", () => {
     expect(tokenFromFragment("#token=abc_DEF-123")).toBe("abc_DEF-123");
