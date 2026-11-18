@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
-import { LAB, results, tabulateToPlot, timeFor, toMeasure } from "./walk";
+import { finishPlotting, LAB, results, tabulateToPlot, timeFor, toMeasure } from "./walk";
 
 const serious = async (page: Page) => {
   const { violations } = await new AxeBuilder({ page })
@@ -63,9 +63,7 @@ test("with the layer on, the table, the graph and Analyse carry the uncertaintie
   await page.getByRole("button", { name: /Plot/ }).first().click();
 
   // Analyse: the slope's least-squares uncertainty, and g quoted with one, checked.
-  await page.getByRole("button", { name: "Finish plotting" }).click();
-  const carryOn = page.getByRole("button", { name: "Carry on as it is" });
-  if (await carryOn.isVisible()) await carryOn.click();
+  await finishPlotting(page);
   await expect(page.getByText(/^Least squares: the slope ± /)).toBeVisible();
   await page.getByLabel("g, your value").fill("9.80");
   await page.getByLabel("The uncertainty in g").fill("5");

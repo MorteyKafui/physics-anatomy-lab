@@ -10,7 +10,8 @@ export default defineConfig({
   testDir: "tests",
   fullyParallel: true,
   forbidOnly: ci,
-  retries: ci ? 1 : 0,
+  // No retries: a test that passes on its second try has a bug, in the test or the app. Find it.
+  retries: 0,
   reporter: ci ? [["github"], ["html", { open: "never" }]] : "list",
   use: { trace: "retain-on-failure" },
   projects: [

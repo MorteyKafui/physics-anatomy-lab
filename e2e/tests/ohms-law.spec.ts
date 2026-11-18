@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { WEB } from "../playwright.config";
+import { finish } from "./finish";
 import { DIAGRAM, serious, terminal, wire } from "./ohms-walk";
 
 /*
@@ -8,20 +9,6 @@ import { DIAGRAM, serious, terminal, wire } from "./ohms-walk";
  * safety block; and live readings from the circuit solver.
  */
 const OHMS = `${WEB}/lab/ohms-law`;
-
-/**
- * Finish a step. The apparatus differs a little in every attempt, so on some the coach flags a
- * reading on the way out (an outlier, say); the student reads it and finishes again to carry on.
- */
-async function finish(page: Page, button: string, next: string) {
-  const step = page.getByText(next);
-  await page.getByRole("button", { name: button }).click();
-  // No advice: the next step opens. Advice: it stays, and finishing again carries on.
-  await step
-    .waitFor({ timeout: 3000 })
-    .catch(() => page.getByRole("button", { name: button }).click());
-  await expect(step).toBeVisible();
-}
 
 /** Through the question and the prediction to the bench. */
 async function toBuild(page: Page) {

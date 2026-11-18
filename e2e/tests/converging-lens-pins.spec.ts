@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { WEB } from "../playwright.config";
+import { finish } from "./finish";
 import { serious } from "./ohms-walk";
 
 /*
@@ -96,19 +97,6 @@ test("the student levels the tips, the check passes, and the search pin finds no
   await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tabulate your readings" })).toBeVisible();
 });
-
-/**
- * Finish a step. The apparatus differs a little in every attempt, so on some the coach flags
- * something on the way out; the student reads it and finishes again to carry on.
- */
-async function finish(page: Page, button: string, next: string) {
-  const step = page.getByText(next);
-  await page.getByRole("button", { name: button }).click();
-  await step
-    .waitFor({ timeout: 3000 })
-    .catch(() => page.getByRole("button", { name: button }).click());
-  await expect(step).toBeVisible();
-}
 
 /** Where to look for no parallax at each x, cm from the lens, around every lens the seed builds. */
 const LOOK: Record<number, [number, number]> = {

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { WEB } from "../playwright.config";
+import { finish } from "./finish";
 import { serious } from "./ohms-walk";
 
 /*
@@ -135,19 +136,6 @@ test("the mixtures bench has no serious accessibility issues, building and measu
   await expect(page.getByText("Still rising", { exact: true })).toBeVisible();
   expect(await serious(page)).toEqual([]);
 });
-
-/**
- * Finish a step. On some runs the coach flags something on the way out; the student reads it and
- * finishes again to carry on.
- */
-async function finish(page: Page, button: string, next: string) {
-  const step = page.getByText(next);
-  await page.getByRole("button", { name: button }).click();
-  await step
-    .waitFor({ timeout: 3000 })
-    .catch(() => page.getByRole("button", { name: button }).click());
-  await expect(step).toBeVisible();
-}
 
 /** Set the measuring cylinder from what it reads to `to` cm³, in 10s. */
 async function cylinderTo(page: Page, from: number, to: number) {

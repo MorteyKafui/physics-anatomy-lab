@@ -1,19 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { WEB } from "../playwright.config";
+import { finish } from "./finish";
 import { DIAGRAM, serious, wire } from "./ohms-walk";
 
 const OHMS = `${WEB}/lab/ohms-law`;
-
-/** Finish a step; on some runs the coach flags something first, and finishing again carries on. */
-async function finish(page: Page, button: string, next: string) {
-  const step = page.getByText(next);
-  await page.getByRole("button", { name: button }).click();
-  await step
-    .waitFor({ timeout: 3000 })
-    .catch(() => page.getByRole("button", { name: button }).click());
-  await expect(step).toBeVisible();
-}
 
 /** Wired, then read off the wire and at each of the book's positions, up and back down. */
 async function toPlot(page: Page) {

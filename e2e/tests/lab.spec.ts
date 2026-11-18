@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { countFromOneErrorPercent } from "@pa/experiments";
 import { expect, test, type Page } from "@playwright/test";
 import { WEB } from "../playwright.config";
+import { finishPlotting } from "./walk";
 
 const LAB = `${WEB}/lab/simple-pendulum`;
 
@@ -667,10 +668,7 @@ test("no sideways scrolling at phone width on the graph sheet", async ({ page },
 /** Plot at Auto (the graph drawn for you, then kept), carry on, and arrive at Analyse. */
 async function toAnalyse(page: Page) {
   await toPlot(page);
-  await page.getByRole("button", { name: "Finish plotting" }).click();
-  const carryOn = page.getByRole("button", { name: "Carry on as it is" });
-  if (await carryOn.isVisible()) await carryOn.click();
-  await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
+  await finishPlotting(page);
 }
 
 const working = (page: Page) => page.getByRole("region", { name: "Your calculation" });
