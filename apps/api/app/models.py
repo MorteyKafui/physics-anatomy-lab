@@ -27,7 +27,7 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import CITEXT, JSONB, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, CITEXT, JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 NAMING = {
@@ -293,3 +293,119 @@ class AttemptEvent(Base):
     at_ms: Mapped[int] = mapped_column(BigInteger, nullable=False)
     kind: Mapped[str] = mapped_column(Text, nullable=False)
     data: Mapped[Any] = mapped_column(JSONB, nullable=False)
+
+
+STEP_NAMES = (
+    "'question', 'predict', 'build', 'check', 'measure', "
+    "'tabulate', 'plot', 'analyse', 'conclude', 'report'"
+)
+
+
+class LiveSession(Base):
+    """A live class: a lesson in which the teacher sees every bench as it changes (ADR 0040).
+
+    A class has at most one open live session. Its benches and messages are kept for 30 days after
+    it ends, then removed with it.
+    """
+
+    __tablename__ = "live_sessions"
+    __table_args__ = (
+        CheckConstraint(
+            "char_length(experiment_id) BETWEEN 1 AND 200", name="experiment_id_length"
+        ),
+        CheckConstraint("lesson_minutes BETWEEN 5 AND 240", name="lesson_minutes_range"),
+        CheckConstraint("ended_at IS NULL OR ended_at >= started_at", name="ends_after_start"),
+        Index(
+            "uq_live_sessions_class_id_open",
+            "class_id",
+            unique=True,
+            postgresql_where=text("ended_at IS NULL"),
+        ),
+        Index(
+            "ix_live_sessions_ended_at", "ended_at", postgresql_where=text("ended_at IS NOT NULL")
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = _id()
+    class_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("classes.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    started_by: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    experiment_id: Mapped[str] = mapped_column(Text, nullable=False)
+    lesson_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+    steps_locked: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    started_at: Mapped[datetime] = _now()
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class LiveBench(Base):
+    """What one student's bench shows the teacher in a live session: the latest summary their
+    device sent. Derived from their attempt, which stays the record; this is only the view."""
+
+    __tablename__ = "live_benches"
+    __table_args__ = (
+        PrimaryKeyConstraint("session_id", "member_id"),
+        CheckConstraint(
+            "attempt_id IS NULL OR char_length(attempt_id) BETWEEN 1 AND 200",
+            name="attempt_id_length",
+        ),
+        CheckConstraint(f"step IN ({STEP_NAMES})", name="step_known"),
+        CheckConstraint(f"completed <@ ARRAY[{STEP_NAMES}]::text[]", name="completed_known"),
+        CheckConstraint("jsonb_typeof(mistakes) = 'array'", name="mistakes_array"),
+        CheckConstraint("octet_length(mistakes::text) <= 4096", name="mistakes_small"),
+        CheckConstraint("readings BETWEEN 0 AND 10000", name="readings_range"),
+    )
+
+    session_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("live_sessions.id", ondelete="CASCADE"), nullable=False
+    )
+    member_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("class_members.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    attempt_id: Mapped[str | None] = mapped_column(Text)
+    step: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'question'"))
+    completed: Mapped[list[str]] = mapped_column(
+        ARRAY(Text), nullable=False, server_default=text("'{}'::text[]")
+    )
+    mistakes: Mapped[Any] = mapped_column(JSONB, nullable=False, server_default=text("'[]'::jsonb"))
+    readings: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    joined_at: Mapped[datetime] = _now()
+    updated_at: Mapped[datetime] = _now()
+    last_seen_at: Mapped[datetime] = _now()
+    measured_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class LiveMessage(Base):
+    """Something the teacher sent in a live session: a hint push, a broadcast or a note.
+
+    `to_member_ids` is who it was for, fixed when it was sent (NULL for everyone). Its `id` is
+    the catch-up cursor: a student who reconnects gets the messages after the last one they saw.
+    """
+
+    __tablename__ = "live_messages"
+    __table_args__ = (
+        CheckConstraint("kind IN ('hint', 'broadcast', 'note')", name="kind_known"),
+        CheckConstraint("jsonb_typeof(data) = 'object'", name="data_object"),
+        CheckConstraint("octet_length(data::text) <= 2048", name="data_small"),
+        CheckConstraint(
+            "to_member_ids IS NULL OR cardinality(to_member_ids) <= 500", name="recipients_bounded"
+        ),
+        Index("ix_live_messages_session_id_id", "session_id", "id"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    session_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("live_sessions.id", ondelete="CASCADE"), nullable=False
+    )
+    kind: Mapped[str] = mapped_column(Text, nullable=False)
+    to_member_ids: Mapped[list[uuid.UUID] | None] = mapped_column(ARRAY(UUID(as_uuid=True)))
+    data: Mapped[Any] = mapped_column(JSONB, nullable=False)
+    sent_by: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    created_at: Mapped[datetime] = _now()
+    undone_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
