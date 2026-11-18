@@ -7,7 +7,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "generate": "openapi-ts && prettier --write openapi.json src/generated",
     "lint": "eslint .",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.99.0"
   }
 }
