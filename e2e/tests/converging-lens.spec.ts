@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { WEB } from "../playwright.config";
+import { finish } from "./finish";
 import { serious } from "./ohms-walk";
 
 /*
@@ -69,8 +70,12 @@ test("the student sets up the bench, the check passes, and the screen finds the 
   // Short of the image the screen shows it blurred; at the right place, sharp.
   await expect(chip(page)).toHaveText("Blurred");
   const at = await findSharp(page);
-  // The sharpest image is short of the thin-lens 60.0 cm, by the lens's aberration (brief decision 7).
-  expect(at - 30).toBeLessThan(60);
+  // The sharpest image is short of the thin-lens v by the lens's aberration (brief decision 7).
+  // Each attempt's lens is f = 15.0 cm ± 2%, so the thin-lens v at u = 20 cm runs from 55.6 to
+  // 65.1 cm, not always 60.0: the window is the one LOOK gives for every lens the seed can build.
+  const [from, to] = LOOK[20]!;
+  expect(at - 30).toBeGreaterThanOrEqual(from);
+  expect(at - 30).toBeLessThanOrEqual(to);
   await expect(page.getByRole("img", { name: /The gauze, upside down and sharp/ })).toBeVisible();
   await page.getByRole("button", { name: "Take this reading" }).click();
   await expect(page.locator("aside ol li")).toHaveCount(1);
@@ -79,19 +84,6 @@ test("the student sets up the bench, the check passes, and the screen finds the 
   await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tabulate your readings" })).toBeVisible();
 });
-
-/**
- * Finish a step. The apparatus differs a little in every attempt, so on some the coach flags
- * something on the way out; the student reads it and finishes again to carry on.
- */
-async function finish(page: Page, button: string, next: string) {
-  const step = page.getByText(next);
-  await page.getByRole("button", { name: button }).click();
-  await step
-    .waitFor({ timeout: 3000 })
-    .catch(() => page.getByRole("button", { name: button }).click());
-  await expect(step).toBeVisible();
-}
 
 /**
  * Where to look for the sharp image at each u, cm from the lens: around every lens the seed can

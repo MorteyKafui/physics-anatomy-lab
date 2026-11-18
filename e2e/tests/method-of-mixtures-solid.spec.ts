@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { WEB } from "../playwright.config";
+import { finish } from "./finish";
 import { serious } from "./ohms-walk";
 
 /*
@@ -120,19 +121,6 @@ test("the hot-solid bench has no serious accessibility issues, weighing and meas
   await page.getByRole("button", { name: "Read it now" }).click();
   expect(await serious(page)).toEqual([]);
 });
-
-/**
- * Finish a step. On some runs the coach flags something on the way out; the student reads it and
- * finishes again to carry on.
- */
-async function finish(page: Page, button: string, next: string) {
-  const step = page.getByText(next);
-  await page.getByRole("button", { name: button }).click();
-  await step
-    .waitFor({ timeout: 3000 })
-    .catch(() => page.getByRole("button", { name: button }).click());
-  await expect(step).toBeVisible();
-}
 
 const C = { copper: 390, brass: 380, iron: 450, aluminium: 900 } as const;
 

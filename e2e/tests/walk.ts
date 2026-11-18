@@ -92,17 +92,29 @@ export async function chooseHelp(page: Page, level: "Auto" | "Check my work" | "
 export async function tabulateToPlot(page: Page) {
   await results(page).getByRole("button", { name: "Standard" }).click();
   await results(page).getByRole("button", { name: "Fill in my readings" }).click();
+  // The readings are saved before the table shows them: wait for them, as a student would.
+  await expect(cell(page, 1, "t₁/s")).toHaveValue(/^\d+\.\d{2}$/);
   await page.getByRole("button", { name: "Finish tabulating" }).click();
   await page.getByRole("button", { name: "Carry on as it is" }).click();
   await expect(page.getByText("Step 7 of 10 · Plot")).toBeVisible();
 }
 
-/** From Plot, through Analyse at Auto, so the slope and g are worked out from the readings. */
-export async function plotToConclude(page: Page) {
+/**
+ * Finish plotting and arrive at Analyse. The coach may have advice on the graph or not: wait for
+ * one or the other (an instant isVisible() check would race the coach), then carry on past it.
+ */
+export async function finishPlotting(page: Page) {
   await page.getByRole("button", { name: "Finish plotting" }).click();
   const carryOn = page.getByRole("button", { name: "Carry on as it is" });
+  const analyse = page.getByText("Step 8 of 10 · Analyse");
+  await expect(carryOn.or(analyse)).toBeVisible();
   if (await carryOn.isVisible()) await carryOn.click();
-  await expect(page.getByText("Step 8 of 10 · Analyse")).toBeVisible();
+  await expect(analyse).toBeVisible();
+}
+
+/** From Plot, through Analyse at Auto, so the slope and g are worked out from the readings. */
+export async function plotToConclude(page: Page) {
+  await finishPlotting(page);
   await page.getByRole("button", { name: "Finish analysing" }).click();
   await expect(page.getByText("Step 9 of 10 · Conclude")).toBeVisible();
 }
