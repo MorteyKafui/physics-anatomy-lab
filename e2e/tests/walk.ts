@@ -93,7 +93,7 @@ export async function tabulateToPlot(page: Page) {
   await results(page).getByRole("button", { name: "Standard" }).click();
   await results(page).getByRole("button", { name: "Fill in my readings" }).click();
   // The readings are saved before the table shows them: wait for them, as a student would.
-  await expect(cell(page, 1, "t₁/s")).toHaveValue(/^d+.d{2}$/);
+  await expect(cell(page, 1, "t₁/s")).toHaveValue(/^\d+\.\d{2}$/);
   await page.getByRole("button", { name: "Finish tabulating" }).click();
   await page.getByRole("button", { name: "Carry on as it is" }).click();
   await expect(page.getByText("Step 7 of 10 · Plot")).toBeVisible();
