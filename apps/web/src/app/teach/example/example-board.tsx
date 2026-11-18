@@ -72,7 +72,6 @@ export function ExampleBoard() {
       snapshot={snapshot}
       now={now}
       actions={actions}
-      banner={t("teach.example.note")}
     />
   );
 }
