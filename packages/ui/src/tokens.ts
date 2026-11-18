@@ -21,6 +21,32 @@ export const colour = {
   accentSoft: "#FF8A6E",
 } as const;
 
+/** Dashboard tones (D30): hover rows, status chips and the dark half of hatched bars. */
+export const dashTone = {
+  hover: "#1A1A19",
+  press: "#242322",
+  quiet: "#55534F",
+  axis: "#6B6963",
+  chipRedBg: "#2A1414",
+  chipRedFg: "#F27A6E",
+  chipRedLine: "#5A2320",
+  chipAmberBg: "#22190A",
+  chipAmberFg: "#F5C46B",
+  chipAmberLine: "#4A3A16",
+  chipVioletBg: "#1A1730",
+  chipVioletFg: "#B3A8FA",
+  chipVioletLine: "#352D66",
+  chipGreenBg: "#132111",
+  chipGreenFg: "#8FD18A",
+  chipGreenLine: "#24451F",
+  chipGreyBg: "#1A1A19",
+  chipGreyFg: "#C9C6BF",
+  chipGreyLine: "#2E2D2B",
+  hatchOk: "#183317",
+  hatchDanger: "#3A1710",
+  hatchWarn: "#3A2A0F",
+} as const;
+
 export type Topic =
   "mechanics" | "heat" | "light" | "waves" | "electricity" | "measurement" | "modern";
 
