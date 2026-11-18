@@ -16,6 +16,24 @@ export type AttemptBatch = {
 };
 
 /**
+ * AttemptEventsPage
+ */
+export type AttemptEventsPage = {
+  /**
+   * Events
+   */
+  events: Array<SyncEvent>;
+  /**
+   * Cursor
+   */
+  cursor: string;
+  /**
+   * More
+   */
+  more: boolean;
+};
+
+/**
  * AttemptHeader
  */
 export type AttemptHeader = {
@@ -50,6 +68,157 @@ export type AttemptHeader = {
 };
 
 /**
+ * BenchOut
+ */
+export type BenchOut = {
+  /**
+   * Member Id
+   */
+  member_id: string;
+  /**
+   * Display Name
+   */
+  display_name: string;
+  /**
+   * Attempt Id
+   */
+  attempt_id: string | null;
+  /**
+   * Step
+   */
+  step:
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report";
+  /**
+   * Completed
+   */
+  completed?: Array<
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report"
+  >;
+  /**
+   * Mistakes
+   */
+  mistakes?: Array<Mistake>;
+  /**
+   * Readings
+   */
+  readings: number;
+  /**
+   * Joined At
+   */
+  joined_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+  /**
+   * Last Seen At
+   */
+  last_seen_at: string;
+  /**
+   * Measured At
+   */
+  measured_at: string | null;
+  /**
+   * Here
+   *
+   * Heard from in the last minute.
+   */
+  here: boolean;
+};
+
+/**
+ * BroadcastSend
+ */
+export type BroadcastSend = {
+  /**
+   * Text
+   */
+  text: string;
+};
+
+/**
+ * ClassAttempt
+ */
+export type ClassAttempt = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Member Id
+   */
+  member_id: string;
+  /**
+   * Display Name
+   */
+  display_name: string;
+  /**
+   * Client Id
+   *
+   * The device's attempt id.
+   */
+  client_id: string;
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Mode
+   */
+  mode: "guided" | "exam" | "own-data";
+  /**
+   * Created At
+   *
+   * ms since 1970, from the device.
+   */
+  created_at: number;
+  /**
+   * Updated At
+   *
+   * ms since 1970, from the device.
+   */
+  updated_at: number;
+  /**
+   * Events
+   */
+  events: number;
+  /**
+   * Step
+   *
+   * The step of the attempt's latest step.go-to event.
+   */
+  step:
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report";
+};
+
+/**
  * ClassCreate
  */
 export type ClassCreate = {
@@ -63,6 +232,36 @@ export type ClassCreate = {
    * The teacher confirms the school allows this class to use Physics Anatomy.
    */
   school_permission_confirmed: true;
+};
+
+/**
+ * ClassMistake
+ */
+export type ClassMistake = {
+  /**
+   * Rule
+   */
+  rule: string;
+  /**
+   * Key
+   */
+  key: string;
+  /**
+   * Skill
+   */
+  skill: string;
+  /**
+   * Students
+   *
+   * Students the coach has shown it to.
+   */
+  students: number;
+  /**
+   * Times
+   *
+   * Times the coach has shown it.
+   */
+  times: number;
 };
 
 /**
@@ -192,6 +391,22 @@ export type Health = {
 };
 
 /**
+ * HintPush
+ *
+ * One hint to everyone whose bench shows this mistake now (GLOSSARY.md, "Hint push").
+ */
+export type HintPush = {
+  /**
+   * Rule
+   */
+  rule: string;
+  /**
+   * Key
+   */
+  key: string;
+};
+
+/**
  * JoinPreview
  */
 export type JoinPreview = {
@@ -230,6 +445,125 @@ export type JoinRequest = {
 export type JsonValue = unknown;
 
 /**
+ * LiveMessageOut
+ */
+export type LiveMessageOut = {
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Kind
+   */
+  kind: "hint" | "broadcast" | "note";
+  /**
+   * Data
+   */
+  data: {
+    [key: string]: JsonValue;
+  };
+  /**
+   * To Member Ids
+   *
+   * Who it was for; null for everyone.
+   */
+  to_member_ids: Array<string> | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Undone At
+   */
+  undone_at: string | null;
+};
+
+/**
+ * LiveSessionOut
+ */
+export type LiveSessionOut = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Class Id
+   */
+  class_id: string;
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Lesson Minutes
+   */
+  lesson_minutes: number;
+  /**
+   * Steps Locked
+   */
+  steps_locked: boolean;
+  /**
+   * Started At
+   */
+  started_at: string;
+  /**
+   * Ended At
+   */
+  ended_at: string | null;
+};
+
+/**
+ * LiveSnapshot
+ *
+ * Everything the live board shows, read from the database. The socket sends what changes.
+ */
+export type LiveSnapshot = {
+  session: LiveSessionOut | null;
+  /**
+   * Members
+   *
+   * Students in the class.
+   */
+  members: number;
+  /**
+   * Benches
+   */
+  benches: Array<BenchOut>;
+  /**
+   * Messages
+   */
+  messages: Array<LiveMessageOut>;
+  /**
+   * Server Time
+   */
+  server_time: string;
+};
+
+/**
+ * LiveStart
+ */
+export type LiveStart = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Lesson Minutes
+   */
+  lesson_minutes?: number;
+};
+
+/**
+ * LockSet
+ */
+export type LockSet = {
+  /**
+   * Locked
+   */
+  locked: boolean;
+};
+
+/**
  * MemberOut
  */
 export type MemberOut = {
@@ -245,6 +579,40 @@ export type MemberOut = {
    * Created At
    */
   created_at: string;
+};
+
+/**
+ * Mistake
+ *
+ * A coach finding on a student's bench: the rule that found it and its message key.
+ */
+export type Mistake = {
+  /**
+   * Rule
+   */
+  rule: string;
+  /**
+   * Key
+   */
+  key: string;
+  /**
+   * Skill
+   */
+  skill: "apparatus" | "measurement" | "tabulation" | "graph" | "analysis" | "writing";
+};
+
+/**
+ * NoteSend
+ */
+export type NoteSend = {
+  /**
+   * Member Id
+   */
+  member_id: string;
+  /**
+   * Text
+   */
+  text: string;
 };
 
 /**
@@ -351,6 +719,30 @@ export type SignInMethods = {
    * Google
    */
   google: boolean;
+};
+
+/**
+ * StepCount
+ */
+export type StepCount = {
+  /**
+   * Step
+   */
+  step:
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report";
+  /**
+   * Students
+   */
+  students: number;
 };
 
 /**
@@ -1040,6 +1432,481 @@ export type PullResponses = {
 };
 
 export type PullResponse = PullResponses[keyof PullResponses];
+
+export type ListClassAttemptsData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: {
+    /**
+     * Experiment Id
+     *
+     * Only this experiment.
+     */
+    experiment_id?: string | null;
+  };
+  url: "/classes/{class_id}/attempts";
+};
+
+export type ListClassAttemptsErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListClassAttemptsError = ListClassAttemptsErrors[keyof ListClassAttemptsErrors];
+
+export type ListClassAttemptsResponses = {
+  /**
+   * Response Listclassattempts
+   *
+   * Successful Response
+   */
+  200: Array<ClassAttempt>;
+};
+
+export type ListClassAttemptsResponse =
+  ListClassAttemptsResponses[keyof ListClassAttemptsResponses];
+
+export type ListAttemptEventsData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+    /**
+     * Attempt Id
+     */
+    attempt_id: string;
+  };
+  query?: {
+    /**
+     * After
+     *
+     * The cursor from the last page.
+     */
+    after?: string | null;
+  };
+  url: "/classes/{class_id}/attempts/{attempt_id}/events";
+};
+
+export type ListAttemptEventsErrors = {
+  /**
+   * No such class or attempt of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListAttemptEventsError = ListAttemptEventsErrors[keyof ListAttemptEventsErrors];
+
+export type ListAttemptEventsResponses = {
+  /**
+   * Successful Response
+   */
+  200: AttemptEventsPage;
+};
+
+export type ListAttemptEventsResponse =
+  ListAttemptEventsResponses[keyof ListAttemptEventsResponses];
+
+export type ListClassMistakesData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: {
+    /**
+     * Experiment Id
+     *
+     * Only this experiment.
+     */
+    experiment_id?: string | null;
+  };
+  url: "/classes/{class_id}/mistakes";
+};
+
+export type ListClassMistakesErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListClassMistakesError = ListClassMistakesErrors[keyof ListClassMistakesErrors];
+
+export type ListClassMistakesResponses = {
+  /**
+   * Response Listclassmistakes
+   *
+   * Successful Response
+   */
+  200: Array<ClassMistake>;
+};
+
+export type ListClassMistakesResponse =
+  ListClassMistakesResponses[keyof ListClassMistakesResponses];
+
+export type GetClassProgressData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query: {
+    /**
+     * Experiment Id
+     */
+    experiment_id: string;
+  };
+  url: "/classes/{class_id}/progress";
+};
+
+export type GetClassProgressErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetClassProgressError = GetClassProgressErrors[keyof GetClassProgressErrors];
+
+export type GetClassProgressResponses = {
+  /**
+   * Response Getclassprogress
+   *
+   * Successful Response
+   */
+  200: Array<StepCount>;
+};
+
+export type GetClassProgressResponse = GetClassProgressResponses[keyof GetClassProgressResponses];
+
+export type GetLiveData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live";
+};
+
+export type GetLiveErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetLiveError = GetLiveErrors[keyof GetLiveErrors];
+
+export type GetLiveResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveSnapshot;
+};
+
+export type GetLiveResponse = GetLiveResponses[keyof GetLiveResponses];
+
+export type StartLiveData = {
+  body: LiveStart;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live";
+};
+
+export type StartLiveErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type StartLiveError = StartLiveErrors[keyof StartLiveErrors];
+
+export type StartLiveResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveSessionOut;
+};
+
+export type StartLiveResponse = StartLiveResponses[keyof StartLiveResponses];
+
+export type EndLiveData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live/end";
+};
+
+export type EndLiveErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * No live class is running
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type EndLiveError = EndLiveErrors[keyof EndLiveErrors];
+
+export type EndLiveResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveSessionOut;
+};
+
+export type EndLiveResponse = EndLiveResponses[keyof EndLiveResponses];
+
+export type SetLiveLockData = {
+  body: LockSet;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live/lock";
+};
+
+export type SetLiveLockErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * No live class is running
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type SetLiveLockError = SetLiveLockErrors[keyof SetLiveLockErrors];
+
+export type SetLiveLockResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveSessionOut;
+};
+
+export type SetLiveLockResponse = SetLiveLockResponses[keyof SetLiveLockResponses];
+
+export type PushHintData = {
+  body: HintPush;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live/hints";
+};
+
+export type PushHintErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * No live class is running
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type PushHintError = PushHintErrors[keyof PushHintErrors];
+
+export type PushHintResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveMessageOut;
+};
+
+export type PushHintResponse = PushHintResponses[keyof PushHintResponses];
+
+export type BroadcastData = {
+  body: BroadcastSend;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live/broadcast";
+};
+
+export type BroadcastErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * No live class is running
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type BroadcastError = BroadcastErrors[keyof BroadcastErrors];
+
+export type BroadcastResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveMessageOut;
+};
+
+export type BroadcastResponse = BroadcastResponses[keyof BroadcastResponses];
+
+export type SendNoteData = {
+  body: NoteSend;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live/notes";
+};
+
+export type SendNoteErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * No live class is running
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type SendNoteError = SendNoteErrors[keyof SendNoteErrors];
+
+export type SendNoteResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveMessageOut;
+};
+
+export type SendNoteResponse = SendNoteResponses[keyof SendNoteResponses];
+
+export type UndoMessageData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+    /**
+     * Message Id
+     */
+    message_id: number;
+  };
+  query?: never;
+  url: "/classes/{class_id}/live/messages/{message_id}/undo";
+};
+
+export type UndoMessageErrors = {
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * No live class is running
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type UndoMessageError = UndoMessageErrors[keyof UndoMessageErrors];
+
+export type UndoMessageResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveMessageOut;
+};
+
+export type UndoMessageResponse = UndoMessageResponses[keyof UndoMessageResponses];
 
 export type HealthData = {
   body?: never;
