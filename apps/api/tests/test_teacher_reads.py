@@ -1,4 +1,4 @@
-"""Teachers read their own classes' work, and nothing else (ADR 0040)."""
+"""Teachers read their own classes' work, and nothing else (ADR 0041)."""
 
 import uuid
 from typing import Any

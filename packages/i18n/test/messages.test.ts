@@ -4,6 +4,7 @@ import { emphasis, enGB, hasMessage, t } from "../src";
 import { enGBConvergingLens } from "../src/converging-lens";
 import { enGBMethodOfMixtures } from "../src/method-of-mixtures";
 import { enGBOhmsLaw } from "../src/ohms-law";
+import { enGBTeach } from "../src/teach";
 
 describe("t", () => {
   test("fills placeholders", () => {
@@ -38,6 +39,7 @@ describe("the en-GB messages", () => {
     ...Object.entries(enGBOhmsLaw),
     ...Object.entries(enGBConvergingLens),
     ...Object.entries(enGBMethodOfMixtures),
+    ...Object.entries(enGBTeach),
   ];
 
   test("an experiment's own file repeats no shared key", () => {
@@ -50,6 +52,21 @@ describe("the en-GB messages", () => {
         (k) => k in enGB || k in enGBOhmsLaw || k in enGBConvergingLens,
       ),
     ).toEqual([]);
+  });
+
+  test("the teacher's file repeats no shared key", () => {
+    expect(Object.keys(enGBTeach).filter((k) => k in enGB)).toEqual([]);
+  });
+
+  test("every pendulum mistake the coach can raise has the teacher's words for it", () => {
+    for (const rule of [
+      "pendulum-count-from-one",
+      "pendulum-thread-on-clamp",
+      "pendulum-stopped-early",
+    ]) {
+      for (const suffix of ["", ".chip", ".detail"])
+        expect(hasMessage(`teach.mistake.${rule}${suffix}`)).toBe(true);
+    }
   });
 
   test("an experiment's messages are found once its file is registered", () => {

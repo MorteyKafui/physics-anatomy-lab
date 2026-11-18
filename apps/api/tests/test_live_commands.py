@@ -1,4 +1,4 @@
-"""Live classes over HTTP (ADR 0040): starting, the board's snapshot and the teacher's commands.
+"""Live classes over HTTP (ADR 0041): starting, the board's snapshot and the teacher's commands.
 
 The sockets are tested in test_live_socket.py; here benches are written straight to the table.
 """

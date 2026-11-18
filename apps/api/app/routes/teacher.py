@@ -2,7 +2,7 @@
 
 Every query starts from a class the teacher owns (`owned_class`, 404 otherwise) and joins
 attempts through `class_members` of that class, so no id from the URL can reach another class's
-work (ADR 0040). A teacher's own attempts are not in a class and never appear here.
+work (ADR 0041). A teacher's own attempts are not in a class and never appear here.
 """
 
 import uuid

@@ -1,1 +1,1 @@
-"""Live classes over WebSockets, relayed between API containers by PostgreSQL (ADR 0040)."""
+"""Live classes over WebSockets, relayed between API containers by PostgreSQL (ADR 0041)."""

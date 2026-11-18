@@ -122,7 +122,7 @@ export function createApi(options: ApiOptions = {}) {
       issueRejoinCode: (id: string, memberId: string) =>
         call<RejoinCodeOut>("POST", `/classes/${path(id)}/members/${path(memberId)}/rejoin-code`),
     },
-    /** A teacher's reads of their own class (ADR 0040). */
+    /** A teacher's reads of their own class (ADR 0041). */
     teacher: {
       attempts: (classId: string, experimentId?: string) =>
         call<ClassAttempt[]>(

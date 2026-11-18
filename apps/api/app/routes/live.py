@@ -1,4 +1,4 @@
-"""Live classes (ADR 0040): the teacher's commands over HTTP, and a WebSocket per open board.
+"""Live classes (ADR 0041): the teacher's commands over HTTP, and a WebSocket per open board.
 
 - Teachers start, lock, push hints, broadcast, send notes and undo over HTTP, so every command is
   a normal request with the Origin guard, a rate limit and one transaction. Each command is stored
@@ -167,7 +167,7 @@ async def _send(
 
 async def purge_ended_sessions(db: AsyncSession, now: datetime) -> None:
     """Remove live sessions (and with them benches and messages) 30 days after they ended.
-    Run when a session starts until the job queue exists (ADR 0040)."""
+    Run when a session starts until the job queue exists (ADR 0041)."""
     await db.execute(delete(LiveSession).where(LiveSession.ended_at < now - KEEP_ENDED_SESSIONS))
 
 

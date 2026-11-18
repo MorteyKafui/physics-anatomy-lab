@@ -27,7 +27,7 @@ def operation_id(route: APIRoute) -> str:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    """Each container listens for live-class messages for as long as it runs (ADR 0040)."""
+    """Each container listens for live-class messages for as long as it runs (ADR 0041)."""
     hub = Hub(listen_dsn(settings.database_url))
     app.state.hub = hub
     await hub.start()

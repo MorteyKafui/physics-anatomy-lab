@@ -1,4 +1,4 @@
-// Live classes over WebSockets (ADR 0040). The frames mirror apps/api/app/live/schemas.py and
+// Live classes over WebSockets (ADR 0041). The frames mirror apps/api/app/live/schemas.py and
 // app/routes/live.py; they are not in OpenAPI, so they are written here by hand and listed in
 // the ADR.
 //
@@ -46,7 +46,7 @@ export interface BenchSummary {
   readonly readings: number;
 }
 
-/** The numbers ADR 0040 fixes on the device side. */
+/** The numbers ADR 0041 fixes on the device side. */
 export const LIVE = {
   benchEveryMs: 2000,
   heartbeatMs: 25_000,

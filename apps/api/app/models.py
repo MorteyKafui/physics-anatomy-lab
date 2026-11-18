@@ -302,7 +302,7 @@ STEP_NAMES = (
 
 
 class LiveSession(Base):
-    """A live class: a lesson in which the teacher sees every bench as it changes (ADR 0040).
+    """A live class: a lesson in which the teacher sees every bench as it changes (ADR 0041).
 
     A class has at most one open live session. Its benches and messages are kept for 30 days after
     it ends, then removed with it.

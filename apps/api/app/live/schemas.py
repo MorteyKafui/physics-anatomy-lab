@@ -1,4 +1,4 @@
-"""Bodies for live classes and the teacher's reads (ADR 0040).
+"""Bodies for live classes and the teacher's reads (ADR 0041).
 
 REST bodies become the OpenAPI schema. WebSocket frames are not in OpenAPI; their TypeScript
 mirror is `packages/api-client/src/live.ts`, and the ADR lists every frame.
@@ -133,10 +133,8 @@ class BenchOut(BaseModel):
     display_name: str
     attempt_id: str | None
     step: StepName
-    completed: Annotated[list[StepName], Field(max_length=10, default_factory=list[StepName])]
-    mistakes: Annotated[
-        list[Mistake], Field(max_length=MAX_MISTAKES, default_factory=list[Mistake])
-    ]
+    completed: list[StepName]
+    mistakes: list[Mistake]
     readings: int
     joined_at: datetime
     updated_at: datetime

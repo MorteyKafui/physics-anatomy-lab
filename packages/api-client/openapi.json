@@ -1695,7 +1695,6 @@
               ]
             },
             "type": "array",
-            "maxItems": 10,
             "title": "Completed"
           },
           "mistakes": {
@@ -1703,7 +1702,6 @@
               "$ref": "#/components/schemas/Mistake"
             },
             "type": "array",
-            "maxItems": 10,
             "title": "Mistakes"
           },
           "readings": {
@@ -1749,6 +1747,8 @@
           "display_name",
           "attempt_id",
           "step",
+          "completed",
+          "mistakes",
           "readings",
           "joined_at",
           "updated_at",

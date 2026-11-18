@@ -1,4 +1,4 @@
-"""Live classes: live sessions, their benches and the teacher's messages (ADR 0040).
+"""Live classes: live sessions, their benches and the teacher's messages (ADR 0041).
 
 New tables only, so it takes no locks on existing data; the downgrade drops them.
 

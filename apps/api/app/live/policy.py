@@ -1,4 +1,4 @@
-"""The numbers ADR 0040 fixes for live classes. Changing one needs a new decision record."""
+"""The numbers ADR 0041 fixes for live classes. Changing one needs a new decision record."""
 
 from datetime import timedelta
 

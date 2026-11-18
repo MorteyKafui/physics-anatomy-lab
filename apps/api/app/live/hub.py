@@ -3,7 +3,7 @@
 Every change is written to the database and announced with NOTIFY in the same transaction, so a
 message reaches sockets only once it is stored, whichever container each socket is on. If the
 LISTEN connection drops, messages sent meanwhile are missed, so every socket is told to `resync`
-from the database once it is back (ADR 0040).
+from the database once it is back (ADR 0041).
 """
 
 import asyncio

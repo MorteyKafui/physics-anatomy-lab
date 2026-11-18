@@ -100,7 +100,7 @@ export type BenchOut = {
   /**
    * Completed
    */
-  completed?: Array<
+  completed: Array<
     | "question"
     | "predict"
     | "build"
@@ -115,7 +115,7 @@ export type BenchOut = {
   /**
    * Mistakes
    */
-  mistakes?: Array<Mistake>;
+  mistakes: Array<Mistake>;
   /**
    * Readings
    */

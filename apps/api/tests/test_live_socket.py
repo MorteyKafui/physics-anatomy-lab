@@ -1,4 +1,4 @@
-"""Live sockets end to end (ADR 0040): a real server, real handshakes, NOTIFY through PostgreSQL.
+"""Live sockets end to end (ADR 0041): a real server, real handshakes, NOTIFY through PostgreSQL.
 
 These tests commit, so each uses fresh email addresses and deletes its teachers at the end (the
 classes, students, sessions and live rows go with them).
