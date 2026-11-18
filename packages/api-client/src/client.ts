@@ -4,6 +4,7 @@
 // Nothing here is on the lab's critical path: the lab works signed out and offline, and these
 // calls are made only from sign-in, join and teacher screens.
 import type {
+  AttemptBatch,
   ClassCreate,
   ClassOut,
   ClassUpdate,
@@ -12,6 +13,8 @@ import type {
   JoinRequest,
   MeResponse,
   MemberOut,
+  PullResult,
+  PushResult,
   RejoinCodeOut,
   SignInMethods,
   StudentMe,
@@ -104,6 +107,18 @@ export function createApi(options: ApiOptions = {}) {
       members: (id: string) => call<MemberOut[]>("GET", `/classes/${path(id)}/members`),
       issueRejoinCode: (id: string, memberId: string) =>
         call<RejoinCodeOut>("POST", `/classes/${path(id)}/members/${path(memberId)}/rejoin-code`),
+    },
+    /**
+     * Event sync (ADR 0039). The engine's syncAccount drives these in the background; the lab
+     * never waits on them.
+     */
+    sync: {
+      push: (attempts: AttemptBatch[]) => call<PushResult>("POST", "/sync/push", { attempts }),
+      pull: (after: string | null) =>
+        call<PullResult>(
+          "GET",
+          after === null ? "/sync/pull" : `/sync/pull?after=${encodeURIComponent(after)}`,
+        ),
     },
     join: {
       preview: (code: string) => call<JoinPreview>("GET", `/join/${path(code)}`),

@@ -105,6 +105,10 @@ request that introduces it.
 - **Class member.** In code, a student in one class: a display name and that class. Not a user.
 - **Re-join code.** A one-time personal code a teacher gives a student who lost their device, such
   as 4KQP-7MZX. It works once, for 24 hours, and brings back that student's place in the class.
+- **Sync.** Sending an account's events the server lacks and fetching the ones the device lacks.
+  It runs in the background; the lab never waits for it.
+- **Adopt.** Adding attempts done signed out on this device to an account. The person always
+  chooses which, because school computers are shared.
 - **Sign-in link.** The email link a teacher signs in with. It works once, for 15 minutes.
 - **Live class.** A teaching session where the teacher sees every bench in real time.
 - **Hint push.** One hint sent to every student who is making the same mistake.

@@ -71,3 +71,14 @@ export {
 export type { ReportCommand, ReportFormat, ReportState } from "./report/report";
 export { decideExam, EMPTY_EXAM, examProjection } from "./exam/exam";
 export type { ExamCommand, ExamState } from "./exam/exam";
+export {
+  adopt,
+  batchesOf,
+  PUSH_MAX_ATTEMPTS,
+  PUSH_MAX_EVENTS,
+  syncAccount,
+  unheldAttempts,
+} from "./sync/sync";
+export type { PullPage, PushBatch, Reply, SyncResult, SyncTransport } from "./sync/sync";
+export { createIndexedDbHoldings, createMemoryHoldings, HeldElsewhereError } from "./sync/holdings";
+export type { Holdings, IndexedDbHoldingsOptions } from "./sync/holdings";

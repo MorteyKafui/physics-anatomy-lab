@@ -44,6 +44,18 @@ for the server.
 - Sync runs in the background when the device is online and signed in. Nothing in the lab waits
   for it (AGENTS.md rule 5).
 
+### On the device
+
+- `packages/engine` has the loop (`syncAccount`): push this account's changed attempts, then
+  pull pages until there are no more, merging each one and keeping the cursor. It stops at the
+  first failed call (offline, signed out) and the next run carries on.
+- What has been pushed is marked by **how many events** of an attempt were sent, not by time,
+  because devices' clocks disagree and events are only ever added. A changed attempt is sent
+  whole; the server skips what it has. An event recorded while a sync runs is still pushed the
+  next time.
+- The device's record of holders, push marks and cursors is its own IndexedDB database
+  (`physics-anatomy-sync`), so the lab's event store is unchanged.
+
 ### Adopting signed-out work
 
 - Work done signed out belongs to the device, not to anyone. The device keeps a small table of
