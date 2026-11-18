@@ -74,7 +74,9 @@ sessions, one-time codes and rate-limit counters all live in PostgreSQL.
 - A code does not expire. The teacher can **rotate** it at any time (the old code stops working
   at once; students already in the class are not affected) or **close joining**.
 - Wrong codes are rate-limited per network address: 20 wrong tries in 10 minutes, then a wait.
-  Only wrong codes count, because a whole school class often shares one address.
+  Only wrong codes count, because a whole school class often shares one address. Each try is
+  counted before the code is looked up and forgiven if it was right, so parallel guesses cannot
+  all slip past the limit.
 - Creating a class needs the teacher to confirm the school's permission (ADR 0011), and the time
   is recorded. AI help is off for a new class (ADR 0008).
 
@@ -88,7 +90,8 @@ sessions, one-time codes and rate-limit counters all live in PostgreSQL.
 ### Re-join codes (student recovery)
 
 - A teacher can issue a one-time personal re-join code for one student: 8 characters from the
-  same alphabet, valid for **24 hours**, stored as a hash.
+  same alphabet, valid for **24 hours**, stored as a hash. A student has at most one unused code;
+  a new one replaces the old.
 - Using it signs the student in as that member and ends their other sessions (the lost device).
   Wrong re-join codes share the wrong-class-code limit.
 
@@ -98,7 +101,12 @@ sessions, one-time codes and rate-limit counters all live in PostgreSQL.
 - Every POST, PUT, PATCH and DELETE that carries an `Origin` header must come from an allowed
   origin, and a request carrying the session cookie must carry `Origin`. With SameSite=Lax this
   stops cross-site request forgery without a second token.
-- Rate-limit counters are rows in `rate_limits`, counted in fixed windows.
+- Rate-limit counters are rows in `rate_limits`, counted in fixed windows. An IPv6 address counts
+  by its /64. Starting a Google sign-in is limited to 30 per address in 10 minutes.
+- The client's address comes from the header the proxy in front sets (`cf-connecting-ip` behind
+  Cloudflare). Preview, staging and production refuse to start without `CLIENT_IP_HEADER`, or
+  every visitor would share the proxy's address and one limit. The API must be reachable only
+  through that proxy, or the header could be forged.
 - Every sign-in, sign-out, join, rotation and refusal is logged as a structured event with the
   principal's id, never the email or display name.
 

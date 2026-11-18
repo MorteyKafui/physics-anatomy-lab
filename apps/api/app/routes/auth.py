@@ -19,6 +19,7 @@ from app.auth.policy import (
     EMAIL_LINK_LIFETIME,
     EMAIL_LINKS_PER_ADDRESS,
     EMAIL_LINKS_PER_EMAIL,
+    GOOGLE_STARTS_PER_ADDRESS,
     OAUTH_STATE_LIFETIME,
 )
 from app.auth.sessions import (
@@ -30,7 +31,7 @@ from app.auth.sessions import (
     start_teacher_session,
 )
 from app.config import get_settings
-from app.db import get_db
+from app.db import Db
 from app.models import ClassMember, EmailLinkToken, OAuthState, SchoolClass, User
 from app.schemas import (
     ClassSummary,
@@ -47,7 +48,6 @@ from app.schemas import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 log = structlog.get_logger()
 
-Db = Annotated[AsyncSession, Depends(get_db)]
 OAUTH_COOKIE = "pa_oauth_state"
 
 
@@ -181,8 +181,11 @@ GoogleDep = Annotated[GoogleProvider, Depends(_google_or_404)]
 
 
 @router.get("/google/start", status_code=status.HTTP_302_FOUND, response_class=RedirectResponse)
-async def google_start(db: Db, google: GoogleDep) -> RedirectResponse:
+async def google_start(request: Request, db: Db, google: GoogleDep) -> RedirectResponse:
     """Send the browser to Google, remembering the state, nonce and PKCE verifier."""
+    await rate_limit.take(db, GOOGLE_STARTS_PER_ADDRESS, rate_limit.client_address(request))
+    # Unauthenticated callers can start sign-ins, so clear the expired ones as we go.
+    await db.execute(delete(OAuthState).where(OAuthState.expires_at <= datetime.now(UTC)))
     state, nonce, verifier = new_token(), new_token(), secrets.token_urlsafe(64)
     db.add(
         OAuthState(

@@ -19,7 +19,7 @@ from app.auth.policy import (
     TEACHER_SESSION_MAX,
 )
 from app.config import get_settings
-from app.db import get_db
+from app.db import Db
 from app.models import ClassMember, SchoolClass, Session, User
 
 log = structlog.get_logger()
@@ -72,47 +72,50 @@ async def _end_current(db: AsyncSession, request: Request) -> None:
         await db.execute(delete(Session).where(Session.token_hash == hash_secret(token)))
 
 
-async def start_teacher_session(
-    db: AsyncSession, request: Request, response: Response, user: User
+async def _start(
+    db: AsyncSession,
+    request: Request,
+    response: Response,
+    *,
+    user_id: uuid.UUID | None = None,
+    member_id: uuid.UUID | None = None,
 ) -> None:
-    """Sign a teacher in: end this browser's old session and issue a new token."""
+    """End this browser's old session and issue a new token (rotation at every sign-in)."""
     await _end_current(db, request)
     now = datetime.now(UTC)
+    idle, longest = (
+        (TEACHER_SESSION_IDLE, TEACHER_SESSION_MAX)
+        if user_id is not None
+        else (STUDENT_SESSION_IDLE, STUDENT_SESSION_MAX)
+    )
     token = new_token()
-    expires_at = now + TEACHER_SESSION_MAX
+    expires_at = now + longest
     db.add(
         Session(
             token_hash=hash_secret(token),
-            user_id=user.id,
+            user_id=user_id,
+            member_id=member_id,
             last_used_at=now,
-            idle_expires_at=min(now + TEACHER_SESSION_IDLE, expires_at),
+            idle_expires_at=min(now + idle, expires_at),
             expires_at=expires_at,
         )
     )
-    user.last_signed_in_at = now
     await db.flush()
     _set_cookie(response, token, expires_at)
+
+
+async def start_teacher_session(
+    db: AsyncSession, request: Request, response: Response, user: User
+) -> None:
+    await _start(db, request, response, user_id=user.id)
+    user.last_signed_in_at = datetime.now(UTC)
     log.info("auth.signed_in", kind="teacher", user_id=str(user.id))
 
 
 async def start_student_session(
     db: AsyncSession, request: Request, response: Response, member: ClassMember
 ) -> None:
-    await _end_current(db, request)
-    now = datetime.now(UTC)
-    token = new_token()
-    expires_at = now + STUDENT_SESSION_MAX
-    db.add(
-        Session(
-            token_hash=hash_secret(token),
-            member_id=member.id,
-            last_used_at=now,
-            idle_expires_at=min(now + STUDENT_SESSION_IDLE, expires_at),
-            expires_at=expires_at,
-        )
-    )
-    await db.flush()
-    _set_cookie(response, token, expires_at)
+    await _start(db, request, response, member_id=member.id)
     log.info("auth.signed_in", kind="student", member_id=str(member.id))
 
 
@@ -134,8 +137,7 @@ async def _load(db: AsyncSession, request: Request) -> Principal | None:
     if row is None:
         return None
     if now >= row.idle_expires_at or now >= row.expires_at:
-        await db.delete(row)
-        return None
+        return None  # expired rows are removed by the cleanup job, not on a refused request
 
     if now - row.last_used_at >= SESSION_TOUCH_EVERY:
         idle = TEACHER_SESSION_IDLE if row.user_id is not None else STUDENT_SESSION_IDLE
@@ -159,9 +161,7 @@ async def _load(db: AsyncSession, request: Request) -> Principal | None:
     return Student("student", row.id, member, school_class)
 
 
-async def optional_principal(
-    request: Request, db: Annotated[AsyncSession, Depends(get_db)]
-) -> Principal | None:
+async def optional_principal(request: Request, db: Db) -> Principal | None:
     return await _load(db, request)
 
 

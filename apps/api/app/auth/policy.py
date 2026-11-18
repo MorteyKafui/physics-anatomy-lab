@@ -33,5 +33,6 @@ class Limit:
 
 EMAIL_LINKS_PER_EMAIL = Limit("email-link:email", 5, timedelta(hours=1))
 EMAIL_LINKS_PER_ADDRESS = Limit("email-link:ip", 30, timedelta(hours=1))
+GOOGLE_STARTS_PER_ADDRESS = Limit("google-start:ip", 30, timedelta(minutes=10))
 # Only wrong codes count: a whole school class often shares one network address.
 WRONG_CODES_PER_ADDRESS = Limit("wrong-code:ip", 20, timedelta(minutes=10))

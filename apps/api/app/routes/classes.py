@@ -2,10 +2,10 @@
 
 import uuid
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import Any
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,7 +26,7 @@ from app.auth.policy import (
     WRONG_CODES_PER_ADDRESS,
 )
 from app.auth.sessions import CurrentTeacher, end_member_sessions, start_student_session
-from app.db import get_db
+from app.db import Db
 from app.models import ClassMember, RejoinCode, SchoolClass, User
 from app.routes.auth import student_me
 from app.schemas import (
@@ -43,7 +43,6 @@ from app.schemas import (
 
 log = structlog.get_logger()
 Responses = dict[int | str, dict[str, Any]]
-Db = Annotated[AsyncSession, Depends(get_db)]
 
 teacher_router = APIRouter(prefix="/classes", tags=["classes"])
 join_router = APIRouter(prefix="/join", tags=["join"])
@@ -200,9 +199,18 @@ async def issue_rejoin_code(
 # Students
 
 
-async def _wrong_code(db: AsyncSession, request: Request) -> HTTPException:
-    """Count a wrong code against this network address, keep the count, and refuse."""
-    await rate_limit.record(db, WRONG_CODES_PER_ADDRESS, rate_limit.client_address(request))
+async def _count_try(db: AsyncSession, request: Request) -> None:
+    """Count this try against the network address before looking, so parallel guesses queue on
+    the counter's row. A right code is forgiven; a wrong one stays counted."""
+    await rate_limit.take(db, WRONG_CODES_PER_ADDRESS, rate_limit.client_address(request))
+
+
+async def _forgive_try(db: AsyncSession, request: Request) -> None:
+    await rate_limit.forgive(db, WRONG_CODES_PER_ADDRESS, rate_limit.client_address(request))
+
+
+async def _wrong_code(db: AsyncSession) -> HTTPException:
+    """Keep the count of this wrong try, and refuse."""
     await db.commit()
     log.info("join.wrong_code")
     return HTTPException(
@@ -212,13 +220,14 @@ async def _wrong_code(db: AsyncSession, request: Request) -> HTTPException:
 
 
 async def _open_class(db: AsyncSession, request: Request, typed: str) -> SchoolClass:
-    await rate_limit.refuse_if_over(db, WRONG_CODES_PER_ADDRESS, rate_limit.client_address(request))
+    await _count_try(db, request)
     code = normalise_code(typed)
     row = None
     if is_code(code, CLASS_CODE_LENGTH):
         row = await db.scalar(select(SchoolClass).where(SchoolClass.code == code))
     if row is None:
-        raise await _wrong_code(db, request)
+        raise await _wrong_code(db)
+    await _forgive_try(db, request)
     if not row.joining_open:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
@@ -264,7 +273,7 @@ async def join_class(body: JoinRequest, request: Request, response: Response, db
 @join_router.post("/rejoin", responses=CODE_ERRORS)
 async def rejoin(body: RejoinRequest, request: Request, response: Response, db: Db) -> StudentMe:
     """Sign back in with a teacher's re-join code. Ends the student's other sessions."""
-    await rate_limit.refuse_if_over(db, WRONG_CODES_PER_ADDRESS, rate_limit.client_address(request))
+    await _count_try(db, request)
     code = normalise_code(body.code)
     now = datetime.now(UTC)
     member_id = None
@@ -289,7 +298,8 @@ async def rejoin(body: RejoinRequest, request: Request, response: Response, db: 
             )
         ).one_or_none()
     if found is None:
-        raise await _wrong_code(db, request)
+        raise await _wrong_code(db)
+    await _forgive_try(db, request)
     member, school_class = found
     await end_member_sessions(db, member.id)
     await start_student_session(db, request, response, member)

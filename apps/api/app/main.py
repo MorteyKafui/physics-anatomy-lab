@@ -1,8 +1,8 @@
 """The Physics Anatomy API: accounts and classes now; sync, live classes and AI later in Phase 3."""
 
 from fastapi import FastAPI
-from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.routing import APIRoute
 from pydantic import BaseModel
 
 from app.auth.origin import OriginGuard

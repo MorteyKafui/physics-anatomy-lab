@@ -31,6 +31,11 @@ def alembic_config() -> Config:
 
 @pytest.fixture(scope="session", autouse=True)
 def schema() -> Iterator[None]:
+    database = get_settings().database_url.rsplit("/", 1)[-1].split("?")[0]
+    if not database.endswith("_test"):
+        pytest.exit(
+            f"Tests drop every table: point DATABASE_URL at a *_test database, not {database}."
+        )
     config = alembic_config()
     command.downgrade(config, "base")
     command.upgrade(config, "head")

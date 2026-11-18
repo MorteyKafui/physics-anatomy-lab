@@ -2,7 +2,9 @@
 
 from collections.abc import AsyncIterator
 from functools import lru_cache
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -36,3 +38,8 @@ async def get_db() -> AsyncIterator[AsyncSession]:
         except BaseException:
             await db.rollback()
             raise
+
+
+# "function" scope: the commit happens when the handler returns, before the response is sent, so
+# a failed commit is a 500 and never a success with a cookie for a session that does not exist.
+Db = Annotated[AsyncSession, Depends(get_db, scope="function")]

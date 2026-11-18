@@ -36,6 +36,9 @@ def upgrade() -> None:
         sa.Column("expires_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("used_at", sa.DateTime(timezone=True), nullable=True),
         sa.CheckConstraint(
+            "char_length(email) BETWEEN 3 AND 254", name=op.f("ck_email_link_tokens_email_length")
+        ),
+        sa.CheckConstraint(
             "octet_length(token_hash) = 32", name=op.f("ck_email_link_tokens_token_hash_length")
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_email_link_tokens")),
@@ -70,6 +73,7 @@ def upgrade() -> None:
         sa.Column("window_start", sa.DateTime(timezone=True), nullable=False),
         sa.Column("hits", sa.Integer(), nullable=False),
         sa.CheckConstraint("hits >= 0", name=op.f("ck_rate_limits_hits_not_negative")),
+        sa.CheckConstraint("char_length(key) <= 320", name=op.f("ck_rate_limits_key_length")),
         sa.PrimaryKeyConstraint("key", "window_start", name=op.f("pk_rate_limits")),
     )
     op.create_table(
@@ -193,6 +197,13 @@ def upgrade() -> None:
         op.f("ix_rejoin_codes_created_by"), "rejoin_codes", ["created_by"], unique=False
     )
     op.create_index(op.f("ix_rejoin_codes_member_id"), "rejoin_codes", ["member_id"], unique=False)
+    op.create_index(
+        "uq_rejoin_codes_member_id_unused",
+        "rejoin_codes",
+        ["member_id"],
+        unique=True,
+        postgresql_where=sa.text("used_at IS NULL"),
+    )
     op.create_table(
         "sessions",
         sa.Column("id", sa.UUID(), server_default=sa.text("uuidv7()"), nullable=False),
@@ -244,6 +255,7 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_sessions_member_id"), table_name="sessions")
     op.drop_index(op.f("ix_sessions_expires_at"), table_name="sessions")
     op.drop_table("sessions")
+    op.drop_index("uq_rejoin_codes_member_id_unused", table_name="rejoin_codes")
     op.drop_index(op.f("ix_rejoin_codes_member_id"), table_name="rejoin_codes")
     op.drop_index(op.f("ix_rejoin_codes_created_by"), table_name="rejoin_codes")
     op.drop_table("rejoin_codes")

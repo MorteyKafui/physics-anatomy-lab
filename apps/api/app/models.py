@@ -12,6 +12,7 @@ from sqlalchemy import (
     CheckConstraint,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     LargeBinary,
     MetaData,
@@ -136,7 +137,10 @@ class EmailLinkToken(Base):
     """A sign-in link sent to a teacher's email. Works once, for 15 minutes."""
 
     __tablename__ = "email_link_tokens"
-    __table_args__ = (CheckConstraint("octet_length(token_hash) = 32", name="token_hash_length"),)
+    __table_args__ = (
+        CheckConstraint("octet_length(token_hash) = 32", name="token_hash_length"),
+        CheckConstraint("char_length(email) BETWEEN 3 AND 254", name="email_length"),
+    )
 
     id: Mapped[uuid.UUID] = _id()
     token_hash: Mapped[bytes] = mapped_column(LargeBinary, nullable=False, unique=True)
@@ -167,7 +171,16 @@ class RejoinCode(Base):
     """A one-time personal code a teacher gives a student who lost their device. 24 hours."""
 
     __tablename__ = "rejoin_codes"
-    __table_args__ = (CheckConstraint("octet_length(code_hash) = 32", name="code_hash_length"),)
+    __table_args__ = (
+        CheckConstraint("octet_length(code_hash) = 32", name="code_hash_length"),
+        # At most one unused code per student: issuing a new one replaces the old.
+        Index(
+            "uq_rejoin_codes_member_id_unused",
+            "member_id",
+            unique=True,
+            postgresql_where=text("used_at IS NULL"),
+        ),
+    )
 
     id: Mapped[uuid.UUID] = _id()
     member_id: Mapped[uuid.UUID] = mapped_column(
@@ -189,6 +202,7 @@ class RateLimit(Base):
     __table_args__ = (
         PrimaryKeyConstraint("key", "window_start"),
         CheckConstraint("hits >= 0", name="hits_not_negative"),
+        CheckConstraint("char_length(key) <= 320", name="key_length"),
     )
 
     key: Mapped[str] = mapped_column(Text, nullable=False)
