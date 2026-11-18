@@ -6,12 +6,17 @@ Every secret (session token, sign-in link, re-join code) is stored only as its S
 
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     CheckConstraint,
+    Computed,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
+    Identity,
     Index,
     Integer,
     LargeBinary,
@@ -22,7 +27,7 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import CITEXT, UUID
+from sqlalchemy.dialects.postgresql import CITEXT, JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 NAMING = {
@@ -208,3 +213,83 @@ class RateLimit(Base):
     key: Mapped[str] = mapped_column(Text, nullable=False)
     window_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     hits: Mapped[int] = mapped_column(Integer, nullable=False)
+
+
+class Attempt(Base):
+    """One attempt, held by one owner: a teacher or a class member (ADR 0039).
+
+    `client_id` is the device's attempt id. It is unique per owner, not across owners, so a shared
+    attempt file gives each account its own copy.
+    """
+
+    __tablename__ = "attempts"
+    __table_args__ = (
+        CheckConstraint("num_nonnulls(user_id, member_id) = 1", name="one_owner"),
+        CheckConstraint("char_length(client_id) BETWEEN 1 AND 200", name="client_id_length"),
+        CheckConstraint(
+            "char_length(experiment_id) BETWEEN 1 AND 200", name="experiment_id_length"
+        ),
+        CheckConstraint("mode IN ('guided', 'exam', 'own-data')", name="mode_known"),
+        CheckConstraint("seed >= 0 AND created_at_ms >= 0 AND updated_at_ms >= 0", name="whole"),
+        # Lets each event carry its owner, checked against the attempt, for the pull query.
+        UniqueConstraint("id", "owner_id"),
+        Index(
+            "uq_attempts_user_id_client_id",
+            "user_id",
+            "client_id",
+            unique=True,
+            postgresql_where=text("user_id IS NOT NULL"),
+        ),
+        Index(
+            "uq_attempts_member_id_client_id",
+            "member_id",
+            "client_id",
+            unique=True,
+            postgresql_where=text("member_id IS NOT NULL"),
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = _id()
+    client_id: Mapped[str] = mapped_column(Text, nullable=False)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    # The partial unique indexes below also serve the cascades from users and class_members.
+    member_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("class_members.id", ondelete="CASCADE")
+    )
+    owner_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), Computed("coalesce(user_id, member_id)", persisted=True)
+    )
+    experiment_id: Mapped[str] = mapped_column(Text, nullable=False)
+    mode: Mapped[str] = mapped_column(Text, nullable=False)
+    seed: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    format_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    created_at_ms: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    updated_at_ms: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    received_at: Mapped[datetime] = _now()
+
+
+class AttemptEvent(Base):
+    """One event of an attempt, as the device recorded it. `pos` is the pull cursor."""
+
+    __tablename__ = "attempt_events"
+    __table_args__ = (
+        PrimaryKeyConstraint("attempt_id", "event_id"),
+        ForeignKeyConstraint(
+            ["attempt_id", "owner_id"], ["attempts.id", "attempts.owner_id"], ondelete="CASCADE"
+        ),
+        Index("ix_attempt_events_owner_id_pos", "owner_id", "pos"),
+        CheckConstraint("char_length(event_id) BETWEEN 1 AND 200", name="event_id_length"),
+        CheckConstraint("char_length(device) BETWEEN 1 AND 200", name="device_length"),
+        CheckConstraint("char_length(kind) BETWEEN 1 AND 200", name="kind_length"),
+        CheckConstraint("seq >= 1 AND at_ms >= 0", name="whole"),
+    )
+
+    attempt_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    owner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    event_id: Mapped[str] = mapped_column(Text, nullable=False)
+    pos: Mapped[int] = mapped_column(BigInteger, Identity(always=True), nullable=False, unique=True)
+    seq: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    device: Mapped[str] = mapped_column(Text, nullable=False)
+    at_ms: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    kind: Mapped[str] = mapped_column(Text, nullable=False)
+    data: Mapped[Any] = mapped_column(JSONB, nullable=False)

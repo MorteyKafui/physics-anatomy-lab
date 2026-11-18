@@ -725,6 +725,99 @@
         }
       }
     },
+    "/sync/push": {
+      "post": {
+        "tags": ["sync"],
+        "summary": "Push",
+        "description": "Store attempts and events from this device. Known events are skipped, so retrying is safe.",
+        "operationId": "push",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushResult"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An attempt's header changed"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sync/pull": {
+      "get": {
+        "tags": ["sync"],
+        "summary": "Pull",
+        "description": "This owner's events after the cursor, oldest first, with their attempts' headers.",
+        "operationId": "pull",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The cursor from the last pull.",
+              "title": "After"
+            },
+            "description": "The cursor from the last pull."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PullResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": ["system"],
@@ -748,6 +841,80 @@
   },
   "components": {
     "schemas": {
+      "AttemptBatch": {
+        "properties": {
+          "attempt": {
+            "$ref": "#/components/schemas/AttemptHeader"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SyncEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["attempt", "events"],
+        "title": "AttemptBatch"
+      },
+      "AttemptHeader": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "experimentId": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Experimentid"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["guided", "exam", "own-data"],
+            "title": "Mode"
+          },
+          "seed": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Seed"
+          },
+          "createdAt": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Updatedat"
+          },
+          "formatVersion": {
+            "type": "integer",
+            "const": 1,
+            "title": "Formatversion"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "experimentId",
+          "mode",
+          "seed",
+          "createdAt",
+          "updatedAt",
+          "formatVersion"
+        ],
+        "title": "AttemptHeader"
+      },
       "ClassCreate": {
         "properties": {
           "name": {
@@ -988,6 +1155,7 @@
         "required": ["code", "display_name", "agreed_to_terms"],
         "title": "JoinRequest"
       },
+      "JsonValue": {},
       "MemberOut": {
         "properties": {
           "id": {
@@ -1008,6 +1176,85 @@
         "type": "object",
         "required": ["id", "display_name", "created_at"],
         "title": "MemberOut"
+      },
+      "PullResult": {
+        "properties": {
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/AttemptHeader"
+            },
+            "type": "array",
+            "title": "Attempts"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SyncEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "cursor": {
+            "type": "string",
+            "title": "Cursor",
+            "description": "Pass as `after` next time. Opaque."
+          },
+          "more": {
+            "type": "boolean",
+            "title": "More",
+            "description": "True when another page is waiting."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["attempts", "events", "cursor", "more"],
+        "title": "PullResult"
+      },
+      "PushRequest": {
+        "properties": {
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/AttemptBatch"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Attempts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["attempts"],
+        "title": "PushRequest"
+      },
+      "PushResult": {
+        "properties": {
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/PushedAttempt"
+            },
+            "type": "array",
+            "title": "Attempts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["attempts"],
+        "title": "PushResult"
+      },
+      "PushedAttempt": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "newEvents": {
+            "type": "integer",
+            "title": "Newevents"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "newEvents"],
+        "title": "PushedAttempt"
       },
       "RejoinCodeOut": {
         "properties": {
@@ -1079,6 +1326,53 @@
         "type": "object",
         "required": ["member_id", "display_name", "school_class"],
         "title": "StudentMe"
+      },
+      "SyncEvent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "attemptId": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Attemptid"
+          },
+          "seq": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Seq"
+          },
+          "device": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Device"
+          },
+          "at": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "At"
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Kind"
+          },
+          "data": {
+            "$ref": "#/components/schemas/JsonValue"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "attemptId", "seq", "device", "at", "kind", "data"],
+        "title": "SyncEvent"
       },
       "TeacherMe": {
         "properties": {

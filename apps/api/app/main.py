@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from app.auth.origin import OriginGuard
 from app.config import get_settings
-from app.routes import auth, classes
+from app.routes import auth, classes, sync
 
 settings = get_settings()
 
@@ -36,6 +36,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(classes.teacher_router)
 app.include_router(classes.join_router)
+app.include_router(sync.router)
 
 
 class Health(BaseModel):

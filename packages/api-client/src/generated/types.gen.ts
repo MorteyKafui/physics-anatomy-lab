@@ -5,6 +5,51 @@ export type ClientOptions = {
 };
 
 /**
+ * AttemptBatch
+ */
+export type AttemptBatch = {
+  attempt: AttemptHeader;
+  /**
+   * Events
+   */
+  events: Array<SyncEvent>;
+};
+
+/**
+ * AttemptHeader
+ */
+export type AttemptHeader = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Experimentid
+   */
+  experimentId: string;
+  /**
+   * Mode
+   */
+  mode: "guided" | "exam" | "own-data";
+  /**
+   * Seed
+   */
+  seed: number;
+  /**
+   * Createdat
+   */
+  createdAt: number;
+  /**
+   * Updatedat
+   */
+  updatedAt: number;
+  /**
+   * Formatversion
+   */
+  formatVersion: 1;
+};
+
+/**
  * ClassCreate
  */
 export type ClassCreate = {
@@ -182,6 +227,8 @@ export type JoinRequest = {
   agreed_to_terms: true;
 };
 
+export type JsonValue = unknown;
+
 /**
  * MemberOut
  */
@@ -198,6 +245,66 @@ export type MemberOut = {
    * Created At
    */
   created_at: string;
+};
+
+/**
+ * PullResult
+ */
+export type PullResult = {
+  /**
+   * Attempts
+   */
+  attempts: Array<AttemptHeader>;
+  /**
+   * Events
+   */
+  events: Array<SyncEvent>;
+  /**
+   * Cursor
+   *
+   * Pass as `after` next time. Opaque.
+   */
+  cursor: string;
+  /**
+   * More
+   *
+   * True when another page is waiting.
+   */
+  more: boolean;
+};
+
+/**
+ * PushRequest
+ */
+export type PushRequest = {
+  /**
+   * Attempts
+   */
+  attempts: Array<AttemptBatch>;
+};
+
+/**
+ * PushResult
+ */
+export type PushResult = {
+  /**
+   * Attempts
+   */
+  attempts: Array<PushedAttempt>;
+};
+
+/**
+ * PushedAttempt
+ */
+export type PushedAttempt = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Newevents
+   */
+  newEvents: number;
 };
 
 /**
@@ -257,6 +364,37 @@ export type StudentMe = {
    */
   display_name: string;
   school_class: ClassSummary;
+};
+
+/**
+ * SyncEvent
+ */
+export type SyncEvent = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Attemptid
+   */
+  attemptId: string;
+  /**
+   * Seq
+   */
+  seq: number;
+  /**
+   * Device
+   */
+  device: string;
+  /**
+   * At
+   */
+  at: number;
+  /**
+   * Kind
+   */
+  kind: string;
+  data: JsonValue;
 };
 
 /**
@@ -835,6 +973,67 @@ export type RejoinResponses = {
 };
 
 export type RejoinResponse = RejoinResponses[keyof RejoinResponses];
+
+export type PushData = {
+  body: PushRequest;
+  path?: never;
+  query?: never;
+  url: "/sync/push";
+};
+
+export type PushErrors = {
+  /**
+   * An attempt's header changed
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type PushError = PushErrors[keyof PushErrors];
+
+export type PushResponses = {
+  /**
+   * Successful Response
+   */
+  200: PushResult;
+};
+
+export type PushResponse = PushResponses[keyof PushResponses];
+
+export type PullData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * After
+     *
+     * The cursor from the last pull.
+     */
+    after?: string | null;
+  };
+  url: "/sync/pull";
+};
+
+export type PullErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type PullError = PullErrors[keyof PullErrors];
+
+export type PullResponses = {
+  /**
+   * Successful Response
+   */
+  200: PullResult;
+};
+
+export type PullResponse = PullResponses[keyof PullResponses];
 
 export type HealthData = {
   body?: never;
