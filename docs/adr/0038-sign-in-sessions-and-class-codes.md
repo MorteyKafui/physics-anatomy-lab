@@ -125,6 +125,10 @@ Sending happens in the request for now and moves to the job queue when Procrasti
 - Sessions can be revoked at once, because every request checks the database.
 - One extra query per request for the session. That is fine at the planned scale; a cache can be
   added if load tests (Phase 3) say otherwise.
+- Two small leaks are accepted. Someone holding a class code learns whether a display name is
+  already in that class (the "name taken" answer). And an email link is not tied to the browser
+  that asked for it, so a teacher tricked into opening someone else's link is signed in as that
+  person. Neither exposes a student's work.
 - The rules above (lifetimes, expiry, code length) are constants in `apps/api/app/auth/policy.py`,
   so a change to them is one reviewed edit plus a new record.
 
