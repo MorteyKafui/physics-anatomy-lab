@@ -24,7 +24,9 @@ for the server.
 - `attempt_events`: the events, unique by (attempt, event id), with the event's `data` as JSONB.
   Each row also gets a server position from one sequence, used as the pull cursor.
 - The attempt's header (experiment, mode, seed, format version) is fixed when it is first sent.
-  A later push with a different header for the same id is refused, as that is a bug or tampering.
+  A later push with a different header for the same id is a conflict: that attempt's events are
+  not stored and the reply says `conflict` for it, while the rest of the push goes through. The
+  device keeps the attempt and does not resend it until it changes.
 
 ### The protocol
 
@@ -32,15 +34,17 @@ for the server.
   already has are skipped, so sending the same batch twice changes nothing and a retry after a
   dropped connection is always safe. The reply says how many events were new for each attempt.
 - **Pull** (`GET /sync/pull?after=<cursor>`): the owner's events with a server position after the
-  cursor, oldest first, up to 2,000 at a time, with the headers of their attempts and the next
-  cursor. The device merges them (its `merge` skips what it holds) and keeps the cursor.
+  cursor, oldest first, up to 500 at a time and stopping early once their data passes 2 MB, with
+  the headers of their attempts and the next cursor. The device merges them (its `merge` skips
+  what it holds) and keeps the cursor.
 - A device always pushes before it pulls, so its own events come back at most once.
 - Pushes for one owner take a transaction-level advisory lock on that owner, so server positions
   are handed out in commit order for each owner and a pull can never skip an event that commits
   late.
 - **Limits:** an event's `kind` is at most 200 characters and its `data` at most 16 KB as JSON;
-  ids are at most 200 characters. A request past a limit is refused whole (422) and the device
-  tries again with smaller batches.
+  ids are at most 200 characters; no text may hold a NUL character, which PostgreSQL cannot
+  store. No request body may pass 2 MB (413, checked before anything is parsed); the device keeps
+  each push under 1.5 MB. A request past a limit is refused whole.
 - Sync runs in the background when the device is online and signed in. Nothing in the lab waits
   for it (AGENTS.md rule 5).
 

@@ -1,5 +1,7 @@
 """Event sync: push the events the server lacks, pull the ones the device lacks (ADR 0039)."""
 
+import json
+import re
 import uuid
 from typing import Annotated, Any
 
@@ -9,7 +11,7 @@ from sqlalchemy import ColumnElement, func, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.policy import SYNC_PULL_PAGE
+from app.auth.policy import SYNC_PULL_MAX_BYTES, SYNC_PULL_PAGE
 from app.auth.sessions import CurrentPrincipal, Principal, Teacher
 from app.db import Db
 from app.models import Attempt, AttemptEvent
@@ -40,8 +42,9 @@ def _owned_by(column: str, owner: uuid.UUID) -> ColumnElement[bool]:
 
 async def _attempt_row(
     db: AsyncSession, column: str, owner: uuid.UUID, header: AttemptHeader
-) -> Attempt:
-    """The owner's row for this attempt, created on first sight. The header never changes."""
+) -> Attempt | None:
+    """The owner's row for this attempt, created on first sight, or None if the header changed.
+    The header never changes once stored."""
     values: dict[str, Any] = {
         column: owner,
         "client_id": header.id,
@@ -70,10 +73,7 @@ async def _attempt_row(
         header.format_version,
     )
     if not same:
-        raise HTTPException(
-            status.HTTP_409_CONFLICT,
-            detail=f"Attempt {header.id} was sent before with a different experiment or seed.",
-        )
+        return None
     row.updated_at_ms = max(row.updated_at_ms, header.updated_at)
     return row
 
@@ -82,6 +82,9 @@ async def _push_one(
     db: AsyncSession, column: str, owner: uuid.UUID, batch: AttemptBatch
 ) -> PushedAttempt:
     row = await _attempt_row(db, column, owner, batch.attempt)
+    if row is None:
+        log.info("sync.conflict", owner_id=str(owner))
+        return PushedAttempt(id=batch.attempt.id, new_events=0, status="conflict")
     new = 0
     if batch.events:
         inserted = await db.scalars(
@@ -105,10 +108,10 @@ async def _push_one(
             .returning(AttemptEvent.event_id)
         )
         new = len(inserted.all())
-    return PushedAttempt(id=batch.attempt.id, new_events=new)
+    return PushedAttempt(id=batch.attempt.id, new_events=new, status="ok")
 
 
-@router.post("/push", responses={409: {"description": "An attempt's header changed"}})
+@router.post("/push", responses={413: {"description": "The body is too large"}})
 async def push(body: PushRequest, principal: CurrentPrincipal, db: Db) -> PushResult:
     """Store attempts and events from this device. Known events are skipped, so retrying is safe."""
     column, owner = _owner(principal)
@@ -128,7 +131,7 @@ async def push(body: PushRequest, principal: CurrentPrincipal, db: Db) -> PushRe
 def _cursor(after: str | None) -> int:
     if after is None or after == "":
         return 0
-    if not after.isdigit() or len(after) > 19:
+    if not re.fullmatch(r"[0-9]{1,18}", after):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Bad cursor.")
     return int(after)
 
@@ -153,6 +156,13 @@ async def pull(
     ).all()
     more = len(rows) > SYNC_PULL_PAGE
     rows = rows[:SYNC_PULL_PAGE]
+    # Stop the page early once its data is large; the cursor makes the rest the next page.
+    size = 0
+    for i, (e, _) in enumerate(rows):
+        size += len(json.dumps(e.data, separators=(",", ":"), ensure_ascii=False))
+        if size > SYNC_PULL_MAX_BYTES and i > 0:
+            rows, more = rows[:i], True
+            break
     events = [
         SyncEvent(
             id=e.event_id,
@@ -181,7 +191,7 @@ async def pull(
                 seed=a.seed,
                 created_at=a.created_at_ms,
                 updated_at=a.updated_at_ms,
-                format_version=1,
+                format_version=1,  # push accepts only format 1, so every stored row is 1
             )
             for a in found
         ]

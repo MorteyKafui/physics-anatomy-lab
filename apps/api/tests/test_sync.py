@@ -55,7 +55,7 @@ async def test_a_push_then_a_pull_gives_the_events_back_exactly(
     await sign_in_teacher(client, outbox, "t@example.org")
     pushed = await client.post("/sync/push", json={"attempts": [batch()]})
     assert pushed.status_code == 200, pushed.text
-    assert pushed.json() == {"attempts": [{"id": "a-1", "newEvents": 3}]}
+    assert pushed.json() == {"attempts": [{"id": "a-1", "newEvents": 3, "status": "ok"}]}
 
     pulled = (await client.get("/sync/pull")).json()
     assert pulled["attempts"] == [attempt()]
@@ -73,7 +73,7 @@ async def test_pushing_the_same_events_twice_changes_nothing(
     await sign_in_teacher(client, outbox, "t@example.org")
     await client.post("/sync/push", json={"attempts": [batch(n=2)]})
     second = await client.post("/sync/push", json={"attempts": [batch(n=3)]})
-    assert second.json()["attempts"] == [{"id": "a-1", "newEvents": 1}]
+    assert second.json()["attempts"] == [{"id": "a-1", "newEvents": 1, "status": "ok"}]
     assert len((await client.get("/sync/pull")).json()["events"]) == 3
 
 
@@ -88,12 +88,19 @@ async def test_two_devices_merge_without_conflict(client: AsyncClient, outbox: L
     assert sorted(ids) == ["l4", "p4"]
 
 
-async def test_a_changed_header_is_refused(client: AsyncClient, outbox: LogSender) -> None:
+async def test_a_changed_header_is_refused_without_blocking_the_rest(
+    client: AsyncClient, outbox: LogSender
+) -> None:
     await sign_in_teacher(client, outbox, "t@example.org")
     await client.post("/sync/push", json={"attempts": [batch()]})
-    changed: dict[str, Any] = {"attempt": attempt(seed=12), "events": []}
-    refused = await client.post("/sync/push", json={"attempts": [changed]})
-    assert refused.status_code == 409
+    changed: dict[str, Any] = {"attempt": attempt(seed=12), "events": [event(9)]}
+    pushed = await client.post("/sync/push", json={"attempts": [changed, batch("a-2", 2)]})
+    assert pushed.status_code == 200
+    assert pushed.json()["attempts"] == [
+        {"id": "a-1", "newEvents": 0, "status": "conflict"},
+        {"id": "a-2", "newEvents": 2, "status": "ok"},
+    ]
+    assert len((await client.get("/sync/pull")).json()["events"]) == 5
 
 
 async def test_a_later_update_time_is_kept(client: AsyncClient, outbox: LogSender) -> None:
@@ -162,3 +169,51 @@ async def test_limits_are_checked(client: AsyncClient, outbox: LogSender) -> Non
     unknown: dict[str, Any] = {"attempt": attempt(formatVersion=2), "events": []}
     assert (await client.post("/sync/push", json={"attempts": [unknown]})).status_code == 422
     assert (await client.get("/sync/pull", params={"after": "-1"})).status_code == 422
+
+
+async def test_nul_characters_are_refused_not_a_server_error(
+    client: AsyncClient, outbox: LogSender
+) -> None:
+    await sign_in_teacher(client, outbox, "t@example.org")
+    in_id: dict[str, Any] = {"attempt": attempt("a\u0000"), "events": []}
+    in_data: dict[str, Any] = {"attempt": attempt(), "events": [event(1, data={"k\u0000": "v"})]}
+    for body in (in_id, in_data):
+        assert (await client.post("/sync/push", json={"attempts": [body]})).status_code == 422
+
+
+async def test_odd_cursors_are_refused(client: AsyncClient, outbox: LogSender) -> None:
+    await sign_in_teacher(client, outbox, "t@example.org")
+    for after in ("²", "9" * 19, "1e3", " 1"):
+        assert (await client.get("/sync/pull", params={"after": after})).status_code == 422
+
+
+async def test_large_bodies_are_refused_before_parsing(client: AsyncClient) -> None:
+    huge = b'{"attempts": [' + b" " * (2 * 1024 * 1024) + b"]}"
+    refused = await client.post(
+        "/sync/push", content=huge, headers={"content-type": "application/json"}
+    )
+    assert refused.status_code == 413
+
+
+async def test_a_pull_page_stops_at_its_byte_cap(client: AsyncClient, outbox: LogSender) -> None:
+    import app.routes.sync as sync_routes
+
+    await sign_in_teacher(client, outbox, "t@example.org")
+    events = [event(i, data={"x": "a" * 10_000}) for i in range(1, 6)]
+    await client.post("/sync/push", json={"attempts": [{"attempt": attempt(), "events": events}]})
+    cap = sync_routes.SYNC_PULL_MAX_BYTES
+    sync_routes.SYNC_PULL_MAX_BYTES = 25_000
+    sizes: list[int] = []
+    try:
+        cursor = None
+        for _ in range(5):
+            page = (
+                await client.get("/sync/pull", params={"after": cursor} if cursor else {})
+            ).json()
+            sizes.append(len(page["events"]))
+            cursor = page["cursor"]
+            if not page["more"]:
+                break
+    finally:
+        sync_routes.SYNC_PULL_MAX_BYTES = cap
+    assert sizes == [2, 2, 1]

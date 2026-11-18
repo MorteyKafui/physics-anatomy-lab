@@ -752,8 +752,8 @@
               }
             }
           },
-          "409": {
-            "description": "An attempt's header changed"
+          "413": {
+            "description": "The body is too large"
           },
           "422": {
             "description": "Validation Error",
@@ -1249,11 +1249,17 @@
           "newEvents": {
             "type": "integer",
             "title": "Newevents"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ok", "conflict"],
+            "title": "Status",
+            "description": "conflict: this id was sent before with another experiment, mode or seed, so its events were not stored. The rest of the push still was."
           }
         },
         "additionalProperties": false,
         "type": "object",
-        "required": ["id", "newEvents"],
+        "required": ["id", "newEvents", "status"],
         "title": "PushedAttempt"
       },
       "RejoinCodeOut": {

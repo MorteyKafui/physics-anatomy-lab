@@ -9,6 +9,7 @@ import {
   createMemoryStore,
   HeldElsewhereError,
   PUSH_MAX_ATTEMPTS,
+  PUSH_MAX_BYTES,
   PUSH_MAX_EVENTS,
   syncAccount,
   unheldAttempts,
@@ -18,6 +19,7 @@ import {
   type LabEvent,
   type PullPage,
   type PushBatch,
+  type PushReply,
   type Reply,
   type SyncTransport,
 } from "../src";
@@ -30,13 +32,19 @@ function fakeServer(pageSize = 3) {
   let online = true;
   const offline = { ok: false as const, status: 0, detail: "offline" };
   const transportFor = (account: string, onPull?: () => Promise<void>): SyncTransport => ({
-    push(batches: PushBatch[]): Promise<Reply<unknown>> {
+    push(batches: PushBatch[]): Promise<Reply<PushReply>> {
       if (!online) return Promise.resolve(offline);
       expect(batches.length).toBeLessThanOrEqual(PUSH_MAX_ATTEMPTS);
       const mine = attempts.get(account) ?? new Map<string, Attempt>();
       attempts.set(account, mine);
+      const statuses: PushReply["attempts"] = [];
       for (const { attempt, events } of batches) {
         const held = mine.get(attempt.id);
+        if (held && held.seed !== attempt.seed) {
+          statuses.push({ id: attempt.id, status: "conflict" });
+          continue;
+        }
+        statuses.push({ id: attempt.id, status: "ok" });
         mine.set(attempt.id, {
           ...attempt,
           updatedAt: Math.max(attempt.updatedAt, held?.updatedAt ?? 0),
@@ -46,7 +54,7 @@ function fakeServer(pageSize = 3) {
           if (!known) log.push({ account, event: structuredClone(event) });
         }
       }
-      return Promise.resolve({ ok: true, data: {} });
+      return Promise.resolve({ ok: true, data: { attempts: statuses } });
     },
     async pull(after: string | null): Promise<Reply<PullPage>> {
       if (!online) return offline;
@@ -249,6 +257,73 @@ describe("sync", () => {
       transport: server.transportFor("member:kofi"),
     });
     expect(again.pulled).toBe(0);
+  });
+
+  test("an attempt the server holds with another seed is set aside, not retried", async () => {
+    const server = fakeServer();
+    const phone = createMemoryStore(testOptions("phone"));
+    const laptop = createMemoryStore(testOptions("laptop"));
+    const ph = createMemoryHoldings();
+    const lh = createMemoryHoldings();
+    const a = await attemptWith(phone, 2);
+    await adopt(ph, "teacher:t", [a.id]);
+    await syncAccount({
+      store: phone,
+      holdings: ph,
+      account: "teacher:t",
+      transport: server.transportFor("teacher:t"),
+    });
+    // The same id with another seed, as a broken import would make.
+    await laptop.merge({ ...a, seed: a.seed + 1 }, []);
+    await laptop.append(a.id, [{ kind: "x", data: null }]);
+    const other = await attemptWith(laptop, 1);
+    await adopt(lh, "teacher:t", [a.id, other.id]);
+    const first = await syncAccount({
+      store: laptop,
+      holdings: lh,
+      account: "teacher:t",
+      transport: server.transportFor("teacher:t"),
+    });
+    expect(first.conflicts).toEqual([a.id]);
+    expect(first.stopped).toBeUndefined();
+    expect(server.count("teacher:t")).toBe(3); // the other attempt still went up
+    const again = await syncAccount({
+      store: laptop,
+      holdings: lh,
+      account: "teacher:t",
+      transport: server.transportFor("teacher:t"),
+    });
+    expect(again.conflicts).toEqual([]);
+  });
+
+  test("pushes keep within the server's size limit", () => {
+    const header: Attempt = {
+      id: "big",
+      experimentId: "e",
+      mode: "guided",
+      seed: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      formatVersion: 1,
+    };
+    const events = Array.from({ length: 300 }, (_, i) => ({
+      id: `big-${i}`,
+      attemptId: "big",
+      seq: i + 1,
+      device: "d",
+      at: 1,
+      kind: "k",
+      data: "x".repeat(15_000),
+    }));
+    const batches = batchesOf([{ attempt: header, events }]);
+    expect(batches.length).toBeGreaterThan(1);
+    for (const batch of batches) {
+      const bytes = batch
+        .flatMap((b) => b.events)
+        .reduce((n, e) => n + JSON.stringify(e).length, 0);
+      expect(bytes).toBeLessThanOrEqual(PUSH_MAX_BYTES);
+    }
+    expect(batches.flat().reduce((n, b) => n + b.events.length, 0)).toBe(300);
   });
 
   test("pushes keep within the server's limits", async () => {

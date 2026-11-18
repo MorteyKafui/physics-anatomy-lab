@@ -305,6 +305,12 @@ export type PushedAttempt = {
    * Newevents
    */
   newEvents: number;
+  /**
+   * Status
+   *
+   * conflict: this id was sent before with another experiment, mode or seed, so its events were not stored. The rest of the push still was.
+   */
+  status: "ok" | "conflict";
 };
 
 /**
@@ -983,9 +989,9 @@ export type PushData = {
 
 export type PushErrors = {
   /**
-   * An attempt's header changed
+   * The body is too large
    */
-  409: unknown;
+  413: unknown;
   /**
    * Validation Error
    */

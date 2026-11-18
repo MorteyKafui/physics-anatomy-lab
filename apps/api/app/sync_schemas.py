@@ -16,7 +16,15 @@ from pydantic.alias_generators import to_camel
 
 from app.auth.policy import SYNC_MAX_ATTEMPTS, SYNC_MAX_EVENT_DATA_BYTES, SYNC_MAX_EVENTS
 
-Id = Annotated[str, Field(min_length=1, max_length=200)]
+
+def _no_nul(value: str) -> str:
+    # PostgreSQL text and JSONB cannot hold U+0000.
+    if chr(0) in value:
+        raise ValueError("Text must not contain a NUL character.")
+    return value
+
+
+Id = Annotated[str, Field(min_length=1, max_length=200), AfterValidator(_no_nul)]
 Whole = Annotated[int, Field(ge=0, le=9_007_199_254_740_991)]  # JavaScript's safe integers
 
 
@@ -34,7 +42,20 @@ class AttemptHeader(Camel):
     format_version: Literal[1]
 
 
+def _no_nul_anywhere(value: JsonValue) -> None:
+    if isinstance(value, str):
+        _no_nul(value)
+    elif isinstance(value, list):
+        for item in value:
+            _no_nul_anywhere(item)
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            _no_nul(key)
+            _no_nul_anywhere(item)
+
+
 def _small(value: JsonValue) -> JsonValue:
+    _no_nul_anywhere(value)
     size = len(json.dumps(value, separators=(",", ":"), ensure_ascii=False).encode("utf-8"))
     if size > SYNC_MAX_EVENT_DATA_BYTES:
         raise ValueError(f"An event's data must be at most {SYNC_MAX_EVENT_DATA_BYTES} bytes.")
@@ -77,6 +98,10 @@ class PushRequest(Camel):
 class PushedAttempt(Camel):
     id: str
     new_events: int
+    status: Literal["ok", "conflict"] = Field(
+        description="conflict: this id was sent before with another experiment, mode or seed, "
+        "so its events were not stored. The rest of the push still was."
+    )
 
 
 class PushResult(Camel):

@@ -75,10 +75,11 @@ export {
   adopt,
   batchesOf,
   PUSH_MAX_ATTEMPTS,
+  PUSH_MAX_BYTES,
   PUSH_MAX_EVENTS,
   syncAccount,
   unheldAttempts,
 } from "./sync/sync";
-export type { PullPage, PushBatch, Reply, SyncResult, SyncTransport } from "./sync/sync";
+export type { PullPage, PushBatch, PushReply, Reply, SyncResult, SyncTransport } from "./sync/sync";
 export { createIndexedDbHoldings, createMemoryHoldings, HeldElsewhereError } from "./sync/holdings";
 export type { Holdings, IndexedDbHoldingsOptions } from "./sync/holdings";
