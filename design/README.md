@@ -23,6 +23,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Model check, your lab data    | `ModelCheck.dc.html`    | on the canvas only     | `apps/web` `/lab/<id>/check`  |
 | Uncertainties, advanced layer | `Uncertainty.dc.html`   | on the canvas only     | `apps/web` steps 6 to 8       |
 | First-run tour                | `Tour.dc.html`          | `screens/Tour.jpg`     | `apps/web` onboarding         |
+| Teacher sign-in (draft)       | `SignIn.dc.html`        | not approved yet       | `apps/web` `/sign-in`         |
 | Teacher live class            | `Teacher.dc.html`       | `screens/Teacher.jpg`  | `apps/web` teacher dashboard  |
 | Admin portal                  | `Admin.dc.html`         | `screens/Admin.jpg`    | `apps/admin`                  |
 | Logo                          | `Logo.dc.html`          | `screens/Logo.jpg`     | `packages/ui` logo component  |

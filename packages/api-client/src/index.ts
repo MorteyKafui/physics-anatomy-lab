@@ -1,3 +1,5 @@
-// @pa/api-client: The TypeScript client generated from the API's OpenAPI schema, so both languages share one contract.
-// Filled in during Phase 1. See the master plan, "Repository layout".
-export {};
+// @pa/api-client: the API's types, generated from its OpenAPI schema so both languages share one
+// contract, and a small typed client over fetch. Regenerate with `bun run generate`.
+export type * from "./generated";
+export { createApi, tokenFromFragment } from "./client";
+export type { Api, ApiOptions, Fetch, Result } from "./client";

@@ -1,25 +1,41 @@
-"""The Physics Anatomy API. Routes for accounts, sync, live classes and AI arrive in Phase 1."""
+"""The Physics Anatomy API: accounts and classes now; sync, live classes and AI later in Phase 3."""
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.routing import APIRoute
 from pydantic import BaseModel
 
+from app.auth.origin import OriginGuard
 from app.config import get_settings
+from app.routes import auth, classes
 
 settings = get_settings()
+
+
+def operation_id(route: APIRoute) -> str:
+    """Name each operation after its handler, so the TypeScript client reads well."""
+    head, *rest = route.name.split("_")
+    return head + "".join(word.capitalize() for word in rest)
+
 
 app = FastAPI(
     title="Physics Anatomy API",
     version="0.0.0",
     summary="Accounts, sync, live classes, AI and exports for the Physics Anatomy lab.",
+    generate_unique_id_function=operation_id,
 )
+# Added last, runs first: CORS answers preflights before the origin guard sees the request.
+app.add_middleware(OriginGuard)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.web_origin],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Content-Type"],
 )
+app.include_router(auth.router)
+app.include_router(classes.teacher_router)
+app.include_router(classes.join_router)
 
 
 class Health(BaseModel):

@@ -100,6 +100,12 @@ request that introduces it.
 - **Student.** Anyone doing experiments. In a class, known only by a display name and class code.
 - **Teacher (lecturer).** Runs classes, sees benches live, pushes hints.
 - **Class code.** The short code a teacher shares so students can join, such as 7KQ-42M.
+- **Display name.** The name a student picks to join a class, such as Kofi_A. Two to 24 letters,
+  numbers or spaces; never an email address or phone number. A student is known by nothing else.
+- **Class member.** In code, a student in one class: a display name and that class. Not a user.
+- **Re-join code.** A one-time personal code a teacher gives a student who lost their device, such
+  as 4KQP-7MZX. It works once, for 24 hours, and brings back that student's place in the class.
+- **Sign-in link.** The email link a teacher signs in with. It works once, for 15 minutes.
 - **Live class.** A teaching session where the teacher sees every bench in real time.
 - **Hint push.** One hint sent to every student who is making the same mistake.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.

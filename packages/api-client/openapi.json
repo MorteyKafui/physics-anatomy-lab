@@ -1,0 +1,1166 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Physics Anatomy API",
+    "summary": "Accounts, sync, live classes, AI and exports for the Physics Anatomy lab.",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/auth/methods": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Sign In Methods",
+        "description": "Which ways of signing in this server offers, so the page shows only those.",
+        "operationId": "signInMethods",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInMethods"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Me",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/TeacherMe"
+                    },
+                    {
+                      "$ref": "#/components/schemas/StudentMe"
+                    }
+                  ],
+                  "title": "Response Me",
+                  "discriminator": {
+                    "propertyName": "kind",
+                    "mapping": {
+                      "teacher": "#/components/schemas/TeacherMe",
+                      "student": "#/components/schemas/StudentMe"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["auth"],
+        "summary": "Update Me",
+        "description": "A teacher sets the name students see when they join, such as Mr Mensah.",
+        "operationId": "updateMe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherMe"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/sign-out": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Sign Out",
+        "operationId": "signOut",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/auth/email-link": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Request Email Link",
+        "description": "Email a sign-in link. The answer is the same whether or not the email has an account.",
+        "operationId": "requestEmailLink",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailLinkSent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many links asked for"
+          },
+          "503": {
+            "description": "Not sent"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/email-link/verify": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Verify Email Link",
+        "description": "Sign in with the token from an email link. The web page posts it; a GET never signs in.",
+        "operationId": "verifyEmailLink",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailLinkVerify"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherMe"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Link expired or used"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/google/start": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Google Start",
+        "description": "Send the browser to Google, remembering the state, nonce and PKCE verifier.",
+        "operationId": "googleStart",
+        "responses": {
+          "302": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Google Callback",
+        "operationId": "googleCallback",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Code"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes": {
+      "get": {
+        "tags": ["classes"],
+        "summary": "List Classes",
+        "operationId": "listClasses",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ClassOut"
+                  },
+                  "type": "array",
+                  "title": "Response Listclasses"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["classes"],
+        "summary": "Create Class",
+        "description": "Create a class. The teacher confirms the school's permission (ADR 0011); AI starts off.",
+        "operationId": "createClass",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}": {
+      "get": {
+        "tags": ["classes"],
+        "summary": "Get Class",
+        "operationId": "getClass",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["classes"],
+        "summary": "Update Class",
+        "description": "Rename the class, open or close joining, or turn AI help on or off (ADR 0008).",
+        "operationId": "updateClass",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/code": {
+      "post": {
+        "tags": ["classes"],
+        "summary": "Rotate Class Code",
+        "description": "Give the class a new code. The old one stops working; students already in stay in.",
+        "operationId": "rotateClassCode",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/members": {
+      "get": {
+        "tags": ["classes"],
+        "summary": "List Members",
+        "operationId": "listMembers",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MemberOut"
+                  },
+                  "title": "Response Listmembers"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/members/{member_id}/rejoin-code": {
+      "post": {
+        "tags": ["classes"],
+        "summary": "Issue Rejoin Code",
+        "description": "A one-time personal code for a student who lost their device. Replaces any earlier one.",
+        "operationId": "issueRejoinCode",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RejoinCodeOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/join/{code}": {
+      "get": {
+        "tags": ["join"],
+        "summary": "Preview Class",
+        "description": "What a student sees before joining: the class, its teacher, and whether AI help is on.",
+        "operationId": "previewClass",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinPreview"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No class has this code"
+          },
+          "409": {
+            "description": "Joining is closed, or the name is taken"
+          },
+          "429": {
+            "description": "Too many wrong codes"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/join": {
+      "post": {
+        "tags": ["join"],
+        "summary": "Join Class",
+        "description": "Join with a class code and a display name. No email, age or phone number (ADR 0011).",
+        "operationId": "joinClass",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentMe"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No class has this code"
+          },
+          "409": {
+            "description": "Joining is closed, or the name is taken"
+          },
+          "429": {
+            "description": "Too many wrong codes"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/join/rejoin": {
+      "post": {
+        "tags": ["join"],
+        "summary": "Rejoin",
+        "description": "Sign back in with a teacher's re-join code. Ends the student's other sessions.",
+        "operationId": "rejoin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejoinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentMe"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No class has this code"
+          },
+          "409": {
+            "description": "Joining is closed, or the name is taken"
+          },
+          "429": {
+            "description": "Too many wrong codes"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["system"],
+        "summary": "Health",
+        "description": "Liveness check used by the status page and the deploy step.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ClassCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "school_permission_confirmed": {
+            "type": "boolean",
+            "const": true,
+            "title": "School Permission Confirmed",
+            "description": "The teacher confirms the school allows this class to use Physics Anatomy."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "school_permission_confirmed"],
+        "title": "ClassCreate"
+      },
+      "ClassOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "The class code as people read it, such as 7KQ-42M."
+          },
+          "joining_open": {
+            "type": "boolean",
+            "title": "Joining Open"
+          },
+          "ai_enabled": {
+            "type": "boolean",
+            "title": "Ai Enabled"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "code_changed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Code Changed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "code",
+          "joining_open",
+          "ai_enabled",
+          "created_at",
+          "code_changed_at"
+        ],
+        "title": "ClassOut"
+      },
+      "ClassSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "ai_enabled": {
+            "type": "boolean",
+            "title": "Ai Enabled"
+          }
+        },
+        "type": "object",
+        "required": ["id", "name", "ai_enabled"],
+        "title": "ClassSummary"
+      },
+      "ClassUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "joining_open": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Joining Open"
+          },
+          "ai_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Enabled"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ClassUpdate"
+      },
+      "EmailLinkRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["email"],
+        "title": "EmailLinkRequest"
+      },
+      "EmailLinkSent": {
+        "properties": {
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": ["detail"],
+        "title": "EmailLinkSent"
+      },
+      "EmailLinkVerify": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 20,
+            "title": "Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["token"],
+        "title": "EmailLinkVerify"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          }
+        },
+        "type": "object",
+        "required": ["status", "environment"],
+        "title": "Health"
+      },
+      "JoinPreview": {
+        "properties": {
+          "class_name": {
+            "type": "string",
+            "title": "Class Name"
+          },
+          "teacher_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Name"
+          },
+          "ai_enabled": {
+            "type": "boolean",
+            "title": "Ai Enabled"
+          }
+        },
+        "type": "object",
+        "required": ["class_name", "teacher_name", "ai_enabled"],
+        "title": "JoinPreview"
+      },
+      "JoinRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Code"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "agreed_to_terms": {
+            "type": "boolean",
+            "const": true,
+            "title": "Agreed To Terms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["code", "display_name", "agreed_to_terms"],
+        "title": "JoinRequest"
+      },
+      "MemberOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": ["id", "display_name", "created_at"],
+        "title": "MemberOut"
+      },
+      "RejoinCodeOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Show it to the student once; it works once, for 24 hours."
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": ["code", "expires_at"],
+        "title": "RejoinCodeOut"
+      },
+      "RejoinRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["code"],
+        "title": "RejoinRequest"
+      },
+      "SignInMethods": {
+        "properties": {
+          "email_link": {
+            "type": "boolean",
+            "title": "Email Link"
+          },
+          "google": {
+            "type": "boolean",
+            "title": "Google"
+          }
+        },
+        "type": "object",
+        "required": ["email_link", "google"],
+        "title": "SignInMethods"
+      },
+      "StudentMe": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "student",
+            "title": "Kind",
+            "default": "student"
+          },
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "school_class": {
+            "$ref": "#/components/schemas/ClassSummary"
+          }
+        },
+        "type": "object",
+        "required": ["member_id", "display_name", "school_class"],
+        "title": "StudentMe"
+      },
+      "TeacherMe": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "teacher",
+            "title": "Kind",
+            "default": "teacher"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          }
+        },
+        "type": "object",
+        "required": ["id", "email", "display_name"],
+        "title": "TeacherMe"
+      },
+      "TeacherUpdate": {
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["display_name"],
+        "title": "TeacherUpdate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
