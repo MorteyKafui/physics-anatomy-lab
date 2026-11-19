@@ -51,3 +51,5 @@ states/
 # The service worker is built from pwa/sw.ts after next build
 apps/web/public/sw.js
 apps/web/pwa/.sw.bundled.js
+# k6 summaries from local runs
+loadtest/results/

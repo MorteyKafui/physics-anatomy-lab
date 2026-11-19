@@ -39,6 +39,8 @@ const BROADCAST_PREFIX = "Load test broadcast sent at ";
 const NORMAL_CLOSE = new Set([1000, 1001, 1005]);
 
 export const options = {
+  // A device keeps its session cookie from lesson to lesson (k6 clears it between iterations).
+  noCookiesReset: true,
   setupTimeout: `${Math.max(120, P.CLASSES * 3)}s`,
   teardownTimeout: "120s",
   thresholds,
