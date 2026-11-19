@@ -33,10 +33,11 @@ export function useAiStatus(): AiStatus | undefined {
 export const canUse = (status: AiStatus | undefined, feature: FeatureName) =>
   status?.available === true && status.features.includes(feature);
 
-/** The line for a feature this person has used up today (docs/content/ai-quotas-brief.md). */
-export const usedUp = (status: AiStatus | undefined, feature: FeatureName) =>
-  status?.used_up?.[feature];
+/** The line for a feature that is otherwise available but not now: used up today, or switched
+ * off in the admin portal (docs/content/ai-quotas-brief.md, decision 6). */
+export const notNow = (status: AiStatus | undefined, feature: FeatureName) =>
+  status?.used_up?.[feature] ?? status?.switched_off?.[feature];
 
 /** Why a feature cannot be used now, in a sentence to show, if the API gave one. */
 export const whyNot = (status: AiStatus | undefined, feature: FeatureName) =>
-  usedUp(status, feature) ?? status?.message ?? undefined;
+  notNow(status, feature) ?? status?.message ?? undefined;

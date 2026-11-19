@@ -7,10 +7,6 @@ import { TopBar } from "@/components/topbar";
 import { staffMe } from "@/lib/api";
 
 const LATER: Readonly<Record<string, { title: string; body: string }>> = {
-  ai: {
-    title: "AI",
-    body: "Requests, cost per feature, cache hit rate, evaluation results, flagged replies and the off switch. Not built yet: the API makes no AI calls, so there is nothing to count.",
-  },
   research: {
     title: "Research",
     body: "Consent records, pilot cohorts and approved anonymised exports for the UEW study. Not built yet.",

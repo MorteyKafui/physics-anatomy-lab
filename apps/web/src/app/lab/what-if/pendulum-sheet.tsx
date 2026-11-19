@@ -102,8 +102,8 @@ export function PendulumWhatIf({
   /** Ask what if (online): shown only when AI is on for this person. */
   ai?: {
     readonly on: boolean;
-    /** The line when today's what-if questions are used up. */
-    readonly usedUp?: string | undefined;
+    /** The line when what if is used up today or switched off. */
+    readonly notNow?: string | undefined;
     readonly input: Omit<TutorInput, "question" | "thread">;
   };
   /** Opens the scenario on the bench as an unmarked attempt; absent where it cannot be. */
@@ -158,9 +158,9 @@ export function PendulumWhatIf({
             {t("lab.whatIf.intro")}
           </SheetDescription>
 
-          {!ai?.on && ai?.usedUp && (
+          {!ai?.on && ai?.notNow && (
             <p role="status" className="text-xs text-muted-foreground">
-              {ai.usedUp}
+              {ai.notNow}
             </p>
           )}
           {ai?.on && (
