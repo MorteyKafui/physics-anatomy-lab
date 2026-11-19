@@ -36,6 +36,7 @@ from app.models import (
     Consent,
     EmailLinkToken,
     LiveMessage,
+    Question,
     SchoolClass,
     Session,
     User,
@@ -480,6 +481,11 @@ async def delete_account(
     # The email is also held outside the account: unused sign-in links and their rate counter.
     await db.execute(delete(EmailLinkToken).where(EmailLinkToken.email == user.email))
     await rate_limit.forget(db, EMAIL_LINKS_PER_EMAIL, user.email)
+    # Questions not yet reviewed go with the account; approved and rejected ones stay in the bank
+    # without the teacher's name (the foreign key sets it to null).
+    await db.execute(
+        delete(Question).where(Question.submitted_by == user.id, Question.state == "submitted")
+    )
     # Cascades to classes, students, attempts, events, sessions, consents and live sessions.
     await db.delete(user)
     await db.flush()

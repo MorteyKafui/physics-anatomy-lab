@@ -86,6 +86,48 @@ export type AiStatus = {
 };
 
 /**
+ * Approval
+ *
+ * Approve as sent, or with the reviewer's edits.
+ */
+export type Approval = {
+  /**
+   * Question
+   */
+  question?: string | null;
+  /**
+   * Answer
+   */
+  answer?: string | null;
+  /**
+   * Marks
+   */
+  marks?: number | null;
+};
+
+/**
+ * ApprovedQuestion
+ */
+export type ApprovedQuestion = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Question
+   */
+  question: string;
+  /**
+   * Answer
+   */
+  answer: string;
+  /**
+   * Marks
+   */
+  marks: number;
+};
+
+/**
  * AttemptBatch
  */
 export type AttemptBatch = {
@@ -732,6 +774,24 @@ export type DisplayNameChange = {
    * Reason
    */
   reason?: string | null;
+};
+
+/**
+ * DraftRequest
+ */
+export type DraftRequest = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Topic
+   */
+  topic: "measuring" | "precautions" | "tabulation" | "graph" | "calculation" | "theory";
+  /**
+   * Note
+   */
+  note?: string;
 };
 
 /**
@@ -1417,6 +1477,126 @@ export type Quantity = {
 };
 
 /**
+ * QuestionIn
+ */
+export type QuestionIn = {
+  /**
+   * Question
+   */
+  question: string;
+  /**
+   * Answer
+   */
+  answer: string;
+  /**
+   * Marks
+   */
+  marks: number;
+};
+
+/**
+ * QuestionOut
+ */
+export type QuestionOut = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Topic
+   */
+  topic: string;
+  /**
+   * Question
+   */
+  question: string;
+  /**
+   * Answer
+   */
+  answer: string;
+  /**
+   * Marks
+   */
+  marks: number;
+  /**
+   * State
+   */
+  state: "submitted" | "approved" | "rejected";
+  /**
+   * Reason
+   */
+  reason: string | null;
+  /**
+   * Submitted At
+   */
+  submitted_at: string;
+  /**
+   * Reviewed At
+   */
+  reviewed_at: string | null;
+};
+
+/**
+ * QuestionReview
+ */
+export type QuestionReview = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Topic
+   */
+  topic: string;
+  /**
+   * Question
+   */
+  question: string;
+  /**
+   * Answer
+   */
+  answer: string;
+  /**
+   * Marks
+   */
+  marks: number;
+  /**
+   * State
+   */
+  state: "submitted" | "approved" | "rejected";
+  /**
+   * Reason
+   */
+  reason: string | null;
+  /**
+   * Submitted At
+   */
+  submitted_at: string;
+  /**
+   * Reviewed At
+   */
+  reviewed_at: string | null;
+  /**
+   * Submitted By
+   *
+   * The teacher's email, for staff (ADR 0040).
+   */
+  submitted_by: string | null;
+  /**
+   * Reviewed By
+   */
+  reviewed_by: string | null;
+};
+
+/**
  * RangeInfo
  */
 export type RangeInfo = {
@@ -1436,6 +1616,16 @@ export type RangeInfo = {
    * Bucket Minutes
    */
   bucket_minutes: number;
+};
+
+/**
+ * Rejection
+ */
+export type Rejection = {
+  /**
+   * Reason
+   */
+  reason: string;
 };
 
 /**
@@ -1701,6 +1891,24 @@ export type StudentMe = {
    */
   display_name: string;
   school_class: ClassSummary;
+};
+
+/**
+ * Submission
+ */
+export type Submission = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Topic
+   */
+  topic: "measuring" | "precautions" | "tabulation" | "graph" | "calculation" | "theory";
+  /**
+   * Questions
+   */
+  questions: Array<QuestionIn>;
 };
 
 /**
@@ -3477,6 +3685,121 @@ export type ReportReviewResponses = {
   200: unknown;
 };
 
+export type QuestionDraftingData = {
+  body: DraftRequest;
+  path?: never;
+  query?: never;
+  url: "/ai/question-drafting";
+};
+
+export type QuestionDraftingErrors = {
+  /**
+   * Signed out
+   */
+  401: unknown;
+  /**
+   * Teachers only
+   */
+  403: unknown;
+  /**
+   * Not ready for this experiment
+   */
+  422: unknown;
+  /**
+   * The day's drafts are used
+   */
+  429: unknown;
+  /**
+   * AI is switched off or not set up
+   */
+  503: unknown;
+};
+
+export type QuestionDraftingResponses = {
+  /**
+   * One item (ADR 0043)
+   */
+  200: unknown;
+};
+
+export type SubmitQuestionsData = {
+  body: Submission;
+  path?: never;
+  query?: never;
+  url: "/questions";
+};
+
+export type SubmitQuestionsErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type SubmitQuestionsError = SubmitQuestionsErrors[keyof SubmitQuestionsErrors];
+
+export type SubmitQuestionsResponses = {
+  /**
+   * Response Submitquestions
+   *
+   * Successful Response
+   */
+  201: Array<QuestionOut>;
+};
+
+export type SubmitQuestionsResponse = SubmitQuestionsResponses[keyof SubmitQuestionsResponses];
+
+export type MyQuestionsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/questions/mine";
+};
+
+export type MyQuestionsResponses = {
+  /**
+   * Response Myquestions
+   *
+   * Successful Response
+   */
+  200: Array<QuestionOut>;
+};
+
+export type MyQuestionsResponse = MyQuestionsResponses[keyof MyQuestionsResponses];
+
+export type ApprovedQuestionsData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Experiment Id
+     */
+    experiment_id: string;
+  };
+  url: "/questions/approved";
+};
+
+export type ApprovedQuestionsErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ApprovedQuestionsError = ApprovedQuestionsErrors[keyof ApprovedQuestionsErrors];
+
+export type ApprovedQuestionsResponses = {
+  /**
+   * Response Approvedquestions
+   *
+   * Successful Response
+   */
+  200: Array<ApprovedQuestion>;
+};
+
+export type ApprovedQuestionsResponse =
+  ApprovedQuestionsResponses[keyof ApprovedQuestionsResponses];
+
 export type StaffMeData = {
   body?: never;
   path?: never;
@@ -3824,6 +4147,133 @@ export type AdminExportResponses = {
    */
   200: unknown;
 };
+
+export type AdminListQuestionsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * State
+     */
+    state?: "submitted" | "approved" | "rejected";
+  };
+  url: "/admin/questions";
+};
+
+export type AdminListQuestionsErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminListQuestionsError = AdminListQuestionsErrors[keyof AdminListQuestionsErrors];
+
+export type AdminListQuestionsResponses = {
+  /**
+   * Response Adminlistquestions
+   *
+   * Successful Response
+   */
+  200: Array<QuestionReview>;
+};
+
+export type AdminListQuestionsResponse =
+  AdminListQuestionsResponses[keyof AdminListQuestionsResponses];
+
+export type AdminApproveQuestionData = {
+  body: Approval;
+  path: {
+    /**
+     * Question Id
+     */
+    question_id: string;
+  };
+  query?: never;
+  url: "/admin/questions/{question_id}/approve";
+};
+
+export type AdminApproveQuestionErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminApproveQuestionError =
+  AdminApproveQuestionErrors[keyof AdminApproveQuestionErrors];
+
+export type AdminApproveQuestionResponses = {
+  /**
+   * Successful Response
+   */
+  200: QuestionReview;
+};
+
+export type AdminApproveQuestionResponse =
+  AdminApproveQuestionResponses[keyof AdminApproveQuestionResponses];
+
+export type AdminRejectQuestionData = {
+  body: Rejection;
+  path: {
+    /**
+     * Question Id
+     */
+    question_id: string;
+  };
+  query?: never;
+  url: "/admin/questions/{question_id}/reject";
+};
+
+export type AdminRejectQuestionErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminRejectQuestionError = AdminRejectQuestionErrors[keyof AdminRejectQuestionErrors];
+
+export type AdminRejectQuestionResponses = {
+  /**
+   * Successful Response
+   */
+  200: QuestionReview;
+};
+
+export type AdminRejectQuestionResponse =
+  AdminRejectQuestionResponses[keyof AdminRejectQuestionResponses];
+
+export type AdminReopenQuestionData = {
+  body?: never;
+  path: {
+    /**
+     * Question Id
+     */
+    question_id: string;
+  };
+  query?: never;
+  url: "/admin/questions/{question_id}/reopen";
+};
+
+export type AdminReopenQuestionErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminReopenQuestionError = AdminReopenQuestionErrors[keyof AdminReopenQuestionErrors];
+
+export type AdminReopenQuestionResponses = {
+  /**
+   * Successful Response
+   */
+  200: QuestionReview;
+};
+
+export type AdminReopenQuestionResponse =
+  AdminReopenQuestionResponses[keyof AdminReopenQuestionResponses];
 
 export type HealthData = {
   body?: never;

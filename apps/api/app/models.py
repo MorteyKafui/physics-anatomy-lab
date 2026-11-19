@@ -541,3 +541,45 @@ class AiRequest(Base):
     cost_microdollars: Mapped[int | None] = mapped_column(BigInteger)
     duration_ms: Mapped[int] = mapped_column(Integer, nullable=False)
     outcome: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class Question(Base):
+    """A follow-up question for exam mode, drafted with Claude and edited by a teacher, in the bank
+    once a reviewer approves it (docs/content/ai-questions-brief.md).
+
+    No student data. A teacher who deletes their account takes their unreviewed questions with
+    them (app/routes/privacy.py); approved ones stay in the bank without their name.
+    """
+
+    __tablename__ = "questions"
+    __table_args__ = (
+        CheckConstraint("experiment_id ~ '^[a-z][a-z0-9.-]{1,63}$'", name="experiment_format"),
+        CheckConstraint("topic ~ '^[a-z][a-z-]{1,31}$'", name="topic_format"),
+        CheckConstraint("char_length(question) BETWEEN 10 AND 400", name="question_length"),
+        CheckConstraint("char_length(answer) BETWEEN 5 AND 800", name="answer_length"),
+        CheckConstraint("marks BETWEEN 1 AND 4", name="marks_range"),
+        CheckConstraint("state IN ('submitted', 'approved', 'rejected')", name="state_known"),
+        CheckConstraint(
+            "(state = 'submitted') = (reviewed_at IS NULL)", name="reviewed_when_decided"
+        ),
+        CheckConstraint(
+            "state <> 'rejected' OR char_length(reason) BETWEEN 1 AND 300", name="rejected_why"
+        ),
+        Index("ix_questions_state_submitted_at", "state", text("submitted_at DESC")),
+        Index("ix_questions_experiment_id_state", "experiment_id", "state"),
+    )
+
+    id: Mapped[uuid.UUID] = _id()
+    experiment_id: Mapped[str] = mapped_column(Text, nullable=False)
+    topic: Mapped[str] = mapped_column(Text, nullable=False)
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    answer: Mapped[str] = mapped_column(Text, nullable=False)
+    marks: Mapped[int] = mapped_column(Integer, nullable=False)
+    state: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'submitted'"))
+    submitted_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    submitted_at: Mapped[datetime] = _now()
+    reviewed_by: Mapped[str | None] = mapped_column(CITEXT)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reason: Mapped[str | None] = mapped_column(Text)

@@ -20,6 +20,12 @@ from app.ai.context import AiContext, ModelRequest, build_request, request_with
 from app.ai.features import FEATURES, Feature, FeatureName
 from app.ai.log import AiLog, get_ai_log
 from app.ai.policy import MESSAGES, Unavailable, available_features, refuse, why_unavailable
+from app.ai.questions import FACTS as QUESTION_FACTS
+from app.ai.questions import INSTRUCTIONS as DRAFT_INSTRUCTIONS
+from app.ai.questions import NOT_READY as DRAFT_NOT_READY
+from app.ai.questions import DraftCheck, DraftRequest
+from app.ai.questions import output_schema as draft_schema
+from app.ai.questions import user_message as draft_message
 from app.ai.review import INSTRUCTIONS as REVIEW_INSTRUCTIONS
 from app.ai.review import ReviewCheck, ReviewRequest, user_message
 from app.ai.review import output_schema as review_schema
@@ -28,9 +34,12 @@ from app.ai.scenarios import NOT_READY, SPECS, ScenarioCheck, output_schema
 from app.ai.stream import ReplyCheck, ReplyItem, reply_stream
 from app.ai.tutor import INSTRUCTIONS as TUTOR_INSTRUCTIONS
 from app.ai.tutor import tutor_check
-from app.auth.sessions import MaybePrincipal
+from app.auth import rate_limit
+from app.auth.sessions import MaybePrincipal, Teacher
 from app.config import get_settings
+from app.db import Db
 from app.routes.load_test import TEST_ENVIRONMENTS
+from app.routes.questions import DRAFTS_PER_TEACHER
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 test_router = APIRouter(prefix="/test-only/ai", include_in_schema=False)
@@ -191,6 +200,50 @@ async def report_review(
         claude,
         ai_log,
         to_item=ReviewCheck(body),
+    )
+
+
+@router.post(
+    "/question-drafting",
+    response_class=EventSourceResponse,
+    responses={
+        200: {"content": {"text/event-stream": {}}, "description": "One item (ADR 0043)"},
+        401: {"description": "Signed out"},
+        403: {"description": "Teachers only"},
+        422: {"description": "Not ready for this experiment"},
+        429: {"description": "The day's drafts are used"},
+        503: {"description": "AI is switched off or not set up"},
+    },
+)
+async def question_drafting(
+    body: DraftRequest,
+    db: Db,
+    principal: MaybePrincipal,
+    claude: ClaudeDep,
+    ai_log: AiLogDep,
+) -> EventSourceResponse:
+    """Three drafted follow-up questions for exam mode, as one item, for a teacher to edit."""
+    facts = QUESTION_FACTS.get(body.experiment_id)
+    if facts is None:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=DRAFT_NOT_READY)
+    reason = why_unavailable(principal, FEATURES[FeatureName.question_drafting], get_settings())
+    if reason is not None:
+        raise refuse(reason)
+    assert isinstance(principal, Teacher)  # students never get drafting (why_unavailable)
+    await rate_limit.take(db, DRAFTS_PER_TEACHER, str(principal.user.id))
+    return ai_reply_with(
+        FeatureName.question_drafting,
+        principal,
+        lambda feature, model: request_with(
+            feature,
+            model,
+            DRAFT_INSTRUCTIONS,
+            [{"role": "user", "content": draft_message(body, facts)}],
+            draft_schema(),
+        ),
+        claude,
+        ai_log,
+        to_item=DraftCheck(facts),
     )
 
 
