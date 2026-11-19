@@ -9,6 +9,11 @@ export const enGBPrivacy = {
   "privacy.signedOut": "Sign in to see your data. Work you do signed out stays on this device.",
   "privacy.back": "Back",
 
+  "privacy.ai.title": "AI help",
+  "privacy.ai.body":
+    "When you ask the tutor, try a what if or ask for a review, we send the step, your bench's numbers and your question. Never your name or your class.",
+  "privacy.ai.kept":
+    "Your questions and the replies are not kept. We keep a count of AI use for 90 days, without them.",
   "privacy.download.title": "Download your data",
   "privacy.download.body":
     "One file with your account and every attempt. You can open each attempt in the lab on any device.",
