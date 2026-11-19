@@ -46,3 +46,10 @@ SYNC_PULL_PAGE = 500
 SYNC_PULL_MAX_BYTES = 2 * 1024 * 1024
 # No request body may be larger (sync pushes are the only big ones).
 MAX_BODY_BYTES = 2 * 1024 * 1024
+
+# Deleting an account needs a sign-in this recent, as well as the typed email (ADR 0042).
+DELETE_ACCOUNT_RECENT_SIGN_IN = timedelta(hours=1)
+# Data export pages (ADR 0042): at most this many attempts, stopping early once their events'
+# data passes this many bytes. An attempt is never split, so one larger attempt is a page alone.
+EXPORT_PAGE_ATTEMPTS = 20
+EXPORT_PAGE_MAX_BYTES = 2 * 1024 * 1024

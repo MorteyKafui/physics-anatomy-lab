@@ -448,3 +448,50 @@ class AdminAudit(Base):
     target_type: Mapped[str | None] = mapped_column(Text)
     target_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
     detail: Mapped[Any] = mapped_column(JSONB, nullable=False, server_default=text("'{}'::jsonb"))
+
+
+class Consent(Base):
+    """One thing a person agreed to, or withdrew, and which version of the document (ADR 0042).
+
+    Append-only: a new decision is a new row, and the latest row for a person and purpose is the
+    one in force. A student's consent is recorded against their class membership, with nothing
+    else about them. Deleting the person deletes their consents.
+    """
+
+    __tablename__ = "consents"
+    __table_args__ = (
+        CheckConstraint("num_nonnulls(user_id, member_id) = 1", name="one_person"),
+        CheckConstraint("purpose IN ('terms', 'privacy', 'analytics')", name="purpose_known"),
+        CheckConstraint("char_length(version) BETWEEN 1 AND 40", name="version_length"),
+        CheckConstraint("via IN ('sign-in', 'join', 'choice')", name="via_known"),
+        # Students are never asked about analytics, and the database holds to it.
+        CheckConstraint("member_id IS NULL OR purpose <> 'analytics'", name="no_student_analytics"),
+        # The required documents are agreed to; they are withdrawn only by deleting the account.
+        CheckConstraint("granted OR purpose = 'analytics'", name="required_only_granted"),
+        Index(
+            "ix_consents_user_id_purpose_recorded_at",
+            "user_id",
+            "purpose",
+            "recorded_at",
+            postgresql_where=text("user_id IS NOT NULL"),
+        ),
+        Index(
+            "ix_consents_member_id_purpose_recorded_at",
+            "member_id",
+            "purpose",
+            "recorded_at",
+            postgresql_where=text("member_id IS NOT NULL"),
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = _id()
+    # The partial indexes above also serve the cascades from users and class_members.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    member_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("class_members.id", ondelete="CASCADE")
+    )
+    purpose: Mapped[str] = mapped_column(Text, nullable=False)
+    version: Mapped[str] = mapped_column(Text, nullable=False)
+    granted: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    via: Mapped[str] = mapped_column(Text, nullable=False)
+    recorded_at: Mapped[datetime] = _now()
