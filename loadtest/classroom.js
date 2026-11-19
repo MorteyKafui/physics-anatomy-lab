@@ -34,6 +34,8 @@ const socketOk = new Rate("live_socket_ok");
 const messagesReceived = new Counter("live_messages_received");
 
 const TEST_SECONDS = P.RAMP_UP + P.HOLD + P.RAMP_DOWN;
+// Students' lessons may run this long after the ramp down (gracefulRampDown).
+const TEACHER_SECONDS = TEST_SECONDS + P.LESSON + 30;
 const BROADCAST_PREFIX = "Load test broadcast sent at ";
 // Closing codes a client expects: normal, or going away.
 const NORMAL_CLOSE = new Set([1000, 1001, 1005]);
@@ -51,7 +53,7 @@ export const options = {
         exec: "teacher",
         vus: P.LIVE_CLASSES,
         iterations: 1,
-        maxDuration: `${TEST_SECONDS + 60}s`,
+        maxDuration: `${TEACHER_SECONDS + 60}s`,
       },
     }),
     students: {
@@ -81,7 +83,7 @@ export function setup() {
     const live = i < P.LIVE_CLASSES;
     const experimentId = EXPERIMENTS[i % EXPERIMENTS.length];
     if (live)
-      teacher.startLive(made.id, experimentId, Math.min(240, Math.ceil(TEST_SECONDS / 60) + 5));
+      teacher.startLive(made.id, experimentId, Math.min(240, Math.ceil(TEACHER_SECONDS / 60) + 5));
     classes.push({ id: made.id, code: made.code, session, live, experimentId });
   }
   return { run, classes };
@@ -98,44 +100,65 @@ export function teacher(data) {
   const mine = live[exec.scenario.iterationInTest % live.length];
   api.useSession(mine.session);
   const sent = new Map();
-
-  const socket = new WebSocket(`${WS_URL}/live/classes/${mine.id}/teacher`, null, {
-    headers: { Origin: WEB_ORIGIN, Cookie: api.cookieHeader() },
-    tags: { name: "teacher-socket" },
-  });
+  // Stay until the last lessons can have finished (see gracefulRampDown).
+  const leaveAt = Date.now() + TEACHER_SECONDS * 1000;
   const timers = [];
-  socket.onopen = () => {
-    timers.push(setInterval(() => socket.send(JSON.stringify({ type: "ping" })), 25_000));
-    timers.push(
-      setInterval(() => {
-        const at = Date.now();
-        const reply = api.broadcast(mine.id, `${BROADCAST_PREFIX}${at}`);
-        if (check(reply, { "broadcast sent": (r) => r.status === 200 }))
-          sent.set(reply.json("id"), at);
-      }, P.BROADCAST_EVERY * 1000),
-    );
-    timers.push(setInterval(() => api.liveSnapshot(mine.id), 60_000));
-    setTimeout(() => {
-      timers.forEach(clearInterval);
-      socket.close();
-    }, TEST_SECONDS * 1000);
-  };
-  socket.onmessage = (event) => {
-    const frame = JSON.parse(event.data);
-    if (frame.type === "message" && sent.has(frame.message.id)) {
-      echoMs.add(Date.now() - sent.get(frame.message.id));
-      sent.delete(frame.message.id);
-    }
-  };
-  let failed = false;
-  socket.onerror = () => {
-    failed = true;
-  };
-  socket.onclose = (event) => {
+  let leaving = false;
+  let backoff = 1000;
+
+  const leave = (socket) => {
+    leaving = true;
     timers.forEach(clearInterval);
-    const code = event && event.code;
-    socketOk.add(!failed && (code === undefined || NORMAL_CLOSE.has(code)));
+    socket.close();
   };
+
+  // The board reconnects after a dropped socket, waiting longer each time (ADR 0041).
+  const connect = () => {
+    const socket = new WebSocket(`${WS_URL}/live/classes/${mine.id}/teacher`, null, {
+      headers: { Origin: WEB_ORIGIN, Cookie: api.cookieHeader() },
+      tags: { name: "teacher-socket" },
+    });
+    const own = [];
+    let failed = false;
+    socket.onopen = () => {
+      backoff = 1000;
+      own.push(setInterval(() => socket.send(JSON.stringify({ type: "ping" })), 25_000));
+      timers.push(...own);
+    };
+    socket.onmessage = (event) => {
+      const frame = JSON.parse(event.data);
+      if (frame.type === "message" && sent.has(frame.message.id)) {
+        echoMs.add(Date.now() - sent.get(frame.message.id));
+        sent.delete(frame.message.id);
+      }
+    };
+    socket.onerror = () => {
+      failed = true;
+    };
+    socket.onclose = (event) => {
+      own.forEach(clearInterval);
+      const code = event && event.code;
+      socketOk.add(leaving || (!failed && (code === undefined || NORMAL_CLOSE.has(code))));
+      if (!leaving && Date.now() < leaveAt) {
+        setTimeout(connect, backoff * (0.5 + Math.random()));
+        backoff = Math.min(backoff * 2, 30_000);
+      }
+    };
+    current = socket;
+  };
+  let current = null;
+  connect();
+
+  timers.push(
+    setInterval(() => {
+      const at = Date.now();
+      const reply = api.broadcast(mine.id, `${BROADCAST_PREFIX}${at}`);
+      if (check(reply, { "broadcast sent": (r) => r.status === 200 }))
+        sent.set(reply.json("id"), at);
+    }, P.BROADCAST_EVERY * 1000),
+  );
+  timers.push(setInterval(() => api.liveSnapshot(mine.id), 60_000));
+  setTimeout(() => leave(current), TEACHER_SECONDS * 1000);
 }
 
 // A student's device
@@ -170,7 +193,9 @@ export function student(data) {
     timers.push(setInterval(() => attempt.record(), P.EVENT_EVERY * 1000));
     // Spread the syncs so a class does not arrive at once.
     setTimeout(
-      () => timers.push(setInterval(() => attempt.sync(), P.SYNC_EVERY * 1000)),
+      () => {
+        if (!ended) timers.push(setInterval(() => attempt.sync(), P.SYNC_EVERY * 1000));
+      },
       Math.random() * P.SYNC_EVERY * 1000,
     );
   };
