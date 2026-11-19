@@ -47,4 +47,4 @@
 ## Still open (non-blocking)
 
 - Mockup approval from you, then Phase 0 repo setup (needs this chat linked to your computer).
-- Benchmark phone model; domain; AI budget; donation route; pilot dates; voice and email providers; whether teacher sign-up offers Google sign-in (removed from the mockup until decided).
+- Benchmark phone model; domain; AI budget; donation route; pilot dates; voice provider. (Decided 2026-11-19: email by Resend, and teacher sign-in offers Google; see ADR 0038.)

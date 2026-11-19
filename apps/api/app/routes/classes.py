@@ -27,6 +27,7 @@ from app.auth.policy import (
     WRONG_CODES_PER_ADDRESS,
 )
 from app.auth.sessions import CurrentTeacher, end_member_sessions, start_student_session
+from app.auth.turnstile import HumanCheckDep, require_human
 from app.db import Db
 from app.models import ClassMember, RejoinCode, SchoolClass, User
 from app.routes.auth import student_me
@@ -253,8 +254,11 @@ async def preview_class(code: str, request: Request, db: Db) -> JoinPreview:
 
 
 @join_router.post("", status_code=status.HTTP_201_CREATED, responses=CODE_ERRORS)
-async def join_class(body: JoinRequest, request: Request, response: Response, db: Db) -> StudentMe:
+async def join_class(
+    body: JoinRequest, request: Request, response: Response, db: Db, human: HumanCheckDep
+) -> StudentMe:
     """Join with a class code and a display name. No email, age or phone number (ADR 0011)."""
+    await require_human(human, body.turnstile_token, request)
     row = await _open_class(db, request, body.code)
     member = ClassMember(class_id=row.id, display_name=body.display_name)
     try:
@@ -274,8 +278,11 @@ async def join_class(body: JoinRequest, request: Request, response: Response, db
 
 
 @join_router.post("/rejoin", responses=CODE_ERRORS)
-async def rejoin(body: RejoinRequest, request: Request, response: Response, db: Db) -> StudentMe:
+async def rejoin(
+    body: RejoinRequest, request: Request, response: Response, db: Db, human: HumanCheckDep
+) -> StudentMe:
     """Sign back in with a teacher's re-join code. Ends the student's other sessions."""
+    await require_human(human, body.turnstile_token, request)
     await _count_try(db, request)
     code = normalise_code(body.code)
     now = datetime.now(UTC)

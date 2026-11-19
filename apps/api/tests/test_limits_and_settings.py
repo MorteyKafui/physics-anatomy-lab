@@ -2,7 +2,7 @@
 
 import pytest
 from httpx import AsyncClient
-from pydantic import ValidationError
+from pydantic import SecretStr, ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
@@ -54,7 +54,10 @@ def test_deployed_environments_need_the_client_address_header() -> None:
     with pytest.raises(ValidationError, match="CLIENT_IP_HEADER"):
         Settings(environment="production", client_ip_header=None, admin_dev_bypass_email=None)
     assert Settings(
-        environment="production", client_ip_header="cf-connecting-ip", admin_dev_bypass_email=None
+        environment="production",
+        client_ip_header="cf-connecting-ip",
+        admin_dev_bypass_email=None,
+        turnstile_secret_key=SecretStr("0x-test"),
     )
 
 

@@ -10,7 +10,7 @@ import pytest
 from httpx import AsyncClient
 from joserfc import jwt
 from joserfc.jwk import Key, KeySet, RSAKey
-from pydantic import ValidationError
+from pydantic import SecretStr, ValidationError
 from sqlalchemy import select, text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -184,6 +184,7 @@ def test_the_dev_bypass_is_refused_on_deployed_servers() -> None:
                 environment=environment,  # pyright: ignore[reportArgumentType]
                 client_ip_header="cf-connecting-ip",
                 admin_dev_bypass_email=STAFF,
+                turnstile_secret_key=SecretStr("0x-test"),
             )
     with pytest.raises(ValidationError, match="CF_ACCESS"):
         Settings(cf_access_team_domain=TEAM)

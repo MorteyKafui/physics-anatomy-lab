@@ -1,6 +1,6 @@
 # 0042. Consent records, data export and deletion
 
-- Status: proposed (waiting for Mortey's approval)
+- Status: accepted (Mortey, 2026-11-19)
 - Date: 2026-11-19
 - Builds on: [0011](./0011-accounts-optional.md), [0025](./0025-legal-pack.md),
   [0038](./0038-sign-in-sessions-and-class-codes.md), [0039](./0039-event-sync-and-adoption.md),
