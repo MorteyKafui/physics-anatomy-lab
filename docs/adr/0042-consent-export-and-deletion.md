@@ -101,6 +101,7 @@ work. This record fixes what is recorded, what an export holds, and what deletin
   - a confirmation step on the screen.
 
   The dashboards' undo toasts do not apply to removing a student.
+
 - **What deletion does not reach:**
   - Copies on devices. The lab is offline first, so a device keeps the attempts it holds, and
     signing out leaves them there (ADR 0039).
