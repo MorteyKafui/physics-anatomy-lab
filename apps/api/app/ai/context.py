@@ -158,14 +158,14 @@ def _context_block(context: AiContext) -> str:
     return "\n".join(lines)
 
 
-def build_request(
+def request_with(
     feature: Feature,
     model: str,
     instructions: str,
-    context: AiContext,
+    messages: list[dict[str, object]],
     output_schema: dict[str, Any] | None = None,
 ) -> ModelRequest:
-    """The request for one feature. `instructions` is the feature's own, fixed system text."""
+    """A request with the shared rules and a feature's fixed instructions, both cached."""
     return ModelRequest(
         output_schema=output_schema,
         model=model,
@@ -175,6 +175,23 @@ def build_request(
             {"type": "text", "text": SHARED_RULES},
             {"type": "text", "text": instructions, "cache_control": {"type": "ephemeral"}},
         ],
+        messages=messages,
+    )
+
+
+def build_request(
+    feature: Feature,
+    model: str,
+    instructions: str,
+    context: AiContext,
+    output_schema: dict[str, Any] | None = None,
+) -> ModelRequest:
+    """The request for one feature. `instructions` is the feature's own, fixed system text."""
+    return request_with(
+        feature,
+        model,
+        instructions,
+        output_schema=output_schema,
         messages=[
             *(
                 {"role": "user", "content": _tagged(turn.text)}
