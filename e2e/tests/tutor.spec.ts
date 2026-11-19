@@ -89,6 +89,17 @@ test("with AI off for the class, the help menu says why and there is no Ask tab"
   await expect(page.getByRole("tab", { name: "Ask" })).toHaveCount(0);
 });
 
+test("when today's tutor questions are used up, the help menu says so", async ({ page }) => {
+  const line =
+    "You have used today's AI help for this. The coach still works. It resets at midnight.";
+  await mockAi(page, { ...ON, features: ["what-if", "report-review"], used_up: { tutor: line } });
+  await page.goto(LAB);
+  await page.getByRole("button", { name: "Help" }).filter({ visible: true }).click();
+  await expect(page.getByText(line)).toBeVisible();
+  await expect(page.getByRole("button", { name: /Give me a hint/ })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Ask" })).toHaveCount(0);
+});
+
 test("signed out or offline, the lab works and offers no tutor", async ({ page }) => {
   await page.route("**/api/ai/status", (route) => route.abort());
   await page.goto(LAB);

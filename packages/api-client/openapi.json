@@ -1989,6 +1989,9 @@
           "403": {
             "description": "AI is off for this class"
           },
+          "429": {
+            "description": "A quota, the daily budget or the address limit is used up"
+          },
           "503": {
             "description": "AI is switched off or not set up"
           },
@@ -2034,6 +2037,9 @@
           "403": {
             "description": "AI is off for this class"
           },
+          "429": {
+            "description": "A quota, the daily budget or the address limit is used up"
+          },
           "422": {
             "description": "What if is not ready for this experiment"
           },
@@ -2071,6 +2077,9 @@
           },
           "403": {
             "description": "AI is off for this class"
+          },
+          "429": {
+            "description": "A quota, the daily budget or the address limit is used up"
           },
           "503": {
             "description": "AI is switched off or not set up"
@@ -2119,9 +2128,6 @@
           },
           "422": {
             "description": "Not ready for this experiment"
-          },
-          "429": {
-            "description": "The day's drafts are used"
           },
           "503": {
             "description": "AI is switched off or not set up"
@@ -3081,7 +3087,19 @@
               "$ref": "#/components/schemas/FeatureName"
             },
             "type": "array",
-            "title": "Features"
+            "title": "Features",
+            "description": "The features this person may use now."
+          },
+          "used_up": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/FeatureName"
+            },
+            "type": "object",
+            "title": "Used Up",
+            "description": "Features whose quota is used up today, each with the line to show."
           }
         },
         "type": "object",
@@ -6041,7 +6059,16 @@
       },
       "Unavailable": {
         "type": "string",
-        "enum": ["signed-out", "class-off", "switched-off", "not-configured", "not-for-students"],
+        "enum": [
+          "signed-out",
+          "class-off",
+          "switched-off",
+          "not-configured",
+          "not-for-students",
+          "quota-used",
+          "budget-reached",
+          "address-busy"
+        ],
         "title": "Unavailable"
       },
       "Usage": {

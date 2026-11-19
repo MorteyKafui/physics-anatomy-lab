@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@pa/ui/components/popov
 import { CircleHelpIcon } from "@pa/ui/icons";
 import { useState } from "react";
 
-import { canUse } from "./use-ai-status";
+import { canUse, whyNot } from "./use-ai-status";
 
 export function HelpMenu({
   status,
@@ -27,6 +27,7 @@ export function HelpMenu({
   const [open, setOpen] = useState(false);
   if (!coachOn) return null;
   const tutor = canUse(status, "tutor");
+  const why = whyNot(status, "tutor");
   const pick = (action: () => void) => () => {
     setOpen(false);
     action();
@@ -63,10 +64,10 @@ export function HelpMenu({
             <span className="text-xs text-muted-foreground">{t("lab.help.askNote")}</span>
           </button>
         ) : (
-          status?.message && (
+          why && (
             <div aria-disabled="true" className={`${item} border-t border-border`}>
               <span className="font-semibold text-muted-foreground">{t("lab.help.ask")}</span>
-              <span className="text-xs text-muted-foreground">{status.message}</span>
+              <span className="text-xs text-muted-foreground">{why}</span>
             </div>
           )
         )}

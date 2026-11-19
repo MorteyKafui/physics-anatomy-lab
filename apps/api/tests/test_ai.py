@@ -54,6 +54,7 @@ async def test_signed_out_never_gets_ai(
         "reason": "signed-out",
         "message": "Sign in to use AI help.",
         "features": [],
+        "used_up": {},
     }
     refused = await client.post("/test-only/ai/tutor", json=context())
     assert refused.status_code == 401
@@ -86,6 +87,7 @@ async def test_a_teacher_has_every_feature(
         "reason": None,
         "message": None,
         "features": ["tutor", "what-if", "report-review", "question-drafting"],
+        "used_up": {},
     }
 
 
@@ -119,7 +121,7 @@ async def test_a_class_is_off_by_default_and_its_teacher_turns_it_on(
     assert [e.principal_kind for e in ai_log.entries] == ["student"]
 
 
-def test_deployed_servers_refuse_ai_without_the_key_or_the_log_key() -> None:
+def test_deployed_servers_refuse_ai_without_the_key_the_log_key_or_a_budget() -> None:
     deployed: dict[str, Any] = {
         "environment": "production",
         "client_ip_header": "cf-connecting-ip",
@@ -130,8 +132,10 @@ def test_deployed_servers_refuse_ai_without_the_key_or_the_log_key() -> None:
         Settings.model_validate(deployed)
     with pytest.raises(ValidationError, match="AI_LOG_KEY"):
         Settings.model_validate({**deployed, "anthropic_api_key": "k"})
+    with pytest.raises(ValidationError, match="AI_DAILY_BUDGET_USD"):
+        Settings.model_validate({**deployed, "anthropic_api_key": "k", "ai_log_key": "l"})
     assert Settings.model_validate(
-        {**deployed, "anthropic_api_key": "k", "ai_log_key": "l"}
+        {**deployed, "anthropic_api_key": "k", "ai_log_key": "l", "ai_daily_budget_usd": 2.5}
     ).ai_enabled
     # Off by default, and fine without a key.
     assert not Settings.model_validate({**deployed, "ai_enabled": False}).ai_enabled

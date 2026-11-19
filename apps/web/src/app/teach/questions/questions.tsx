@@ -10,7 +10,7 @@ import { Button } from "@pa/ui/components/button";
 import { useEffect, useState } from "react";
 
 import { ConsentGate } from "../../account/consent-gate";
-import { canUse, useAiStatus } from "../../lab/tutor/use-ai-status";
+import { canUse, useAiStatus, whyNot } from "../../lab/tutor/use-ai-status";
 import { FIELD, Shell } from "../panels";
 
 const api = createApi();
@@ -178,7 +178,7 @@ function QuestionsPage() {
         <span className="text-xs text-[var(--pa-text-faint)]">
           {aiOn
             ? t(k("teach.questions.sentNote"))
-            : t(k("teach.questions.noAi"), { reason: status?.message ?? "" })}
+            : t(k("teach.questions.noAi"), { reason: whyNot(status, "question-drafting") ?? "" })}
         </span>
       </div>
 
