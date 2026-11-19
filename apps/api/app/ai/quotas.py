@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.ai.features import FEATURES, FeatureName
 from app.ai.log import pseudonym
 from app.ai.policy import Unavailable, refuse, why_unavailable
+from app.ai.switches import switched_off
 from app.auth import rate_limit
 from app.auth.policy import Limit
 from app.auth.sessions import MaybePrincipal, Principal, Teacher
@@ -85,9 +86,10 @@ async def why_limited(
 async def enforce(
     db: AsyncSession, request: Request, principal: Principal | None, name: FeatureName
 ) -> None:
-    """Every AI route's gate: who may use it (ADR 0043), then the day's limits."""
+    """Every AI route's gate: who may use it (ADR 0043) and the switches, then the day's limits."""
     settings = get_settings()
-    reason = why_unavailable(principal, FEATURES[name], settings)
+    off = await switched_off(db) if principal is not None else frozenset[str]()
+    reason = why_unavailable(principal, FEATURES[name], settings, off)
     if reason is not None:
         raise refuse(reason)
     assert principal is not None  # checked by why_unavailable

@@ -2671,6 +2671,105 @@
         }
       }
     },
+    "/admin/ai": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin Ai",
+        "description": "Requests, spend, the cache and held replies, by feature; and the switches.",
+        "operationId": "adminAi",
+        "parameters": [
+          {
+            "name": "range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["24h", "7d", "30d"],
+              "type": "string",
+              "default": "7d",
+              "title": "Range"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/ai/switches/{name}": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Set Ai Switch",
+        "description": "Turn all AI, or one feature, on or off for everyone. Undo is the same call the other way.\nTakes effect at once on this API process and within 10 seconds on the others.",
+        "operationId": "adminSetAiSwitch",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": ["all", "tutor", "what-if", "report-review", "question-drafting"],
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiSwitchChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AiSwitchState"
+                  },
+                  "title": "Response Adminsetaiswitch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/members/{member_id}/display-name": {
       "post": {
         "tags": ["admin"],
@@ -3055,6 +3154,110 @@
         "required": ["experiment_id", "experiment_version", "step", "help_level", "student_text"],
         "title": "AiContext"
       },
+      "AiFeatureUse": {
+        "properties": {
+          "feature": {
+            "$ref": "#/components/schemas/FeatureName"
+          },
+          "requests": {
+            "type": "integer",
+            "title": "Requests"
+          },
+          "cost_microdollars": {
+            "type": "integer",
+            "title": "Cost Microdollars",
+            "description": "Millionths of a US dollar."
+          },
+          "held": {
+            "type": "integer",
+            "title": "Held"
+          },
+          "cached": {
+            "type": "integer",
+            "title": "Cached"
+          }
+        },
+        "type": "object",
+        "required": ["feature", "requests", "cost_microdollars", "held", "cached"],
+        "title": "AiFeatureUse"
+      },
+      "AiOverview": {
+        "properties": {
+          "range": {
+            "$ref": "#/components/schemas/RangeInfo"
+          },
+          "today": {
+            "items": {
+              "$ref": "#/components/schemas/AiFeatureUse"
+            },
+            "type": "array",
+            "title": "Today"
+          },
+          "by_feature": {
+            "items": {
+              "$ref": "#/components/schemas/AiFeatureUse"
+            },
+            "type": "array",
+            "title": "By Feature",
+            "description": "Over the chosen range."
+          },
+          "budget_microdollars": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Microdollars",
+            "description": "AI_DAILY_BUDGET_USD, if set."
+          },
+          "budget_reached_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Reached At",
+            "description": "When today's spend reached it."
+          },
+          "switches": {
+            "items": {
+              "$ref": "#/components/schemas/AiSwitchState"
+            },
+            "type": "array",
+            "title": "Switches"
+          },
+          "server_enabled": {
+            "type": "boolean",
+            "title": "Server Enabled",
+            "description": "AI_ENABLED, the server's master switch."
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured",
+            "description": "Whether the Anthropic key is set."
+          }
+        },
+        "type": "object",
+        "required": [
+          "range",
+          "today",
+          "by_feature",
+          "budget_microdollars",
+          "budget_reached_at",
+          "switches",
+          "server_enabled",
+          "configured"
+        ],
+        "title": "AiOverview",
+        "description": "The admin AI page (ai-quotas-brief.md, decision 5). Today is since midnight UTC."
+      },
       "AiStatus": {
         "properties": {
           "available": {
@@ -3100,12 +3303,90 @@
             "type": "object",
             "title": "Used Up",
             "description": "Features whose quota is used up today, each with the line to show."
+          },
+          "switched_off": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/FeatureName"
+            },
+            "type": "object",
+            "title": "Switched Off",
+            "description": "Features switched off in the admin portal, each with the line to show."
           }
         },
         "type": "object",
         "required": ["available", "reason", "message", "features"],
         "title": "AiStatus",
         "description": "Whether this person may use AI now, and if not, why, in a sentence to show."
+      },
+      "AiSwitchChange": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": ["enabled"],
+        "title": "AiSwitchChange"
+      },
+      "AiSwitchState": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["all", "tutor", "what-if", "report-review", "question-drafting"],
+            "title": "Name"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "The feature's model; none for the switch for all AI."
+          },
+          "teachers_only": {
+            "type": "boolean",
+            "title": "Teachers Only"
+          },
+          "changed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed At"
+          }
+        },
+        "type": "object",
+        "required": ["name", "enabled", "model", "teachers_only", "changed_at"],
+        "title": "AiSwitchState"
       },
       "Approval": {
         "properties": {

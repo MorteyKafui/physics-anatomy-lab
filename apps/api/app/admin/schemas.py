@@ -7,6 +7,8 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 from app.admin.queries import Range
+from app.ai.features import FeatureName
+from app.ai.switches import SwitchName
 from app.auth.codes import show_code
 from app.schemas import DisplayName
 
@@ -213,3 +215,37 @@ class ExportRequest(BaseModel):
     report: Literal["mistakes", "stages", "classes"]
     range: Range = "7d"
     experiment_id: str | None = Field(default=None, max_length=200)
+
+
+class AiFeatureUse(BaseModel):
+    feature: FeatureName
+    requests: int
+    cost_microdollars: int = Field(description="Millionths of a US dollar.")
+    held: int
+    cached: int
+
+
+class AiSwitchState(BaseModel):
+    name: SwitchName
+    enabled: bool
+    model: str | None = Field(description="The feature's model; none for the switch for all AI.")
+    teachers_only: bool
+    changed_at: datetime | None
+
+
+class AiOverview(BaseModel):
+    """The admin AI page (ai-quotas-brief.md, decision 5). Today is since midnight UTC."""
+
+    range: RangeInfo
+    today: list[AiFeatureUse]
+    by_feature: list[AiFeatureUse] = Field(description="Over the chosen range.")
+    budget_microdollars: int | None = Field(description="AI_DAILY_BUDGET_USD, if set.")
+    budget_reached_at: datetime | None = Field(description="When today's spend reached it.")
+    switches: list[AiSwitchState]
+    server_enabled: bool = Field(description="AI_ENABLED, the server's master switch.")
+    configured: bool = Field(description="Whether the Anthropic key is set.")
+
+
+class AiSwitchChange(BaseModel):
+    enabled: bool
+    reason: str | None = Reason

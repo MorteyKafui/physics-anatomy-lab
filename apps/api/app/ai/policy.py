@@ -3,7 +3,8 @@
 - Signed out: never.
 - A teacher (a signed-in adult): yes.
 - A student: only while their class's teacher has AI on, which is off by default.
-- Nobody, while AI is switched off or the key is not set.
+- Nobody, while AI is switched off (AI_ENABLED, or the portal's switch for all AI) or the key is
+  not set; and nobody uses a feature while its own switch is off (app/ai/switches.py).
 """
 
 from enum import StrEnum
@@ -45,16 +46,21 @@ MESSAGES: dict[Unavailable, str] = {
 
 
 def why_unavailable(
-    principal: Principal | None, feature: Feature | None, settings: Settings
+    principal: Principal | None,
+    feature: Feature | None,
+    settings: Settings,
+    off: frozenset[str] = frozenset(),
 ) -> Unavailable | None:
     """None when AI may be used; otherwise the reason it may not. Order matters: the most
     useful reason comes first, so a signed-out visitor is told to sign in, not that AI is off."""
     if principal is None:
         return Unavailable.signed_out
-    if not settings.ai_enabled:
+    if not settings.ai_enabled or "all" in off:
         return Unavailable.switched_off
     if settings.anthropic_api_key is None:
         return Unavailable.not_configured
+    if feature is not None and feature.name.value in off:
+        return Unavailable.switched_off
     if isinstance(principal, Student):
         if feature is not None and not feature.students:
             return Unavailable.not_for_students
@@ -63,11 +69,13 @@ def why_unavailable(
     return None
 
 
-def available_features(principal: Principal | None, settings: Settings) -> list[FeatureName]:
+def available_features(
+    principal: Principal | None, settings: Settings, off: frozenset[str] = frozenset()
+) -> list[FeatureName]:
     return [
         name
         for name, feature in FEATURES.items()
-        if why_unavailable(principal, feature, settings) is None
+        if why_unavailable(principal, feature, settings, off) is None
     ]
 
 

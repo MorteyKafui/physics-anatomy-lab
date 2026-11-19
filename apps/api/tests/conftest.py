@@ -20,6 +20,7 @@ from sqlalchemy.pool import NullPool
 from app.ai.answers import get_answer_store
 from app.ai.claude import get_claude
 from app.ai.log import get_ai_log
+from app.ai.switches import forget as forget_switches
 from app.auth.email import LogSender, get_email_sender
 from app.config import get_settings
 from app.db import get_db
@@ -129,3 +130,11 @@ def answers() -> Iterator[FakeAnswers]:
     app.dependency_overrides[get_answer_store] = lambda: fake
     yield fake
     app.dependency_overrides.pop(get_answer_store, None)
+
+
+@pytest.fixture(autouse=True)
+def fresh_switches() -> Iterator[None]:
+    """The AI switches are read with a short cache (app/ai/switches.py): none outlives a test."""
+    forget_switches()
+    yield
+    forget_switches()
