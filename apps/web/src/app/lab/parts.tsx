@@ -56,7 +56,14 @@ function NotBuilt({ icon: Icon, name }: { icon: LucideIcon; name: string }) {
  * The app rail (desktop): logo, sections, help and settings. Sections not built yet say so.
  * It is drawn again only when its section changes, not at every tap in the lab.
  */
-export const Rail = memo(function Rail({ current }: { current: "lab" | "notebook" }) {
+export const Rail = memo(function Rail({
+  current,
+  help,
+}: {
+  current: "lab" | "notebook";
+  /** The lab's help menu, where a lab has one; otherwise Help says it is not built yet. */
+  help?: ReactNode;
+}) {
   const here = (on: boolean) =>
     cn(railItem, on && "border-l-2 border-primary bg-raised text-foreground");
   return (
@@ -86,7 +93,7 @@ export const Rail = memo(function Rail({ current }: { current: "lab" | "notebook
       </Link>
       <NotBuilt icon={BookIcon} name={t("lab.rail.reference")} />
       <span className="flex-1" />
-      <NotBuilt icon={CircleHelpIcon} name={t("lab.rail.help")} />
+      {help ?? <NotBuilt icon={CircleHelpIcon} name={t("lab.rail.help")} />}
       <NotBuilt icon={SettingsIcon} name={t("lab.rail.settings")} />
     </nav>
   );

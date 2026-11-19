@@ -219,6 +219,8 @@ export function LabScreen() {
   const [tab, setTab] = useState("instructions");
   // AI (ADR 0043): asked once, off the critical path; the lab never waits for it.
   const aiStatus = useAiStatus();
+  const showHint = useCallback(() => setTab("tips"), []);
+  const showAsk = useCallback(() => setTab("ask"), []);
   // Rules the coach has already acted on during this timing: a mistake counts once, however
   // many times the rules are re-checked while the student carries on counting.
   const acted = useRef(new Set<string>());
@@ -1047,7 +1049,18 @@ export function LabScreen() {
         playSound={playSound}
       />
       <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
-        <Rail current="lab" />
+        <Rail
+          current="lab"
+          help={
+            <HelpMenu
+              status={aiStatus}
+              onHint={showHint}
+              onAsk={showAsk}
+              coachOn={coachIsOn(state)}
+              place="rail"
+            />
+          }
+        />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {/* Header */}
           <LabHeader
@@ -1069,8 +1082,8 @@ export function LabScreen() {
             uncertain={uncertain}
             setUncertain={setUncertain}
             aiStatus={aiStatus}
-            onHint={() => setTab("tips")}
-            onAsk={() => setTab("ask")}
+            onHint={showHint}
+            onAsk={showAsk}
           />
           {handle.attempt.mode === "exam" &&
             exam.startedAt !== undefined &&
@@ -2115,7 +2128,13 @@ const LabHeader = memo(function LabHeader({
           </PopoverContent>
         </Popover>
       )}
-      <HelpMenu status={aiStatus} onHint={onHint} onAsk={onAsk} coachOn={coachIsOn(state)} />
+      <HelpMenu
+        status={aiStatus}
+        onHint={onHint}
+        onAsk={onAsk}
+        coachOn={coachIsOn(state)}
+        place="header"
+      />
       <Button
         aria-label={t("lab.snapshot.label")}
         aria-keyshortcuts="C"

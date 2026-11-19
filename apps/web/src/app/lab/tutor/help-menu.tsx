@@ -14,12 +14,15 @@ export function HelpMenu({
   onHint,
   onAsk,
   coachOn,
+  place,
 }: {
   status: AiStatus | undefined;
   onHint: () => void;
   onAsk: () => void;
   /** Exam mode turns the coach off, and the tutor with it. */
   coachOn: boolean;
+  /** The rail on a wide screen, the header on a phone: one Help button shows at a time. */
+  place: "rail" | "header";
 }) {
   const [open, setOpen] = useState(false);
   if (!coachOn) return null;
@@ -33,11 +36,19 @@ export function HelpMenu({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         aria-label={t("lab.help.label")}
-        className="flex size-11 items-center justify-center border border-border bg-surface"
+        className={
+          place === "rail"
+            ? "flex size-11 items-center justify-center text-muted-foreground hover:bg-raised hover:text-foreground"
+            : "flex size-11 items-center justify-center border border-border bg-surface md:hidden"
+        }
       >
         <CircleHelpIcon className="size-5" aria-hidden />
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-72 gap-0 p-0">
+      <PopoverContent
+        align="end"
+        {...(place === "rail" ? { side: "right" as const } : {})}
+        className="w-72 gap-0 p-0"
+      >
         <button type="button" className={`${item} hover:bg-muted`} onClick={pick(onHint)}>
           <span className="font-semibold">{t("lab.help.hint")}</span>
           <span className="text-xs text-muted-foreground">{t("lab.help.hintNote")}</span>
