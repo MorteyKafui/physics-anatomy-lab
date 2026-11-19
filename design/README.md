@@ -33,6 +33,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Teacher classes, start        | `TeacherStart.dc.html`  | approved 2026-11-19    | `apps/web` `/teach`, live extras |
 | Admin portal                  | `Admin.dc.html`         | `screens/Admin.jpg`    | `apps/admin`                     |
 | Logo                          | `Logo.dc.html`          | `screens/Logo.jpg`     | `packages/ui` logo component     |
+| Logo set                      | `LogoSet.dc.html`       | draft for approval     | `packages/ui/brand`, app icons   |
 
 The `.dc.html` files are the source: open them on the canvas to see every state and interaction.
 The screenshots were taken without web fonts, so type looks slightly different; the canvas is
