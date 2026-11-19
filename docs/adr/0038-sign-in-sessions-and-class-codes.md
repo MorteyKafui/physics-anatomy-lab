@@ -1,6 +1,6 @@
 # 0038. Sign-in, sessions and class codes
 
-- Status: proposed (waiting for Mortey's approval)
+- Status: accepted (Mortey, 2026-11-19)
 - Date: 2026-11-18
 - Builds on: [0008](./0008-ai-from-the-api.md), [0011](./0011-accounts-optional.md),
   [0016](./0016-own-backend-fastapi-postgresql.md), and the master plan's "Security, privacy and
@@ -60,9 +60,8 @@ sessions, one-time codes and rate-limit counters all live in PostgreSQL.
 - The ID token's signature is checked against Google's published keys, along with its issuer,
   audience, expiry and nonce. Only accounts whose email Google has verified are accepted.
 - A Google account whose email matches an existing teacher is linked to that teacher.
-- Google sign-in is off unless a client id and secret are configured. Whether teacher sign-in
-  offers Google at all is still an open question in the decision log; this record makes it
-  possible, not required.
+- Google sign-in is off unless a client id and secret are configured. Mortey decided on
+  2026-11-19 that teacher sign-in offers it.
 
 ### Class codes
 
@@ -114,7 +113,8 @@ sessions, one-time codes and rate-limit counters all live in PostgreSQL.
 
 Email goes through one small interface. Locally and in tests it is written to the log and kept in
 memory; in preview, staging and production the API refuses to send sign-in links until a provider
-is configured. Choosing the provider (Cloudflare Email Service or Resend) is still Mortey's call.
+is configured. Mortey chose Resend on 2026-11-19 (`EMAIL_DELIVERY=resend`, with `RESEND_API_KEY` in the secret
+store).
 Sending happens in the request for now and moves to the job queue when Procrastinate arrives.
 
 ## Consequences

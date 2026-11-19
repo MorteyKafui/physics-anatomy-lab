@@ -3378,6 +3378,19 @@
             "type": "string",
             "format": "email",
             "title": "Email"
+          },
+          "turnstile_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turnstile Token",
+            "description": "From the page's Turnstile widget, when Turnstile is on."
           }
         },
         "additionalProperties": false,
@@ -3771,6 +3784,19 @@
             "type": "boolean",
             "const": true,
             "title": "Agreed To Terms"
+          },
+          "turnstile_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turnstile Token",
+            "description": "From the page's Turnstile widget, when Turnstile is on."
           }
         },
         "additionalProperties": false,
@@ -4316,6 +4342,19 @@
             "maxLength": 32,
             "minLength": 1,
             "title": "Code"
+          },
+          "turnstile_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turnstile Token",
+            "description": "From the page's Turnstile widget, when Turnstile is on."
           }
         },
         "additionalProperties": false,
