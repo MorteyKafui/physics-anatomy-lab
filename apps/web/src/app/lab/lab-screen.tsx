@@ -75,6 +75,7 @@ import {
   type PendulumSlot,
   type Timing,
 } from "@pa/experiments";
+import type { AiStatus, ThreadTurn } from "@pa/api-client";
 import { hasMessage, t, type MessageKey } from "@pa/i18n";
 import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT } from "@pa/instruments";
 import { cn } from "@pa/ui";
@@ -138,6 +139,10 @@ import { flagsFor, useTable } from "./table-builder";
 import { backToPractice, useAttempt, type AttemptHandle } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
+import { tutorContext } from "./tutor/context";
+import { HelpMenu } from "./tutor/help-menu";
+import { TutorPanel } from "./tutor/tutor-panel";
+import { canUse, useAiStatus } from "./tutor/use-ai-status";
 import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
 import { newSnapshotId, useSnapshots } from "./use-snapshots";
 import { UncertaintySwitch } from "./uncertainty-switch";
@@ -212,6 +217,8 @@ export function LabScreen() {
   const [labels, setLabels] = useState(true);
   const [demoFrom, setDemoFrom] = useState<number | undefined>();
   const [tab, setTab] = useState("instructions");
+  // AI (ADR 0043): asked once, off the critical path; the lab never waits for it.
+  const aiStatus = useAiStatus();
   // Rules the coach has already acted on during this timing: a mistake counts once, however
   // many times the rules are re-checked while the student carries on counting.
   const acted = useRef(new Set<string>());
@@ -242,6 +249,24 @@ export function LabScreen() {
     [handle],
   );
   const period = useMemo(() => benchPeriod(g, length), [g, length]);
+  // The tutor (docs/content/ai-tutor-brief.md): shown only when AI is on for this person, never
+  // in an exam. It is sent the step, the summarised events and the length the bench shows; never
+  // the bench's hidden g.
+  const tutorOn = state !== undefined && coachIsOn(state) && canUse(aiStatus, "tutor");
+  const tutorContextFor = useCallback(
+    (question: string, thread: readonly ThreadTurn[]) =>
+      tutorContext({
+        experimentId: E.id,
+        experimentVersion: E.version,
+        step: handle?.state.step ?? "question",
+        helpLevel: handle?.state.helpLevel ?? "auto",
+        events: handle?.events ?? [],
+        quantities: [{ symbol: "l", name: "Length of the pendulum", value: length, unit: "m" }],
+        question,
+        thread,
+      }),
+    [handle, length],
+  );
   const [checkedTable, setCheckedTable] = useState<string>();
   const running = timing !== undefined && timing.stoppedAt === undefined;
 
@@ -1043,6 +1068,9 @@ export function LabScreen() {
             onSnapshot={onSnapshot}
             uncertain={uncertain}
             setUncertain={setUncertain}
+            aiStatus={aiStatus}
+            onHint={() => setTab("tips")}
+            onAsk={() => setTab("ask")}
           />
           {handle.attempt.mode === "exam" &&
             exam.startedAt !== undefined &&
@@ -1330,6 +1358,14 @@ export function LabScreen() {
                   >
                     {t("lab.coach.tips")}
                   </TabsTrigger>
+                  {tutorOn && (
+                    <TabsTrigger
+                      value="ask"
+                      className="flex-none px-0 py-3.5 text-sm after:bg-primary"
+                    >
+                      {t("lab.coach.askTab")}
+                    </TabsTrigger>
+                  )}
                 </TabsList>
                 <TabsContent value="instructions" className="flex flex-col gap-3.5 p-5">
                   {state.step === "build" ? (
@@ -1717,6 +1753,16 @@ export function LabScreen() {
                     ))}
                   </ul>
                 </TabsContent>
+                {tutorOn && (
+                  <TabsContent value="ask" className="flex min-h-[420px] flex-col">
+                    <TutorPanel
+                      key={state.step}
+                      stepName={stepName(state.step)}
+                      contextFor={tutorContextFor}
+                      {...(audio.canSpeak ? { readAloud: audio.read } : {})}
+                    />
+                  </TabsContent>
+                )}
               </Tabs>
             </aside>
           </div>
@@ -1781,6 +1827,9 @@ const LabHeader = memo(function LabHeader({
   onSnapshot,
   uncertain,
   setUncertain,
+  aiStatus,
+  onHint,
+  onAsk,
 }: {
   handle: AttemptHandle;
   labels: boolean;
@@ -1799,6 +1848,9 @@ const LabHeader = memo(function LabHeader({
   onSnapshot: () => void;
   uncertain: boolean;
   setUncertain: (on: boolean) => void;
+  aiStatus: AiStatus | undefined;
+  onHint: () => void;
+  onAsk: () => void;
 }) {
   const state = handle.state;
   const stepIndex = STEPS.indexOf(state.step);
@@ -2063,6 +2115,7 @@ const LabHeader = memo(function LabHeader({
           </PopoverContent>
         </Popover>
       )}
+      <HelpMenu status={aiStatus} onHint={onHint} onAsk={onAsk} coachOn={coachIsOn(state)} />
       <Button
         aria-label={t("lab.snapshot.label")}
         aria-keyshortcuts="C"

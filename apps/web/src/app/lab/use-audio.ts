@@ -77,6 +77,14 @@ export function useAudio() {
     setCaption(text);
   }, []);
 
+  // Read aloud, pressed by the student: speaks even with the coach's voice off, at their
+  // speed and volume, with the line as the caption.
+  const read = useCallback((text: string) => {
+    if (!text) return;
+    tools.current?.speaker.say(text, "correction");
+    setCaption(text);
+  }, []);
+
   const count = useCallback((text: string) => {
     const s = current.current;
     if (!s.on || !s.countAlong) return;
@@ -95,5 +103,5 @@ export function useAudio() {
     [],
   );
 
-  return { settings, update, say, count, sound, caption, voices, canSpeak };
+  return { settings, update, say, read, count, sound, caption, voices, canSpeak };
 }
