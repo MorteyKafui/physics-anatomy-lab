@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { save } from "../snapshot-export";
 import { startExam, useAttempt } from "../use-attempt";
+import { useBankQuestions } from "./bank";
 import { mmss } from "./bar";
 
 /** Why marks were lost, in the shared words (exam.lost). */
@@ -54,6 +55,8 @@ export function asHandedIn(events: readonly LabEvent[]): LabEvent[] {
  */
 export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
   const handle = useAttempt(E.id);
+  // Up to three approved questions from the bank, after the built-in ones (decision 5).
+  const fromBank = useBankQuestions(E.id, handle?.attempt.seed);
   const { itemText, lostText } = E;
   const router = useRouter();
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -89,7 +92,15 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
 
   const running =
     handle.attempt.mode === "exam" && exam.startedAt !== undefined && !exam.handedInAt;
-  const questions = E.followUps;
+  const questions: readonly { id: string; q: string; a: string; bank?: boolean }[] = [
+    ...E.followUps,
+    ...fromBank.map((b) => ({
+      id: `bank-${b.id}`,
+      q: b.question,
+      a: `${b.answer} ${b.marks === 1 ? t("exam.bank.mark") : t("exam.bank.marks", { n: b.marks })}`,
+      bank: true,
+    })),
+  ];
   const used =
     exam.startedAt !== undefined && exam.handedInAt !== undefined
       ? Math.min(EXAM_MINUTES, Math.ceil((exam.handedInAt - exam.startedAt) / 60_000))
@@ -118,7 +129,7 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
         sections: marked.sections,
         itemText,
         lostText,
-        followUps: [...questions],
+        followUps: questions.map(({ q, a }) => ({ q, a })),
       },
       await loadFonts(),
       "a4",
@@ -236,6 +247,9 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
               {questions.map((q) => (
                 <div key={q.id} className="flex flex-col gap-1.5 border-b border-border pb-2.5">
                   <span>{q.q}</span>
+                  {q.bank && (
+                    <span className="text-xs text-muted-foreground">{t("exam.bank.from")}</span>
+                  )}
                   {open[q.id] && (
                     <span id={`answer-${q.id}`} className="text-[13px] text-soft">
                       {q.a}

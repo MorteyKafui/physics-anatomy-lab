@@ -827,7 +827,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 
 - [x] Claude through the Anthropic Python SDK in the API, streamed to the browser
 - [x] Tutor (text and voice), what-if scenarios, report review
-- [ ] Question drafting with reviewer approval in the admin portal
+- [x] Question drafting with reviewer approval in the admin portal
 - [ ] Quotas, caching, feature flags
 - [ ] Evaluation suite in CI
 
