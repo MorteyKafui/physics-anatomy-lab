@@ -53,3 +53,74 @@ test("the Earth in a scenario is standard gravity, not the bench's", async ({ pa
   await expect(panel.getByText("g = 9.80665 m s⁻²", { exact: false })).toBeVisible();
   await expect(panel.getByText("not your bench's", { exact: false })).toBeVisible();
 });
+
+// Ask what if (online): the AI's scenario is checked again here and the real model runs it.
+const ON = { available: true, reason: null, message: null, features: ["tutor", "what-if"] };
+const itemStream = (item: object) =>
+  `event: item\ndata: ${JSON.stringify({ item })}\n\nevent: done\ndata: {"cut_short": false}\n\n`;
+
+async function askWhatIf(page: import("@playwright/test").Page, body: string) {
+  await page.route("**/api/ai/status", (route) => route.fulfill({ json: ON }));
+  await page.route("**/api/ai/what-if", (route) =>
+    route.fulfill({ status: 200, contentType: "text/event-stream", body }),
+  );
+  await page.goto(LAB);
+  await page.getByRole("button", { name: "What if" }).click();
+  const panel = page.getByRole("dialog", { name: "What if" });
+  await panel.getByLabel("Ask what if (online)").fill("What if I did this on the Moon?");
+  await panel.getByRole("button", { name: "Try it" }).click();
+  return panel;
+}
+
+test("asking what if fills the panel from the AI's scenario, and the model predicts", async ({
+  page,
+}) => {
+  const panel = await askWhatIf(
+    page,
+    itemStream({
+      kind: "scenario",
+      title: "The pendulum on the Moon",
+      reason: "Gravity changes to the Moon's.",
+      changes: { place: "moon" },
+    }),
+  );
+  await expect(panel.getByRole("status").filter({ hasText: "From your question" })).toContainText(
+    "The pendulum on the Moon",
+  );
+  await expect(panel.getByRole("radio", { name: "The Moon" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await expect(panel.getByText(T({ ...asSet(), place: "moon" }))).toBeVisible();
+});
+
+test("a question the model cannot run is declined, with the nearest variant to try", async ({
+  page,
+}) => {
+  const panel = await askWhatIf(
+    page,
+    itemStream({
+      kind: "declined",
+      title: "A longer string, 0.85 m",
+      reason: "This model treats the string as one that does not stretch.",
+      changes: { length: 0.85 },
+    }),
+  );
+  await expect(panel.getByText("The model cannot do that")).toBeVisible();
+  await panel.getByRole("button", { name: "Try this instead: A longer string, 0.85 m" }).click();
+  await expect(panel.getByText("0.85 m", { exact: true })).toBeVisible();
+  await expect(panel.getByText(T({ ...asSet(), length: 0.85 }))).toBeVisible();
+});
+
+test("a scenario outside the model's limits is not used, even if the API sent it", async ({
+  page,
+}) => {
+  const panel = await askWhatIf(
+    page,
+    itemStream({ kind: "scenario", title: "Far", reason: "Longer.", changes: { length: 9 } }),
+  );
+  await expect(
+    panel.getByText("could not be turned into something the model can run"),
+  ).toBeVisible();
+  await expect(panel.getByText(T(asSet()))).toHaveCount(2);
+});

@@ -10,7 +10,7 @@
  */
 import { periodExact, periodSmallAngle, placeById, type PlaceId } from "@pa/physics";
 
-import limits from "./pendulum-scenario-limits.json";
+import limits from "./pendulum-scenario-limits.json" with { type: "json" };
 import { simplePendulum } from "./simple-pendulum";
 
 // The limits are in a JSON file so the API checks an AI-drafted scenario against the same ones

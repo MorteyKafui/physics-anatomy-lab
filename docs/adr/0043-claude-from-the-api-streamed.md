@@ -111,3 +111,14 @@ context, the student's words or plain counting ends with `refused` and the messa
 been hidden, and is logged with a new outcome, `held` (migration 0007). The stream's four events
 are unchanged. A tutor request also carries the thread so far (`thread`, at most ten turns,
 student and tutor in turn), which the device keeps in memory only.
+
+## Amendment, 2026-11-19: one `item` for answers that are data
+
+What if (`POST /ai/what-if`) answers with data, not prose. Claude replies with JSON under a schema
+(structured outputs, `output_config.format`). The API checks the whole reply before anything is
+sent (`apps/api/app/ai/scenarios.py`): only the changes the experiment's model supports, each
+within its limits, and no number in its words that is not one of the scenario's own. It sends it
+as one `item` event, then `done`. Its text is never streamed. A reply that fails the check ends
+with `refused` and is logged as `held`. The browser checks the scenario again
+(`checkScenario`, packages/experiments) and runs the real model. The limits live in one JSON file
+that both sides read or are tested against (`pendulum-scenario-limits.json`).

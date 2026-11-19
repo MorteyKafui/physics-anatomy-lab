@@ -224,6 +224,21 @@ export function LabScreen() {
   // mounted, so it can close smoothly and keep the student's scenario).
   const [whatIf, setWhatIf] = useState({ open: false, used: false });
   const openWhatIf = useCallback(() => setWhatIf({ open: true, used: true }), []);
+  // The rail is drawn again only when its props change (parts.tsx), so its help menu is made
+  // once per change of what it shows, not at every tick of the lab.
+  const examMode = handle?.attempt.mode === "exam";
+  const railHelp = useMemo(
+    () => (
+      <HelpMenu
+        status={aiStatus}
+        onHint={showHint}
+        onAsk={showAsk}
+        coachOn={!examMode}
+        place="rail"
+      />
+    ),
+    [aiStatus, showHint, showAsk, examMode],
+  );
   // Rules the coach has already acted on during this timing: a mistake counts once, however
   // many times the rules are re-checked while the student carries on counting.
   const acted = useRef(new Set<string>());
@@ -1049,18 +1064,7 @@ export function LabScreen() {
         playSound={playSound}
       />
       <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
-        <Rail
-          current="lab"
-          help={
-            <HelpMenu
-              status={aiStatus}
-              onHint={showHint}
-              onAsk={showAsk}
-              coachOn={coachIsOn(state)}
-              place="rail"
-            />
-          }
-        />
+        <Rail current="lab" help={railHelp} />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {/* Header */}
           <LabHeader
@@ -1091,6 +1095,7 @@ export function LabScreen() {
               open={whatIf.open}
               onOpenChange={(open: boolean) => setWhatIf({ open, used: true })}
               benchLength={length}
+              ai={{ on: canUse(aiStatus, "what-if"), input: tutorInput }}
             />
           )}
           {handle.attempt.mode === "exam" &&

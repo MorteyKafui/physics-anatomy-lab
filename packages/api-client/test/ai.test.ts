@@ -175,3 +175,25 @@ describe("api.ai.status", () => {
     expect(await api.ai.status()).toEqual({ ok: true, data: status });
   });
 });
+
+describe("streamAi items", () => {
+  test("an item comes whole, then done", async () => {
+    const item = {
+      kind: "scenario",
+      title: "The pendulum on the Moon",
+      changes: { place: "moon" },
+    };
+    const body = [
+      `event: item\ndata: ${JSON.stringify({ item })}\n\n`,
+      'event: done\ndata: {"cut_short": false}\n\n',
+    ];
+    expect(await all(streamAi("/ai/what-if", {}, { fetch: sse(chunked(body)) }))).toEqual([
+      { type: "item", item },
+      { type: "done", cutShort: false },
+    ]);
+  });
+
+  test("an item that is not an object is ignored", () => {
+    expect(parseAiEvent("item", '{"item": "moon"}')).toBeNull();
+  });
+});

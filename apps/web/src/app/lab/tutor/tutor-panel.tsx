@@ -85,7 +85,7 @@ export function TutorPanel({ stepName, input, readAloud: given }: TutorPanelProp
           setPending(undefined);
         } else if (event.type === "refused") {
           setPending({ status: "held", question: q, message: event.message });
-        } else {
+        } else if (event.type === "error") {
           setPending({ status: "error", question: q, message: event.message, retry: event.retry });
         }
       }
