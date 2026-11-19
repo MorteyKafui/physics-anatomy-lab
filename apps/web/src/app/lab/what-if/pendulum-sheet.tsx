@@ -93,6 +93,7 @@ export function PendulumWhatIf({
   onOpenChange,
   benchLength,
   ai,
+  onOpenBench,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -100,6 +101,8 @@ export function PendulumWhatIf({
   benchLength: number;
   /** Ask what if (online): shown only when AI is on for this person. */
   ai?: { readonly on: boolean; readonly input: Omit<TutorInput, "question" | "thread"> };
+  /** Opens the scenario on the bench as an unmarked attempt; absent where it cannot be. */
+  onOpenBench?: (scenario: PendulumScenario) => void;
 }) {
   const [scenario, setScenario] = useState<PendulumScenario>(() => asSet(benchLength));
   const [question, setQuestion] = useState("");
@@ -265,6 +268,12 @@ export function PendulumWhatIf({
               </p>
             ))}
             <p className="text-xs text-muted-foreground">{t("lab.whatIf.model")}</p>
+            {onOpenBench && (
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <Button onClick={() => onOpenBench(scenario)}>{t("lab.whatIf.bench")}</Button>
+                <span className="text-xs text-muted-foreground">{t("lab.whatIf.benchNote")}</span>
+              </div>
+            )}
           </section>
         </div>
       </SheetContent>

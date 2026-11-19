@@ -52,6 +52,9 @@ import {
   EMPTY_ASSEMBLY,
   LENGTHS,
   lengthProjection,
+  scenarioProjection,
+  whatIfStart,
+  type PendulumScenario,
   nextPart,
   PENDULUM_PARTS,
   passTimes,
@@ -78,6 +81,7 @@ import {
 import type { AiStatus } from "@pa/api-client";
 import { hasMessage, t, type MessageKey } from "@pa/i18n";
 import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT } from "@pa/instruments";
+import { placeById } from "@pa/physics";
 import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import {
@@ -137,7 +141,7 @@ import { graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet"
 import { AnalysePanel, GraphPanel, PendulumWhatIf, TableBuilder, TutorPanel } from "./lazy-panels";
 import { HelpMenu } from "./tutor/help-menu";
 import { flagsFor, useTable } from "./table-builder";
-import { backToPractice, useAttempt, type AttemptHandle } from "./use-attempt";
+import { backToPractice, startWhatIf, useAttempt, type AttemptHandle } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
 
@@ -199,7 +203,15 @@ export function LabScreen() {
   const audio = useAudio();
   // The audio callbacks are stable, so effects can list them without running every frame.
   const { say: speak, count: countAloud, sound: playSound } = audio;
-  const g = DEFAULT_ENVIRONMENT.g;
+  // A what-if attempt (ai-tutor-brief.md) runs its scenario: the place's g and the swing it sets.
+  // Any other attempt runs the lab's hidden world.
+  const scenario = useMemo(
+    () => (handle ? replay(scenarioProjection, handle.attempt, handle.events) : undefined),
+    [handle],
+  );
+  const whatIfRun = handle?.attempt.mode === "what-if";
+  const g = scenario ? placeById(scenario.place).g : DEFAULT_ENVIRONMENT.g;
+  const amplitudeDeg = scenario?.amplitudeDeg ?? E.amplitudeDeg;
   const results = useTable(handle);
   const plot = useGraph(handle);
   const shots = useSnapshots(handle);
@@ -268,7 +280,7 @@ export function LabScreen() {
     () => (handle ? replay(lengthProjection, handle.attempt, handle.events) : E.length),
     [handle],
   );
-  const period = useMemo(() => benchPeriod(g, length), [g, length]);
+  const period = useMemo(() => benchPeriod(g, length, amplitudeDeg), [g, length, amplitudeDeg]);
   // The tutor (docs/content/ai-tutor-brief.md): shown only when AI is on for this person, never
   // in an exam. It is sent the step, the summarised events and the length the bench shows; never
   // the bench's hidden g.
@@ -626,14 +638,18 @@ export function LabScreen() {
   // The step strip's props stay the same until a step changes, so a tap on Start, Count a pass
   // or Stop does not draw the strip again (master plan, "Performance budgets").
   const stepOpen = useCallback(
-    (s: Step) => state !== undefined && STEPS.indexOf(s) <= STEPS.indexOf(frontier(state)),
-    [state],
+    (s: Step) =>
+      state !== undefined &&
+      STEPS.indexOf(s) <= STEPS.indexOf(frontier(state)) &&
+      // A what-if is not marked: Conclude and Report stay closed.
+      !(whatIfRun && (s === "conclude" || s === "report")),
+    [state, whatIfRun],
   );
   const goToStep = useCallback(
     (step: Step) => void handle?.dispatch({ type: "go-to-step", step }),
     [handle],
   );
-  const reviewOpen = state?.completed.includes("analyse") ?? false;
+  const reviewOpen = !whatIfRun && (state?.completed.includes("analyse") ?? false);
   const review = useMemo(() => ({ href: `/lab/${E.id}/review`, open: reviewOpen }), [reviewOpen]);
 
   // The header's two actions, the same function from render to render: each does what the lab
@@ -758,7 +774,9 @@ export function LabScreen() {
     return readings > 1 ? "done" : readings === 1 && !running ? "current" : "todo";
   };
 
-  const next = STEPS[stepIndex + 1];
+  const after = STEPS[stepIndex + 1];
+  // A what-if stops after Analyse: there is no conclusion or report to write.
+  const next = whatIfRun && (after === "conclude" || after === "report") ? undefined : after;
   const finishStep = async () => {
     // The first time a step is finished, its snapshot goes in the notebook.
     const auto = autoCaption(state.step);
@@ -1099,8 +1117,30 @@ export function LabScreen() {
               open={whatIf.open}
               onOpenChange={(open: boolean) => setWhatIf({ open, used: true })}
               benchLength={length}
+              onOpenBench={(chosen: PendulumScenario) =>
+                void startWhatIf(E.id, whatIfStart(chosen)).then(() => window.location.reload())
+              }
               ai={{ on: canUse(aiStatus, "what-if"), input: tutorInput }}
             />
+          )}
+          {whatIfRun && scenario && (
+            <div
+              role="status"
+              className="relative z-10 flex flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm"
+            >
+              <span>
+                {t("lab.whatIf.bar", {
+                  scenario: `${t(`lab.whatIf.place.${scenario.place}` as MessageKey)}, ${scenario.length.toFixed(2)} m, ${String(scenario.amplitudeDeg)}°`,
+                })}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void backToPractice(E.id).then(() => window.location.reload())}
+              >
+                {t("lab.whatIf.back")}
+              </Button>
+            </div>
           )}
           {handle.attempt.mode === "exam" &&
             exam.startedAt !== undefined &&
@@ -1236,7 +1276,7 @@ export function LabScreen() {
                     <BenchStage
                       box={benchBox}
                       bench={{
-                        angle: swinging ? bobAngle(time, period) : 0,
+                        angle: swinging ? bobAngle(time, period, amplitudeDeg) : 0,
                         stopwatchSeconds: shownTimeAt(time),
                         length,
                         assembly,
@@ -1355,7 +1395,7 @@ export function LabScreen() {
                   )}
                 >
                   <Sym id="l" g={g} /> = {length.toFixed(3)} m · <Sym id="θ" g={g} /> ≈{" "}
-                  {E.amplitudeDeg}°
+                  {amplitudeDeg}°
                 </div>
               </section>
             )}

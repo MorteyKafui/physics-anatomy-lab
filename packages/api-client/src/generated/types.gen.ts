@@ -150,7 +150,7 @@ export type AttemptHeader = {
   /**
    * Mode
    */
-  mode: "guided" | "exam" | "own-data";
+  mode: "guided" | "exam" | "own-data" | "what-if";
   /**
    * Seed
    */
@@ -353,7 +353,7 @@ export type ClassAttempt = {
   /**
    * Mode
    */
-  mode: "guided" | "exam" | "own-data";
+  mode: "guided" | "exam" | "own-data" | "what-if";
   /**
    * Created At
    *
@@ -803,7 +803,7 @@ export type ExperimentUse = {
   /**
    * Mode
    */
-  mode: "guided" | "exam" | "own-data";
+  mode: "guided" | "exam" | "own-data" | "what-if";
   /**
    * Attempts
    */

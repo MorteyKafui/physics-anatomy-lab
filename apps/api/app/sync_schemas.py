@@ -35,7 +35,7 @@ class Camel(BaseModel):
 class AttemptHeader(Camel):
     id: Id
     experiment_id: Id
-    mode: Literal["guided", "exam", "own-data"]
+    mode: Literal["guided", "exam", "own-data", "what-if"]
     seed: Whole
     created_at: Whole
     updated_at: Whole

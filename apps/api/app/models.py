@@ -229,7 +229,7 @@ class Attempt(Base):
         CheckConstraint(
             "char_length(experiment_id) BETWEEN 1 AND 200", name="experiment_id_length"
         ),
-        CheckConstraint("mode IN ('guided', 'exam', 'own-data')", name="mode_known"),
+        CheckConstraint("mode IN ('guided', 'exam', 'own-data', 'what-if')", name="mode_known"),
         CheckConstraint("seed >= 0 AND created_at_ms >= 0 AND updated_at_ms >= 0", name="whole"),
         # Lets each event carry its owner, checked against the attempt, for the pull query.
         UniqueConstraint("id", "owner_id"),

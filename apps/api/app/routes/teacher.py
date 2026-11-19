@@ -150,6 +150,7 @@ async def list_class_mistakes(
             JOIN attempts a ON a.id = e.attempt_id
             JOIN class_members m ON m.id = a.member_id
             WHERE m.class_id = :class_id
+              AND a.mode <> 'what-if'  -- a scenario on the bench is not marked
               AND e.kind IN ('coach.hint', 'coach.note')
               AND jsonb_typeof(e.data->'rule') = 'string'
               AND jsonb_typeof(e.data->'hint') = 'string'
@@ -185,6 +186,7 @@ async def get_class_progress(
                 FROM attempts a
                 JOIN class_members m ON m.id = a.member_id
                 WHERE m.class_id = :class_id AND a.experiment_id = :experiment_id
+                  AND a.mode <> 'what-if'
                 ORDER BY a.member_id, a.updated_at_ms DESC, a.id
             )
             SELECT step, count(*) AS students FROM (
