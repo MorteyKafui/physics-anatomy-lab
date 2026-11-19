@@ -1,6 +1,7 @@
 """The load test's test-only route: it hands back sign-in links locally, and nowhere else."""
 
 from httpx import AsyncClient
+from pydantic import SecretStr
 from pytest import MonkeyPatch
 
 from app.auth.email import LogSender, NoSender, get_email_sender
@@ -34,7 +35,11 @@ async def test_it_says_404_outside_local_and_test(
     client: AsyncClient, outbox: LogSender, monkeypatch: MonkeyPatch
 ) -> None:
     await client.post("/auth/email-link", json={"email": "ama@school.example"})
-    staging = Settings(environment="staging", client_ip_header="cf-connecting-ip")
+    staging = Settings(
+        environment="staging",
+        client_ip_header="cf-connecting-ip",
+        turnstile_secret_key=SecretStr("0x-test"),
+    )
     monkeypatch.setattr(load_test, "get_settings", lambda: staging)
     refused = await client.get("/test-only/sign-in-link", params={"email": "ama@school.example"})
     assert refused.status_code == 404

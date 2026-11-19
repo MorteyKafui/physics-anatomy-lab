@@ -32,7 +32,13 @@ class Settings(BaseSettings):
 
     # "log" writes emails to the log and keeps them in memory (local and tests only).
     # "none" refuses to send. A real provider is chosen by Mortey (ADR 0038).
-    email_delivery: Literal["log", "none"] = "log"
+    email_delivery: Literal["log", "none", "resend"] = "log"
+    # Resend's API key (ADR 0038), only from the secret store. Needed when email_delivery is resend.
+    resend_api_key: SecretStr | None = None
+
+    # Cloudflare Turnstile on the sign-in and join forms. Off unless the secret is set; required
+    # in preview, staging and production.
+    turnstile_secret_key: SecretStr | None = None
     email_from: str = "Physics Anatomy <sign-in@localhost>"
 
     # The admin portal (ADR 0040). Staff reach it through Cloudflare Access; the API checks the
@@ -52,8 +58,13 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _deployed_settings(self) -> Self:
-        if self.environment in ("preview", "staging", "production") and not self.client_ip_header:
+        deployed = self.environment in ("preview", "staging", "production")
+        if deployed and not self.client_ip_header:
             raise ValueError("Set CLIENT_IP_HEADER (cf-connecting-ip behind Cloudflare).")
+        if self.email_delivery == "resend" and not self.resend_api_key:
+            raise ValueError("Set RESEND_API_KEY, or choose another EMAIL_DELIVERY.")
+        if deployed and not self.turnstile_secret_key:
+            raise ValueError("Set TURNSTILE_SECRET_KEY (the sign-in and join forms need it).")
         if self.admin_dev_bypass_email and self.environment not in ("local", "test"):
             raise ValueError("ADMIN_DEV_BYPASS_EMAIL works only in local and test.")
         if bool(self.cf_access_team_domain) != bool(self.cf_access_audience):

@@ -30,6 +30,7 @@ from app.auth.sessions import (
     end_session,
     start_teacher_session,
 )
+from app.auth.turnstile import HumanCheckDep, require_human
 from app.config import get_settings
 from app.db import Db
 from app.models import ClassMember, EmailLinkToken, OAuthState, SchoolClass, User
@@ -105,8 +106,10 @@ async def request_email_link(
     request: Request,
     db: Db,
     sender: Annotated[EmailSender, Depends(get_email_sender)],
+    human: HumanCheckDep,
 ) -> EmailLinkSent:
     """Email a sign-in link. The answer is the same whether or not the email has an account."""
+    await require_human(human, body.turnstile_token, request)
     email = str(body.email)
     await rate_limit.take(db, EMAIL_LINKS_PER_ADDRESS, rate_limit.client_address(request))
     await rate_limit.take(db, EMAIL_LINKS_PER_EMAIL, email)

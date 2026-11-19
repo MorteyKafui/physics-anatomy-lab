@@ -464,8 +464,11 @@ export function ConvergingLensScreen() {
     const commit = () => {
       if (draft?.part !== part) return;
       const to = draft.to;
-      setDraft(undefined);
-      void act({ type: "move", part, to });
+      // Keep showing the new position until the move is saved: clearing the draft first made
+      // the bench jump back to the old position for a moment.
+      void act({ type: "move", part, to }).finally(() => {
+        setDraft((d) => (d?.part === part && d.to === to ? undefined : d));
+      });
     };
     return (
       <label className="flex flex-col gap-1.5 text-sm text-muted-foreground">

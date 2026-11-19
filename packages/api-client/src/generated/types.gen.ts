@@ -641,6 +641,12 @@ export type EmailLinkRequest = {
    * Email
    */
   email: string;
+  /**
+   * Turnstile Token
+   *
+   * From the page's Turnstile widget, when Turnstile is on.
+   */
+  turnstile_token?: string | null;
 };
 
 /**
@@ -935,6 +941,12 @@ export type JoinRequest = {
    * Agreed To Terms
    */
   agreed_to_terms: true;
+  /**
+   * Turnstile Token
+   *
+   * From the page's Turnstile widget, when Turnstile is on.
+   */
+  turnstile_token?: string | null;
 };
 
 export type JsonValue = unknown;
@@ -1320,6 +1332,12 @@ export type RejoinRequest = {
    * Code
    */
   code: string;
+  /**
+   * Turnstile Token
+   *
+   * From the page's Turnstile widget, when Turnstile is on.
+   */
+  turnstile_token?: string | null;
 };
 
 /**

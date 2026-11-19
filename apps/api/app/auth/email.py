@@ -7,6 +7,7 @@ The provider is not chosen yet (ADR 0038). "log" writes each message to the log 
 from dataclasses import dataclass
 from typing import Protocol
 
+import httpx
 import structlog
 
 from app.config import get_settings
@@ -39,6 +40,38 @@ class LogSender:
         log.info("email.logged", subject=email.subject, text=email.text)
 
 
+class ResendSender:
+    """Sends through Resend's HTTP API (ADR 0038). The key comes from the secret store."""
+
+    URL = "https://api.resend.com/emails"
+
+    def __init__(
+        self, api_key: str, sender: str, transport: httpx.AsyncBaseTransport | None = None
+    ) -> None:
+        self._api_key = api_key
+        self._sender = sender
+        self._transport = transport
+
+    async def send(self, email: Email) -> None:
+        try:
+            async with httpx.AsyncClient(timeout=10.0, transport=self._transport) as http:
+                response = await http.post(
+                    self.URL,
+                    headers={"Authorization": f"Bearer {self._api_key}"},
+                    json={
+                        "from": self._sender,
+                        "to": [email.to],
+                        "subject": email.subject,
+                        "text": email.text,
+                    },
+                )
+        except httpx.HTTPError as error:
+            raise EmailNotSentError("Resend could not be reached.") from error
+        if response.status_code >= 300:
+            # Never log the body: it can echo the address.
+            raise EmailNotSentError(f"Resend refused the message ({response.status_code}).")
+
+
 class NoSender:
     async def send(self, email: Email) -> None:
         raise EmailNotSentError("No email provider is configured.")
@@ -51,6 +84,8 @@ def get_email_sender() -> EmailSender:
     settings = get_settings()
     if settings.email_delivery == "log" and settings.environment in ("local", "test"):
         return _log_sender
+    if settings.email_delivery == "resend" and settings.resend_api_key is not None:
+        return ResendSender(settings.resend_api_key.get_secret_value(), settings.email_from)
     return NoSender()
 
 

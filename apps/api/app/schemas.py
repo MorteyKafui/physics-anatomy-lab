@@ -62,6 +62,9 @@ class SignInMethods(BaseModel):
 
 class EmailLinkRequest(Body):
     email: EmailStr
+    turnstile_token: Annotated[str | None, Field(max_length=2048)] = Field(
+        default=None, description="From the page's Turnstile widget, when Turnstile is on."
+    )
 
 
 class EmailLinkSent(BaseModel):
@@ -149,7 +152,13 @@ class JoinRequest(Body):
     code: TypedCode
     display_name: DisplayName
     agreed_to_terms: Literal[True]
+    turnstile_token: Annotated[str | None, Field(max_length=2048)] = Field(
+        default=None, description="From the page's Turnstile widget, when Turnstile is on."
+    )
 
 
 class RejoinRequest(Body):
     code: TypedCode
+    turnstile_token: Annotated[str | None, Field(max_length=2048)] = Field(
+        default=None, description="From the page's Turnstile widget, when Turnstile is on."
+    )
