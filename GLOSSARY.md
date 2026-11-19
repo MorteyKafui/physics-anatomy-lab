@@ -134,6 +134,9 @@ request that introduces it.
 - **What-if attempt.** A scenario opened on the bench: an attempt in mode `what-if` that starts at
   Measure with the bench built. It is not marked, has no conclusion or report, and is left out of
   a teacher's mistakes and progress. The student's practice run is kept.
+- **Question bank.** Follow-up questions for exam mode, drafted with Claude by teachers and
+  approved by a reviewer in the admin portal. Approved questions are shared with everyone using
+  the experiment.
 - **AI request log.** One row per AI request: what it cost and how it ended, under a pseudonym,
   never what was asked or answered. Kept 90 days.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.

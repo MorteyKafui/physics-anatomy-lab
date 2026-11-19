@@ -2088,6 +2088,161 @@
         }
       }
     },
+    "/ai/question-drafting": {
+      "post": {
+        "tags": ["ai"],
+        "summary": "Question Drafting",
+        "description": "Three drafted follow-up questions for exam mode, as one item, for a teacher to edit.",
+        "operationId": "questionDrafting",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "One item (ADR 0043)",
+            "content": {
+              "text/event-stream": {}
+            }
+          },
+          "401": {
+            "description": "Signed out"
+          },
+          "403": {
+            "description": "Teachers only"
+          },
+          "422": {
+            "description": "Not ready for this experiment"
+          },
+          "429": {
+            "description": "The day's drafts are used"
+          },
+          "503": {
+            "description": "AI is switched off or not set up"
+          }
+        }
+      }
+    },
+    "/questions": {
+      "post": {
+        "tags": ["questions"],
+        "summary": "Submit Questions",
+        "description": "Send up to three drafted, edited questions for review. Nothing reaches a student yet.",
+        "operationId": "submitQuestions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Submission"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/QuestionOut"
+                  },
+                  "type": "array",
+                  "title": "Response Submitquestions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions/mine": {
+      "get": {
+        "tags": ["questions"],
+        "summary": "My Questions",
+        "description": "The questions this teacher sent, newest first, with their state.",
+        "operationId": "myQuestions",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/QuestionOut"
+                  },
+                  "type": "array",
+                  "title": "Response Myquestions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions/approved": {
+      "get": {
+        "tags": ["questions"],
+        "summary": "Approved Questions",
+        "description": "The bank's approved questions for an experiment, for exam mode. No account needed.",
+        "operationId": "approvedQuestions",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9.-]{1,63}$",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprovedQuestion"
+                  },
+                  "title": "Response Approvedquestions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/me": {
       "get": {
         "tags": ["admin"],
@@ -2595,6 +2750,199 @@
         }
       }
     },
+    "/admin/questions": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Admin List Questions",
+        "description": "Questions in one state, newest first (waiting ones by default).",
+        "operationId": "adminListQuestions",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["submitted", "approved", "rejected"],
+              "type": "string",
+              "default": "submitted",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QuestionReview"
+                  },
+                  "title": "Response Adminlistquestions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/questions/{question_id}/approve": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Approve Question",
+        "description": "Approve a waiting question, as sent or with edits; it joins exam mode for everyone.",
+        "operationId": "adminApproveQuestion",
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Approval"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionReview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/questions/{question_id}/reject": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Reject Question",
+        "description": "Reject a waiting question, with a reason the teacher sees.",
+        "operationId": "adminRejectQuestion",
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rejection"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionReview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/questions/{question_id}/reopen": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Reopen Question",
+        "description": "Undo a decision (the portal's undo toast): the question waits for review again.",
+        "operationId": "adminReopenQuestion",
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionReview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": ["system"],
@@ -2740,6 +3088,75 @@
         "required": ["available", "reason", "message", "features"],
         "title": "AiStatus",
         "description": "Whether this person may use AI now, and if not, why, in a sentence to show."
+      },
+      "Approval": {
+        "properties": {
+          "question": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 600
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          },
+          "marks": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 4.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Approval",
+        "description": "Approve as sent, or with the reviewer's edits."
+      },
+      "ApprovedQuestion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "marks": {
+            "type": "integer",
+            "title": "Marks"
+          }
+        },
+        "type": "object",
+        "required": ["id", "question", "answer", "marks"],
+        "title": "ApprovedQuestion"
       },
       "AttemptBatch": {
         "properties": {
@@ -3682,6 +4099,30 @@
         "type": "object",
         "required": ["display_name"],
         "title": "DisplayNameChange"
+      },
+      "DraftRequest": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{1,63}$",
+            "title": "Experiment Id"
+          },
+          "topic": {
+            "type": "string",
+            "enum": ["measuring", "precautions", "tabulation", "graph", "calculation", "theory"],
+            "title": "Topic"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["experiment_id", "topic"],
+        "title": "DraftRequest"
       },
       "EmailLinkRequest": {
         "properties": {
@@ -4638,6 +5079,209 @@
         "title": "Quantity",
         "description": "A number worked out by packages/physics for this bench, with its unit."
       },
+      "QuestionIn": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Answer"
+          },
+          "marks": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Marks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["question", "answer", "marks"],
+        "title": "QuestionIn"
+      },
+      "QuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "marks": {
+            "type": "integer",
+            "title": "Marks"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["submitted", "approved", "rejected"],
+            "title": "State"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "experiment_id",
+          "topic",
+          "question",
+          "answer",
+          "marks",
+          "state",
+          "reason",
+          "submitted_at",
+          "reviewed_at"
+        ],
+        "title": "QuestionOut"
+      },
+      "QuestionReview": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "marks": {
+            "type": "integer",
+            "title": "Marks"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["submitted", "approved", "rejected"],
+            "title": "State"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "submitted_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted By",
+            "description": "The teacher's email, for staff (ADR 0040)."
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "experiment_id",
+          "topic",
+          "question",
+          "answer",
+          "marks",
+          "state",
+          "reason",
+          "submitted_at",
+          "reviewed_at",
+          "submitted_by",
+          "reviewed_by"
+        ],
+        "title": "QuestionReview"
+      },
       "RangeInfo": {
         "properties": {
           "range": {
@@ -4663,6 +5307,20 @@
         "type": "object",
         "required": ["range", "since", "until", "bucket_minutes"],
         "title": "RangeInfo"
+      },
+      "Rejection": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["reason"],
+        "title": "Rejection"
       },
       "RejoinCodeOut": {
         "properties": {
@@ -4999,6 +5657,33 @@
         "type": "object",
         "required": ["member_id", "display_name", "school_class"],
         "title": "StudentMe"
+      },
+      "Submission": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{1,63}$",
+            "title": "Experiment Id"
+          },
+          "topic": {
+            "type": "string",
+            "enum": ["measuring", "precautions", "tabulation", "graph", "calculation", "theory"],
+            "title": "Topic"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionIn"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Questions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["experiment_id", "topic", "questions"],
+        "title": "Submission"
       },
       "Summary": {
         "properties": {
