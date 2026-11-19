@@ -48,6 +48,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@pa/analysis": "workspace:*",
+        "@pa/api-client": "workspace:*",
         "@pa/apparatus": "workspace:*",
         "@pa/audio": "workspace:*",
         "@pa/engine": "workspace:*",

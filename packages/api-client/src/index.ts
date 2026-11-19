@@ -3,3 +3,18 @@
 export type * from "./generated";
 export { createApi, tokenFromFragment } from "./client";
 export type { Api, ApiOptions, Fetch, Result } from "./client";
+export { FINAL_CLOSE_CODES, LIVE, LiveSocket, liveSocketUrl, StudentLive } from "./live";
+export type {
+  BenchSummary,
+  Clock,
+  LiveSocketOptions,
+  LiveStatus,
+  SocketFactory,
+  SocketLike,
+  StepName,
+  StudentFrame,
+  StudentLiveOptions,
+  StudentLiveSession,
+  StudentMessage,
+  TeacherFrame,
+} from "./live";

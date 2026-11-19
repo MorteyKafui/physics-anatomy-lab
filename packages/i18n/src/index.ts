@@ -4,6 +4,7 @@ import { enGB, type MessageKey as SharedKey } from "./en-GB";
 import type { enGBConvergingLens } from "./en-GB-converging-lens";
 import type { enGBMethodOfMixtures } from "./en-GB-method-of-mixtures";
 import type { enGBOhmsLaw } from "./en-GB-ohms-law";
+import type { enGBTeach } from "./en-GB-teach";
 
 export { enGB };
 
@@ -16,7 +17,8 @@ export type MessageKey =
   | SharedKey
   | keyof typeof enGBOhmsLaw
   | keyof typeof enGBConvergingLens
-  | keyof typeof enGBMethodOfMixtures;
+  | keyof typeof enGBMethodOfMixtures
+  | keyof typeof enGBTeach;
 
 const messages: Record<string, string> = { ...enGB };
 

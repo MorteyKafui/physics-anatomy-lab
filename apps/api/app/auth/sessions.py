@@ -9,6 +9,7 @@ import structlog
 from fastapi import Depends, HTTPException, Request, Response, status
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.requests import HTTPConnection
 
 from app.auth.codes import hash_secret, new_token
 from app.auth.policy import (
@@ -128,7 +129,7 @@ async def end_member_sessions(db: AsyncSession, member_id: uuid.UUID) -> None:
     await db.execute(delete(Session).where(Session.member_id == member_id))
 
 
-async def _load(db: AsyncSession, request: Request) -> Principal | None:
+async def load_principal(db: AsyncSession, request: HTTPConnection) -> Principal | None:
     token = request.cookies.get(cookie_name())
     if not token:
         return None
@@ -162,7 +163,7 @@ async def _load(db: AsyncSession, request: Request) -> Principal | None:
 
 
 async def optional_principal(request: Request, db: Db) -> Principal | None:
-    return await _load(db, request)
+    return await load_principal(db, request)
 
 
 def _signed_out() -> HTTPException:

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Teacher: classes, starting a live class, and what students see (draft for approval)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+.ts .f:focus-visible{outline:2px solid #F0482A;outline-offset:2px}
+.ts .seg{height:30px;padding:0 10px;border:0;font:500 12px Geist,sans-serif;cursor:pointer;background:transparent;color:#C9C6BF}
+.ts .seg[aria-pressed="true"]{background:#F2F0EA;color:#0D0D0D}
+.ts .panel{background:#111110;border:1px solid #1E1D1D;padding:24px;display:flex;flex-direction:column;gap:16px;width:592px;box-sizing:border-box}
+.ts .field{height:36px;border:1px solid #2A2928;background:#0D0D0D;color:#F2F0EA;padding:0 8px;font:14px Geist,sans-serif}
+.ts .primary{height:36px;padding:0 12px;background:#F0482A;color:#0D0D0D;border:0;font:600 14px Geist,sans-serif;cursor:pointer;align-self:flex-start}
+.ts .outline{height:36px;padding:0 12px;background:transparent;color:#F2F0EA;border:1px solid #2A2928;font:500 14px Geist,sans-serif;cursor:pointer}
+.ts .label{font-size:12px;color:#8F8D88;display:flex;flex-direction:column;gap:6px}
+.ts .mono{font-family:'Geist Mono',monospace}
+.ts a{color:#FF8A6E;text-underline-offset:4px}
+</style>
+</helmet>
+<div class="ts" style="display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 14px; min-height: 900px; background: #0A0A0A; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 14px; line-height: 1.45">
+<div role="group" aria-label="Board state (mockup only)" style="display: flex; gap: 2px; background: #111110; border: 1px solid #1E1D1D; padding: 3px">
+  <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="5"><button type="button" class="seg f" onClick="{{tb.pick}}" aria-pressed="{{tb.on}}">{{tb.label}}</button></sc-for>
+</div>
+
+<!-- 1. The teacher's classes -->
+<sc-if value="{{isClasses}}" hint-placeholder-val="{{true}}">
+  <main class="panel">
+    <span style="font-weight: 500; font-size: 15px">Your classes</span>
+    <ul style="list-style: none; margin: 0; padding: 0; border: 1px solid #1E1D1D">
+      <sc-for list="{{classes}}" as="c" hint-placeholder-count="2">
+        <li style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid #1E1D1D">
+          <span style="display: flex; flex-direction: column"><span>{{c.name}}</span><span class="mono" style="font-size: 12px; color: #8F8D88">{{c.code}}</span></span>
+          <a class="f" href="#live">Open the live board</a>
+        </li>
+      </sc-for>
+    </ul>
+    <span style="font-size: 12px; color: #8F8D88">Example list: the real one shows your classes.</span>
+    <a class="f" href="#example">See an example class</a>
+  </main>
+</sc-if>
+
+<!-- 2. No live class yet: start one -->
+<sc-if value="{{isStart}}" hint-placeholder-val="{{false}}">
+  <main class="panel">
+    <span style="font-size: 13px; color: #8F8D88">SHS 2 Science A</span>
+    <span style="font-weight: 500; font-size: 15px">No live class is running</span>
+    <span style="color: #C9C6BF">Start one when the class is ready. Students see it on their benches.</span>
+    <label class="label">Experiment
+      <select class="field f"><option>Simple pendulum</option><option>Ohm's law and the potentiometer</option><option>The converging lens</option><option>The converging lens: two pins</option><option>The method of mixtures</option><option>The method of mixtures: a hot solid</option></select>
+    </label>
+    <label class="label">Lesson length, minutes
+      <input class="field f mono" type="number" value="40" min="5" max="240" style="width: 112px">
+    </label>
+    <button type="button" class="primary f">Start a live class</button>
+    <span style="font-size: 12px; color: #8F8D88">On the live board, an "End live class" button sits after "Broadcast an instruction". A bench whose student went offline shows a grey "Offline" chip.</span>
+  </main>
+</sc-if>
+
+<!-- 3. Broadcast an instruction, and a note to one student -->
+<sc-if value="{{isSend}}" hint-placeholder-val="{{false}}">
+  <div role="dialog" aria-label="{{sendTitle}}" style="width: 420px; background: #161616; border: 1px solid #2A2928; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+    <span style="font-weight: 600; font-size: 16px">{{sendTitle}}</span>
+    <span style="color: #C9C6BF">{{sendBody}}</span>
+    <label class="label">Message<textarea class="f" rows="3" maxlength="280" style="border: 1px solid #66645E; background: transparent; color: #F2F0EA; font: 14px Geist, sans-serif; padding: 8px; resize: vertical">{{sendText}}</textarea></label>
+    <span style="display: flex; justify-content: flex-end; gap: 8px"><button type="button" class="outline f">Cancel</button><button type="button" class="primary f" style="align-self: auto">Send</button></span>
+    <button type="button" class="seg f" onClick="{{flipSend}}" aria-pressed="false" style="align-self: flex-start">Show the {{otherSend}}</button>
+  </div>
+</sc-if>
+
+<!-- 4. What a student sees during a live class (lab, top of the coach panel) -->
+<sc-if value="{{isStudent}}" hint-placeholder-val="{{false}}">
+  <div style="width: 390px; display: flex; flex-direction: column; gap: 8px; background: #111110; border: 1px solid #1E1D1D; padding: 12px; box-sizing: border-box">
+    <span style="display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; font-size: 12px; color: #8FD18A; border: 1px solid #24451F; background: #132111; padding: 2px 8px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #6CC25A"></span>Live class with your teacher</span>
+    <sc-if value="{{locked}}" hint-placeholder-val="{{true}}">
+      <div role="status" style="border: 1px solid #F5A524; background: #2B2112; color: #F5C46B; padding: 10px 12px; font-size: 13px">Your teacher has locked the steps. Stay on Measure until they unlock.</div>
+    </sc-if>
+    <div role="status" style="border: 1px solid #352D66; background: #1A1730; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; color: #B3A8FA">Hint from your teacher</span>
+      <span style="font-weight: 600">You said "one" on the first pass</span>
+      <span style="color: #C9C6BF; font-size: 13px">That pass starts the timing, so it is zero. The coach's own words for this bench's numbers show here.</span>
+    </div>
+    <div role="status" style="border: 1px solid #2E2D2B; background: #1A1A19; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; color: #C9C6BF">From your teacher</span>
+      <span>Everyone measure the length to the centre of the bob.</span>
+    </div>
+    <button type="button" class="seg f" onClick="{{flipLock}}" aria-pressed="{{locked}}" style="align-self: flex-start">Steps locked</button>
+    <span style="font-size: 12px; color: #8F8D88">Nothing here blocks the lab: offline, the student keeps working, and these arrive when the device reconnects. A hint the teacher takes back disappears.</span>
+  </div>
+</sc-if>
+
+<!-- 5. Signed out, or not your class -->
+<sc-if value="{{isNotice}}" hint-placeholder-val="{{false}}">
+  <main class="panel"><span style="color: #C9C6BF">Sign in as a teacher to see your classes.</span><span style="font-size: 12px; color: #8F8D88">Or, for a class that is not yours: "We couldn't find that class."</span></main>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 0, note: false, locked: true }; }
+  renderVals() {
+    const st = this.state;
+    const labels = ['Classes', 'Start', 'Send', 'Student', 'Signed out'];
+    return {
+      tabs: labels.map((label, i) => ({ label, on: st.tab === i, pick: () => this.setState({ tab: i }) })),
+      isClasses: st.tab === 0, isStart: st.tab === 1, isSend: st.tab === 2, isStudent: st.tab === 3, isNotice: st.tab === 4,
+      classes: [{ name: 'SHS 2 Science A', code: '7KQ-42M' }, { name: 'SHS 3 Physics', code: 'M4P-9TR' }],
+      sendTitle: st.note ? 'Send a note to Kofi_A' : 'Broadcast an instruction',
+      sendBody: st.note ? 'Only Kofi_A sees it.' : 'Every student in the class sees it on their bench.',
+      sendText: st.note ? 'Well done on your readings.' : 'Everyone measure the length to the centre of the bob.',
+      otherSend: st.note ? 'broadcast' : 'note',
+      flipSend: () => this.setState({ note: !st.note }),
+      locked: st.locked, flipLock: () => this.setState({ locked: !st.locked })
+    };
+  }
+}
+</script>
+</body>
+</html>

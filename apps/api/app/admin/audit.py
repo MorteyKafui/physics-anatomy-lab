@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.admin.access import Staff
 from app.models import AdminAudit
 
-# How long entries are kept. The database refuses to delete younger ones (migration 0003).
+# How long entries are kept. The database refuses to delete younger ones (migration 0004).
 RETENTION_YEARS = 2
 
 

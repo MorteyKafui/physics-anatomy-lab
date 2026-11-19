@@ -5,6 +5,14 @@
 // calls are made only from sign-in, join and teacher screens.
 import type {
   AttemptBatch,
+  AttemptEventsPage,
+  ClassAttempt,
+  ClassMistake,
+  LiveMessageOut,
+  LiveSessionOut,
+  LiveSnapshot,
+  LiveStart,
+  StepCount,
   ClassCreate,
   ClassOut,
   ClassUpdate,
@@ -82,6 +90,12 @@ export function createApi(options: ApiOptions = {}) {
   }
 
   const path = encodeURIComponent;
+  const query = (params: Record<string, string | null | undefined>) => {
+    const pairs = Object.entries(params).filter(
+      (p): p is [string, string] => p[1] !== undefined && p[1] !== null,
+    );
+    return pairs.length === 0 ? "" : `?${new URLSearchParams(pairs).toString()}`;
+  };
 
   return {
     auth: {
@@ -107,6 +121,52 @@ export function createApi(options: ApiOptions = {}) {
       members: (id: string) => call<MemberOut[]>("GET", `/classes/${path(id)}/members`),
       issueRejoinCode: (id: string, memberId: string) =>
         call<RejoinCodeOut>("POST", `/classes/${path(id)}/members/${path(memberId)}/rejoin-code`),
+    },
+    /** A teacher's reads of their own class (ADR 0041). */
+    teacher: {
+      attempts: (classId: string, experimentId?: string) =>
+        call<ClassAttempt[]>(
+          "GET",
+          `/classes/${path(classId)}/attempts${query({ experiment_id: experimentId })}`,
+        ),
+      events: (classId: string, attemptId: string, after: string | null = null) =>
+        call<AttemptEventsPage>(
+          "GET",
+          `/classes/${path(classId)}/attempts/${path(attemptId)}/events${query({ after })}`,
+        ),
+      mistakes: (classId: string, experimentId?: string) =>
+        call<ClassMistake[]>(
+          "GET",
+          `/classes/${path(classId)}/mistakes${query({ experiment_id: experimentId })}`,
+        ),
+      progress: (classId: string, experimentId: string) =>
+        call<StepCount[]>(
+          "GET",
+          `/classes/${path(classId)}/progress${query({ experiment_id: experimentId })}`,
+        ),
+    },
+    /** Live classes: the teacher's commands. The board listens on `liveSocketUrl`. */
+    live: {
+      get: (classId: string) => call<LiveSnapshot>("GET", `/classes/${path(classId)}/live`),
+      start: (classId: string, body: LiveStart) =>
+        call<LiveSessionOut>("POST", `/classes/${path(classId)}/live`, body),
+      end: (classId: string) => call<LiveSessionOut>("POST", `/classes/${path(classId)}/live/end`),
+      lock: (classId: string, locked: boolean) =>
+        call<LiveSessionOut>("PUT", `/classes/${path(classId)}/live/lock`, { locked }),
+      pushHint: (classId: string, rule: string, key: string) =>
+        call<LiveMessageOut>("POST", `/classes/${path(classId)}/live/hints`, { rule, key }),
+      broadcast: (classId: string, text: string) =>
+        call<LiveMessageOut>("POST", `/classes/${path(classId)}/live/broadcast`, { text }),
+      note: (classId: string, memberId: string, text: string) =>
+        call<LiveMessageOut>("POST", `/classes/${path(classId)}/live/notes`, {
+          member_id: memberId,
+          text,
+        }),
+      undo: (classId: string, messageId: number) =>
+        call<LiveMessageOut>(
+          "POST",
+          `/classes/${path(classId)}/live/messages/${String(messageId)}/undo`,
+        ),
     },
     /**
      * Event sync (ADR 0039). The engine's syncAccount drives these in the background; the lab

@@ -56,7 +56,7 @@ class StageCount(BaseModel):
     students: int
 
 
-class Mistake(BaseModel):
+class HintCount(BaseModel):
     experiment_id: str
     hint: str
     rule: str | None
@@ -88,7 +88,7 @@ class Overview(BaseModel):
     experiments: list[ExperimentUse]
     stages_experiment: str
     stages: list[StageCount]
-    mistakes: list[Mistake]
+    mistakes: list[HintCount]
     flagged_names: list[FlaggedName]
     database_bytes: int
 
@@ -122,7 +122,7 @@ class Learning(BaseModel):
     window: RangeInfo
     experiment_id: str
     stages: list[StageCount]
-    mistakes: list[Mistake]
+    mistakes: list[HintCount]
     skills: list[SkillSeries]
     experiments: list[ExperimentUse]
 

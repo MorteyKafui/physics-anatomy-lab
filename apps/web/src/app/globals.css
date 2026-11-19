@@ -1,2 +1,25 @@
 @import "tailwindcss";
 @import "@pa/ui/styles.css";
+
+/* The teacher board's drawer and toast (design/mockups/Teacher.dc.html). Reduced motion turns
+   every animation off (packages/ui styles.css). */
+@keyframes pa-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pa-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

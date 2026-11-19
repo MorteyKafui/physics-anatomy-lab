@@ -128,7 +128,7 @@ async def push(body: PushRequest, principal: CurrentPrincipal, db: Db) -> PushRe
     return PushResult(attempts=results)
 
 
-def _cursor(after: str | None) -> int:
+def parse_cursor(after: str | None) -> int:
     if after is None or after == "":
         return 0
     if not re.fullmatch(r"[0-9]{1,18}", after):
@@ -144,7 +144,7 @@ async def pull(
 ) -> PullResult:
     """This owner's events after the cursor, oldest first, with their attempts' headers."""
     column, owner = _owner(principal)
-    since = _cursor(after)
+    since = parse_cursor(after)
     rows = (
         await db.execute(
             select(AttemptEvent, Attempt.client_id)

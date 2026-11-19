@@ -1,5 +1,5 @@
 // The commonest mistakes: the coach's hints, by how many students needed each one.
-import type { Mistake } from "@pa/api-client";
+import type { HintCount } from "@pa/api-client";
 
 import { experiment, mistakeName, titleOf } from "@/lib/experiments";
 import { n } from "@/lib/format";
@@ -16,7 +16,7 @@ const SKILLS: Readonly<Record<string, string>> = {
   writing: "Writing",
 };
 
-export function MistakesTable({ mistakes }: { mistakes: readonly Mistake[] }) {
+export function MistakesTable({ mistakes }: { mistakes: readonly HintCount[] }) {
   if (mistakes.length === 0)
     return (
       <div style={{ padding: 16 }}>

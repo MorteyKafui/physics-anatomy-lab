@@ -29,9 +29,9 @@ from app.admin.schemas import (
     ExperimentUse,
     ExportRequest,
     FlaggedName,
+    HintCount,
     Learning,
     MemberRow,
-    Mistake,
     Overview,
     RangeInfo,
     SkillSeries,
@@ -100,7 +100,7 @@ async def admin_overview(db: ReadDb, range: RangeQuery = "7d") -> Overview:
         experiments=[ExperimentUse(**r) for r in await q.per_experiment(db, w)],
         stages_experiment=DEFAULT_EXPERIMENT,
         stages=[StageCount(**r) for r in await q.stages(db, DEFAULT_EXPERIMENT, w)],
-        mistakes=[Mistake(**r) for r in await q.mistakes(db, w, limit=6)],
+        mistakes=[HintCount(**r) for r in await q.mistakes(db, w, limit=6)],
         flagged_names=[FlaggedName(**r) for r in await q.flagged_names(db)],
         database_bytes=await q.database_bytes(db),
     )
@@ -128,7 +128,7 @@ async def admin_learning(
         window=_info(range, w),
         experiment_id=experiment,
         stages=[StageCount(**r) for r in await q.stages(db, experiment, w)],
-        mistakes=[Mistake(**r) for r in await q.mistakes(db, w)],
+        mistakes=[HintCount(**r) for r in await q.mistakes(db, w)],
         skills=[SkillSeries(skill=k, hints=v) for k, v in skills.items()],
         experiments=[ExperimentUse(**r) for r in await q.per_experiment(db, w)],
     )
