@@ -6,7 +6,7 @@ import {
   type NewEvent,
 } from "./types";
 
-const MODES = new Set(["guided", "exam", "own-data"]);
+const MODES = new Set(["guided", "exam", "own-data", "what-if"]);
 
 function text(value: unknown, name: string): string {
   if (typeof value !== "string" || value.length === 0 || value.length > 200) {
@@ -35,7 +35,7 @@ export function validateAttempt(a: unknown): Attempt {
   text(x.id, "attempt.id");
   text(x.experimentId, "attempt.experimentId");
   if (!MODES.has(x.mode as string))
-    throw new TypeError(`attempt.mode must be guided, exam or own-data`);
+    throw new TypeError(`attempt.mode must be guided, exam, own-data or what-if`);
   whole(x.seed, "attempt.seed");
   whole(x.createdAt, "attempt.createdAt");
   whole(x.updatedAt, "attempt.updatedAt");

@@ -168,7 +168,7 @@ class ClassAttempt(BaseModel):
     display_name: str
     client_id: str = Field(description="The device's attempt id.")
     experiment_id: str
-    mode: Literal["guided", "exam", "own-data"]
+    mode: Literal["guided", "exam", "own-data", "what-if"]
     created_at: int = Field(description="ms since 1970, from the device.")
     updated_at: int = Field(description="ms since 1970, from the device.")
     events: int

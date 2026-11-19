@@ -8,8 +8,11 @@
  * tied to a learner only by the account or class membership that holds it, on the server.
  */
 
-/** Guided with the coach; exam with the coach off; own data typed in from a real lab. */
-export type AttemptMode = "guided" | "exam" | "own-data";
+/**
+ * Guided with the coach; exam with the coach off; own data typed in from a real lab; what if,
+ * a scenario on the bench (docs/content/ai-tutor-brief.md): guided, but not marked and no report.
+ */
+export type AttemptMode = "guided" | "exam" | "own-data" | "what-if";
 
 /** Bumped when the stored shape of attempts or events changes; old files then need migrating. */
 export const ATTEMPT_FORMAT_VERSION = 1;

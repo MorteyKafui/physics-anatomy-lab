@@ -187,3 +187,33 @@ async def test_an_unknown_attempt_is_not_found(client: AsyncClient, outbox: LogS
     assert missing.status_code == 404
     bad = await client.get(f"/classes/{made['id']}/attempts/{uuid.uuid4()}/events?after=x")
     assert bad.status_code == 404  # the attempt is checked before the cursor
+
+
+async def test_what_if_attempts_are_not_marked(client: AsyncClient, outbox: LogSender) -> None:
+    """A scenario on the bench (ai-tutor-brief.md) syncs, but stays out of mistakes and progress."""
+    await sign_in_teacher(client, outbox, "teacher@example.org")
+    made = await create_class(client)
+    async with browser() as student:
+        await join(student, made["code"], "Kofi_A")
+        events = [
+            ev(
+                1,
+                "scenario.set",
+                {"length": 0.8, "place": "moon", "amplitudeDeg": 8, "massG": 50},
+                "w-1",
+            ),
+            ev(2, "step.go-to", {"step": "measure"}, "w-1"),
+            ev(3, "coach.hint", {**HINT_ONE, "level": "hint"}, "w-1"),
+        ]
+        pushed = await student.post(
+            "/sync/push",
+            json={"attempts": [{"attempt": attempt("w-1", mode="what-if"), "events": events}]},
+        )
+        assert pushed.status_code == 200, pushed.text
+    listed = (await client.get(f"/classes/{made['id']}/attempts")).json()
+    assert [a["mode"] for a in listed] == ["what-if"]
+    assert (await client.get(f"/classes/{made['id']}/mistakes")).json() == []
+    progress = await client.get(
+        f"/classes/{made['id']}/progress", params={"experiment_id": "simple-pendulum"}
+    )
+    assert progress.json() == []

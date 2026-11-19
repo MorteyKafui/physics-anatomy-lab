@@ -23,7 +23,7 @@ Steps == <<"question", "predict", "build", "check", "measure",
 N == Len(Steps)
 Idx(s) == CHOOSE i \in 1..N : Steps[i] = s
 
-Modes == {"guided", "exam", "own-data"}
+Modes == {"guided", "exam", "own-data", "what-if"}
 Levels == {"auto", "check-my-work", "on-my-own"}
 
 VARIABLES

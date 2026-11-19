@@ -42,7 +42,7 @@ class ClassCounts(BaseModel):
 
 class ExperimentUse(BaseModel):
     experiment_id: str
-    mode: Literal["guided", "exam", "own-data"]
+    mode: Literal["guided", "exam", "own-data", "what-if"]
     attempts: int
     students: int
     reports: int

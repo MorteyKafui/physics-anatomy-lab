@@ -2783,7 +2783,7 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["guided", "exam", "own-data"],
+            "enum": ["guided", "exam", "own-data", "what-if"],
             "title": "Mode"
           },
           "seed": {
@@ -3096,7 +3096,7 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["guided", "exam", "own-data"],
+            "enum": ["guided", "exam", "own-data", "what-if"],
             "title": "Mode"
           },
           "created_at": {
@@ -3727,7 +3727,7 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["guided", "exam", "own-data"],
+            "enum": ["guided", "exam", "own-data", "what-if"],
             "title": "Mode"
           },
           "attempts": {
