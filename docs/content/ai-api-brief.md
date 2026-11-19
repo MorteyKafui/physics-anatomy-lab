@@ -25,12 +25,12 @@ One rule in the API, `ai_allowed(principal, feature)`, checked on every AI reque
 anything else, and the same rule behind a `GET /ai/status` answer the web app uses to show or
 hide AI buttons:
 
-| Who | AI |
-| --- | --- |
-| Signed out | Never. The request is refused with 401 and nothing reaches Claude. |
-| Teacher (signed-in adult) | Yes, for features open to teachers. |
-| Student in a class | Only while that class's teacher has AI on (`classes.ai_enabled`, already in the database, off by default). Turned off mid-lesson, the next request is refused. |
-| Anyone, when AI is switched off | No (decision 5). |
+| Who                             | AI                                                                                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Signed out                      | Never. The request is refused with 401 and nothing reaches Claude.                                                                                             |
+| Teacher (signed-in adult)       | Yes, for features open to teachers.                                                                                                                            |
+| Student in a class              | Only while that class's teacher has AI on (`classes.ai_enabled`, already in the database, off by default). Turned off mid-lesson, the next request is refused. |
+| Anyone, when AI is switched off | No (decision 5).                                                                                                                                               |
 
 `GET /ai/status` says `available` or the reason it is not (`signed-out`, `class-off`,
 `switched-off`, `not-configured`), so the app can say "Your teacher has not turned AI on for this
@@ -57,11 +57,11 @@ prompt by accident:
 - **The model is a setting per feature**, never typed into code paths. The plan says "small model
   for hints, larger model for report review". Proposed defaults, for Mortey to choose:
 
-| Feature | Proposed model | Price per million tokens (in / out) |
-| --- | --- | --- |
-| Tutor, what-if | Claude Haiku 5.5 (`claude-haiku-5-5`) | $0.10 / $0.50 |
-| Report review, question drafting | Claude Sonnet 5.5 (`claude-sonnet-5-5`) | $2 / $10 |
-| Alternative for anything | Claude Opus 5.5 (`claude-opus-5-5`), the most capable | $4 / $20 |
+| Feature                          | Proposed model                                        | Price per million tokens (in / out) |
+| -------------------------------- | ----------------------------------------------------- | ----------------------------------- |
+| Tutor, what-if                   | Claude Haiku 5.5 (`claude-haiku-5-5`)                 | $0.10 / $0.50                       |
+| Report review, question drafting | Claude Sonnet 5.5 (`claude-sonnet-5-5`)               | $2 / $10                            |
+| Alternative for anything         | Claude Opus 5.5 (`claude-opus-5-5`), the most capable | $4 / $20                            |
 
 - The stable system prompt is cached (prompt caching), so repeated requests pay a tenth for it.
 
@@ -106,11 +106,11 @@ gains a line.
 
 ## What Mortey needs to provide
 
-| Item | When | Expected monthly cost |
-| --- | --- | --- |
+| Item                                                                                            | When                                  | Expected monthly cost                                                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | An Anthropic API key in a workspace with a monthly spend limit, as a secret (never in the repo) | Before item 2 runs anywhere but tests | Nothing in this item. For the tutor at 1,000 students asking 20 questions a month on Haiku 5.5: about $10. Report review, 4 a month each: about $80 on Sonnet 5.5, or about $4 on Haiku 5.5. |
-| The monthly AI budget ceiling (master plan, still open) | Before the pilot | Sets the spend limit above |
-| Voice for the tutor's spoken replies | Item 2's brief | Nothing with the browser's own voice; about $300 a month at 100,000 students with a cloud voice (cost model) |
+| The monthly AI budget ceiling (master plan, still open)                                         | Before the pilot                      | Sets the spend limit above                                                                                                                                                                   |
+| Voice for the tutor's spoken replies                                                            | Item 2's brief                        | Nothing with the browser's own voice; about $300 a month at 100,000 students with a cloud voice (cost model)                                                                                 |
 
 These estimates rest on assumed usage (about 3,000 tokens in and 300 out per tutor question,
 6,000 in and 800 out per review) and should be replaced with measured usage after the pilot.

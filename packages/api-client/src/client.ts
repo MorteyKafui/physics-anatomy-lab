@@ -2,8 +2,9 @@
 // (src/generated); only the calls are written here, so they keep the repository's strict settings.
 //
 // Nothing here is on the lab's critical path: the lab works signed out and offline, and these
-// calls are made only from sign-in, join and teacher screens.
+// calls are made only from sign-in, join and teacher screens, and from AI buttons.
 import type {
+  AiStatus,
   AttemptBatch,
   AttemptEventsPage,
   ClassAttempt,
@@ -103,6 +104,10 @@ export function createApi(options: ApiOptions = {}) {
   };
 
   return {
+    /** Whether to show AI buttons, and why not (ADR 0043). Replies stream with streamAi(). */
+    ai: {
+      status: () => call<AiStatus>("GET", "/ai/status"),
+    },
     auth: {
       methods: () => call<SignInMethods>("GET", "/auth/methods"),
       me: () => call<MeResponse>("GET", "/auth/me"),

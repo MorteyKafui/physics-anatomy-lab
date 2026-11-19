@@ -11,12 +11,14 @@ import anthropic
 import httpx2
 import pytest
 from sqlalchemy import delete, func, select
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from app.ai.claude import AnthropicClaude, ClaudeError, Finished, Piece, TextPiece
 from app.ai.context import AiContext, build_request
 from app.ai.features import FEATURES, FeatureName
 from app.ai.log import DatabaseAiLog, LogEntry
-from app.db import get_sessionmaker
+from app.config import get_settings
 from app.models import AiRequest
 from tests.ai_fakes import TEST_KEY, context
 
@@ -156,7 +158,9 @@ def entry(**changes: Any) -> LogEntry:
 async def test_the_log_keeps_a_row_and_forgets_old_ones() -> None:
     """Writes to the test database for real (the log has its own session), then cleans up."""
     marker = bytes([7]) * 32
-    async with get_sessionmaker()() as db:
+    engine = create_async_engine(get_settings().database_url, poolclass=NullPool)
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+    async with sessions() as db:
         try:
             async with db.begin():
                 db.add(AiRequest(**entry(pseudonym=marker).__dict__))
@@ -166,7 +170,7 @@ async def test_the_log_keeps_a_row_and_forgets_old_ones() -> None:
                         at=datetime.now(UTC) - timedelta(days=91),
                     )
                 )
-            await DatabaseAiLog().record(entry(pseudonym=marker, outcome="refused"))
+            await DatabaseAiLog(sessions).record(entry(pseudonym=marker, outcome="refused"))
             outcomes = (
                 await db.scalars(select(AiRequest.outcome).where(AiRequest.pseudonym == marker))
             ).all()
@@ -176,3 +180,4 @@ async def test_the_log_keeps_a_row_and_forgets_old_ones() -> None:
             await db.rollback()
             async with db.begin():
                 await db.execute(delete(AiRequest).where(AiRequest.pseudonym == marker))
+    await engine.dispose()

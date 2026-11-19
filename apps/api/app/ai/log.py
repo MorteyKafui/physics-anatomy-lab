@@ -12,6 +12,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Literal, Protocol
 
 from sqlalchemy import delete
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.auth.sessions import Principal, Teacher
 from app.config import get_settings
@@ -57,8 +58,12 @@ class AiLog(Protocol):
 
 
 class DatabaseAiLog:
+    def __init__(self, sessions: async_sessionmaker[AsyncSession] | None = None) -> None:
+        self._sessions = sessions
+
     async def record(self, entry: LogEntry) -> None:
-        async with get_sessionmaker()() as db, db.begin():
+        sessions = self._sessions or get_sessionmaker()
+        async with sessions() as db, db.begin():
             await db.execute(
                 delete(AiRequest).where(AiRequest.at < datetime.now(UTC) - AI_LOG_RETENTION)
             )
