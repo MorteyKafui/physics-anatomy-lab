@@ -88,3 +88,8 @@ def too_many(limit: Limit) -> HTTPException:
 async def forget_older_than(db: AsyncSession, cutoff: datetime) -> None:
     """Cleanup for the job queue, once it exists."""
     await db.execute(delete(RateLimit).where(RateLimit.window_start < cutoff))
+
+
+async def forget(db: AsyncSession, limit: Limit, subject: str) -> None:
+    """Drop every window counted against this subject, such as a deleted account's email."""
+    await db.execute(delete(RateLimit).where(RateLimit.key == _key(limit, subject)))
