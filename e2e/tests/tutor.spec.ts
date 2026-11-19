@@ -67,6 +67,30 @@ test("a student asks the tutor from the help menu and reads the reply", async ({
   expect(second.thread).toHaveLength(2);
 });
 
+test("a student reports a reply, and only the reply and the reason are sent", async ({ page }) => {
+  await mockAi(page, ON);
+  const flags: Request[] = [];
+  await page.route("**/api/ai/flags", (route) => {
+    flags.push(route.request());
+    return route.fulfill({ status: 204 });
+  });
+  await page.goto(LAB);
+  await page.getByRole("tab", { name: "Ask" }).click();
+  await page.getByLabel("Your question").fill("Why do I count from zero?");
+  await page.getByRole("button", { name: "Send" }).click();
+  await page.getByRole("button", { name: "Report this answer" }).click();
+  await page.getByRole("radio", { name: "Confusing" }).click();
+  await page.getByRole("button", { name: "Send report" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Thanks for telling us" })).toBeVisible();
+  expect(flags[0]?.postDataJSON()).toEqual({
+    feature: "tutor",
+    experiment_id: "simple-pendulum",
+    step: "question",
+    reason: "confusing",
+    reply: "Start counting at zero. Then T = t / 20 gives 1.806 s.",
+  });
+});
+
 test("a held reply is hidden, with a way to ask again", async ({ page }) => {
   const held = `event: text\ndata: {"text": "Your g is 9.81"}\n\nevent: refused\ndata: ${JSON.stringify({ message: HELD })}\n\n`;
   await mockAi(page, ON, held);

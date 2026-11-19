@@ -19,6 +19,7 @@ from app.ai import prepare
 from app.ai.claude import Claude, ClaudeError, Finished, TextPiece
 from app.ai.context import ModelRequest
 from app.ai.features import FeatureName
+from app.ai.flags import EMAIL, PHONE
 from app.ai.stream import CUT_SHORT
 from app.config import Settings
 from evals.cases import Case, context, draft_request, facts, review_request, sent
@@ -75,8 +76,6 @@ AMERICAN = re.compile(
     r"modeling|traveled|fiber|aluminum)\b",
     re.IGNORECASE,
 )
-EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
-PHONE = re.compile(r"(?:\+?\d[\s-]?){9,}")
 
 
 def prepared(case: Case, settings: Settings) -> prepare.Prepared:

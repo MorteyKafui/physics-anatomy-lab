@@ -2,6 +2,7 @@
 // later (decision D10).
 import { enGB, type MessageKey as SharedKey } from "./en-GB";
 import type { enGBConvergingLens } from "./en-GB-converging-lens";
+import type { enGBFlag } from "./en-GB-flag";
 import type { enGBMethodOfMixtures } from "./en-GB-method-of-mixtures";
 import type { enGBOhmsLaw } from "./en-GB-ohms-law";
 import type { enGBPrivacy } from "./en-GB-privacy";
@@ -26,7 +27,8 @@ export type MessageKey =
   | keyof typeof enGBPrivacy
   | keyof typeof enGBReview
   | keyof typeof enGBTutor
-  | keyof typeof enGBWhatIf;
+  | keyof typeof enGBWhatIf
+  | keyof typeof enGBFlag;
 
 const messages: Record<string, string> = { ...enGB };
 

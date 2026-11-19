@@ -11,6 +11,8 @@ import { when } from "@/lib/format";
 const ACTIONS: Readonly<Record<string, string>> = {
   "class.ai.set": "Changed AI for a class",
   "ai.switch.set": "Changed an AI switch",
+  "ai.flag.dismiss": "Dismissed a flagged reply",
+  "ai.flag.restore": "Restored a flagged reply",
   "member.display-name.replace": "Replaced a display name",
   "export.create": "Exported a table",
 };

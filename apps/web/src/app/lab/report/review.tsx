@@ -9,6 +9,7 @@ import "@pa/i18n/review";
 import { Button } from "@pa/ui/components/button";
 import { useRef, useState } from "react";
 
+import { ReportAnswer } from "../tutor/report-answer";
 import { canUse, useAiStatus, notNow } from "../tutor/use-ai-status";
 import type { ReportContent } from "./content";
 
@@ -127,7 +128,13 @@ export function ReviewControls({ r }: { r: ReportReview }) {
 }
 
 /** A section's notes, beside it on the page; never part of the report or its exports. */
-export function ReviewNotes({ notes }: { notes: readonly ReviewNote[] }) {
+export function ReviewNotes({
+  notes,
+  experimentId,
+}: {
+  notes: readonly ReviewNote[];
+  experimentId: string;
+}) {
   if (notes.length === 0) return null;
   return (
     <div className="flex flex-col gap-2 print:hidden" data-review-notes>
@@ -143,6 +150,12 @@ export function ReviewNotes({ notes }: { notes: readonly ReviewNote[] }) {
           <span className="self-start border border-[var(--pa-border)] px-2 py-0.5 text-xs text-[var(--pa-fg-muted)]">
             {t("report.review.rule", { rule: n.ruleText })}
           </span>
+          <ReportAnswer
+            feature="report-review"
+            experimentId={experimentId}
+            reply={n.comment}
+            what="note"
+          />
         </aside>
       ))}
     </div>

@@ -90,6 +90,51 @@ export type AiFeatureUse = {
 };
 
 /**
+ * AiFlagChange
+ */
+export type AiFlagChange = {
+  /**
+   * Reason
+   */
+  reason?: string | null;
+};
+
+/**
+ * AiFlagRow
+ */
+export type AiFlagRow = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * At
+   */
+  at: string;
+  feature: FeatureName;
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Step
+   */
+  step: string | null;
+  /**
+   * Reason
+   */
+  reason: "wrong-physics" | "confusing" | "unsuitable" | "other";
+  /**
+   * Reply
+   */
+  reply: string;
+  /**
+   * Dismissed
+   */
+  dismissed: boolean;
+};
+
+/**
  * AiOverview
  *
  * The admin AI page (ai-quotas-brief.md, decision 5). Today is since midnight UTC.
@@ -122,6 +167,20 @@ export type AiOverview = {
    * Switches
    */
   switches: Array<AiSwitchState>;
+  /**
+   * Evaluations
+   */
+  evaluations: Array<EvalSummary>;
+  /**
+   * Flags
+   *
+   * Open flags, newest first, at most 50.
+   */
+  flags: Array<AiFlagRow>;
+  /**
+   * Flags Open
+   */
+  flags_open: number;
   /**
    * Server Enabled
    *
@@ -963,6 +1022,59 @@ export type EmailLinkVerify = {
 };
 
 /**
+ * EvalFailure
+ */
+export type EvalFailure = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Why
+   *
+   * The rule that failed, or the grader's reason.
+   */
+  why: string;
+};
+
+/**
+ * EvalSummary
+ *
+ * A feature's latest evaluation results in this deployment (apps/api/evals/results).
+ */
+export type EvalSummary = {
+  feature: FeatureName;
+  /**
+   * Cases
+   */
+  cases: number;
+  /**
+   * Run At
+   *
+   * None when the suite has not run yet.
+   */
+  run_at: string | null;
+  /**
+   * Rate
+   *
+   * The share of rubric lines that pass.
+   */
+  rate: number | null;
+  /**
+   * Bar
+   */
+  bar: number;
+  /**
+   * Passed
+   */
+  passed: boolean | null;
+  /**
+   * Failing
+   */
+  failing: Array<EvalFailure>;
+};
+
+/**
  * ExperimentTotal
  */
 export type ExperimentTotal = {
@@ -1100,6 +1212,40 @@ export type ExportedClass = {
  * FeatureName
  */
 export type FeatureName = "tutor" | "what-if" | "report-review" | "question-drafting";
+
+/**
+ * FlagRequest
+ */
+export type FlagRequest = {
+  feature: FeatureName;
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Step
+   */
+  step?:
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report"
+    | null;
+  /**
+   * Reason
+   */
+  reason: "wrong-physics" | "confusing" | "unsuitable" | "other";
+  /**
+   * Reply
+   */
+  reply: string;
+};
 
 /**
  * FlaggedName
@@ -3869,6 +4015,37 @@ export type QuestionDraftingResponses = {
   200: unknown;
 };
 
+export type FlagReplyData = {
+  body: FlagRequest;
+  path?: never;
+  query?: never;
+  url: "/ai/flags";
+};
+
+export type FlagReplyErrors = {
+  /**
+   * Signed out
+   */
+  401: unknown;
+  /**
+   * The reply looks like it holds contact details
+   */
+  422: unknown;
+  /**
+   * Ten reports a day
+   */
+  429: unknown;
+};
+
+export type FlagReplyResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type FlagReplyResponse = FlagReplyResponses[keyof FlagReplyResponses];
+
 export type SubmitQuestionsData = {
   body: Submission;
   path?: never;
@@ -4301,6 +4478,66 @@ export type AdminSetAiSwitchResponses = {
 };
 
 export type AdminSetAiSwitchResponse = AdminSetAiSwitchResponses[keyof AdminSetAiSwitchResponses];
+
+export type AdminDismissFlagData = {
+  body: AiFlagChange;
+  path: {
+    /**
+     * Flag Id
+     */
+    flag_id: string;
+  };
+  query?: never;
+  url: "/admin/ai/flags/{flag_id}/dismiss";
+};
+
+export type AdminDismissFlagErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminDismissFlagError = AdminDismissFlagErrors[keyof AdminDismissFlagErrors];
+
+export type AdminDismissFlagResponses = {
+  /**
+   * Successful Response
+   */
+  200: AiFlagRow;
+};
+
+export type AdminDismissFlagResponse = AdminDismissFlagResponses[keyof AdminDismissFlagResponses];
+
+export type AdminRestoreFlagData = {
+  body: AiFlagChange;
+  path: {
+    /**
+     * Flag Id
+     */
+    flag_id: string;
+  };
+  query?: never;
+  url: "/admin/ai/flags/{flag_id}/restore";
+};
+
+export type AdminRestoreFlagErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminRestoreFlagError = AdminRestoreFlagErrors[keyof AdminRestoreFlagErrors];
+
+export type AdminRestoreFlagResponses = {
+  /**
+   * Successful Response
+   */
+  200: AiFlagRow;
+};
+
+export type AdminRestoreFlagResponse = AdminRestoreFlagResponses[keyof AdminRestoreFlagResponses];
 
 export type AdminReplaceDisplayNameData = {
   body: DisplayNameChange;

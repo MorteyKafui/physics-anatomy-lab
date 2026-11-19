@@ -586,6 +586,35 @@ class AiSwitch(Base):
     changed_at: Mapped[datetime] = _now()
 
 
+class AiFlag(Base):
+    """A reported AI answer (docs/content/ai-evals-brief.md, decision 6): the reply and the reason,
+    never the question and never who sent it. Kept for FLAG_RETENTION (app/ai/flags.py)."""
+
+    __tablename__ = "ai_flags"
+    __table_args__ = (
+        CheckConstraint(
+            "feature IN ('tutor', 'what-if', 'report-review', 'question-drafting')",
+            name="feature_known",
+        ),
+        CheckConstraint("experiment_id ~ '^[a-z][a-z0-9.-]{1,63}$'", name="experiment_format"),
+        CheckConstraint(
+            "reason IN ('wrong-physics', 'confusing', 'unsuitable', 'other')", name="reason_known"
+        ),
+        CheckConstraint("char_length(reply) BETWEEN 1 AND 2000", name="reply_length"),
+        Index("ix_ai_flags_at", "at"),
+    )
+
+    id: Mapped[uuid.UUID] = _id()
+    at: Mapped[datetime] = _now()
+    feature: Mapped[str] = mapped_column(Text, nullable=False)
+    experiment_id: Mapped[str] = mapped_column(Text, nullable=False)
+    step: Mapped[str | None] = mapped_column(Text)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    reply: Mapped[str] = mapped_column(Text, nullable=False)
+    # Set when staff dismiss it (audited); cleared by undo.
+    dismissed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
 class Question(Base):
     """A follow-up question for exam mode, drafted with Claude and edited by a teacher, in the bank
     once a reviewer approves it (docs/content/ai-questions-brief.md).

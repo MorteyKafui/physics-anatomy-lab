@@ -2,7 +2,7 @@
 
 // Every change the portal makes is one admin API call, which checks the staff member's Access
 // token and writes the audit entry in the same transaction (ADR 0040).
-import type { AiSwitchState, ClassRow, MemberRow, QuestionReview } from "@pa/api-client";
+import type { AiFlagRow, AiSwitchState, ClassRow, MemberRow, QuestionReview } from "@pa/api-client";
 import { revalidatePath } from "next/cache";
 
 import { adminGet, adminPost } from "@/lib/api";
@@ -33,6 +33,20 @@ export async function setAiSwitch(
 ): Promise<ActionResult<AiSwitchState[]>> {
   const r = await adminPost<AiSwitchState[]>(`/admin/ai/switches/${encodeURIComponent(name)}`, {
     enabled,
+    reason: reason ?? null,
+  });
+  revalidatePath("/ai");
+  return done(r);
+}
+
+/** Dismiss a flagged reply, or restore it (undo). Audited either way. */
+export async function setAiFlag(
+  flagId: string,
+  dismissed: boolean,
+  reason?: string,
+): Promise<ActionResult<AiFlagRow>> {
+  const action = dismissed ? "dismiss" : "restore";
+  const r = await adminPost<AiFlagRow>(`/admin/ai/flags/${encodeURIComponent(flagId)}/${action}`, {
     reason: reason ?? null,
   });
   revalidatePath("/ai");
