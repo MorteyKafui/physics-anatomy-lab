@@ -133,11 +133,26 @@ export async function startExam(experimentId: string) {
   return attempt;
 }
 
-/** Leave an exam for practice: the latest run that was not an exam, or a new one if none. */
+/**
+ * Open a what-if scenario on the bench (docs/content/ai-tutor-brief.md): a new attempt in mode
+ * "what-if" that starts with the given events (the scenario, the bench built, at Measure). The lab
+ * opens it from now on; earlier runs are kept. It is not marked and has no report.
+ */
+export async function startWhatIf(experimentId: string, first: readonly NewEvent[]) {
+  const attempt = await store().createAttempt({ experimentId, mode: "what-if", seed: newSeed() });
+  await store().append(attempt.id, first);
+  remember(`pa:attempt:${experimentId}`, attempt.id);
+  openings.delete(experimentId);
+  return attempt;
+}
+
+/**
+ * Leave an exam or a what-if for practice: the latest run that was neither, or a new one if none.
+ */
 export async function backToPractice(experimentId: string) {
   const attempts = await store().listAttempts({ experimentId });
   const practice = [...attempts]
-    .filter((a) => a.mode !== "exam")
+    .filter((a) => a.mode !== "exam" && a.mode !== "what-if")
     .sort((a, b) => b.createdAt - a.createdAt)[0];
   if (practice) remember(`pa:attempt:${experimentId}`, practice.id);
   else forget(`pa:attempt:${experimentId}`);

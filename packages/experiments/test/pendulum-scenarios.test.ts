@@ -1,12 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { replay, type Attempt, type Json, type LabEvent } from "@pa/engine";
+import { guidedProjection, replay, type Attempt, type Json, type LabEvent } from "@pa/engine";
 import { periodExact, PLACES } from "@pa/physics";
 
 import fixtures from "../../../validation/fixtures/pendulum.json";
 import {
   asSet,
+  assemblyProjection,
   benchPeriod,
   checkScenario,
+  CORRECT_ASSEMBLY,
   lengthProjection,
   PENDULUM_LIMITS,
   predictPendulum,
@@ -14,6 +16,7 @@ import {
   scenarioProjection,
   SMALL_ANGLE_DEG,
   simplePendulum,
+  whatIfStart,
 } from "../src";
 
 const deg = (rad: number) => (rad * 180) / Math.PI;
@@ -126,5 +129,25 @@ describe("a what-if attempt on the bench", () => {
       periodExact({ length: 0.85, g: 1.62, amplitude: Math.PI / 6 }),
     );
     expect(benchPeriod(1.62, 0.85)).toBe(benchPeriod(1.62, 0.85, simplePendulum.amplitudeDeg));
+  });
+});
+
+describe("opening a what-if attempt", () => {
+  test("starts at Measure with the bench built the right way and the scenario set", () => {
+    const moon = { length: 0.85, place: "moon" as const, amplitudeDeg: 30, massG: 50 };
+    const events = whatIfStart(moon).map((e, i) => ({
+      ...e,
+      id: `e${String(i)}`,
+      attemptId: "w",
+      seq: i + 1,
+      device: "d",
+      at: i,
+    }));
+    const state = replay(guidedProjection, ATTEMPT, events);
+    expect(state.step).toBe("measure");
+    expect(state.completed).toEqual(["question", "predict", "build", "check"]);
+    expect(replay(assemblyProjection, ATTEMPT, events)).toEqual(CORRECT_ASSEMBLY);
+    expect(replay(scenarioProjection, ATTEMPT, events)).toEqual(moon);
+    expect(replay(lengthProjection, ATTEMPT, events)).toBe(0.85);
   });
 });

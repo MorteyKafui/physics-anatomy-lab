@@ -12,6 +12,7 @@ import type { LabEvent, NewEvent, Projection } from "@pa/engine";
 import { periodExact, periodSmallAngle, placeById, type PlaceId } from "@pa/physics";
 
 import limits from "./pendulum-scenario-limits.json" with { type: "json" };
+import { CORRECT_ASSEMBLY, PENDULUM_PARTS } from "./pendulum-assembly";
 import { simplePendulum } from "./simple-pendulum";
 
 // The limits are in a JSON file so the API checks an AI-drafted scenario against the same ones
@@ -76,6 +77,27 @@ export const scenarioProjection: Projection<PendulumScenario | undefined> = {
   apply: (scenario, e: LabEvent) =>
     scenario ?? (e.kind === "scenario.set" ? checkScenario(e.data) : undefined),
 };
+
+/**
+ * The events a what-if attempt opens with (docs/content/ai-tutor-brief.md, "Opening a what-if
+ * scenario on the bench"): its scenario, the bench built the right way, and the steps before
+ * Measure done, so the student starts by timing the scenario's pendulum.
+ */
+export function whatIfStart(s: PendulumScenario): NewEvent[] {
+  const events: NewEvent[] = [
+    scenarioEvent(s),
+    ...PENDULUM_PARTS.map((part) => ({
+      kind: "part.place",
+      data: { part, slot: CORRECT_ASSEMBLY[part]! },
+    })),
+  ];
+  for (const step of ["question", "predict", "build", "check"] as const) {
+    if (step !== "question") events.push({ kind: "step.go-to", data: { step } });
+    events.push({ kind: "step.complete", data: { step } });
+  }
+  events.push({ kind: "step.go-to", data: { step: "measure" } });
+  return events;
+}
 
 export interface PendulumPrediction {
   /** The period the model predicts, s: the exact period. */
