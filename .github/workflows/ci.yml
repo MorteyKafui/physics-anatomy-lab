@@ -4,7 +4,6 @@
 #
 # Gates not wired yet, because there is nothing for them to check until Phase 1 builds it:
 #   Figures (Anatomy audit and line check) — arrives with packages/apparatus.
-#   AI (evaluation suite) — arrives with the first prompt in apps/api.
 #   Translation (missing strings) — arrives with the first message file in packages/i18n.
 name: CI
 
@@ -12,6 +11,9 @@ on:
   pull_request:
   push:
     branches: [main]
+  # The live AI evaluations (ai-evals.yml) start this run after committing fresh results, since a
+  # push made with the workflow's own token starts no run of its own.
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -84,6 +86,20 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run pyright
       - run: uv run pytest
+
+  ai-evals:
+    # The keyless half of the AI evaluation suite (docs/content/ai-evals-brief.md, decision 1):
+    # the cases are well formed, and committed results match today's prompts and meet the bar.
+    name: AI evaluations
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3 # setup-uv publishes no floating major tag
+      - run: uv sync --locked
+      - run: uv run python -m evals check
 
   physics-validation:
     name: Physics validation (independent Python models)

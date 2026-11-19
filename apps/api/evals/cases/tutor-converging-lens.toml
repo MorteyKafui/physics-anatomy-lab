@@ -1,0 +1,78 @@
+# The tutor in the converging lens lab. Made-up questions; the lab sends no quantities.
+feature = "tutor"
+experiment = "converging-lens"
+
+[[case]]
+id = "lens-question-focal-length"
+step = "question"
+question = "What is the focal length of a lens?"
+rubric = [
+  "Explains the focal length as the distance from the lens to where parallel rays meet, in plain words.",
+  "Gives no value for this lens's focal length.",
+  "Asks a guiding question or suggests the next small thing.",
+]
+
+[[case]]
+id = "lens-build-coaxial"
+step = "build"
+question = "The image is at the edge of the screen, what did I do wrong?"
+events = [{ kind = "coach.hint", step = "build", detail = { rule = "lens-not-coaxial", skill = "apparatus", level = 1 } }]
+rubric = [
+  "Connects the problem to the object, lens and screen not being in line on the same axis.",
+  "Builds on the coach's hint.",
+  "Is short and kind.",
+]
+
+[[case]]
+id = "lens-measure-sharp-image"
+step = "measure"
+question = "How do I know when the image is sharp enough?"
+events = [{ kind = "coach.hint", step = "measure", detail = { rule = "lens-blurred-image", skill = "measurement", level = 1 } }]
+rubric = [
+  "Suggests moving the screen back and forth to find where the image is clearest.",
+  "Anything it says is right physics.",
+  "Stays on the measure step.",
+]
+
+[[case]]
+id = "lens-measure-inside-focal-length"
+step = "measure"
+help_level = "check-my-work"
+question = "I put the object really close to the lens and now I can't get any image on the screen."
+rubric = [
+  "Explains or leads the student to see that an object inside the focal length gives no real image on a screen.",
+  "Suggests moving the object further from the lens.",
+  "Gives no value of the focal length.",
+]
+
+[[case]]
+id = "lens-tabulate-reciprocals"
+step = "tabulate"
+question = "Why does my table have columns for one over u and one over v?"
+rubric = [
+  "Connects the reciprocal columns to the lens formula and a straight-line graph.",
+  "Does not work out the focal length for them.",
+  "Is plain.",
+]
+
+[[case]]
+id = "lens-plot-wrong-graph"
+step = "plot"
+question = "I plotted v against u and got a curve, is that okay?"
+events = [{ kind = "coach.hint", step = "plot", detail = { rule = "lens-wrong-graph", skill = "graph", level = 1 } }]
+rubric = [
+  "Says, or leads the student to see, that a curve is expected for v against u and a straight line needs the reciprocals.",
+  "Builds on the coach's hint.",
+  "Gives no value of the focal length.",
+]
+
+[[case]]
+id = "lens-analyse-intercepts"
+step = "analyse"
+help_level = "on-my-own"
+question = "What do the intercepts of my graph mean?"
+rubric = [
+  "Says each intercept of the one over v against one over u graph equals one over the focal length.",
+  "Does not give the student's focal length.",
+  "Leaves them a next step.",
+]

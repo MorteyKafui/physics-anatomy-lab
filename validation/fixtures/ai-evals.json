@@ -1,0 +1,375 @@
+{
+  "model": "simple pendulum, exact period at the lab's amplitude, SciPy ellipk",
+  "units": {
+    "length": "m",
+    "g": "m s^-2",
+    "period": "s"
+  },
+  "amplitude_deg": 5,
+  "benches": [
+    {
+      "length": 0.4,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.2689646566217128,
+      "period": 1.269568902676886
+    },
+    {
+      "length": 0.45,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.3459402706749077,
+      "period": 1.346581170399585
+    },
+    {
+      "length": 0.5,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.4187456166254142,
+      "period": 1.4194211842526658
+    },
+    {
+      "length": 0.55,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.487992956019352,
+      "period": 1.4887014973243509
+    },
+    {
+      "length": 0.6,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.5541579551746314,
+      "period": 1.5548980024317633
+    },
+    {
+      "length": 0.65,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.6176188865434202,
+      "period": 1.6183891521500051
+    },
+    {
+      "length": 0.7,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.6786824519757624,
+      "period": 1.6794817943721023
+    },
+    {
+      "length": 0.75,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.7376014177712737,
+      "period": 1.7384288157580283
+    },
+    {
+      "length": 0.8,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.7945870275665439,
+      "period": 1.79544156053278
+    },
+    {
+      "length": 0.85,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.849817967255023,
+      "period": 1.850698799675114
+    },
+    {
+      "length": 0.9,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.9034469849325693,
+      "period": 1.9043533540153288
+    },
+    {
+      "length": 0.95,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 1.9556058746379013,
+      "period": 1.9565370803488382
+    },
+    {
+      "length": 1.0,
+      "place": "earth",
+      "g": 9.80665,
+      "period_small_angle": 2.0064092925890407,
+      "period": 2.0073646894898
+    },
+    {
+      "length": 0.4,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 3.122139880462545,
+      "period": 3.123626557571024
+    },
+    {
+      "length": 0.45,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 3.311529421932034,
+      "period": 3.313106281129294
+    },
+    {
+      "length": 0.5,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 3.490658503988659,
+      "period": 3.492320659526235
+    },
+    {
+      "length": 0.55,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 3.66103352492369,
+      "period": 3.6627768083585344
+    },
+    {
+      "length": 0.6,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 3.823824806363651,
+      "period": 3.825645606527676
+    },
+    {
+      "length": 0.65,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 3.9799630436611904,
+      "period": 3.9818581925578265
+    },
+    {
+      "length": 0.7,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 4.130202841030411,
+      "period": 4.132169529984854
+    },
+    {
+      "length": 0.75,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 4.275166100539547,
+      "period": 4.277201817009648
+    },
+    {
+      "length": 0.8,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 4.415372562576045,
+      "period": 4.417475041505726
+    },
+    {
+      "length": 0.85,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 4.551261862988789,
+      "period": 4.553429048664466
+    },
+    {
+      "length": 0.9,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 4.6832098206938175,
+      "period": 4.685439836356536
+    },
+    {
+      "length": 0.95,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 4.811540699587799,
+      "period": 4.81383182288415
+    },
+    {
+      "length": 1.0,
+      "place": "moon",
+      "g": 1.62,
+      "period_small_angle": 4.93653659795374,
+      "period": 4.9388872408577535
+    },
+    {
+      "length": 0.4,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.063112494482618,
+      "period": 2.064094891887986
+    },
+    {
+      "length": 0.45,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.188261252799029,
+      "period": 2.189303242599763
+    },
+    {
+      "length": 0.5,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.3066298914461463,
+      "period": 2.307728245135808
+    },
+    {
+      "length": 0.55,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.4192138396024747,
+      "period": 2.420365802670612
+    },
+    {
+      "length": 0.6,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.526786446721494,
+      "period": 2.5279896329053875
+    },
+    {
+      "length": 0.65,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.6299627170259887,
+      "period": 2.631215032911008
+    },
+    {
+      "length": 0.7,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.7292412935755617,
+      "period": 2.7305408831871816
+    },
+    {
+      "length": 0.75,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.8250331297472058,
+      "period": 2.826378332795593
+    },
+    {
+      "length": 0.8,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 2.9176816703987054,
+      "period": 2.9190709901330174
+    },
+    {
+      "length": 0.85,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 3.0074774272456084,
+      "period": 3.0089095052486896
+    },
+    {
+      "length": 0.9,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 3.0946687417239263,
+      "period": 3.0961423378319792
+    },
+    {
+      "length": 0.95,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 3.1794698876722256,
+      "period": 3.180983863752759
+    },
+    {
+      "length": 1.0,
+      "place": "mars",
+      "g": 3.71,
+      "period_small_angle": 3.2620672758583202,
+      "period": 3.263620582542522
+    },
+    {
+      "length": 0.4,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 0.7981262607544045,
+      "period": 0.7985063065201193
+    },
+    {
+      "length": 0.45,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 0.8465407368337532,
+      "period": 0.8469438362409005
+    },
+    {
+      "length": 0.5,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 0.8923322868372856,
+      "period": 0.8927571909206353
+    },
+    {
+      "length": 0.55,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 0.9358859979428508,
+      "period": 0.9363316411050916
+    },
+    {
+      "length": 0.6,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 0.977501044581903,
+      "period": 0.9779665036843564
+    },
+    {
+      "length": 0.65,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.0174153444743879,
+      "period": 1.0178998096682474
+    },
+    {
+      "length": 0.7,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.0558218003930226,
+      "period": 1.056324553684475
+    },
+    {
+      "length": 0.75,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.092879391881094,
+      "period": 1.0933997909780098
+    },
+    {
+      "length": 0.8,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.1287209824450042,
+      "period": 1.1292584483212007
+    },
+    {
+      "length": 0.85,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.1634589581179222,
+      "period": 1.164012965262353
+    },
+    {
+      "length": 0.9,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.197189391131607,
+      "period": 1.197759459780179
+    },
+    {
+      "length": 0.95,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.22999517448293,
+      "period": 1.2305808643429155
+    },
+    {
+      "length": 1.0,
+      "place": "jupiter",
+      "g": 24.79,
+      "period_small_angle": 1.261948422188688,
+      "period": 1.2625493273060688
+    }
+  ]
+}

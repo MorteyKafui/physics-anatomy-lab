@@ -46,7 +46,7 @@ ignore = ["S101"]
 [tool.pyright]
 typeCheckingMode = "strict"
 pythonVersion = "3.13"
-include = ["app", "tests"]
+include = ["app", "tests", "evals"]
 venvPath = "."
 venv = ".venv"
 

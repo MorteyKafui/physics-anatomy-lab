@@ -15,6 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sse_starlette import EventSourceResponse
 
+from app.ai import prepare
 from app.ai.answers import (
     AnswerStore,
     Caching,
@@ -25,26 +26,18 @@ from app.ai.answers import (
     what_if_key,
 )
 from app.ai.claude import Claude, get_claude
-from app.ai.context import AiContext, ModelRequest, build_request, request_with
+from app.ai.context import AiContext, ModelRequest, build_request
 from app.ai.features import FEATURES, Feature, FeatureName
 from app.ai.log import AiLog, get_ai_log
 from app.ai.policy import MESSAGES, Unavailable, available_features, refuse, why_unavailable
-from app.ai.questions import FACTS as QUESTION_FACTS
-from app.ai.questions import INSTRUCTIONS as DRAFT_INSTRUCTIONS
+from app.ai.prepare import Prepared
 from app.ai.questions import NOT_READY as DRAFT_NOT_READY
-from app.ai.questions import DraftCheck, DraftRequest
-from app.ai.questions import output_schema as draft_schema
-from app.ai.questions import user_message as draft_message
+from app.ai.questions import DraftRequest
 from app.ai.quotas import budget_reached, enforce, quota, used_today, within_limits
-from app.ai.review import INSTRUCTIONS as REVIEW_INSTRUCTIONS
-from app.ai.review import ReviewCheck, ReviewRequest, user_message
-from app.ai.review import output_schema as review_schema
-from app.ai.scenarios import INSTRUCTIONS as WHAT_IF_INSTRUCTIONS
-from app.ai.scenarios import NOT_READY, SPECS, ScenarioCheck, output_schema
+from app.ai.review import ReviewRequest
+from app.ai.scenarios import NOT_READY
 from app.ai.stream import ReplyCheck, ReplyItem, cached_stream, reply_stream
 from app.ai.switches import switched_off
-from app.ai.tutor import INSTRUCTIONS as TUTOR_INSTRUCTIONS
-from app.ai.tutor import tutor_check
 from app.auth.sessions import MaybePrincipal
 from app.config import get_settings
 from app.db import Db
@@ -135,6 +128,30 @@ def ai_reply(
     )
 
 
+def reply_to(
+    name: FeatureName,
+    principal: MaybePrincipal,
+    prepared: Prepared,
+    claude: Claude | None,
+    ai_log: AiLog,
+    caching: Caching | None = None,
+    store: AnswerStore | None = None,
+) -> EventSourceResponse:
+    """Streams the reply to a request built in app/ai/prepare.py, the same one the evaluation
+    suite grades."""
+    return ai_reply_with(
+        name,
+        principal,
+        lambda _feature, _model: prepared.request,
+        claude,
+        ai_log,
+        prepared.check,
+        prepared.to_item,
+        caching,
+        store,
+    )
+
+
 def ai_reply_with(
     name: FeatureName,
     principal: MaybePrincipal,
@@ -201,14 +218,12 @@ async def tutor(
     cached = await from_cache(db, answers, FeatureName.tutor, principal, key, ai_log)
     if cached is not None:
         return cached
-    return ai_reply(
+    return reply_to(
         FeatureName.tutor,
         principal,
-        context,
-        TUTOR_INSTRUCTIONS,
+        prepare.tutor(context, get_settings()),
         claude,
         ai_log,
-        tutor_check(context),
         caching=None if key is None else Caching("tutor", key, keeps_text=tutor_keeps),
         store=answers,
     )
@@ -237,22 +252,20 @@ async def what_if(
 ) -> EventSourceResponse:
     """A what-if question turned into a scenario the experiment's model supports, as one item.
     The same question on the same bench is answered from the cache."""
-    spec = SPECS.get(context.experiment_id)
-    if spec is None:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=NOT_READY)
+    try:
+        prepared = prepare.what_if(context, get_settings())
+    except prepare.NotReadyError:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=NOT_READY) from None
     key = what_if_key(context)
     cached = await from_cache(db, answers, FeatureName.what_if, principal, key, ai_log)
     if cached is not None:
         return cached
-    return ai_reply(
+    return reply_to(
         FeatureName.what_if,
         principal,
-        context,
-        WHAT_IF_INSTRUCTIONS,
+        prepared,
         claude,
         ai_log,
-        to_item=ScenarioCheck(context, spec),
-        output_schema=output_schema(spec),
         caching=Caching("what-if", key, keeps_item=what_if_keeps(context)),
         store=answers,
     )
@@ -277,19 +290,12 @@ async def report_review(
     ids = [s.id for s in body.sections]
     if len(set(ids)) != len(ids):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail="One of each section.")
-    return ai_reply_with(
+    return reply_to(
         FeatureName.report_review,
         principal,
-        lambda feature, model: request_with(
-            feature,
-            model,
-            REVIEW_INSTRUCTIONS,
-            [{"role": "user", "content": user_message(body)}],
-            review_schema(list(ids)),
-        ),
+        prepare.report_review(body, get_settings()),
         claude,
         ai_log,
-        to_item=ReviewCheck(body),
     )
 
 
@@ -312,23 +318,11 @@ async def question_drafting(
     ai_log: AiLogDep,
 ) -> EventSourceResponse:
     """Three drafted follow-up questions for exam mode, as one item, for a teacher to edit."""
-    facts = QUESTION_FACTS.get(body.experiment_id)
-    if facts is None:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=DRAFT_NOT_READY)
-    return ai_reply_with(
-        FeatureName.question_drafting,
-        principal,
-        lambda feature, model: request_with(
-            feature,
-            model,
-            DRAFT_INSTRUCTIONS,
-            [{"role": "user", "content": draft_message(body, facts)}],
-            draft_schema(),
-        ),
-        claude,
-        ai_log,
-        to_item=DraftCheck(facts),
-    )
+    try:
+        prepared = prepare.question_drafting(body, get_settings())
+    except prepare.NotReadyError:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=DRAFT_NOT_READY) from None
+    return reply_to(FeatureName.question_drafting, principal, prepared, claude, ai_log)
 
 
 TEST_INSTRUCTIONS = "Answer the student's question about this step in one or two sentences."

@@ -38,6 +38,7 @@ bun run check                    # typecheck, lint and test everything
 bun run build; bun run e2e       # end to end, accessibility and performance (Playwright)
 cd apps/api; uv sync; uv run fastapi dev app/main.py   # API on :8000
 cd validation; uv sync; uv run pytest                   # independent physics models
+cd apps/api; uv run python -m evals check                # AI evaluation cases (no key)
 ```
 
 ## Git

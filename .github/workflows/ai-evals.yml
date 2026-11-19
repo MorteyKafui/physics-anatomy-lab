@@ -1,0 +1,70 @@
+# The live AI evaluations (docs/content/ai-evals-brief.md, decision 1): the cases of any feature
+# whose prompt, model or cases changed are run against the real model and graded, and the fresh
+# results are committed to the pull request. Weekly, every feature runs on main, so a change on
+# Anthropic's side shows within a week; that run reports and does not commit (main is protected).
+#
+# The key is ANTHROPIC_EVAL_KEY, in a workspace of its own with a monthly spend limit. Until it is
+# set, the job says so and passes. GitHub gives no secrets to pull requests from forks, so those
+# are told that a maintainer must run the evaluations.
+name: AI evaluations (live)
+
+on:
+  pull_request:
+    paths:
+      - "apps/api/app/ai/**"
+      - "apps/api/evals/**"
+      - "validation/fixtures/ai-evals.json"
+  schedule:
+    - cron: "0 6 * * 1" # Mondays, 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: ai-evals-${{ github.head_ref || github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    name: AI evaluations (live)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to commit the results to the pull request's branch
+      actions: write # to start CI on that commit
+    env:
+      SAME_REPO: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref || github.ref }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v10.3.3 # setup-uv publishes no floating major tag
+      - run: uv sync --locked
+      - name: A pull request from a fork cannot use the key
+        if: env.SAME_REPO != 'true'
+        run: echo "::notice::A pull request from a fork cannot use the evaluation key. A maintainer must run the AI evaluations."
+      - name: Run the features that are due
+        if: env.SAME_REPO == 'true'
+        env:
+          ANTHROPIC_EVAL_KEY: ${{ secrets.ANTHROPIC_EVAL_KEY }}
+          EVERY: ${{ github.event_name == 'schedule' && '--all' || '' }}
+        run: uv run python -m evals run $EVERY
+      - name: Commit the results to the pull request
+        # Below the bar too, so the reviewer sees which cases failed and why.
+        if: always() && github.event_name == 'pull_request' && env.SAME_REPO == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          if [ -n "$(git status --porcelain evals/results)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add evals/results
+            git commit -m "chore(evals): results for this pull request"
+            git push origin "HEAD:$BRANCH"
+            gh workflow run ci.yml --ref "$BRANCH"
+          fi

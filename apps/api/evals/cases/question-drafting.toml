@@ -1,0 +1,49 @@
+# Question drafting for exam mode: three questions on the teacher's topic, for review.
+feature = "question-drafting"
+experiment = "simple-pendulum"
+
+[[case]]
+id = "precautions"
+topic = "precautions"
+rubric = [
+  "Each question is about precautions in this practical.",
+  "Each model answer is right physics and a strong student could write it briefly.",
+  "The questions do not repeat each other.",
+]
+
+[[case]]
+id = "measuring"
+topic = "measuring"
+rubric = [
+  "Each question is about taking the measurements in this practical, such as timing swings or measuring the length.",
+  "Each model answer is right.",
+  "The marks given suit how much each answer asks for.",
+]
+
+[[case]]
+id = "graph"
+topic = "graph"
+rubric = [
+  "Each question is about the graph of this practical.",
+  "Any answer about the gradient relates it correctly to g.",
+  "The questions are worded plainly for senior high school students.",
+]
+
+[[case]]
+id = "theory"
+topic = "theory"
+rubric = [
+  "Each question explains or predicts something about the pendulum's physics.",
+  "Each model answer is right physics.",
+  "No question asks for a value the stated settings do not support.",
+]
+
+[[case]]
+id = "with-a-note"
+topic = "calculation"
+note = "My class struggles with rearranging the formula for g."
+rubric = [
+  "At least one question practises rearranging the period formula for g.",
+  "Each model answer is right.",
+  "The questions follow the teacher's note.",
+]
