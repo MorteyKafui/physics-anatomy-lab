@@ -42,6 +42,7 @@ from app.ai.review import output_schema as review_schema
 from app.ai.scenarios import INSTRUCTIONS as WHAT_IF_INSTRUCTIONS
 from app.ai.scenarios import NOT_READY, SPECS, ScenarioCheck, output_schema
 from app.ai.stream import ReplyCheck, ReplyItem, cached_stream, reply_stream
+from app.ai.switches import switched_off
 from app.ai.tutor import INSTRUCTIONS as TUTOR_INSTRUCTIONS
 from app.ai.tutor import tutor_check
 from app.auth.sessions import MaybePrincipal
@@ -68,13 +69,18 @@ class AiStatus(BaseModel):
         default_factory=dict[FeatureName, str],
         description="Features whose quota is used up today, each with the line to show.",
     )
+    switched_off: dict[FeatureName, str] = Field(
+        default_factory=dict[FeatureName, str],
+        description="Features switched off in the admin portal, each with the line to show.",
+    )
 
 
 @router.get("/status")
 async def ai_status(principal: MaybePrincipal, db: Db) -> AiStatus:
     """Signed out is an answer here, not an error: the reason is `signed-out`."""
     settings = get_settings()
-    reason = why_unavailable(principal, None, settings)
+    off = await switched_off(db) if principal is not None else frozenset[str]()
+    reason = why_unavailable(principal, None, settings, off)
     if reason is None and await budget_reached(db, settings):
         reason = Unavailable.budget_reached
     if reason is not None or principal is None:
@@ -82,12 +88,24 @@ async def ai_status(principal: MaybePrincipal, db: Db) -> AiStatus:
         return AiStatus(available=False, reason=reason, message=message, features=[])
     features: list[FeatureName] = []
     used_up: dict[FeatureName, str] = {}
-    for name in available_features(principal, settings):
+    switched = {
+        name: MESSAGES[Unavailable.switched_off]
+        for name in available_features(principal, settings)
+        if name.value in off
+    }
+    for name in available_features(principal, settings, off):
         if await used_today(db, principal, name) >= quota(principal, name, settings):
             used_up[name] = MESSAGES[Unavailable.quota_used]
         else:
             features.append(name)
-    return AiStatus(available=True, reason=None, message=None, features=features, used_up=used_up)
+    return AiStatus(
+        available=True,
+        reason=None,
+        message=None,
+        features=features,
+        used_up=used_up,
+        switched_off=switched,
+    )
 
 
 def ai_reply(

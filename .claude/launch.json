@@ -20,6 +20,21 @@
       "port": 3100
     },
     {
+      "name": "api",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": [
+        "run",
+        "--directory",
+        "apps/api",
+        "fastapi",
+        "dev",
+        "app/main.py",
+        "--port",
+        "8000"
+      ],
+      "port": 8000
+    },
+    {
       "name": "admin-build",
       "runtimeExecutable": "bun",
       "runtimeArgs": ["run", "--cwd", "apps/admin", "start"],

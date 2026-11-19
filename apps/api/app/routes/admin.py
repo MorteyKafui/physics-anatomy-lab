@@ -13,6 +13,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy import select, text
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 
 from app.admin import queries as q
@@ -20,6 +21,10 @@ from app.admin.access import CurrentStaff, require_staff
 from app.admin.audit import record
 from app.admin.db import ReadDb
 from app.admin.schemas import (
+    AiFeatureUse,
+    AiOverview,
+    AiSwitchChange,
+    AiSwitchState,
     AuditEntry,
     AuditPage,
     ClassAiChange,
@@ -45,9 +50,12 @@ from app.admin.schemas import (
     TeacherRow,
     Usage,
 )
+from app.ai.features import FEATURES, FeatureName
+from app.ai.quotas import midnight
+from app.ai.switches import SWITCHES, SwitchName, forget
 from app.config import get_settings
 from app.db import Db
-from app.models import ClassMember, SchoolClass
+from app.models import AiSwitch, ClassMember, SchoolClass
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_staff)])
 
@@ -217,6 +225,92 @@ async def admin_set_class_ai(
     )
     [row] = await q.class_list(db, 1, class_id)
     return ClassRow(**row)
+
+
+def _uses(rows: list[dict[str, Any]]) -> list[AiFeatureUse]:
+    by = {r["feature"]: r for r in rows}
+    empty = {"requests": 0, "cost_microdollars": 0, "held": 0, "cached": 0}
+    return [
+        AiFeatureUse(
+            feature=name,
+            **{k: int(v) for k, v in by.get(name.value, empty).items() if k != "feature"},
+        )
+        for name in FeatureName
+    ]
+
+
+async def _switches(db: Any) -> list[AiSwitchState]:
+    stored = await q.ai_switches(db)
+    settings = get_settings()
+    out: list[AiSwitchState] = []
+    for name in SWITCHES:
+        row = stored.get(name, {})
+        feature = None if name == "all" else FEATURES[FeatureName(name)]
+        out.append(
+            AiSwitchState(
+                name=name,
+                enabled=row.get("enabled", True),
+                model=None if feature is None else feature.model(settings),
+                teachers_only=feature is not None and not feature.students,
+                changed_at=row.get("changed_at"),
+            )
+        )
+    return out
+
+
+@router.get("/ai")
+async def admin_ai(db: ReadDb, range: RangeQuery = "7d") -> AiOverview:
+    """Requests, spend, the cache and held replies, by feature; and the switches."""
+    settings = get_settings()
+    w = q.window(range)
+    today_ms = int(midnight().timestamp() * 1000)
+    budget = settings.ai_daily_budget_usd
+    budget_micro = None if budget is None else round(budget * 1_000_000)
+    reached = (
+        None if budget_micro is None else await q.ai_budget_reached_at(db, today_ms, budget_micro)
+    )
+    return AiOverview(
+        range=_info(range, w),
+        today=_uses(await q.ai_use(db, today_ms)),
+        by_feature=_uses(await q.ai_use(db, w.since_ms)),
+        budget_microdollars=budget_micro,
+        budget_reached_at=reached,
+        switches=await _switches(db),
+        server_enabled=settings.ai_enabled,
+        configured=settings.anthropic_api_key is not None,
+    )
+
+
+@router.post("/ai/switches/{name}")
+async def admin_set_ai_switch(
+    name: SwitchName, body: AiSwitchChange, db: Db, staff: CurrentStaff
+) -> list[AiSwitchState]:
+    """Turn all AI, or one feature, on or off for everyone. Undo is the same call the other way.
+    Takes effect at once on this API process and within 10 seconds on the others."""
+    was = await db.scalar(select(AiSwitch.enabled).where(AiSwitch.name == name).with_for_update())
+    await db.execute(
+        insert(AiSwitch)
+        .values(name=name, enabled=body.enabled)
+        .on_conflict_do_update(
+            index_elements=[AiSwitch.name],
+            set_={"enabled": body.enabled, "changed_at": text("now()")},
+        )
+    )
+    await record(
+        db,
+        staff,
+        "ai.switch.set",
+        "ai-switch",
+        None,
+        {
+            "name": name,
+            "enabled": body.enabled,
+            "was": True if was is None else was,
+            "reason": body.reason,
+        },
+    )
+    forget()
+    return await _switches(db)
 
 
 @router.post("/members/{member_id}/display-name")

@@ -9,7 +9,7 @@ import "@pa/i18n/review";
 import { Button } from "@pa/ui/components/button";
 import { useRef, useState } from "react";
 
-import { canUse, useAiStatus, usedUp } from "../tutor/use-ai-status";
+import { canUse, useAiStatus, notNow } from "../tutor/use-ai-status";
 import type { ReportContent } from "./content";
 
 export const REVIEWED = ["conclusion", "precautions", "sources", "discussion"] as const;
@@ -78,7 +78,7 @@ export function useReportReview(content: ReportContent | undefined, experiment: 
 
   return {
     on: canUse(status, "report-review"),
-    usedUp: usedUp(status, "report-review"),
+    notNow: notNow(status, "report-review"),
     review,
     ready: sections.length > 0,
     ask: () => void ask(),
@@ -93,11 +93,11 @@ export type ReportReview = ReturnType<typeof useReportReview>;
 export function ReviewControls({ r }: { r: ReportReview }) {
   if (!r.on) {
     // Used up for today: say so where the button was; otherwise AI is simply not offered.
-    if (!r.usedUp) return null;
+    if (!r.notNow) return null;
     return (
       <div className="border-t border-border px-3.5 py-3">
         <span role="status" className="text-xs text-muted-foreground">
-          {r.usedUp}
+          {r.notNow}
         </span>
       </div>
     );

@@ -444,3 +444,53 @@ async def experiment_totals(db: AsyncSession) -> list[dict[str, Any]]:
         )
     ).all()
     return [dict(r._mapping) for r in rows]  # pyright: ignore[reportPrivateUsage]
+
+
+# AI (docs/content/ai-quotas-brief.md, decision 5): counts and cost from the AI request log, which
+# holds no prompt, no reply and no name.
+
+
+async def ai_use(db: AsyncSession, since_ms: int) -> list[dict[str, Any]]:
+    """Requests, cost and outcomes per feature since a time."""
+    rows = (
+        await db.execute(
+            text(
+                """
+                SELECT feature,
+                       count(*) AS requests,
+                       coalesce(sum(cost_microdollars), 0) AS cost_microdollars,
+                       count(*) FILTER (WHERE outcome = 'held') AS held,
+                       count(*) FILTER (WHERE outcome = 'cached') AS cached
+                FROM ai_requests
+                WHERE at >= to_timestamp(:since / 1000.0)
+                GROUP BY feature
+                """
+            ),
+            {"since": since_ms},
+        )
+    ).all()
+    return [dict(r._mapping) for r in rows]  # pyright: ignore[reportPrivateUsage]
+
+
+async def ai_budget_reached_at(db: AsyncSession, since_ms: int, budget: int) -> Any:
+    """When the spend since `since_ms` first reached `budget` (millionths of a dollar), if ever."""
+    return await db.scalar(
+        text(
+            """
+            SELECT at FROM (
+                SELECT at, sum(coalesce(cost_microdollars, 0)) OVER (ORDER BY at, id) AS spent
+                FROM ai_requests
+                WHERE at >= to_timestamp(:since / 1000.0)
+            ) s
+            WHERE spent >= :budget
+            ORDER BY at
+            LIMIT 1
+            """
+        ),
+        {"since": since_ms, "budget": budget},
+    )
+
+
+async def ai_switches(db: AsyncSession) -> dict[str, dict[str, Any]]:
+    rows = (await db.execute(text("SELECT name, enabled, changed_at FROM ai_switches"))).all()
+    return {r.name: {"enabled": r.enabled, "changed_at": r.changed_at} for r in rows}

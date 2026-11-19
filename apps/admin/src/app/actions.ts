@@ -2,7 +2,7 @@
 
 // Every change the portal makes is one admin API call, which checks the staff member's Access
 // token and writes the audit entry in the same transaction (ADR 0040).
-import type { ClassRow, MemberRow, QuestionReview } from "@pa/api-client";
+import type { AiSwitchState, ClassRow, MemberRow, QuestionReview } from "@pa/api-client";
 import { revalidatePath } from "next/cache";
 
 import { adminGet, adminPost } from "@/lib/api";
@@ -23,6 +23,19 @@ export async function setClassAi(
     reason: reason ?? null,
   });
   revalidatePath("/", "layout");
+  return done(r);
+}
+
+export async function setAiSwitch(
+  name: AiSwitchState["name"],
+  enabled: boolean,
+  reason?: string,
+): Promise<ActionResult<AiSwitchState[]>> {
+  const r = await adminPost<AiSwitchState[]>(`/admin/ai/switches/${encodeURIComponent(name)}`, {
+    enabled,
+    reason: reason ?? null,
+  });
+  revalidatePath("/ai");
   return done(r);
 }
 

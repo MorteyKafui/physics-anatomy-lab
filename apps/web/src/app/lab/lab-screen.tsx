@@ -145,7 +145,7 @@ import { backToPractice, startWhatIf, useAttempt, type AttemptHandle } from "./u
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
 
-import { canUse, useAiStatus, usedUp } from "./tutor/use-ai-status";
+import { canUse, useAiStatus, notNow } from "./tutor/use-ai-status";
 import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
 import { newSnapshotId, useSnapshots } from "./use-snapshots";
 import { UncertaintySwitch } from "./uncertainty-switch";
@@ -1122,7 +1122,7 @@ export function LabScreen() {
               }
               ai={{
                 on: canUse(aiStatus, "what-if"),
-                usedUp: usedUp(aiStatus, "what-if"),
+                notNow: notNow(aiStatus, "what-if"),
                 input: tutorInput,
               }}
             />

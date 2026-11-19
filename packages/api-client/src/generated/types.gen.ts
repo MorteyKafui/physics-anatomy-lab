@@ -65,6 +65,78 @@ export type AiContext = {
 };
 
 /**
+ * AiFeatureUse
+ */
+export type AiFeatureUse = {
+  feature: FeatureName;
+  /**
+   * Requests
+   */
+  requests: number;
+  /**
+   * Cost Microdollars
+   *
+   * Millionths of a US dollar.
+   */
+  cost_microdollars: number;
+  /**
+   * Held
+   */
+  held: number;
+  /**
+   * Cached
+   */
+  cached: number;
+};
+
+/**
+ * AiOverview
+ *
+ * The admin AI page (ai-quotas-brief.md, decision 5). Today is since midnight UTC.
+ */
+export type AiOverview = {
+  range: RangeInfo;
+  /**
+   * Today
+   */
+  today: Array<AiFeatureUse>;
+  /**
+   * By Feature
+   *
+   * Over the chosen range.
+   */
+  by_feature: Array<AiFeatureUse>;
+  /**
+   * Budget Microdollars
+   *
+   * AI_DAILY_BUDGET_USD, if set.
+   */
+  budget_microdollars: number | null;
+  /**
+   * Budget Reached At
+   *
+   * When today's spend reached it.
+   */
+  budget_reached_at: string | null;
+  /**
+   * Switches
+   */
+  switches: Array<AiSwitchState>;
+  /**
+   * Server Enabled
+   *
+   * AI_ENABLED, the server's master switch.
+   */
+  server_enabled: boolean;
+  /**
+   * Configured
+   *
+   * Whether the Anthropic key is set.
+   */
+  configured: boolean;
+};
+
+/**
  * AiStatus
  *
  * Whether this person may use AI now, and if not, why, in a sentence to show.
@@ -93,6 +165,56 @@ export type AiStatus = {
   used_up?: {
     [key in FeatureName]?: string;
   };
+  /**
+   * Switched Off
+   *
+   * Features switched off in the admin portal, each with the line to show.
+   */
+  switched_off?: {
+    [key in FeatureName]?: string;
+  };
+};
+
+/**
+ * AiSwitchChange
+ */
+export type AiSwitchChange = {
+  /**
+   * Enabled
+   */
+  enabled: boolean;
+  /**
+   * Reason
+   */
+  reason?: string | null;
+};
+
+/**
+ * AiSwitchState
+ */
+export type AiSwitchState = {
+  /**
+   * Name
+   */
+  name: "all" | "tutor" | "what-if" | "report-review" | "question-drafting";
+  /**
+   * Enabled
+   */
+  enabled: boolean;
+  /**
+   * Model
+   *
+   * The feature's model; none for the switch for all AI.
+   */
+  model: string | null;
+  /**
+   * Teachers Only
+   */
+  teachers_only: boolean;
+  /**
+   * Changed At
+   */
+  changed_at: string | null;
 };
 
 /**
@@ -4117,6 +4239,68 @@ export type AdminSetClassAiResponses = {
 };
 
 export type AdminSetClassAiResponse = AdminSetClassAiResponses[keyof AdminSetClassAiResponses];
+
+export type AdminAiData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Range
+     */
+    range?: "24h" | "7d" | "30d";
+  };
+  url: "/admin/ai";
+};
+
+export type AdminAiErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminAiError = AdminAiErrors[keyof AdminAiErrors];
+
+export type AdminAiResponses = {
+  /**
+   * Successful Response
+   */
+  200: AiOverview;
+};
+
+export type AdminAiResponse = AdminAiResponses[keyof AdminAiResponses];
+
+export type AdminSetAiSwitchData = {
+  body: AiSwitchChange;
+  path: {
+    /**
+     * Name
+     */
+    name: "all" | "tutor" | "what-if" | "report-review" | "question-drafting";
+  };
+  query?: never;
+  url: "/admin/ai/switches/{name}";
+};
+
+export type AdminSetAiSwitchErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminSetAiSwitchError = AdminSetAiSwitchErrors[keyof AdminSetAiSwitchErrors];
+
+export type AdminSetAiSwitchResponses = {
+  /**
+   * Response Adminsetaiswitch
+   *
+   * Successful Response
+   */
+  200: Array<AiSwitchState>;
+};
+
+export type AdminSetAiSwitchResponse = AdminSetAiSwitchResponses[keyof AdminSetAiSwitchResponses];
 
 export type AdminReplaceDisplayNameData = {
   body: DisplayNameChange;

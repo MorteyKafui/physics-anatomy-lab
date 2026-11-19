@@ -1,14 +1,16 @@
 // Audit log: every change made through the portal, and every export, who did it and when.
-import type { AuditPage } from "@pa/api-client";
+import type { AiSwitchState, AuditPage } from "@pa/api-client";
 import Link from "next/link";
 
 import { ApiProblem, Chip, Empty, Panel } from "@/components/bits";
 import { TopBar } from "@/components/topbar";
+import { switchName } from "@/lib/ai";
 import { adminGet, staffMe } from "@/lib/api";
 import { when } from "@/lib/format";
 
 const ACTIONS: Readonly<Record<string, string>> = {
   "class.ai.set": "Changed AI for a class",
+  "ai.switch.set": "Changed an AI switch",
   "member.display-name.replace": "Replaced a display name",
   "export.create": "Exported a table",
 };
@@ -18,6 +20,8 @@ function summary(action: string, detail: Record<string, unknown>): string {
   const reason = typeof detail.reason === "string" ? ` Reason: ${detail.reason}.` : "";
   if (action === "class.ai.set")
     return `AI ${detail.enabled ? "on" : "off"}, was ${detail.was ? "on" : "off"}.${reason}`;
+  if (action === "ai.switch.set")
+    return `${switchName(detail.name as AiSwitchState["name"])} ${detail.enabled ? "on" : "off"}, was ${detail.was ? "on" : "off"}.${reason}`;
   if (action === "export.create")
     return `${String(detail.report)}, ${String(detail.range)}, ${String(detail.rows)} rows.`;
   return reason.trim() || "–";

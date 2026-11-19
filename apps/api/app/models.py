@@ -566,6 +566,26 @@ class AiAnswer(Base):
     answer: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
 
+class AiSwitch(Base):
+    """A switch for all AI, or one feature (docs/content/ai-quotas-brief.md, decision 4).
+
+    A switch with no row is on. Staff change them in the admin portal; each change is audited
+    (admin_audit, ADR 0040), so this table keeps only the current state.
+    """
+
+    __tablename__ = "ai_switches"
+    __table_args__ = (
+        CheckConstraint(
+            "name IN ('all', 'tutor', 'what-if', 'report-review', 'question-drafting')",
+            name="name_known",
+        ),
+    )
+
+    name: Mapped[str] = mapped_column(Text, primary_key=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    changed_at: Mapped[datetime] = _now()
+
+
 class Question(Base):
     """A follow-up question for exam mode, drafted with Claude and edited by a teacher, in the bank
     once a reviewer approves it (docs/content/ai-questions-brief.md).
