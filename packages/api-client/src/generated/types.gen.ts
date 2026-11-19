@@ -3373,6 +3373,39 @@ export type TutorResponses = {
   200: unknown;
 };
 
+export type WhatIfData = {
+  body: AiContext;
+  path?: never;
+  query?: never;
+  url: "/ai/what-if";
+};
+
+export type WhatIfErrors = {
+  /**
+   * Signed out
+   */
+  401: unknown;
+  /**
+   * AI is off for this class
+   */
+  403: unknown;
+  /**
+   * What if is not ready for this experiment
+   */
+  422: unknown;
+  /**
+   * AI is switched off or not set up
+   */
+  503: unknown;
+};
+
+export type WhatIfResponses = {
+  /**
+   * One item (ADR 0043)
+   */
+  200: unknown;
+};
+
 export type StaffMeData = {
   body?: never;
   path?: never;

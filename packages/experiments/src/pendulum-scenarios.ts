@@ -10,21 +10,23 @@
  */
 import { periodExact, periodSmallAngle, placeById, type PlaceId } from "@pa/physics";
 
+import limits from "./pendulum-scenario-limits.json";
 import { simplePendulum } from "./simple-pendulum";
 
+// The limits are in a JSON file so the API checks an AI-drafted scenario against the same ones
+// (apps/api/app/ai/scenarios.py, whose test compares them). Why each limit is where it is:
+// length, a short thread to the tallest stand; amplitude, beyond 60° a thread may go slack in
+// practice; mass, any bob the lab has (it has no effect on the period, which is the point).
 export const PENDULUM_LIMITS = {
-  /** Pivot to the centre of the bob, m: a short thread to the tallest stand. */
-  length: { min: 0.1, max: 2, step: 0.01 },
-  /** Largest angle from the vertical, degrees. Beyond 60° a thread may go slack in practice. */
-  amplitudeDeg: { min: 1, max: 60, step: 1 },
-  /** The bob's mass, g. It has no effect on the period, which is the point of the slider. */
-  massG: { min: 10, max: 200, step: 10 },
+  length: limits.length,
+  amplitudeDeg: limits.amplitudeDeg,
+  massG: limits.massG,
 } as const;
 
 /** Below this the small-angle formula is within 0.2 % of the exact period (the WASSCE limit). */
 export const SMALL_ANGLE_DEG = 10;
 
-export const PENDULUM_PLACES: readonly PlaceId[] = ["earth", "moon", "mars", "jupiter"];
+export const PENDULUM_PLACES = limits.places as readonly PlaceId[];
 
 export interface PendulumScenario {
   readonly length: number;

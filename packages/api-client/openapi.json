@@ -2005,6 +2005,44 @@
         }
       }
     },
+    "/ai/what-if": {
+      "post": {
+        "tags": ["ai"],
+        "summary": "What If",
+        "description": "A what-if question turned into a scenario the experiment's model supports, as one item.",
+        "operationId": "whatIf",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiContext"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "One item (ADR 0043)",
+            "content": {
+              "text/event-stream": {}
+            }
+          },
+          "401": {
+            "description": "Signed out"
+          },
+          "403": {
+            "description": "AI is off for this class"
+          },
+          "422": {
+            "description": "What if is not ready for this experiment"
+          },
+          "503": {
+            "description": "AI is switched off or not set up"
+          }
+        }
+      }
+    },
     "/admin/me": {
       "get": {
         "tags": ["admin"],

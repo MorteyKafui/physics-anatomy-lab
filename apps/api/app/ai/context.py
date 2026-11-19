@@ -10,7 +10,7 @@ as data, and the API strips anything that could close that block early.
 """
 
 from dataclasses import dataclass, field
-from typing import Annotated, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
 from pydantic import Field, model_validator
 
@@ -125,6 +125,8 @@ class ModelRequest:
     effort: str
     system: list[dict[str, object]]
     messages: list[dict[str, object]] = field(default_factory=list[dict[str, object]])
+    # A JSON schema the reply must match (structured outputs), for features that answer with data.
+    output_schema: dict[str, Any] | None = None
 
 
 def _safe(text: str) -> str:
@@ -157,10 +159,15 @@ def _context_block(context: AiContext) -> str:
 
 
 def build_request(
-    feature: Feature, model: str, instructions: str, context: AiContext
+    feature: Feature,
+    model: str,
+    instructions: str,
+    context: AiContext,
+    output_schema: dict[str, Any] | None = None,
 ) -> ModelRequest:
     """The request for one feature. `instructions` is the feature's own, fixed system text."""
     return ModelRequest(
+        output_schema=output_schema,
         model=model,
         max_tokens=feature.max_tokens,
         effort=feature.effort,

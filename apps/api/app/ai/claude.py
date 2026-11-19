@@ -72,7 +72,14 @@ class AnthropicClaude:
             "max_tokens": request.max_tokens,
             "system": request.system,
             "messages": request.messages,
-            "output_config": {"effort": request.effort},
+            "output_config": {
+                "effort": request.effort,
+                **(
+                    {"format": {"type": "json_schema", "schema": request.output_schema}}
+                    if request.output_schema is not None
+                    else {}
+                ),
+            },
         }
         try:
             if request.model in FALLBACK_MODELS:
