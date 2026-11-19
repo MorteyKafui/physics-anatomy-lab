@@ -6,6 +6,7 @@ import type { enGBMethodOfMixtures } from "./en-GB-method-of-mixtures";
 import type { enGBOhmsLaw } from "./en-GB-ohms-law";
 import type { enGBPrivacy } from "./en-GB-privacy";
 import type { enGBTeach } from "./en-GB-teach";
+import type { enGBTutor } from "./en-GB-tutor";
 
 export { enGB };
 
@@ -20,7 +21,8 @@ export type MessageKey =
   | keyof typeof enGBConvergingLens
   | keyof typeof enGBMethodOfMixtures
   | keyof typeof enGBTeach
-  | keyof typeof enGBPrivacy;
+  | keyof typeof enGBPrivacy
+  | keyof typeof enGBTutor;
 
 const messages: Record<string, string> = { ...enGB };
 

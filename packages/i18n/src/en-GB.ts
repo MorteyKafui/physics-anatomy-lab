@@ -44,6 +44,12 @@ export const enGB = {
   "lab.coach.tryAgain": "Try again",
   "lab.coach.ask": "Check my work now",
   "lab.coach.allGood": "Nothing to fix in your timing so far.",
+  "lab.coach.askTab": "Ask",
+  "lab.help.label": "Help",
+  "lab.help.hint": "Give me a hint",
+  "lab.help.hintNote": "From the coach. Works offline.",
+  "lab.help.ask": "Ask the tutor",
+  "lab.help.askNote": "Online. It asks you a question first.",
 
   "lab.snapshot.take": "Snapshot",
   "lab.snapshot.label": "Take a snapshot",

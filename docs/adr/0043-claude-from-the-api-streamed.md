@@ -102,3 +102,12 @@ path the features will use.
   are item 4; until then `AI_ENABLED` is the one switch.
 - A student who deletes their work leaves pseudonymous log rows for up to 90 days. They hold no
   text and cannot be read back without the key.
+
+## Amendment, 2026-11-19: the tutor's held replies
+
+The tutor (`POST /ai/tutor`, `docs/content/ai-tutor-brief.md`) checks every number in its reply
+when the reply ends (`apps/api/app/ai/numbers.py`). A reply with a number that is not in the
+context, the student's words or plain counting ends with `refused` and the message that it has
+been hidden, and is logged with a new outcome, `held` (migration 0007). The stream's four events
+are unchanged. A tutor request also carries the thread so far (`thread`, at most ten turns,
+student and tutor in turn), which the device keeps in memory only.

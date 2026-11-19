@@ -17,6 +17,54 @@ export type AccountDelete = {
 };
 
 /**
+ * AiContext
+ */
+export type AiContext = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Experiment Version
+   */
+  experiment_version: number;
+  /**
+   * Step
+   */
+  step:
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report";
+  /**
+   * Help Level
+   */
+  help_level: "auto" | "check-my-work" | "on-my-own";
+  /**
+   * Events
+   */
+  events?: Array<ContextEvent>;
+  /**
+   * Quantities
+   */
+  quantities?: Array<Quantity>;
+  /**
+   * Student Text
+   */
+  student_text: string;
+  /**
+   * Thread
+   */
+  thread?: Array<ThreadTurn>;
+};
+
+/**
  * AiStatus
  *
  * Whether this person may use AI now, and if not, why, in a sentence to show.
@@ -638,6 +686,38 @@ export type ConsentsOut = {
    * Consents
    */
   consents: Array<ConsentState>;
+};
+
+/**
+ * ContextEvent
+ *
+ * One recent event of the attempt, as the device summarises it: what happened, not who.
+ */
+export type ContextEvent = {
+  /**
+   * Kind
+   */
+  kind: string;
+  /**
+   * Step
+   */
+  step:
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report";
+  /**
+   * Detail
+   */
+  detail?: {
+    [key: string]: unknown | boolean | number | number | string;
+  };
 };
 
 /**
@@ -1313,6 +1393,30 @@ export type PushedAttempt = {
 };
 
 /**
+ * Quantity
+ *
+ * A number worked out by packages/physics for this bench, with its unit.
+ */
+export type Quantity = {
+  /**
+   * Symbol
+   */
+  symbol: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Value
+   */
+  value: number;
+  /**
+   * Unit
+   */
+  unit: string;
+};
+
+/**
  * RangeInfo
  */
 export type RangeInfo = {
@@ -1782,6 +1886,22 @@ export type TeacherUpdate = {
    * Display Name
    */
   display_name: string;
+};
+
+/**
+ * ThreadTurn
+ *
+ * One earlier turn of a tutor thread. The thread lives only on the device (ADR 0043).
+ */
+export type ThreadTurn = {
+  /**
+   * Role
+   */
+  role: "student" | "tutor";
+  /**
+   * Text
+   */
+  text: string;
 };
 
 /**
@@ -3217,6 +3337,41 @@ export type AiStatusResponses = {
 };
 
 export type AiStatusResponse = AiStatusResponses[keyof AiStatusResponses];
+
+export type TutorData = {
+  body: AiContext;
+  path?: never;
+  query?: never;
+  url: "/ai/tutor";
+};
+
+export type TutorErrors = {
+  /**
+   * Signed out
+   */
+  401: unknown;
+  /**
+   * AI is off for this class
+   */
+  403: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * AI is switched off or not set up
+   */
+  503: unknown;
+};
+
+export type TutorError = TutorErrors[keyof TutorErrors];
+
+export type TutorResponses = {
+  /**
+   * The reply (ADR 0043)
+   */
+  200: unknown;
+};
 
 export type StaffMeData = {
   body?: never;

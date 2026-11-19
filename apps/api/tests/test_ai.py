@@ -1,21 +1,19 @@
 """Who may use AI, what is sent to Claude, and how the reply streams (ADR 0043)."""
 
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Any
 
 import pytest
 from httpx import AsyncClient
-from pydantic import SecretStr, ValidationError
+from pydantic import ValidationError
 
-from app.ai.claude import ClaudeError, get_claude
+from app.ai.claude import ClaudeError
 from app.ai.context import STUDENT_TAG
-from app.ai.log import get_ai_log
 from app.ai.prices import cost_microdollars
 from app.ai.stream import REFUSED
 from app.auth.email import LogSender
 from app.config import Settings, get_settings
-from app.main import app
 from tests.ai_fakes import TEST_KEY, FakeClaude, FakeLog, context, stream
 from tests.conftest import browser
 from tests.helpers import create_class, join, sign_in_teacher
@@ -24,30 +22,6 @@ from tests.helpers import create_class, join, sign_in_teacher
 STREAM_FIXTURE = (
     Path(__file__).parents[3] / "packages" / "api-client" / "test" / "fixtures" / "ai-stream.txt"
 )
-
-
-@pytest.fixture
-def ai_on(monkeypatch: pytest.MonkeyPatch) -> None:
-    settings = get_settings()
-    monkeypatch.setattr(settings, "ai_enabled", True)
-    monkeypatch.setattr(settings, "anthropic_api_key", SecretStr(TEST_KEY))
-
-
-@pytest.fixture
-def claude() -> Iterator[FakeClaude]:
-    fake = FakeClaude()
-    fake.reply("Start counting at ", "zero.")
-    app.dependency_overrides[get_claude] = lambda: fake
-    yield fake
-    app.dependency_overrides.pop(get_claude, None)
-
-
-@pytest.fixture
-def ai_log() -> Iterator[FakeLog]:
-    fake = FakeLog()
-    app.dependency_overrides[get_ai_log] = lambda: fake
-    yield fake
-    app.dependency_overrides.pop(get_ai_log, None)
 
 
 @pytest.fixture

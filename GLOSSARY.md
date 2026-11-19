@@ -120,6 +120,11 @@ request that introduces it.
 - **Broadcast.** One instruction from the teacher to every student in a live class.
 - **AI status.** Whether a person may use AI now, and if not, why: signed out, their class has
   AI off, AI is switched off, or it is not set up. The app shows AI buttons only when it is on.
+- **Tutor.** The coach panel's Ask tab: Claude answering a student's question about the current
+  step, asking a guiding question first, using only the bench's numbers. Online, never in an exam.
+- **Held reply.** A tutor reply hidden because it used a number that is not from the bench.
+- **Thread.** One student's questions and the tutor's replies on one step: at most six questions,
+  kept in memory on the device only, never saved or synced.
 - **AI request log.** One row per AI request: what it cost and how it ended, under a pseudonym,
   never what was asked or answered. Kept 90 days.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.

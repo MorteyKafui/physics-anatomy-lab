@@ -4,7 +4,8 @@ Four events, and nothing else is ever sent:
 
 - `text`: {"text": "..."}, a piece of the reply, in order.
 - `done`: {"cut_short": bool}, the reply is complete (or was cut at the length limit).
-- `refused`: {"message": "..."}, the model declined; discard any text already shown.
+- `refused`: {"message": "..."}, the model declined, or the reply failed its check (a number
+  not from the bench); discard any text already shown.
 - `error`: {"message": "...", "retry": bool}, no reply; `retry` says whether trying later may help.
 
 Exactly one of done, refused or error ends every stream. Each request is logged once, however it
@@ -14,7 +15,7 @@ ends, including when the browser goes away mid-reply.
 import asyncio
 import json
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from typing import Any
 
 import structlog
@@ -37,6 +38,13 @@ CUT_SHORT = frozenset({"max_tokens", "model_context_window_exceeded"})
 NOT_AVAILABLE = "AI help is not available right now. The coach still works offline."
 TOO_SLOW = "AI help took too long to answer. Try again in a moment."
 REFUSED = "AI help cannot answer that. Ask about the experiment, or use the coach's hints."
+HELD = (
+    "That answer used a number that is not from your bench, so it has been hidden. "
+    "Try asking again."
+)
+
+# Called with the whole reply when it ends; False holds it back (shown as `refused`).
+ReplyCheck = Callable[[str], bool]
 
 
 def _event(name: str, data: dict[str, Any]) -> ServerSentEvent:
@@ -49,8 +57,10 @@ async def reply_events(
     request: ModelRequest,
     claude: Claude,
     ai_log: AiLog,
+    check: ReplyCheck | None = None,
 ) -> AsyncIterator[ServerSentEvent]:
     started = time.monotonic()
+    written: list[str] = []
     finished: Finished | None = None
     outcome: Outcome = "error"
     try:
@@ -58,6 +68,7 @@ async def reply_events(
             async for piece in claude.stream(request):
                 if isinstance(piece, TextPiece):
                     if piece.text:
+                        written.append(piece.text)
                         yield _event("text", {"text": piece.text})
                 else:
                     finished = piece
@@ -66,6 +77,10 @@ async def reply_events(
         elif finished.stop_reason == "refusal":
             outcome = "refused"
             yield _event("refused", {"message": REFUSED})
+        elif check is not None and not check("".join(written)):
+            outcome = "held"
+            log.info("ai.held", feature=feature.name)
+            yield _event("refused", {"message": HELD})
         else:
             cut_short = finished.stop_reason in CUT_SHORT
             outcome = "cut-short" if cut_short else "done"
@@ -112,9 +127,10 @@ def reply_stream(
     request: ModelRequest,
     claude: Claude,
     ai_log: AiLog,
+    check: ReplyCheck | None = None,
 ) -> EventSourceResponse:
     return EventSourceResponse(
-        reply_events(feature, principal, request, claude, ai_log),
+        reply_events(feature, principal, request, claude, ai_log, check),
         ping=PING_SECONDS,
         headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
     )

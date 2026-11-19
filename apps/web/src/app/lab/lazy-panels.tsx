@@ -39,3 +39,5 @@ export const AnalysePanel = lazyPanel(() => import("./analyse").then((m) => m.An
 export const AnswerLine = lazyPanel(() => import("./analyse").then((m) => m.AnswerLine), false);
 export const Calculator = lazyPanel(() => import("./analyse").then((m) => m.Calculator), false);
 export const QuoteLine = lazyPanel(() => import("./analyse").then((m) => m.QuoteLine), false);
+// The tutor (ADR 0043) loads the first time its Ask tab is opened: most students never open it.
+export const TutorPanel = lazyPanel(() => import("./tutor/tutor-panel").then((m) => m.TutorPanel));

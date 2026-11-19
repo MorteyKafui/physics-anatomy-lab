@@ -23,7 +23,7 @@ AI_LOG_RETENTION = timedelta(days=90)
 # Used only where the settings allow AI without a log key: local and test (app/config.py).
 _LOCAL_KEY = b"physics-anatomy-local-ai-log-key"
 
-Outcome = Literal["done", "cut-short", "refused", "error", "cancelled"]
+Outcome = Literal["done", "cut-short", "refused", "held", "error", "cancelled"]
 
 
 def pseudonym(principal: Principal) -> bytes:

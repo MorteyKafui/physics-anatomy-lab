@@ -19,7 +19,9 @@ from app.ai.context import AiContext, build_request
 from app.ai.features import FEATURES, FeatureName
 from app.ai.log import AiLog, get_ai_log
 from app.ai.policy import MESSAGES, Unavailable, available_features, refuse, why_unavailable
-from app.ai.stream import reply_stream
+from app.ai.stream import ReplyCheck, reply_stream
+from app.ai.tutor import INSTRUCTIONS as TUTOR_INSTRUCTIONS
+from app.ai.tutor import tutor_check
 from app.auth.sessions import MaybePrincipal
 from app.config import get_settings
 from app.routes.load_test import TEST_ENVIRONMENTS
@@ -60,6 +62,7 @@ def ai_reply(
     instructions: str,
     claude: Claude | None,
     ai_log: AiLog,
+    check: ReplyCheck | None = None,
 ) -> EventSourceResponse:
     """The one way a feature calls Claude. Refuses with a plain HTTP error before streaming."""
     settings = get_settings()
@@ -71,7 +74,32 @@ def ai_reply(
         raise refuse(reason)
     assert principal is not None and claude is not None  # checked by why_unavailable
     request = build_request(feature, feature.model(settings), instructions, context)
-    return reply_stream(feature, principal, request, claude, ai_log)
+    return reply_stream(feature, principal, request, claude, ai_log, check)
+
+
+@router.post(
+    "/tutor",
+    response_class=EventSourceResponse,
+    responses={
+        200: {"content": {"text/event-stream": {}}, "description": "The reply (ADR 0043)"},
+        401: {"description": "Signed out"},
+        403: {"description": "AI is off for this class"},
+        503: {"description": "AI is switched off or not set up"},
+    },
+)
+async def tutor(
+    context: AiContext, principal: MaybePrincipal, claude: ClaudeDep, ai_log: AiLogDep
+) -> EventSourceResponse:
+    """The tutor's reply about the current step, streamed. Numbers not from the bench are held."""
+    return ai_reply(
+        FeatureName.tutor,
+        principal,
+        context,
+        TUTOR_INSTRUCTIONS,
+        claude,
+        ai_log,
+        tutor_check(context),
+    )
 
 
 TEST_INSTRUCTIONS = "Answer the student's question about this step in one or two sentences."

@@ -13,13 +13,17 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
+from pydantic import SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from app.ai.claude import get_claude
+from app.ai.log import get_ai_log
 from app.auth.email import LogSender, get_email_sender
 from app.config import get_settings
 from app.db import get_db
 from app.main import app
+from tests.ai_fakes import TEST_KEY, FakeClaude, FakeLog
 
 ORIGIN = get_settings().web_origin
 BASE_URL = "http://testserver"
@@ -88,3 +92,30 @@ def browser() -> AsyncClient:
 async def client(db: AsyncSession) -> AsyncIterator[AsyncClient]:
     async with browser() as c:
         yield c
+
+
+# AI (ADR 0043): a fake Claude and log, so no test calls the SDK or needs a key.
+
+
+@pytest.fixture
+def ai_on(monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = get_settings()
+    monkeypatch.setattr(settings, "ai_enabled", True)
+    monkeypatch.setattr(settings, "anthropic_api_key", SecretStr(TEST_KEY))
+
+
+@pytest.fixture
+def claude() -> Iterator[FakeClaude]:
+    fake = FakeClaude()
+    fake.reply("Start counting at ", "zero.")
+    app.dependency_overrides[get_claude] = lambda: fake
+    yield fake
+    app.dependency_overrides.pop(get_claude, None)
+
+
+@pytest.fixture
+def ai_log() -> Iterator[FakeLog]:
+    fake = FakeLog()
+    app.dependency_overrides[get_ai_log] = lambda: fake
+    yield fake
+    app.dependency_overrides.pop(get_ai_log, None)
