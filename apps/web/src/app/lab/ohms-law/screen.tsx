@@ -89,7 +89,16 @@ import {
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
 import { CheckItem, Rail, StepStrip } from "../parts";
-import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
+import {
+  AnswerLine,
+  Calculator,
+  GraphPanel,
+  QuoteLine,
+  TableBuilder,
+  TutorPanel,
+} from "../lazy-panels";
+import { HelpMenu } from "../tutor/help-menu";
+import { canUse, useAiStatus } from "../tutor/use-ai-status";
 import { showUncertainty } from "../uncertainty-format";
 import { UncertaintySwitch } from "../uncertainty-switch";
 import { useUncertainties } from "../use-uncertainties";
@@ -131,6 +140,10 @@ export function OhmsLawScreen() {
     [handle, router],
   );
   const [tab, setTab] = useState("instructions");
+  // AI (ADR 0043): asked once, off the critical path; the lab never waits for it.
+  const aiStatus = useAiStatus();
+  const showHint = useCallback(() => setTab("tips"), []);
+  const showAsk = useCallback(() => setTab("ask"), []);
   const [from, setFrom] = useState<Terminal>();
   const [pointer, setPointer] = useState<{ x: number; y: number }>();
   const [refusal, setRefusal] = useState<string>();
@@ -178,6 +191,17 @@ export function OhmsLawScreen() {
   }
 
   const state = handle.state;
+  // The tutor (docs/content/ai-tutor-brief.md): online, never in an exam. It is sent the step
+  // and the attempt's events as the tutor's context allows (tutor/context.ts), nothing hidden.
+  const tutorOn = coachIsOn(state) && canUse(aiStatus, "tutor");
+  const tutorInput = {
+    experimentId: E.id,
+    experimentVersion: E.version,
+    step: state.step,
+    helpLevel: state.helpLevel,
+    events: handle.events,
+    quantities: [],
+  };
   const stepIndex = STEPS.indexOf(state.step);
   const percent = Math.round((state.completed.length / STEPS.length) * 100);
   const next = STEPS[stepIndex + 1];
@@ -535,7 +559,18 @@ export function OhmsLawScreen() {
 
   return (
     <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
-      <Rail current="lab" />
+      <Rail
+        current="lab"
+        help={
+          <HelpMenu
+            status={aiStatus}
+            onHint={showHint}
+            onAsk={showAsk}
+            coachOn={coachIsOn(state)}
+            place="rail"
+          />
+        }
+      />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
           <Link
@@ -589,6 +624,13 @@ export function OhmsLawScreen() {
             </label>
           )}
           {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
+          <HelpMenu
+            status={aiStatus}
+            onHint={showHint}
+            onAsk={showAsk}
+            coachOn={coachIsOn(state)}
+            place="header"
+          />
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&
@@ -907,6 +949,14 @@ export function OhmsLawScreen() {
                     {t(`lab.coach.${v}`)}
                   </TabsTrigger>
                 ))}
+                {tutorOn && (
+                  <TabsTrigger
+                    value="ask"
+                    className="flex-none px-0 py-3.5 text-sm after:bg-primary"
+                  >
+                    {t("lab.coach.askTab")}
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               <TabsContent value="instructions" className="flex flex-col gap-3.5 p-5">
@@ -1217,6 +1267,11 @@ export function OhmsLawScreen() {
                   ))}
                 </ul>
               </TabsContent>
+              {tutorOn && (
+                <TabsContent value="ask" className="flex min-h-[420px] flex-col">
+                  <TutorPanel key={state.step} stepName={stepName(state.step)} input={tutorInput} />
+                </TabsContent>
+              )}
             </Tabs>
           </aside>
         </div>

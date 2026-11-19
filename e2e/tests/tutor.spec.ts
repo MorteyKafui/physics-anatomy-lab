@@ -40,7 +40,7 @@ async function mockAi(page: Page, status: object, body = REPLY): Promise<Request
 test("a student asks the tutor from the help menu and reads the reply", async ({ page }) => {
   const asked = await mockAi(page, ON);
   await page.goto(LAB);
-  await page.getByRole("button", { name: "Help" }).click();
+  await page.getByRole("button", { name: "Help" }).filter({ visible: true }).click();
   await page.getByRole("button", { name: /Ask the tutor/ }).click();
   await expect(page.getByRole("heading", { name: "Ask about this step" })).toBeVisible();
   await expect(page.getByText("6 of 6 questions left on this step")).toBeVisible();
@@ -84,7 +84,7 @@ test("with AI off for the class, the help menu says why and there is no Ask tab"
 }) => {
   await mockAi(page, CLASS_OFF);
   await page.goto(LAB);
-  await page.getByRole("button", { name: "Help" }).click();
+  await page.getByRole("button", { name: "Help" }).filter({ visible: true }).click();
   await expect(page.getByText(CLASS_OFF.message)).toBeVisible();
   await expect(page.getByRole("tab", { name: "Ask" })).toHaveCount(0);
 });
@@ -92,8 +92,28 @@ test("with AI off for the class, the help menu says why and there is no Ask tab"
 test("signed out or offline, the lab works and offers no tutor", async ({ page }) => {
   await page.route("**/api/ai/status", (route) => route.abort());
   await page.goto(LAB);
-  await page.getByRole("button", { name: "Help" }).click();
+  await page.getByRole("button", { name: "Help" }).filter({ visible: true }).click();
   await expect(page.getByRole("button", { name: /Give me a hint/ })).toBeVisible();
   await expect(page.getByText("Ask the tutor")).toHaveCount(0);
   await expect(page.getByRole("tab", { name: "Ask" })).toHaveCount(0);
 });
+
+// Every lab has the tutor, sending its own experiment and the step the student is on.
+for (const id of [
+  "ohms-law",
+  "converging-lens",
+  "converging-lens-pins",
+  "method-of-mixtures",
+  "method-of-mixtures-solid",
+]) {
+  test(`the tutor answers in the ${id} lab`, async ({ page }) => {
+    const asked = await mockAi(page, ON);
+    await page.goto(`${WEB}/lab/${id}`);
+    await page.getByRole("button", { name: "Help" }).filter({ visible: true }).click();
+    await page.getByRole("button", { name: /Ask the tutor/ }).click();
+    await page.getByLabel("Your question").fill("What do I do first?");
+    await page.getByRole("button", { name: "Send" }).click();
+    await expect(page.getByText("Start counting at zero.", { exact: false })).toBeVisible();
+    expect(asked[0]?.postDataJSON()).toMatchObject({ experiment_id: id, step: "question" });
+  });
+}
