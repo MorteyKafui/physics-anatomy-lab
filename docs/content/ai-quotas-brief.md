@@ -13,8 +13,9 @@ every deployed server (item 2, decision 1). The plan says:
 
 The models per feature and prompt caching are already in place (items 1 and 2).
 
-- **Status:** draft for Mortey's approval. Decisions 1 to 7; the questions for Mortey are marked
-  **Choose**.
+- **Status:** approved by Mortey on 2026-11-19: decisions 1 to 7 as proposed. The quotas are the
+  table's; the daily budget is the monthly AI ceiling ÷ 30, set when the ceiling is chosen; the
+  switches are in our own database.
 
 ## The decisions
 
@@ -32,7 +33,7 @@ time it resets. Replies served from the cache (decision 3) do not count.
 | Report review     | 5                | 20                                   |
 | Question drafting | none             | 20 (replaces item 3's interim limit) |
 
-**Choose:** these numbers, or others. They are settings, so they can change without a release.
+They are settings, so they can change without a release.
 
 ### 2. Per address, and a daily budget
 
@@ -41,8 +42,8 @@ time it resets. Replies served from the cache (decision 3) do not count.
 - **A daily spend budget** (`AI_DAILY_BUDGET_USD`): when the day's cost in the log passes it, AI
   switches itself off until midnight for everyone, with the line "AI help has reached today's
   limit. The coach still works." The portal shows it, and the alert fires (master plan,
-  "Alerts"). **Choose:** the budget, from the monthly ceiling the plan still lists as open.
-  Proposed: monthly ceiling ÷ 30.
+  "Alerts"). The budget is the monthly AI ceiling (still open in the plan) ÷ 30. A deployed
+  server with AI on refuses to start without it.
 
 ### 3. Caching answers
 
@@ -63,9 +64,8 @@ time it resets. Replies served from the cache (decision 3) do not count.
   (ADR 0040) with undo. Off means the feature's routes answer "switched off" at once (a few
   seconds at most: the API reads the switches with a 10-second cache) and the app hides it.
 - `AI_ENABLED` stays the server's master switch; the portal's switches work beneath it.
-- **Choose:** the flags in our own database (proposed: no extra service, instant, audited with
-  the rest), or in PostHog, which the plan names for product feature flags. PostHog stays planned
-  for product analytics and pilot rollouts in Phase 6.
+- The switches are in our own database: no extra service, instant, audited with the rest.
+  PostHog stays planned for product analytics and pilot rollouts in Phase 6.
 
 ### 5. The admin portal's AI page
 
