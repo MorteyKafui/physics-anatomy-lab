@@ -21,22 +21,30 @@ export const simplePendulum = {
   stopwatch: STOPWATCH,
 } as const;
 
-/** The true period of the bench pendulum, s, at a length (m) in a room with field strength g. */
-export function benchPeriod(g: number, length: number = simplePendulum.length): number {
-  return periodExact({
-    length,
-    g,
-    amplitude: (simplePendulum.amplitudeDeg * Math.PI) / 180,
-  });
+/**
+ * The true period of the bench pendulum, s, at a length (m) in a room with field strength g, and
+ * a swing of amplitudeDeg (the lab's 8°, or a what-if scenario's).
+ */
+export function benchPeriod(
+  g: number,
+  length: number = simplePendulum.length,
+  amplitudeDeg: number = simplePendulum.amplitudeDeg,
+): number {
+  return periodExact({ length, g, amplitude: (amplitudeDeg * Math.PI) / 180 });
 }
 
 /**
  * The bob's angle from the vertical at time t, radians: θ₀ cos(2πt / T), started at the far
  * left of its swing. The period is the exact one; the cosine shape is the small-angle motion,
- * which differs from the exact motion by less than 0.1% at 8°.
+ * which differs from the exact motion by less than 0.1% at 8°. A what-if scenario's wide swing
+ * keeps the exact period (so its timings are right) with this shape, drawn only.
  */
-export function bobAngle(t: number, period: number): number {
-  return ((simplePendulum.amplitudeDeg * Math.PI) / 180) * -Math.cos((2 * Math.PI * t) / period);
+export function bobAngle(
+  t: number,
+  period: number,
+  amplitudeDeg: number = simplePendulum.amplitudeDeg,
+): number {
+  return ((amplitudeDeg * Math.PI) / 180) * -Math.cos((2 * Math.PI * t) / period);
 }
 
 /**

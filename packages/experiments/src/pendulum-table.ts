@@ -2,6 +2,7 @@ import { addRepeat, type DesignColumn, type TableDesign } from "@pa/analysis";
 import type { Json, LabEvent, NewEvent, Projection } from "@pa/engine";
 import { METRE_RULE } from "@pa/instruments";
 
+import { checkScenario } from "./pendulum-scenarios";
 import { simplePendulum } from "./simple-pendulum";
 
 /**
@@ -22,6 +23,11 @@ const onStep = (l: number) =>
 export const lengthProjection: Projection<number> = {
   initial: () => simplePendulum.length,
   apply(length, e: LabEvent) {
+    // A what-if attempt starts at its scenario's length, which may lie between the bench's steps.
+    if (e.kind === "scenario.set") {
+      const s = checkScenario(e.data);
+      return s ? Number(s.length.toFixed(3)) : length;
+    }
     if (e.kind !== "pendulum.set-length") return length;
     const l = (e.data as Record<string, Json> | null)?.length;
     return typeof l === "number" && onStep(l) ? Number(l.toFixed(3)) : length;

@@ -464,6 +464,9 @@ export {
   PENDULUM_LIMITS,
   PENDULUM_PLACES,
   predictPendulum,
+  scenarioEvent,
+  scenarioProjection,
   SMALL_ANGLE_DEG,
+  whatIfStart,
 } from "./pendulum-scenarios";
 export type { PendulumPrediction, PendulumScenario } from "./pendulum-scenarios";

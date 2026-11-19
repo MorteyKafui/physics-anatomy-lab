@@ -78,7 +78,7 @@ function violations(s: GuidedState, recordedEver: Set<string>): string[] {
 }
 
 describe("model check: every reachable state, every mode", () => {
-  for (const mode of ["guided", "exam", "own-data"] as const) {
+  for (const mode of ["guided", "exam", "own-data", "what-if"] as const) {
     test(`${mode}: the four rules hold everywhere, and the report is always reachable`, () => {
       const start = initialGuidedState(attemptIn(mode));
       const states = new Map<string, GuidedState>([[key(start), start]]);
@@ -215,7 +215,7 @@ describe("the projection never breaks a rule, whatever events it is given", () =
   test("random, tampered or out-of-order event lists", () => {
     fc.assert(
       fc.property(
-        fc.constantFrom("guided", "exam", "own-data" as const),
+        fc.constantFrom("guided", "exam", "own-data", "what-if" as const),
         fc.array(eventArb, { maxLength: 60 }),
         (mode, news) => {
           const events = news.map((n, i): LabEvent => ({

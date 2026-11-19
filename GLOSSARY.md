@@ -131,6 +131,9 @@ request that introduces it.
 - **Report review.** Notes from Claude on the conclusion, precautions, sources of error and
   discussion of a report, each on the student's own words and the report rule it relies on. They
   sit beside the report, are not saved and never change it.
+- **What-if attempt.** A scenario opened on the bench: an attempt in mode `what-if` that starts at
+  Measure with the bench built. It is not marked, has no conclusion or report, and is left out of
+  a teacher's mistakes and progress. The student's practice run is kept.
 - **AI request log.** One row per AI request: what it cost and how it ended, under a pseudonym,
   never what was asked or answered. Kept 90 days.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.
