@@ -5,6 +5,18 @@ export type ClientOptions = {
 };
 
 /**
+ * AccountDelete
+ */
+export type AccountDelete = {
+  /**
+   * Confirm Email
+   *
+   * The teacher types their email to confirm.
+   */
+  confirm_email: string;
+};
+
+/**
  * AttemptBatch
  */
 export type AttemptBatch = {
@@ -31,6 +43,27 @@ export type AttemptEventsPage = {
    * More
    */
   more: boolean;
+};
+
+/**
+ * AttemptFile
+ *
+ * The lab's attempt file: import it on any device to rebuild the attempt.
+ */
+export type AttemptFile = {
+  /**
+   * Format
+   */
+  format?: "physics-anatomy/attempt";
+  /**
+   * Version
+   */
+  version?: 1;
+  attempt: AttemptHeader;
+  /**
+   * Events
+   */
+  events: Array<SyncEvent>;
 };
 
 /**
@@ -461,6 +494,120 @@ export type ClassUpdate = {
 };
 
 /**
+ * ConsentChoice
+ */
+export type ConsentChoice = {
+  /**
+   * Purpose
+   */
+  purpose: "terms" | "privacy" | "analytics";
+  /**
+   * Version
+   *
+   * The version shown to the person. It must be the current one.
+   */
+  version: string;
+  /**
+   * Granted
+   */
+  granted: boolean;
+};
+
+/**
+ * ConsentRecord
+ */
+export type ConsentRecord = {
+  /**
+   * Purpose
+   */
+  purpose: "terms" | "privacy" | "analytics";
+  /**
+   * Version
+   */
+  version: string;
+  /**
+   * Granted
+   */
+  granted: boolean;
+  /**
+   * Via
+   */
+  via: "sign-in" | "join" | "choice";
+  /**
+   * Recorded At
+   */
+  recorded_at: string;
+};
+
+/**
+ * ConsentState
+ */
+export type ConsentState = {
+  /**
+   * Purpose
+   */
+  purpose: "terms" | "privacy" | "analytics";
+  /**
+   * Document
+   *
+   * The document this purpose is governed by.
+   */
+  document: string;
+  /**
+   * Required
+   *
+   * Terms and privacy are required; analytics is optional.
+   */
+  required: boolean;
+  /**
+   * Current Version
+   */
+  current_version: string;
+  /**
+   * Upcoming Version
+   *
+   * A new version in its notice period: tell the person before it applies.
+   */
+  upcoming_version: string | null;
+  /**
+   * Upcoming From
+   */
+  upcoming_from: string | null;
+  /**
+   * Granted
+   *
+   * The latest choice on record; null if none.
+   */
+  granted: boolean | null;
+  /**
+   * Version
+   *
+   * The version that choice was made on.
+   */
+  version: string | null;
+  /**
+   * Recorded At
+   */
+  recorded_at: string | null;
+  /**
+   * Needs Agreement
+   *
+   * A required document's current version has not been agreed to yet.
+   */
+  needs_agreement: boolean;
+};
+
+/**
+ * ConsentsOut
+ */
+export type ConsentsOut = {
+  /**
+   * Consents
+   */
+  consents: Array<ConsentState>;
+};
+
+/**
  * DisplayNameChange
  */
 export type DisplayNameChange = {
@@ -561,6 +708,26 @@ export type ExperimentUse = {
 };
 
 /**
+ * ExportAttemptsPage
+ */
+export type ExportAttemptsPage = {
+  /**
+   * Attempts
+   */
+  attempts: Array<AttemptFile>;
+  /**
+   * Cursor
+   *
+   * Pass as `after` for the next page. Opaque.
+   */
+  cursor: string;
+  /**
+   * More
+   */
+  more: boolean;
+};
+
+/**
  * ExportRequest
  */
 export type ExportRequest = {
@@ -576,6 +743,46 @@ export type ExportRequest = {
    * Experiment Id
    */
   experiment_id?: string | null;
+};
+
+/**
+ * ExportedClass
+ *
+ * A teacher's class. Its students' names and work are theirs, so they are not in it.
+ */
+export type ExportedClass = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Joining Open
+   */
+  joining_open: boolean;
+  /**
+   * Ai Enabled
+   */
+  ai_enabled: boolean;
+  /**
+   * School Permission Confirmed At
+   */
+  school_permission_confirmed_at: string;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Students
+   */
+  students: number;
 };
 
 /**
@@ -1222,6 +1429,54 @@ export type StudentCounts = {
 };
 
 /**
+ * StudentExport
+ */
+export type StudentExport = {
+  /**
+   * Format
+   */
+  format?: "physics-anatomy/export";
+  /**
+   * Version
+   */
+  version?: 1;
+  /**
+   * Kind
+   */
+  kind?: "student";
+  /**
+   * Exported At
+   */
+  exported_at: string;
+  /**
+   * Display Name
+   */
+  display_name: string;
+  /**
+   * Class Name
+   */
+  class_name: string;
+  /**
+   * Teacher Name
+   */
+  teacher_name: string | null;
+  /**
+   * Joined At
+   */
+  joined_at: string;
+  /**
+   * Consents
+   */
+  consents: Array<ConsentRecord>;
+  /**
+   * Attempts
+   *
+   * How many attempts the pages of attempt files hold.
+   */
+  attempts: number;
+};
+
+/**
  * StudentMe
  */
 export type StudentMe = {
@@ -1341,6 +1596,62 @@ export type TableSize = {
    * Bytes
    */
   bytes: number;
+};
+
+/**
+ * TeacherExport
+ */
+export type TeacherExport = {
+  /**
+   * Format
+   */
+  format?: "physics-anatomy/export";
+  /**
+   * Version
+   */
+  version?: 1;
+  /**
+   * Kind
+   */
+  kind?: "teacher";
+  /**
+   * Exported At
+   */
+  exported_at: string;
+  /**
+   * Email
+   */
+  email: string;
+  /**
+   * Display Name
+   */
+  display_name: string | null;
+  /**
+   * Google Linked
+   */
+  google_linked: boolean;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Last Signed In At
+   */
+  last_signed_in_at: string | null;
+  /**
+   * Consents
+   */
+  consents: Array<ConsentRecord>;
+  /**
+   * Classes
+   */
+  classes: Array<ExportedClass>;
+  /**
+   * Attempts
+   *
+   * How many attempts the pages at /export/attempts hold.
+   */
+  attempts: number;
 };
 
 /**
@@ -2200,6 +2511,259 @@ export type GetClassProgressResponses = {
 };
 
 export type GetClassProgressResponse = GetClassProgressResponses[keyof GetClassProgressResponses];
+
+export type GetConsentsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/consents";
+};
+
+export type GetConsentsResponses = {
+  /**
+   * Successful Response
+   */
+  200: ConsentsOut;
+};
+
+export type GetConsentsResponse = GetConsentsResponses[keyof GetConsentsResponses];
+
+export type RecordConsentData = {
+  body: ConsentChoice;
+  path?: never;
+  query?: never;
+  url: "/consents";
+};
+
+export type RecordConsentErrors = {
+  /**
+   * Not something this person is asked about
+   */
+  403: unknown;
+  /**
+   * That version is not the current one
+   */
+  409: unknown;
+  /**
+   * A required document cannot be withdrawn
+   */
+  422: unknown;
+};
+
+export type RecordConsentResponses = {
+  /**
+   * Successful Response
+   */
+  200: ConsentsOut;
+};
+
+export type RecordConsentResponse = RecordConsentResponses[keyof RecordConsentResponses];
+
+export type ExportMineData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/export";
+};
+
+export type ExportMineResponses = {
+  /**
+   * Response Exportmine
+   *
+   * Successful Response
+   */
+  200:
+    | ({
+        kind: "teacher";
+      } & TeacherExport)
+    | ({
+        kind: "student";
+      } & StudentExport);
+};
+
+export type ExportMineResponse = ExportMineResponses[keyof ExportMineResponses];
+
+export type ExportMyAttemptsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * After
+     *
+     * The cursor from the last page.
+     */
+    after?: string | null;
+  };
+  url: "/export/attempts";
+};
+
+export type ExportMyAttemptsErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ExportMyAttemptsError = ExportMyAttemptsErrors[keyof ExportMyAttemptsErrors];
+
+export type ExportMyAttemptsResponses = {
+  /**
+   * Successful Response
+   */
+  200: ExportAttemptsPage;
+};
+
+export type ExportMyAttemptsResponse = ExportMyAttemptsResponses[keyof ExportMyAttemptsResponses];
+
+export type ExportMemberData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+    /**
+     * Member Id
+     */
+    member_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/members/{member_id}/export";
+};
+
+export type ExportMemberErrors = {
+  /**
+   * No such class or student of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ExportMemberError = ExportMemberErrors[keyof ExportMemberErrors];
+
+export type ExportMemberResponses = {
+  /**
+   * Successful Response
+   */
+  200: StudentExport;
+};
+
+export type ExportMemberResponse = ExportMemberResponses[keyof ExportMemberResponses];
+
+export type ExportMemberAttemptsData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+    /**
+     * Member Id
+     */
+    member_id: string;
+  };
+  query?: {
+    /**
+     * After
+     *
+     * The cursor from the last page.
+     */
+    after?: string | null;
+  };
+  url: "/classes/{class_id}/members/{member_id}/export/attempts";
+};
+
+export type ExportMemberAttemptsErrors = {
+  /**
+   * No such class or student of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ExportMemberAttemptsError =
+  ExportMemberAttemptsErrors[keyof ExportMemberAttemptsErrors];
+
+export type ExportMemberAttemptsResponses = {
+  /**
+   * Successful Response
+   */
+  200: ExportAttemptsPage;
+};
+
+export type ExportMemberAttemptsResponse =
+  ExportMemberAttemptsResponses[keyof ExportMemberAttemptsResponses];
+
+export type RemoveMemberData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+    /**
+     * Member Id
+     */
+    member_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/members/{member_id}";
+};
+
+export type RemoveMemberErrors = {
+  /**
+   * No such class or student of yours
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type RemoveMemberError = RemoveMemberErrors[keyof RemoveMemberErrors];
+
+export type RemoveMemberResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type RemoveMemberResponse = RemoveMemberResponses[keyof RemoveMemberResponses];
+
+export type DeleteAccountData = {
+  body: AccountDelete;
+  path?: never;
+  query?: never;
+  url: "/account/delete";
+};
+
+export type DeleteAccountErrors = {
+  /**
+   * Sign in again first
+   */
+  403: unknown;
+  /**
+   * The email does not match
+   */
+  422: unknown;
+};
+
+export type DeleteAccountResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type DeleteAccountResponse = DeleteAccountResponses[keyof DeleteAccountResponses];
 
 export type GetLiveData = {
   body?: never;

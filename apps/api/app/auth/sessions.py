@@ -11,6 +11,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import HTTPConnection
 
+from app import consents
 from app.auth.codes import hash_secret, new_token
 from app.auth.policy import (
     SESSION_TOUCH_EVERY,
@@ -110,6 +111,8 @@ async def start_teacher_session(
 ) -> None:
     await _start(db, request, response, user_id=user.id)
     user.last_signed_in_at = datetime.now(UTC)
+    # The sign-in screen says signing in is agreeing to the terms and privacy policy (ADR 0042).
+    await consents.record_required(db, user_id=user.id, via="sign-in")
     log.info("auth.signed_in", kind="teacher", user_id=str(user.id))
 
 

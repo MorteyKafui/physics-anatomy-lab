@@ -10,6 +10,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app import consents
 from app.auth import rate_limit
 from app.auth.codes import (
     hash_secret,
@@ -265,6 +266,8 @@ async def join_class(body: JoinRequest, request: Request, response: Response, db
             detail="Someone in this class already uses that name. Pick another.",
         ) from error
     await db.refresh(member)
+    # The join screen's tick box: agreeing to the current terms and privacy policy (ADR 0042).
+    await consents.record_required(db, member_id=member.id, via="join")
     log.info("join.joined", class_id=str(row.id), member_id=str(member.id))
     await start_student_session(db, request, response, member)
     return student_me(member, row)

@@ -1087,6 +1087,352 @@
         }
       }
     },
+    "/consents": {
+      "get": {
+        "tags": ["privacy"],
+        "summary": "Get Consents",
+        "description": "What this person has agreed to, against the current versions, and any notice running.",
+        "operationId": "getConsents",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentsOut"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["privacy"],
+        "summary": "Record Consent",
+        "description": "Agree to the current version of a document, or give or withdraw analytics consent.",
+        "operationId": "recordConsent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentChoice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentsOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not something this person is asked about"
+          },
+          "409": {
+            "description": "That version is not the current one"
+          },
+          "422": {
+            "description": "A required document cannot be withdrawn"
+          }
+        }
+      }
+    },
+    "/export": {
+      "get": {
+        "tags": ["privacy"],
+        "summary": "Export Mine",
+        "description": "Everything the server holds about this person; their attempts follow in pages.",
+        "operationId": "exportMine",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/TeacherExport"
+                    },
+                    {
+                      "$ref": "#/components/schemas/StudentExport"
+                    }
+                  ],
+                  "title": "Response Exportmine",
+                  "discriminator": {
+                    "propertyName": "kind",
+                    "mapping": {
+                      "teacher": "#/components/schemas/TeacherExport",
+                      "student": "#/components/schemas/StudentExport"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/export/attempts": {
+      "get": {
+        "tags": ["privacy"],
+        "summary": "Export My Attempts",
+        "description": "This person's attempts as attempt files, a page at a time.",
+        "operationId": "exportMyAttempts",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The cursor from the last page.",
+              "title": "After"
+            },
+            "description": "The cursor from the last page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportAttemptsPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/members/{member_id}/export": {
+      "get": {
+        "tags": ["privacy"],
+        "summary": "Export Member",
+        "description": "One student's data, for a parent's or the student's request; attempts follow in pages.",
+        "operationId": "exportMember",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentExport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class or student of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/members/{member_id}/export/attempts": {
+      "get": {
+        "tags": ["privacy"],
+        "summary": "Export Member Attempts",
+        "operationId": "exportMemberAttempts",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The cursor from the last page.",
+              "title": "After"
+            },
+            "description": "The cursor from the last page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportAttemptsPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class or student of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/members/{member_id}": {
+      "delete": {
+        "tags": ["privacy"],
+        "summary": "Remove Member",
+        "description": "Remove a student and delete everything of theirs: attempts, consents, sessions, benches.\n\nPermanent, at once. Their devices keep their own copy of the work (offline first).",
+        "operationId": "removeMember",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "No such class or student of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/delete": {
+      "post": {
+        "tags": ["privacy"],
+        "summary": "Delete Account",
+        "description": "Delete this teacher's account with their classes, students and all their work. Permanent.\n\nThe teacher types their email to confirm, and must have signed in within the last hour.",
+        "operationId": "deleteAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountDelete"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Sign in again first"
+          },
+          "422": {
+            "description": "The email does not match"
+          }
+        }
+      }
+    },
     "/classes/{class_id}/live": {
       "post": {
         "tags": ["live"],
@@ -2051,6 +2397,20 @@
   },
   "components": {
     "schemas": {
+      "AccountDelete": {
+        "properties": {
+          "confirm_email": {
+            "type": "string",
+            "format": "email",
+            "title": "Confirm Email",
+            "description": "The teacher types their email to confirm."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["confirm_email"],
+        "title": "AccountDelete"
+      },
       "AttemptBatch": {
         "properties": {
           "attempt": {
@@ -2090,6 +2450,37 @@
         "type": "object",
         "required": ["events", "cursor", "more"],
         "title": "AttemptEventsPage"
+      },
+      "AttemptFile": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "const": "physics-anatomy/attempt",
+            "title": "Format",
+            "default": "physics-anatomy/attempt"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Version",
+            "default": 1
+          },
+          "attempt": {
+            "$ref": "#/components/schemas/AttemptHeader"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SyncEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["attempt", "events"],
+        "title": "AttemptFile",
+        "description": "The lab's attempt file: import it on any device to rebuild the attempt."
       },
       "AttemptHeader": {
         "properties": {
@@ -2700,6 +3091,176 @@
         "type": "object",
         "title": "ClassUpdate"
       },
+      "ConsentChoice": {
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": ["terms", "privacy", "analytics"],
+            "title": "Purpose"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Version",
+            "description": "The version shown to the person. It must be the current one."
+          },
+          "granted": {
+            "type": "boolean",
+            "title": "Granted"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["purpose", "version", "granted"],
+        "title": "ConsentChoice"
+      },
+      "ConsentRecord": {
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": ["terms", "privacy", "analytics"],
+            "title": "Purpose"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "granted": {
+            "type": "boolean",
+            "title": "Granted"
+          },
+          "via": {
+            "type": "string",
+            "enum": ["sign-in", "join", "choice"],
+            "title": "Via"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recorded At"
+          }
+        },
+        "type": "object",
+        "required": ["purpose", "version", "granted", "via", "recorded_at"],
+        "title": "ConsentRecord"
+      },
+      "ConsentState": {
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": ["terms", "privacy", "analytics"],
+            "title": "Purpose"
+          },
+          "document": {
+            "type": "string",
+            "title": "Document",
+            "description": "The document this purpose is governed by."
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "description": "Terms and privacy are required; analytics is optional."
+          },
+          "current_version": {
+            "type": "string",
+            "title": "Current Version"
+          },
+          "upcoming_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upcoming Version",
+            "description": "A new version in its notice period: tell the person before it applies."
+          },
+          "upcoming_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upcoming From"
+          },
+          "granted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Granted",
+            "description": "The latest choice on record; null if none."
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version",
+            "description": "The version that choice was made on."
+          },
+          "recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded At"
+          },
+          "needs_agreement": {
+            "type": "boolean",
+            "title": "Needs Agreement",
+            "description": "A required document's current version has not been agreed to yet."
+          }
+        },
+        "type": "object",
+        "required": [
+          "purpose",
+          "document",
+          "required",
+          "current_version",
+          "upcoming_version",
+          "upcoming_from",
+          "granted",
+          "version",
+          "recorded_at",
+          "needs_agreement"
+        ],
+        "title": "ConsentState"
+      },
+      "ConsentsOut": {
+        "properties": {
+          "consents": {
+            "items": {
+              "$ref": "#/components/schemas/ConsentState"
+            },
+            "type": "array",
+            "title": "Consents"
+          }
+        },
+        "type": "object",
+        "required": ["consents"],
+        "title": "ConsentsOut"
+      },
       "DisplayNameChange": {
         "properties": {
           "display_name": {
@@ -2835,6 +3396,30 @@
         ],
         "title": "ExperimentUse"
       },
+      "ExportAttemptsPage": {
+        "properties": {
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/AttemptFile"
+            },
+            "type": "array",
+            "title": "Attempts"
+          },
+          "cursor": {
+            "type": "string",
+            "title": "Cursor",
+            "description": "Pass as `after` for the next page. Opaque."
+          },
+          "more": {
+            "type": "boolean",
+            "title": "More"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["attempts", "cursor", "more"],
+        "title": "ExportAttemptsPage"
+      },
       "ExportRequest": {
         "properties": {
           "report": {
@@ -2864,6 +3449,58 @@
         "type": "object",
         "required": ["report"],
         "title": "ExportRequest"
+      },
+      "ExportedClass": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "joining_open": {
+            "type": "boolean",
+            "title": "Joining Open"
+          },
+          "ai_enabled": {
+            "type": "boolean",
+            "title": "Ai Enabled"
+          },
+          "school_permission_confirmed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "School Permission Confirmed At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "students": {
+            "type": "integer",
+            "title": "Students"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "code",
+          "joining_open",
+          "ai_enabled",
+          "school_permission_confirmed_at",
+          "created_at",
+          "students"
+        ],
+        "title": "ExportedClass",
+        "description": "A teacher's class. Its students' names and work are theirs, so they are not in it."
       },
       "FlaggedName": {
         "properties": {
@@ -3725,6 +4362,80 @@
         "title": "StudentCounts",
         "description": "Class members only: the lab works signed out, and signed-out students are not counted."
       },
+      "StudentExport": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "const": "physics-anatomy/export",
+            "title": "Format",
+            "default": "physics-anatomy/export"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Version",
+            "default": 1
+          },
+          "kind": {
+            "type": "string",
+            "const": "student",
+            "title": "Kind",
+            "default": "student"
+          },
+          "exported_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Exported At"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "class_name": {
+            "type": "string",
+            "title": "Class Name"
+          },
+          "teacher_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Name"
+          },
+          "joined_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Joined At"
+          },
+          "consents": {
+            "items": {
+              "$ref": "#/components/schemas/ConsentRecord"
+            },
+            "type": "array",
+            "title": "Consents"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts",
+            "description": "How many attempts the pages of attempt files hold."
+          }
+        },
+        "type": "object",
+        "required": [
+          "exported_at",
+          "display_name",
+          "class_name",
+          "teacher_name",
+          "joined_at",
+          "consents",
+          "attempts"
+        ],
+        "title": "StudentExport"
+      },
       "StudentMe": {
         "properties": {
           "kind": {
@@ -3895,6 +4606,101 @@
         "type": "object",
         "required": ["name", "rows", "bytes"],
         "title": "TableSize"
+      },
+      "TeacherExport": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "const": "physics-anatomy/export",
+            "title": "Format",
+            "default": "physics-anatomy/export"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Version",
+            "default": 1
+          },
+          "kind": {
+            "type": "string",
+            "const": "teacher",
+            "title": "Kind",
+            "default": "teacher"
+          },
+          "exported_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Exported At"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "google_linked": {
+            "type": "boolean",
+            "title": "Google Linked"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "last_signed_in_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Signed In At"
+          },
+          "consents": {
+            "items": {
+              "$ref": "#/components/schemas/ConsentRecord"
+            },
+            "type": "array",
+            "title": "Consents"
+          },
+          "classes": {
+            "items": {
+              "$ref": "#/components/schemas/ExportedClass"
+            },
+            "type": "array",
+            "title": "Classes"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts",
+            "description": "How many attempts the pages at /export/attempts hold."
+          }
+        },
+        "type": "object",
+        "required": [
+          "exported_at",
+          "email",
+          "display_name",
+          "google_linked",
+          "created_at",
+          "last_signed_in_at",
+          "consents",
+          "classes",
+          "attempts"
+        ],
+        "title": "TeacherExport"
       },
       "TeacherMe": {
         "properties": {
