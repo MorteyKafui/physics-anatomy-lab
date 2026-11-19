@@ -181,3 +181,18 @@ async def test_the_log_keeps_a_row_and_forgets_old_ones() -> None:
             async with db.begin():
                 await db.execute(delete(AiRequest).where(AiRequest.pseudonym == marker))
     await engine.dispose()
+
+
+async def test_a_feature_that_answers_with_data_asks_for_its_schema() -> None:
+    schema: dict[str, Any] = {"type": "object", "properties": {}, "additionalProperties": False}
+    recorder = Recorder(200, recorded("claude-haiku-5-5", "end_turn", "{}"))
+    feature = FEATURES[FeatureName.what_if]
+    request = build_request(
+        feature, "claude-haiku-5-5", "Help.", AiContext.model_validate(context()), schema
+    )
+    [_, _] = [piece async for piece in claude_for(recorder).stream(request)]
+    body = json.loads(recorder.sent[0].content)
+    assert body["output_config"] == {
+        "effort": "low",
+        "format": {"type": "json_schema", "schema": schema},
+    }

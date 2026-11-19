@@ -6,6 +6,15 @@
 export const enGBWhatIf = {
   "lab.whatIf.title": "What if",
   "lab.whatIf.close": "Close",
+  "lab.whatIf.ask.label": "Ask what if (online)",
+  "lab.whatIf.ask.placeholder": "What if the string stretches?",
+  "lab.whatIf.ask.try": "Try it",
+  "lab.whatIf.ask.working": "Working it out…",
+  "lab.whatIf.ask.from": "From your question",
+  "lab.whatIf.ask.declined": "The model cannot do that",
+  "lab.whatIf.ask.nearest": "Try this instead: {title}",
+  "lab.whatIf.ask.unusable":
+    "That could not be turned into something the model can run. Try asking another way.",
   "lab.whatIf.intro": "Change one thing at a time and see what the model predicts. Works offline.",
   "lab.whatIf.length": "Length",
   "lab.whatIf.gravity": "Gravity",

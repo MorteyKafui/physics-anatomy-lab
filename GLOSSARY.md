@@ -125,6 +125,9 @@ request that introduces it.
 - **Held reply.** A tutor reply hidden because it used a number that is not from the bench.
 - **Thread.** One student's questions and the tutor's replies on one step: at most six questions,
   kept in memory on the device only, never saved or synced.
+- **What if (scenario).** A changed version of an experiment, such as the pendulum on the Moon,
+  within the limits its model supports. The panel runs the real model; Ask what if lets Claude
+  turn a question into one, and a question the model cannot run is declined with the nearest one.
 - **AI request log.** One row per AI request: what it cost and how it ended, under a pseudonym,
   never what was asked or answered. Kept 90 days.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.

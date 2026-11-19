@@ -343,4 +343,7 @@ export type {
   VerifyEmailLinkErrors,
   VerifyEmailLinkResponse,
   VerifyEmailLinkResponses,
+  WhatIfData,
+  WhatIfErrors,
+  WhatIfResponses,
 } from "./types.gen";

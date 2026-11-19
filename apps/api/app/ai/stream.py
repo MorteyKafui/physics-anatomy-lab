@@ -3,6 +3,8 @@
 Four events, and nothing else is ever sent:
 
 - `text`: {"text": "..."}, a piece of the reply, in order.
+- `item`: {"item": {...}}, for features that answer with data (what if): the whole answer,
+  checked on the server, sent once instead of `text`.
 - `done`: {"cut_short": bool}, the reply is complete (or was cut at the length limit).
 - `refused`: {"message": "..."}, the model declined, or the reply failed its check (a number
   not from the bench); discard any text already shown.
@@ -45,6 +47,10 @@ HELD = (
 
 # Called with the whole reply when it ends; False holds it back (shown as `refused`).
 ReplyCheck = Callable[[str], bool]
+# For features that answer with data: turns the whole reply into the one `item` sent, or None to
+# hold it. Their text is never streamed.
+ReplyItem = Callable[[str], dict[str, Any] | None]
+UNUSABLE = "AI help could not turn that into something the lab can run. Try asking another way."
 
 
 def _event(name: str, data: dict[str, Any]) -> ServerSentEvent:
@@ -58,6 +64,7 @@ async def reply_events(
     claude: Claude,
     ai_log: AiLog,
     check: ReplyCheck | None = None,
+    to_item: ReplyItem | None = None,
 ) -> AsyncIterator[ServerSentEvent]:
     started = time.monotonic()
     written: list[str] = []
@@ -69,7 +76,8 @@ async def reply_events(
                 if isinstance(piece, TextPiece):
                     if piece.text:
                         written.append(piece.text)
-                        yield _event("text", {"text": piece.text})
+                        if to_item is None:
+                            yield _event("text", {"text": piece.text})
                 else:
                     finished = piece
         if finished is None:
@@ -81,6 +89,19 @@ async def reply_events(
             outcome = "held"
             log.info("ai.held", feature=feature.name)
             yield _event("refused", {"message": HELD})
+        elif to_item is not None and finished.stop_reason not in CUT_SHORT:
+            item = to_item("".join(written))
+            if item is None:
+                outcome = "held"
+                log.info("ai.held", feature=feature.name)
+                yield _event("refused", {"message": UNUSABLE})
+            else:
+                outcome = "done"
+                yield _event("item", {"item": item})
+                yield _event("done", {"cut_short": False})
+        elif to_item is not None:
+            outcome = "cut-short"
+            yield _event("refused", {"message": UNUSABLE})
         else:
             cut_short = finished.stop_reason in CUT_SHORT
             outcome = "cut-short" if cut_short else "done"
@@ -128,9 +149,10 @@ def reply_stream(
     claude: Claude,
     ai_log: AiLog,
     check: ReplyCheck | None = None,
+    to_item: ReplyItem | None = None,
 ) -> EventSourceResponse:
     return EventSourceResponse(
-        reply_events(feature, principal, request, claude, ai_log, check),
+        reply_events(feature, principal, request, claude, ai_log, check, to_item),
         ping=PING_SECONDS,
         headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
     )

@@ -10,6 +10,8 @@ export type AiEvent =
   /** A piece of the reply, in order. */
   | { readonly type: "text"; readonly text: string }
   /** The reply is complete, or was cut at the length limit. */
+  /** The whole answer of a feature that answers with data (what if), checked on the server. */
+  | { readonly type: "item"; readonly item: Readonly<Record<string, unknown>> }
   | { readonly type: "done"; readonly cutShort: boolean }
   /** The model declined: discard any text already shown and show the message. */
   | { readonly type: "refused"; readonly message: string }
@@ -56,8 +58,9 @@ export function parseAiEvent(name: string, data: string): AiEvent | null {
     return null;
   }
   if (parsed === null) return null;
-  const { text, cut_short: cutShort, message, retry } = parsed;
+  const { text, cut_short: cutShort, message, retry, item } = parsed;
   if (name === "text" && typeof text === "string") return { type: "text", text };
+  if (name === "item" && record(item)) return { type: "item", item: record(item)! };
   if (name === "done" && typeof cutShort === "boolean") return { type: "done", cutShort };
   if (name === "refused" && typeof message === "string") return { type: "refused", message };
   if (name === "error" && typeof message === "string" && typeof retry === "boolean") {
@@ -146,7 +149,7 @@ export async function* streamAi(
       const event = parseAiEvent(name, data);
       if (event === null) continue;
       yield event;
-      if (event.type !== "text") return;
+      if (event.type !== "text" && event.type !== "item") return;
     }
   } catch {
     if (stopped()) return;
