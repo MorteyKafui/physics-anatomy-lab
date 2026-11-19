@@ -5,6 +5,9 @@
 // calls are made only from sign-in, join and teacher screens, and from AI buttons.
 import type {
   AiStatus,
+  ApprovedQuestion,
+  QuestionOut,
+  Submission,
   AttemptBatch,
   AttemptEventsPage,
   ClassAttempt,
@@ -107,6 +110,16 @@ export function createApi(options: ApiOptions = {}) {
     /** Whether to show AI buttons, and why not (ADR 0043). Replies stream with streamAi(). */
     ai: {
       status: () => call<AiStatus>("GET", "/ai/status"),
+    },
+    /** The question bank (docs/content/ai-questions-brief.md). Drafting streams with streamAi(). */
+    questions: {
+      submit: (body: Submission) => call<QuestionOut[]>("POST", "/questions", body),
+      mine: () => call<QuestionOut[]>("GET", "/questions/mine"),
+      approved: (experimentId: string) =>
+        call<ApprovedQuestion[]>(
+          "GET",
+          `/questions/approved${query({ experiment_id: experimentId })}`,
+        ),
     },
     auth: {
       methods: () => call<SignInMethods>("GET", "/auth/methods"),
