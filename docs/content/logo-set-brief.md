@@ -30,15 +30,15 @@ cannot drift between the header, the icons and the exports.
 
 ### 2. The SVG files, in `packages/ui/brand/`
 
-| File                     | What it is                                        | For                             |
-| ------------------------ | ------------------------------------------------- | ------------------------------- |
-| `mark.svg`               | Ink P and thread, red-orange bob                  | Light pages, colour print       |
-| `mark-on-dark.svg`       | Light P and thread, red-orange bob                | The lab, admin, dark slides     |
-| `mark-black.svg`         | All ink, bob included                             | Black-and-white print (D31)     |
-| `mark-white.svg`         | All white, bob included                           | Single-colour print on dark     |
-| `lockup.svg`             | Mark and "Physics Anatomy" side by side           | Light pages, letters, posters   |
-| `lockup-on-dark.svg`     | The same on ink                                   | Dark pages                      |
-| `lockup-black.svg`       | The same, all ink                                 | Black-and-white print           |
+| File                 | What it is                              | For                           |
+| -------------------- | --------------------------------------- | ----------------------------- |
+| `mark.svg`           | Ink P and thread, red-orange bob        | Light pages, colour print     |
+| `mark-on-dark.svg`   | Light P and thread, red-orange bob      | The lab, admin, dark slides   |
+| `mark-black.svg`     | All ink, bob included                   | Black-and-white print (D31)   |
+| `mark-white.svg`     | All white, bob included                 | Single-colour print on dark   |
+| `lockup.svg`         | Mark and "Physics Anatomy" side by side | Light pages, letters, posters |
+| `lockup-on-dark.svg` | The same on ink                         | Dark pages                    |
+| `lockup-black.svg`   | The same, all ink                       | Black-and-white print         |
 
 The black and white versions keep the bob in the same colour as the letter: with one colour there
 is nothing for the bob to stand out in, and a grey bob would print muddy.
