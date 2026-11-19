@@ -1964,7 +1964,7 @@
       "post": {
         "tags": ["ai"],
         "summary": "Tutor",
-        "description": "The tutor's reply about the current step, streamed. Numbers not from the bench are held.",
+        "description": "The tutor's reply about the current step, streamed. Numbers not from the bench are held.\nA first question with no number may be answered from the cache.",
         "operationId": "tutor",
         "requestBody": {
           "content": {
@@ -2012,7 +2012,7 @@
       "post": {
         "tags": ["ai"],
         "summary": "What If",
-        "description": "A what-if question turned into a scenario the experiment's model supports, as one item.",
+        "description": "A what-if question turned into a scenario the experiment's model supports, as one item.\nThe same question on the same bench is answered from the cache.",
         "operationId": "whatIf",
         "requestBody": {
           "content": {

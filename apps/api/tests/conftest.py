@@ -17,13 +17,14 @@ from pydantic import SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from app.ai.answers import get_answer_store
 from app.ai.claude import get_claude
 from app.ai.log import get_ai_log
 from app.auth.email import LogSender, get_email_sender
 from app.config import get_settings
 from app.db import get_db
 from app.main import app
-from tests.ai_fakes import TEST_KEY, FakeClaude, FakeLog
+from tests.ai_fakes import TEST_KEY, FakeAnswers, FakeClaude, FakeLog
 
 ORIGIN = get_settings().web_origin
 BASE_URL = "http://testserver"
@@ -119,3 +120,12 @@ def ai_log(db: AsyncSession) -> Iterator[FakeLog]:
     app.dependency_overrides[get_ai_log] = lambda: fake
     yield fake
     app.dependency_overrides.pop(get_ai_log, None)
+
+
+@pytest.fixture(autouse=True)
+def answers() -> Iterator[FakeAnswers]:
+    """Every test gets an empty answer cache of its own (the real one is tested on its own)."""
+    fake = FakeAnswers()
+    app.dependency_overrides[get_answer_store] = lambda: fake
+    yield fake
+    app.dependency_overrides.pop(get_answer_store, None)
