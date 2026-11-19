@@ -95,6 +95,11 @@ function Cards({ teacher }: { teacher: boolean }) {
           </Action>
           {downloadError ? <Problem>{downloadError}</Problem> : null}
         </Card>
+        {/* AI help (ADR 0043): what is sent and what is kept, in the words of the board. */}
+        <Card title={t(k("privacy.ai.title"))}>
+          <Small>{t(k("privacy.ai.body"))}</Small>
+          <Small>{t(k("privacy.ai.kept"))}</Small>
+        </Card>
         <Card title={t(k("privacy.agreed.title"))}>
           {terms?.version ? (
             <Small>

@@ -99,6 +99,11 @@ export const enGBTeach = {
   "teach.classes.none": "You have no classes yet.",
   "teach.classes.open": "Open the live board",
   "teach.classes.example": "See an example class",
+  "teach.ai.label": "AI for this class",
+  "teach.ai.on": "On. Students in this class can use AI help.",
+  "teach.ai.off": "Off. Students see the coach only.",
+  "teach.ai.note":
+    "Students see the tutor, what if and report review. AI is sent the step and the bench, never a student's name.",
 
   // How the board names each mistake, for the teacher. Keyed by the coach rule's id.
   "teach.mistake.pendulum-count-from-one": "Counted the first pass as one",
