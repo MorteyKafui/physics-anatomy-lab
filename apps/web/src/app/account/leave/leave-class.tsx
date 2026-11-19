@@ -23,7 +23,7 @@ const api = createApi();
 
 export function LeaveClass() {
   const [me, setMe] = useState<StudentMe | { problem: string } | null>(null);
-  const { busy, download } = useDownload(
+  const { busy, error, download } = useDownload(
     () => api.privacy.exportMine(),
     (after) => api.privacy.exportMyAttempts(after),
   );
@@ -63,6 +63,7 @@ export function LeaveClass() {
       <DownloadFirst
         label={t(k("privacy.leaveClass.downloadFirst"))}
         busy={busy}
+        error={error}
         onClick={download}
       />
     </ConfirmScreen>

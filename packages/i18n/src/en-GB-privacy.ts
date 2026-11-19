@@ -43,12 +43,10 @@ export const enGBPrivacy = {
   "privacy.notice.title": "We're changing our terms",
   "privacy.notice.titleNow": "Our terms have changed",
   "privacy.notice.body": "A new version of the {document} applies from **{date}**.",
-  "privacy.notice.bodyNow":
-    "A new version of the {document} applies now. Agree to it to keep using your account.",
+  "privacy.notice.bodyNow": "A new version of the {document} applies now. Please agree to it.",
   "privacy.notice.agree": "I agree to the new {document}",
   "privacy.notice.carryOn": "Carry on",
-  "privacy.notice.later":
-    "Before the date, you can close this and carry on. After it, you'll need to agree to keep using your account.",
+  "privacy.notice.later": "You can close this and carry on until the date.",
   "privacy.notice.close": "Not now",
 
   "privacy.deleteAccount.title": "Delete your account?",

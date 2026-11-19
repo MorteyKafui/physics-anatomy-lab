@@ -11,11 +11,10 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { k } from "../../account/parts";
+import { LINK } from "../classes";
 import { Notice, Shell } from "../panels";
 
 const api = createApi();
-const LINK =
-  "text-[var(--pa-accent-soft)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-[var(--pa-accent)]";
 
 export function Students() {
   const classId = useSearchParams().get("class") ?? "";

@@ -14,7 +14,7 @@ import { Notice, Shell } from "./panels";
 
 const api = createApi();
 const k = (key: string) => key as MessageKey;
-const LINK =
+export const LINK =
   "text-[var(--pa-accent-soft)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-[var(--pa-accent)]";
 
 export function Classes() {

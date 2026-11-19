@@ -23,7 +23,7 @@ const api = createApi();
 
 export function DeleteAccount() {
   const [summary, setSummary] = useState<TeacherExport | { problem: string } | null>(null);
-  const { busy, download } = useDownload(
+  const { busy, error, download } = useDownload(
     () => api.privacy.exportMine(),
     (after) => api.privacy.exportMyAttempts(after),
   );
@@ -75,6 +75,7 @@ export function DeleteAccount() {
       <DownloadFirst
         label={t(k("privacy.deleteAccount.downloadFirst"))}
         busy={busy}
+        error={error}
         onClick={download}
       />
     </ConfirmScreen>

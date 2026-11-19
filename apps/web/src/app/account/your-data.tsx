@@ -52,6 +52,7 @@ export function YourData() {
 function Cards({ teacher }: { teacher: boolean }) {
   const [consents, setConsents] = useState<ConsentState[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const box = useId();
   const {
     busy,
@@ -70,12 +71,14 @@ function Cards({ teacher }: { teacher: boolean }) {
   const analytics = consents.find((c) => c.purpose === "analytics");
 
   async function setAnalytics(granted: boolean) {
-    if (!analytics) return;
+    if (!analytics || saving) return;
+    setSaving(true);
     const r = await api.privacy.choose({
       purpose: "analytics",
       version: analytics.current_version,
       granted,
     });
+    setSaving(false);
     if (r.ok) setConsents(r.data.consents);
     else setError(r.detail);
   }
@@ -106,6 +109,7 @@ function Cards({ teacher }: { teacher: boolean }) {
             <>
               <label className="mt-1.5 flex items-center gap-2.5">
                 <Checkbox
+                  disabled={saving}
                   aria-labelledby={`${box}-label`}
                   checked={analytics.granted === true}
                   onCheckedChange={(on) => void setAnalytics(on)}

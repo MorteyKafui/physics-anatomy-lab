@@ -173,8 +173,11 @@ export function useDownload(
     const a = document.createElement("a");
     a.href = url;
     a.download = exportFileName(got.data.exported_at, who);
+    // Some browsers need the link in the page, and the URL alive until the download has begun.
+    document.body.append(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }
   return { busy, error, download: () => void download() };
 }
@@ -244,16 +247,24 @@ export function ConfirmScreen(props: {
 }
 
 /** "Download … first": a link-styled button that fetches the export. */
-export function DownloadFirst(props: { label: string; busy: boolean; onClick: () => void }) {
+export function DownloadFirst(props: {
+  label: string;
+  busy: boolean;
+  error: string | null;
+  onClick: () => void;
+}) {
   return (
-    <button
-      type="button"
-      className={`${LINK} self-start disabled:opacity-50`}
-      disabled={props.busy}
-      onClick={props.onClick}
-    >
-      {props.label}
-    </button>
+    <>
+      <button
+        type="button"
+        className={`${LINK} self-start disabled:opacity-50`}
+        disabled={props.busy}
+        onClick={props.onClick}
+      >
+        {props.label}
+      </button>
+      {props.error ? <Problem>{props.error}</Problem> : null}
+    </>
   );
 }
 
