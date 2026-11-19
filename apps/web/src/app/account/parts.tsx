@@ -14,7 +14,6 @@ import {
 import { emphasis, t, type MessageKey, type Params } from "@pa/i18n";
 import "@pa/i18n/privacy";
 import { Button } from "@pa/ui/components/button";
-import { Input } from "@pa/ui/components/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
@@ -138,13 +137,13 @@ export function ConfirmField(props: {
       <label htmlFor={id} className="text-sm font-semibold">
         {props.label}
       </label>
-      <Input
+      <input
         id={id}
         type={props.type ?? "text"}
         autoComplete="off"
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
-        className="h-[46px] border-[var(--pa-fg)] bg-[var(--pa-surface)] text-[15px]"
+        className="h-[46px] w-full border border-[var(--pa-fg)] bg-[var(--pa-surface)] px-3 text-[15px] text-[var(--pa-fg)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pa-ring)]"
       />
       {props.hint ? <Small>{props.hint}</Small> : null}
     </div>

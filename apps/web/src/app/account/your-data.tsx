@@ -5,9 +5,8 @@
 import { createApi, type ConsentState, type MeResponse } from "@pa/api-client";
 import { t } from "@pa/i18n";
 import "@pa/i18n/privacy";
-import { Checkbox } from "@pa/ui/components/checkbox";
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ConsentGate } from "./consent-gate";
 import {
@@ -53,7 +52,6 @@ function Cards({ teacher }: { teacher: boolean }) {
   const [consents, setConsents] = useState<ConsentState[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const box = useId();
   const {
     busy,
     error: downloadError,
@@ -108,14 +106,14 @@ function Cards({ teacher }: { teacher: boolean }) {
           {teacher && analytics ? (
             <>
               <label className="mt-1.5 flex items-center gap-2.5">
-                <Checkbox
+                <input
+                  type="checkbox"
                   disabled={saving}
-                  aria-labelledby={`${box}-label`}
                   checked={analytics.granted === true}
-                  onCheckedChange={(on) => void setAnalytics(on)}
-                  className="size-[22px]"
+                  onChange={(e) => void setAnalytics(e.target.checked)}
+                  className="size-[22px] shrink-0 accent-[var(--pa-fg)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pa-ring)]"
                 />
-                <span id={`${box}-label`}>{t(k("privacy.analytics.label"))}</span>
+                <span>{t(k("privacy.analytics.label"))}</span>
               </label>
               <Small>{t(k("privacy.analytics.note"))}</Small>
             </>

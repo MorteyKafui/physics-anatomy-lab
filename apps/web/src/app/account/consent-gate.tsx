@@ -6,8 +6,7 @@
 import { createApi, type ConsentState } from "@pa/api-client";
 import { t } from "@pa/i18n";
 import "@pa/i18n/privacy";
-import { Checkbox } from "@pa/ui/components/checkbox";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Action, Actions, Heading, k, Lead, Page, Problem, Rich, Small, Spacer } from "./parts";
 
@@ -88,7 +87,6 @@ function TermsNotice(props: {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const id = useId();
   const version = now ? consent.current_version : (consent.upcoming_version ?? "");
   const params = {
     document: consent.document,
@@ -110,13 +108,13 @@ function TermsNotice(props: {
         </Lead>
       </div>
       <label className="mt-4 flex items-start gap-3 border border-[var(--pa-border)] bg-[var(--pa-surface)] px-3.5 py-3">
-        <Checkbox
-          aria-labelledby={`${id}-label`}
+        <input
+          type="checkbox"
           checked={agreed}
-          onCheckedChange={setAgreed}
-          className="mt-0.5 size-[22px]"
+          onChange={(e) => setAgreed(e.target.checked)}
+          className="mt-0.5 size-[22px] shrink-0 accent-[var(--pa-fg)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pa-ring)]"
         />
-        <span id={`${id}-label`}>{t(k("privacy.notice.agree"), params)}</span>
+        <span>{t(k("privacy.notice.agree"), params)}</span>
       </label>
       {error ? <Problem>{error}</Problem> : null}
       <Spacer />
