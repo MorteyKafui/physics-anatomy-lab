@@ -2,7 +2,8 @@
 
 - Everyone signed in reads their consents and exports their own data.
 - A teacher exports one student's work (for a parent's request) and removes a student.
-- A teacher deletes their own account. Deletion is immediate and permanent.
+- A teacher deletes one class, or their own account; a student deletes their own work.
+  Deletion is immediate and permanent.
 
 An export never holds another person's data: a teacher's export lists their classes without the
 students, and a student's export holds only their own attempts.
@@ -14,7 +15,7 @@ from typing import Annotated
 
 import structlog
 from fastapi import APIRouter, HTTPException, Query, Response, status
-from sqlalchemy import delete, func, select, update
+from sqlalchemy import ColumnElement, delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import consents, legal
@@ -42,11 +43,13 @@ from app.models import (
 from app.privacy_schemas import (
     AccountDelete,
     AttemptFile,
+    ClassDelete,
     ConsentChoice,
     ConsentsOut,
     Export,
     ExportAttemptsPage,
     ExportedClass,
+    LeaveClass,
     StudentExport,
     TeacherExport,
 )
@@ -328,19 +331,8 @@ async def export_member_attempts(
 # Deletion
 
 
-@router.delete(
-    "/classes/{class_id}/members/{member_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    responses=MEMBER_NOT_FOUND,
-)
-async def remove_member(
-    class_id: uuid.UUID, member_id: uuid.UUID, teacher: CurrentTeacher, db: Db
-) -> None:
-    """Remove a student and delete everything of theirs: attempts, consents, sessions, benches.
-
-    Permanent, at once. Their devices keep their own copy of the work (offline first).
-    """
-    member, _ = await _member_of(db, teacher, class_id, member_id)
+async def _delete_member(db: AsyncSession, member: ClassMember) -> None:
+    """Delete a student and everything of theirs: attempts, consents, sessions, benches."""
     # Notes written to this student alone go with them; group hints just lose their id.
     await db.execute(
         delete(LiveMessage).where(
@@ -354,7 +346,111 @@ async def remove_member(
     )
     await db.delete(member)
     await db.flush()
+
+
+async def _require_recent_sign_in(db: AsyncSession, teacher: Teacher, what: str) -> None:
+    """Deleting a class or an account needs a sign-in within the last hour (ADR 0042)."""
+    signed_in = await db.scalar(select(Session.created_at).where(Session.id == teacher.session_id))
+    if signed_in is None or datetime.now(UTC) - signed_in > DELETE_ACCOUNT_RECENT_SIGN_IN:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail=f"To delete {what}, sign in again first.",
+        )
+
+
+async def _students_in(db: AsyncSession, *where: ColumnElement[bool]) -> int:
+    return (
+        await db.scalar(
+            select(func.count())
+            .select_from(ClassMember)
+            .join(SchoolClass, SchoolClass.id == ClassMember.class_id)
+            .where(*where)
+        )
+        or 0
+    )
+
+
+@router.post(
+    "/classes/{class_id}/delete",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        403: {"description": "Sign in again first"},
+        404: {"description": "No such class of yours"},
+        422: {"description": "The class name does not match"},
+    },
+)
+async def delete_class(
+    class_id: uuid.UUID, body: ClassDelete, teacher: CurrentTeacher, db: Db
+) -> None:
+    """Delete one class with its students and all their work. Permanent, at once.
+
+    The teacher types the class name to confirm, and must have signed in within the last hour.
+    """
+    school_class = await owned_class(db, teacher, class_id)
+    if " ".join(body.confirm_name.split()).casefold() != school_class.name.casefold():
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="That isn't the class's name. Type it as it shows above.",
+        )
+    await _require_recent_sign_in(db, teacher, "a class")
+    students = await _students_in(db, SchoolClass.id == school_class.id)
+    # Cascades to students, their attempts, events, consents, sessions and live sessions.
+    await db.delete(school_class)
+    await db.flush()
+    log.info(
+        "privacy.class_deleted",
+        class_id=str(school_class.id),
+        user_id=str(teacher.user.id),
+        students=students,
+    )
+
+
+@router.delete(
+    "/classes/{class_id}/members/{member_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=MEMBER_NOT_FOUND,
+)
+async def remove_member(
+    class_id: uuid.UUID, member_id: uuid.UUID, teacher: CurrentTeacher, db: Db
+) -> None:
+    """Remove a student and delete everything of theirs: attempts, consents, sessions, benches.
+
+    Permanent, at once. Their devices keep their own copy of the work (offline first).
+    """
+    member, _ = await _member_of(db, teacher, class_id, member_id)
+    await _delete_member(db, member)
     log.info("privacy.member_removed", member_id=str(member.id), user_id=str(teacher.user.id))
+
+
+@router.post(
+    "/account/leave",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        403: {"description": "Only students leave a class this way"},
+        422: {"description": "The display name does not match"},
+    },
+)
+async def leave_class(
+    body: LeaveClass, response: Response, principal: CurrentPrincipal, db: Db
+) -> None:
+    """A student deletes their own work and leaves the class. Permanent, at once.
+
+    They type their display name to confirm. Their device keeps its own copy (offline first), and
+    they can join again with the class code, starting fresh.
+    """
+    if isinstance(principal, Teacher):
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, detail="Teachers delete their account instead."
+        )
+    member = principal.member
+    if body.confirm_display_name.casefold() != member.display_name.casefold():
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="That isn't your display name. Type it as it shows at the top.",
+        )
+    await _delete_member(db, member)
+    clear_cookie(response)
+    log.info("privacy.member_left", member_id=str(member.id))
 
 
 @router.post(
@@ -378,19 +474,9 @@ async def delete_account(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="That isn't the email you signed in with.",
         )
-    signed_in = await db.scalar(select(Session.created_at).where(Session.id == teacher.session_id))
-    if signed_in is None or datetime.now(UTC) - signed_in > DELETE_ACCOUNT_RECENT_SIGN_IN:
-        raise HTTPException(
-            status.HTTP_403_FORBIDDEN,
-            detail="To delete your account, sign in again first.",
-        )
+    await _require_recent_sign_in(db, teacher, "your account")
     classes = await db.scalar(select(func.count()).where(SchoolClass.teacher_id == user.id))
-    students = await db.scalar(
-        select(func.count())
-        .select_from(ClassMember)
-        .join(SchoolClass, SchoolClass.id == ClassMember.class_id)
-        .where(SchoolClass.teacher_id == user.id)
-    )
+    students = await _students_in(db, SchoolClass.teacher_id == user.id)
     # The email is also held outside the account: unused sign-in links and their rate counter.
     await db.execute(delete(EmailLinkToken).where(EmailLinkToken.email == user.email))
     await rate_limit.forget(db, EMAIL_LINKS_PER_EMAIL, user.email)

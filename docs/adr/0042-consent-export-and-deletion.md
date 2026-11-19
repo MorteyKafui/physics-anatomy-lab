@@ -1,6 +1,6 @@
 # 0042. Consent records, data export and deletion
 
-- Status: accepted (Mortey, 2026-11-19)
+- Status: accepted (Mortey, 2026-11-19; see "Mortey's answers" below)
 - Date: 2026-11-19
 - Builds on: [0011](./0011-accounts-optional.md), [0025](./0025-legal-pack.md),
   [0038](./0038-sign-in-sessions-and-class-codes.md), [0039](./0039-event-sync-and-adoption.md),
@@ -90,13 +90,24 @@ work. This record fixes what is recorded, what an export holds, and what deletin
   - Their attempts, events, consents, sessions, re-join codes and live benches go.
   - Notes written to that student alone are deleted.
   - Group hints keep their wording but lose the student's id.
-- **A student or parent asks through the teacher**, who removes the student. Students cannot
-  delete from their own device. The teacher is the person the school and the parent know, and
-  a student cannot lose work they handed in by tapping the wrong thing.
+- **A teacher deletes one class** with `POST /classes/{class}/delete`:
+  - They type the class's name to confirm, and must have signed in within the last hour, as for
+    the account.
+  - The class goes with its students, their attempts, events, consents, sessions and live
+    sessions. The teacher's other classes and their own attempts stay.
+- **A student deletes their own work** with `POST /account/leave`:
+  - They type their display name to confirm.
+  - It deletes the same as a teacher removing them, and signs them out. They can join again
+    with the class code, starting fresh.
+  - A student has no recent sign-in to check (they have no email to sign in again with). So a
+    classmate on a shared computer who sees the name at the top of the screen could do it. The
+    screen's confirmation step and the export offered first are the guard. Teachers can see who
+    has left in the class list.
+- **A parent asks the teacher**, who exports the work if wanted and then removes the student.
 - **Hard delete.** There is no soft-delete flag and no grace period. A grace period means
   keeping a child's data after someone asked for it to go. It would also need a scheduled job,
   and there is no job queue yet. Mistakes are guarded against before the delete instead:
-  - the typed email and the recent sign-in;
+  - the typed email, class name or display name, and the teacher's recent sign-in;
   - an export offered first on the delete page;
   - a confirmation step on the screen.
 
@@ -107,8 +118,11 @@ work. This record fixes what is recorded, what an export holds, and what deletin
     signing out leaves them there (ADR 0039).
   - The admin audit log (ADR 0040). It keeps the ids of a deleted class or student, never their
     names.
-  - Database backups. Deleted rows leave the backups as the backups age out. The privacy policy
-    must state how long that is.
+  - Database backups. The nightly encrypted dumps are kept for **30 days** (master plan,
+    "Backups and recovery"), and Neon's point-in-time history is shorter. So deleted data has
+    left every backup within 30 days of the deletion. The privacy policy states this. A restore
+    from a backup must delete again whatever was deleted after the backup was taken. The
+    restore runbook, not written yet, must include that step.
 
 ## Consequences
 
@@ -122,7 +136,7 @@ work. This record fixes what is recorded, what an export holds, and what deletin
   more than 5 seconds, move it to the job queue (with a new record).
 - Teachers' deletions are logged as structured events. They are not written to `admin_audit`,
   which records staff actions.
-- The screens need approved boards first: `design/mockups/Privacy.dc.html` is the draft.
+- The screens are on the approved board `design/mockups/Privacy.dc.html`.
 
 ## Alternatives considered
 
@@ -133,5 +147,19 @@ work. This record fixes what is recorded, what an export holds, and what deletin
   it starts again from nothing, and it holds a database connection for the whole download.
 - **Analytics consent for students, with a parent's agreement.** It would need a way to reach
   parents, which we deliberately do not have.
-- **Students deleting their own work.** Possible later if Mortey and the schools want it. The
-  endpoint would be the same delete, run for the student themselves.
+- **Only the teacher deleting a student's work.** Proposed first, so that a student could not
+  lose handed-in work by tapping the wrong thing. Mortey chose self-service: the plan promises
+  it, and a student should not need to ask anyone to have their data deleted.
+
+## Mortey's answers (2026-11-19)
+
+- Teachers agree by signing in ("By signing in you agree…"), as the sign-in screen says. No
+  separate tick box.
+- Students are never asked about analytics, and nothing is recorded on the server for
+  signed-out visitors.
+- Deletion: hard and immediate, as is usual practice for children's data (GDPR Article 17,
+  "without undue delay", and Act 843's right to have data deleted). Backups age out within 30 days.
+- Students may delete their own work.
+- The board `Privacy.dc.html` is approved.
+- Research data waits for ethics approval, as written above.
+- Deleting a single class, and the web screens, are approved as follow-ups.
