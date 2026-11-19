@@ -2043,6 +2043,51 @@
         }
       }
     },
+    "/ai/report-review": {
+      "post": {
+        "tags": ["ai"],
+        "summary": "Report Review",
+        "description": "Comments on the conclusion, precautions, sources of error and discussion, as one item.",
+        "operationId": "reportReview",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "One item (ADR 0043)",
+            "content": {
+              "text/event-stream": {}
+            }
+          },
+          "401": {
+            "description": "Signed out"
+          },
+          "403": {
+            "description": "AI is off for this class"
+          },
+          "503": {
+            "description": "AI is switched off or not set up"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/me": {
       "get": {
         "tags": ["admin"],
@@ -4662,6 +4707,57 @@
         "type": "object",
         "required": ["code"],
         "title": "RejoinRequest"
+      },
+      "ReviewRequest": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{1,63}$",
+            "title": "Experiment Id"
+          },
+          "experiment_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Experiment Version"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["wassce", "university"],
+            "title": "Format"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewSection"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Sections"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["experiment_id", "experiment_version", "format", "sections"],
+        "title": "ReviewRequest"
+      },
+      "ReviewSection": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": ["conclusion", "precautions", "sources", "discussion"],
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "text"],
+        "title": "ReviewSection"
       },
       "SignInMethods": {
         "properties": {

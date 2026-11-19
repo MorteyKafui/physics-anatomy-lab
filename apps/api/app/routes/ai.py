@@ -8,6 +8,7 @@ The test-only route streams a reply through the same path, so the stream is prov
 without a feature. It is mounted only in local and test, and left out of the OpenAPI file.
 """
 
+from collections.abc import Callable
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -15,10 +16,13 @@ from pydantic import BaseModel
 from sse_starlette import EventSourceResponse
 
 from app.ai.claude import Claude, get_claude
-from app.ai.context import AiContext, build_request
-from app.ai.features import FEATURES, FeatureName
+from app.ai.context import AiContext, ModelRequest, build_request, request_with
+from app.ai.features import FEATURES, Feature, FeatureName
 from app.ai.log import AiLog, get_ai_log
 from app.ai.policy import MESSAGES, Unavailable, available_features, refuse, why_unavailable
+from app.ai.review import INSTRUCTIONS as REVIEW_INSTRUCTIONS
+from app.ai.review import ReviewCheck, ReviewRequest, user_message
+from app.ai.review import output_schema as review_schema
 from app.ai.scenarios import INSTRUCTIONS as WHAT_IF_INSTRUCTIONS
 from app.ai.scenarios import NOT_READY, SPECS, ScenarioCheck, output_schema
 from app.ai.stream import ReplyCheck, ReplyItem, reply_stream
@@ -68,7 +72,28 @@ def ai_reply(
     to_item: ReplyItem | None = None,
     output_schema: dict[str, Any] | None = None,
 ) -> EventSourceResponse:
-    """The one way a feature calls Claude. Refuses with a plain HTTP error before streaming."""
+    """The one way a feature calls Claude with an AiContext."""
+    return ai_reply_with(
+        name,
+        principal,
+        lambda feature, model: build_request(feature, model, instructions, context, output_schema),
+        claude,
+        ai_log,
+        check,
+        to_item,
+    )
+
+
+def ai_reply_with(
+    name: FeatureName,
+    principal: MaybePrincipal,
+    build: Callable[[Feature, str], ModelRequest],
+    claude: Claude | None,
+    ai_log: AiLog,
+    check: ReplyCheck | None = None,
+    to_item: ReplyItem | None = None,
+) -> EventSourceResponse:
+    """Refuses with a plain HTTP error before streaming, or streams the reply to `build`."""
     settings = get_settings()
     feature = FEATURES[name]
     reason = why_unavailable(principal, feature, settings)
@@ -77,7 +102,7 @@ def ai_reply(
     if reason is not None:
         raise refuse(reason)
     assert principal is not None and claude is not None  # checked by why_unavailable
-    request = build_request(feature, feature.model(settings), instructions, context, output_schema)
+    request = build(feature, feature.model(settings))
     return reply_stream(feature, principal, request, claude, ai_log, check, to_item)
 
 
@@ -133,6 +158,39 @@ async def what_if(
         ai_log,
         to_item=ScenarioCheck(context, spec),
         output_schema=output_schema(spec),
+    )
+
+
+@router.post(
+    "/report-review",
+    response_class=EventSourceResponse,
+    responses={
+        200: {"content": {"text/event-stream": {}}, "description": "One item (ADR 0043)"},
+        401: {"description": "Signed out"},
+        403: {"description": "AI is off for this class"},
+        503: {"description": "AI is switched off or not set up"},
+    },
+)
+async def report_review(
+    body: ReviewRequest, principal: MaybePrincipal, claude: ClaudeDep, ai_log: AiLogDep
+) -> EventSourceResponse:
+    """Comments on the conclusion, precautions, sources of error and discussion, as one item."""
+    ids = [s.id for s in body.sections]
+    if len(set(ids)) != len(ids):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail="One of each section.")
+    return ai_reply_with(
+        FeatureName.report_review,
+        principal,
+        lambda feature, model: request_with(
+            feature,
+            model,
+            REVIEW_INSTRUCTIONS,
+            [{"role": "user", "content": user_message(body)}],
+            review_schema(list(ids)),
+        ),
+        claude,
+        ai_log,
+        to_item=ReviewCheck(body),
     )
 
 

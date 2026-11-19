@@ -10,6 +10,7 @@
     "./method-of-mixtures": "./src/method-of-mixtures.ts",
     "./teach": "./src/teach.ts",
     "./privacy": "./src/privacy.ts",
+    "./review": "./src/review.ts",
     "./tutor": "./src/tutor.ts",
     "./what-if": "./src/what-if.ts"
   },

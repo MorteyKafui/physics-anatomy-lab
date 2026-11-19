@@ -1471,6 +1471,42 @@ export type RejoinRequest = {
 };
 
 /**
+ * ReviewRequest
+ */
+export type ReviewRequest = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Experiment Version
+   */
+  experiment_version: number;
+  /**
+   * Format
+   */
+  format: "wassce" | "university";
+  /**
+   * Sections
+   */
+  sections: Array<ReviewSection>;
+};
+
+/**
+ * ReviewSection
+ */
+export type ReviewSection = {
+  /**
+   * Id
+   */
+  id: "conclusion" | "precautions" | "sources" | "discussion";
+  /**
+   * Text
+   */
+  text: string;
+};
+
+/**
  * SignInMethods
  */
 export type SignInMethods = {
@@ -3400,6 +3436,41 @@ export type WhatIfErrors = {
 };
 
 export type WhatIfResponses = {
+  /**
+   * One item (ADR 0043)
+   */
+  200: unknown;
+};
+
+export type ReportReviewData = {
+  body: ReviewRequest;
+  path?: never;
+  query?: never;
+  url: "/ai/report-review";
+};
+
+export type ReportReviewErrors = {
+  /**
+   * Signed out
+   */
+  401: unknown;
+  /**
+   * AI is off for this class
+   */
+  403: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * AI is switched off or not set up
+   */
+  503: unknown;
+};
+
+export type ReportReviewError = ReportReviewErrors[keyof ReportReviewErrors];
+
+export type ReportReviewResponses = {
   /**
    * One item (ADR 0043)
    */

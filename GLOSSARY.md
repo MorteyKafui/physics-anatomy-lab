@@ -128,6 +128,9 @@ request that introduces it.
 - **What if (scenario).** A changed version of an experiment, such as the pendulum on the Moon,
   within the limits its model supports. The panel runs the real model; Ask what if lets Claude
   turn a question into one, and a question the model cannot run is declined with the nearest one.
+- **Report review.** Notes from Claude on the conclusion, precautions, sources of error and
+  discussion of a report, each on the student's own words and the report rule it relies on. They
+  sit beside the report, are not saved and never change it.
 - **What-if attempt.** A scenario opened on the bench: an attempt in mode `what-if` that starts at
   Measure with the bench built. It is not marked, has no conclusion or report, and is left out of
   a teacher's mistakes and progress. The student's practice run is kept.
