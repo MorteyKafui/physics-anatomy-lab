@@ -4,6 +4,7 @@ import { emphasis, enGB, hasMessage, t } from "../src";
 import { enGBConvergingLens } from "../src/converging-lens";
 import { enGBMethodOfMixtures } from "../src/method-of-mixtures";
 import { enGBOhmsLaw } from "../src/ohms-law";
+import { enGBPrivacy } from "../src/privacy";
 import { enGBTeach } from "../src/teach";
 
 describe("t", () => {
@@ -40,6 +41,7 @@ describe("the en-GB messages", () => {
     ...Object.entries(enGBConvergingLens),
     ...Object.entries(enGBMethodOfMixtures),
     ...Object.entries(enGBTeach),
+    ...Object.entries(enGBPrivacy),
   ];
 
   test("an experiment's own file repeats no shared key", () => {
@@ -52,6 +54,10 @@ describe("the en-GB messages", () => {
         (k) => k in enGB || k in enGBOhmsLaw || k in enGBConvergingLens,
       ),
     ).toEqual([]);
+  });
+
+  test("the privacy file repeats no shared or teacher key", () => {
+    expect(Object.keys(enGBPrivacy).filter((k) => k in enGB || k in enGBTeach)).toEqual([]);
   });
 
   test("the teacher's file repeats no shared key", () => {
