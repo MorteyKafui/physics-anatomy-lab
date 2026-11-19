@@ -75,7 +75,7 @@ import {
   type PendulumSlot,
   type Timing,
 } from "@pa/experiments";
-import type { AiStatus, ThreadTurn } from "@pa/api-client";
+import type { AiStatus } from "@pa/api-client";
 import { hasMessage, t, type MessageKey } from "@pa/i18n";
 import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT } from "@pa/instruments";
 import { cn } from "@pa/ui";
@@ -134,14 +134,13 @@ import {
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
 import { FormulaBox, Sym } from "./formula";
 import { graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
-import { AnalysePanel, GraphPanel, TableBuilder } from "./lazy-panels";
+import { AnalysePanel, GraphPanel, TableBuilder, TutorPanel } from "./lazy-panels";
+import { HelpMenu } from "./tutor/help-menu";
 import { flagsFor, useTable } from "./table-builder";
 import { backToPractice, useAttempt, type AttemptHandle } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
-import { tutorContext } from "./tutor/context";
-import { HelpMenu } from "./tutor/help-menu";
-import { TutorPanel } from "./tutor/tutor-panel";
+
 import { canUse, useAiStatus } from "./tutor/use-ai-status";
 import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
 import { newSnapshotId, useSnapshots } from "./use-snapshots";
@@ -255,18 +254,15 @@ export function LabScreen() {
   // in an exam. It is sent the step, the summarised events and the length the bench shows; never
   // the bench's hidden g.
   const tutorOn = state !== undefined && coachIsOn(state) && canUse(aiStatus, "tutor");
-  const tutorContextFor = useCallback(
-    (question: string, thread: readonly ThreadTurn[]) =>
-      tutorContext({
-        experimentId: E.id,
-        experimentVersion: E.version,
-        step: handle?.state.step ?? "question",
-        helpLevel: handle?.state.helpLevel ?? "auto",
-        events: handle?.events ?? [],
-        quantities: [{ symbol: "l", name: "Length of the pendulum", value: length, unit: "m" }],
-        question,
-        thread,
-      }),
+  const tutorInput = useMemo(
+    () => ({
+      experimentId: E.id,
+      experimentVersion: E.version,
+      step: handle?.state.step ?? ("question" as const),
+      helpLevel: handle?.state.helpLevel ?? ("auto" as const),
+      events: handle?.events ?? [],
+      quantities: [{ symbol: "l", name: "Length of the pendulum", value: length, unit: "m" }],
+    }),
     [handle, length],
   );
   const [checkedTable, setCheckedTable] = useState<string>();
@@ -1771,7 +1767,7 @@ export function LabScreen() {
                     <TutorPanel
                       key={state.step}
                       stepName={stepName(state.step)}
-                      contextFor={tutorContextFor}
+                      input={tutorInput}
                       {...(audio.canSpeak ? { readAloud: audio.read } : {})}
                     />
                   </TabsContent>

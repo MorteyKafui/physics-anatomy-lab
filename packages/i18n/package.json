@@ -9,7 +9,8 @@
     "./converging-lens": "./src/converging-lens.ts",
     "./method-of-mixtures": "./src/method-of-mixtures.ts",
     "./teach": "./src/teach.ts",
-    "./privacy": "./src/privacy.ts"
+    "./privacy": "./src/privacy.ts",
+    "./tutor": "./src/tutor.ts"
   },
   "scripts": {
     "lint": "eslint .",

@@ -4,13 +4,14 @@
 // A thread lives in this component's memory only: it is never an event, so it is never synced,
 // saved with the attempt or seen by the teacher, and it is gone when the step changes (the lab
 // gives this component a new key) or the page closes. Nothing in the lab waits on it.
-import { streamAi, type AiContext, type ThreadTurn } from "@pa/api-client";
+import { streamAi, type ThreadTurn } from "@pa/api-client";
 import { t } from "@pa/i18n";
+import "@pa/i18n/tutor";
 import { Button } from "@pa/ui/components/button";
 import { Textarea } from "@pa/ui/components/textarea";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
-import { QUESTIONS_PER_STEP } from "./context";
+import { QUESTIONS_PER_STEP, tutorContext, type TutorInput } from "./context";
 
 type Pending =
   | { readonly status: "writing"; readonly question: string; readonly text: string }
@@ -25,13 +26,13 @@ type Pending =
 export interface TutorPanelProps {
   /** The step's name as the student sees it, for the empty state. */
   readonly stepName: string;
-  /** The request for a question, with the thread so far (built from the attempt on the device). */
-  readonly contextFor: (question: string, thread: readonly ThreadTurn[]) => AiContext;
+  /** What the request is built from on the device: the attempt, the step, the bench's numbers. */
+  readonly input: Omit<TutorInput, "question" | "thread">;
   /** Reads a reply aloud with the browser's own voice; undefined when the browser has none. */
   readonly readAloud?: (text: string) => void;
 }
 
-export function TutorPanel({ stepName, contextFor, readAloud }: TutorPanelProps) {
+export function TutorPanel({ stepName, input, readAloud }: TutorPanelProps) {
   const [thread, setThread] = useState<ThreadTurn[]>([]);
   const [pending, setPending] = useState<Pending>();
   const [cutShort, setCutShort] = useState(false);
@@ -53,9 +54,13 @@ export function TutorPanel({ stepName, contextFor, readAloud }: TutorPanelProps)
       setCutShort(false);
       setPending({ status: "writing", question: q, text: "" });
       let text = "";
-      for await (const event of streamAi("/ai/tutor", contextFor(q, thread), {
-        signal: controller.signal,
-      })) {
+      for await (const event of streamAi(
+        "/ai/tutor",
+        tutorContext({ ...input, question: q, thread }),
+        {
+          signal: controller.signal,
+        },
+      )) {
         if (event.type === "text") {
           text += event.text;
           setPending({ status: "writing", question: q, text });
@@ -79,7 +84,7 @@ export function TutorPanel({ stepName, contextFor, readAloud }: TutorPanelProps)
         setDraft(q);
       }
     },
-    [contextFor, thread, writing],
+    [input, thread, writing],
   );
 
   const submit = (e: FormEvent) => {
