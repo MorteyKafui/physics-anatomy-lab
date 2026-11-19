@@ -100,7 +100,12 @@ export function PendulumWhatIf({
   /** The length the bench is set to, m: the experiment as set starts from it. */
   benchLength: number;
   /** Ask what if (online): shown only when AI is on for this person. */
-  ai?: { readonly on: boolean; readonly input: Omit<TutorInput, "question" | "thread"> };
+  ai?: {
+    readonly on: boolean;
+    /** The line when today's what-if questions are used up. */
+    readonly usedUp?: string | undefined;
+    readonly input: Omit<TutorInput, "question" | "thread">;
+  };
   /** Opens the scenario on the bench as an unmarked attempt; absent where it cannot be. */
   onOpenBench?: (scenario: PendulumScenario) => void;
 }) {
@@ -153,6 +158,11 @@ export function PendulumWhatIf({
             {t("lab.whatIf.intro")}
           </SheetDescription>
 
+          {!ai?.on && ai?.usedUp && (
+            <p role="status" className="text-xs text-muted-foreground">
+              {ai.usedUp}
+            </p>
+          )}
           {ai?.on && (
             <form onSubmit={(e) => void ask(e)} className="flex flex-col gap-1.5">
               <label htmlFor="what-if-question" className="text-xs text-muted-foreground">

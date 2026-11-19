@@ -145,7 +145,7 @@ import { backToPractice, startWhatIf, useAttempt, type AttemptHandle } from "./u
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
 
-import { canUse, useAiStatus } from "./tutor/use-ai-status";
+import { canUse, useAiStatus, usedUp } from "./tutor/use-ai-status";
 import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
 import { newSnapshotId, useSnapshots } from "./use-snapshots";
 import { UncertaintySwitch } from "./uncertainty-switch";
@@ -1120,7 +1120,11 @@ export function LabScreen() {
               onOpenBench={(chosen: PendulumScenario) =>
                 void startWhatIf(E.id, whatIfStart(chosen)).then(() => window.location.reload())
               }
-              ai={{ on: canUse(aiStatus, "what-if"), input: tutorInput }}
+              ai={{
+                on: canUse(aiStatus, "what-if"),
+                usedUp: usedUp(aiStatus, "what-if"),
+                input: tutorInput,
+              }}
             />
           )}
           {whatIfRun && scenario && (
