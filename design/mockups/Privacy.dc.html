@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Consent, your data and deleting (draft for approval)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#FBFBF6}
+a{color:#C2361B}a:hover{color:#8F2410}
+.pv .f:focus-visible{outline:2px solid #C2361B;outline-offset:2px}
+.pv .seg{height:30px;padding:0 10px;border:0;font:500 12px Geist,sans-serif;cursor:pointer;background:transparent;color:#3D3B37}
+.pv .seg[aria-pressed="true"]{background:#141414;color:#FBFBF6}
+.pv .primary{height:50px;display:flex;align-items:center;justify-content:center;background:#141414;color:#FBFBF6;border:0;text-decoration:none;font:600 15px Geist,sans-serif;cursor:pointer}
+.pv .secondary{height:50px;display:flex;align-items:center;justify-content:center;background:#FFFFFF;color:#141414;border:1px solid #141414;text-decoration:none;font:600 15px Geist,sans-serif;cursor:pointer}
+.pv .danger{height:50px;display:flex;align-items:center;justify-content:center;background:#B3261E;color:#FFFFFF;border:0;text-decoration:none;font:600 15px Geist,sans-serif;cursor:pointer}
+.pv .card{display:flex;flex-direction:column;gap:6px;padding:14px;background:#FFFFFF;border:1px solid #E6E4DB}
+.pv .row{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#FFFFFF;border:1px solid #E6E4DB}
+.pv .row input{width:22px;height:22px;margin:0;flex:0 0 auto;accent-color:#141414}
+.pv .field{height:46px;box-sizing:border-box;padding:0 12px;border:1px solid #141414;background:#FFFFFF;font:400 15px Geist,sans-serif;width:100%}
+.pv .mono{font-family:'Geist Mono',monospace}
+.pv .h{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:26px;line-height:1.1}
+.pv .small{font-size:13px;color:#5F5D57}
+</style>
+</helmet>
+<div class="pv" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 0; background: #FBFBF6">
+<div role="group" aria-label="Board state (mockup only)" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 3px; max-width: 420px">
+  <button type="button" class="seg f" onClick="{{showChoice}}" aria-pressed="{{isChoice}}">Analytics choice</button>
+  <button type="button" class="seg f" onClick="{{showNotice}}" aria-pressed="{{isNotice}}">New terms</button>
+  <button type="button" class="seg f" onClick="{{showData}}" aria-pressed="{{isData}}">Your data</button>
+  <button type="button" class="seg f" onClick="{{showDelete}}" aria-pressed="{{isDelete}}">Delete account</button>
+  <button type="button" class="seg f" onClick="{{showStudent}}" aria-pressed="{{isStudent}}">A student's data</button>
+</div>
+
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FBFBF6; color: #141414; font-family: Geist, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-direction: column; border: 1px solid #E6E4DB">
+
+  <!-- Teacher, after first sign-in: analytics is off until they choose. Students never see this. -->
+  <sc-if value="{{isChoice}}" hint-placeholder-val="{{true}}">
+    <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <span class="h">Help us improve Physics Anatomy?</span>
+      <span style="color: #3D3B37">We'd like to count a few things you do, such as which pages you open, to see what to fix. We never count anything your students do.</span>
+      <span style="color: #3D3B37">It's off unless you turn it on, and you can change your mind in Your data at any time.</span>
+      <a href="#cookies" class="f" style="font-size: 14px">Read the Cookies and Storage policy</a>
+    </div>
+    <span style="flex: 1"></span>
+    <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px">
+      <a href="#yes" class="secondary f">Yes, count my visits</a>
+      <a href="#no" class="primary f">No thanks</a>
+    </div>
+  </sc-if>
+
+  <!-- Anyone signed in, during the 30-day notice and after a new version takes effect. -->
+  <sc-if value="{{isNotice}}" hint-placeholder-val="{{false}}">
+    <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <span class="h">We're changing our terms</span>
+      <span style="color: #3D3B37">The new Terms of Use apply from <b>{{noticeDate}}</b>. Read what's changing before then.</span>
+      <a href="#terms" class="f" style="font-size: 14px">What's changing in the Terms of Use</a>
+      <span class="small">Example date: the real one is 30 days after a change is published.</span>
+    </div>
+    <div style="padding: 16px 20px 0">
+      <label class="row">
+        <input class="f" type="checkbox">
+        <span>I agree to the new Terms of Use</span>
+      </label>
+    </div>
+    <span style="flex: 1"></span>
+    <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px">
+      <a href="#agree" class="primary f">Carry on</a>
+      <span class="small" style="text-align: center">Before the date, you can close this and carry on. After it, you'll need to agree to keep using your account.</span>
+    </div>
+  </sc-if>
+
+  <!-- Teacher or student: settings, Your data. -->
+  <sc-if value="{{isData}}" hint-placeholder-val="{{false}}">
+    <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <span class="h">Your data</span>
+      <span style="color: #3D3B37">Everything we keep about you, and what you've agreed to.</span>
+    </div>
+    <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <div class="card">
+        <span style="font-weight: 600">Download your data</span>
+        <span class="small">One file with your account and every attempt. You can open each attempt in the lab on any device.</span>
+        <a href="#download" class="secondary f" style="margin-top: 6px">Download</a>
+      </div>
+      <div class="card">
+        <span style="font-weight: 600">What you've agreed to</span>
+        <span class="small">Terms of Use and Privacy Policy, version <span class="mono">{{version}}</span>, when you first signed in.</span>
+        <label style="display: flex; gap: 10px; align-items: center; margin-top: 6px">
+          <input class="f" type="checkbox" style="width: 22px; height: 22px; margin: 0; accent-color: #141414">
+          <span>Count my visits to help improve the site</span>
+        </label>
+        <span class="small">Teachers only. Students are never counted.</span>
+      </div>
+      <div class="card">
+        <span style="font-weight: 600">Delete your account</span>
+        <span class="small">Deletes your classes, your students and all their work. This can't be undone.</span>
+        <a href="#delete" class="f" style="font-size: 14px; color: #B3261E">Delete your account…</a>
+      </div>
+      <span class="small">A student sees the first two cards, and in place of the third: "To delete your work, ask your teacher. Your parent can ask too."</span>
+    </div>
+  </sc-if>
+
+  <!-- Teacher: the confirmation step. -->
+  <sc-if value="{{isDelete}}" hint-placeholder-val="{{false}}">
+    <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <span class="h">Delete your account?</span>
+      <span style="color: #3D3B37">This deletes, straight away and for good:</span>
+      <ul style="margin: 0; padding-left: 20px; color: #3D3B37">
+        <li>your account and your own attempts</li>
+        <li>your <b>{{classes}}</b> and the <b>{{students}}</b> in them, with all their work</li>
+      </ul>
+      <span style="color: #3D3B37">Your students will be signed out. Work already on their devices stays there.</span>
+      <a href="#download" class="f" style="font-size: 14px">Download your data first</a>
+      <span class="small">Example counts: the real ones come from your classes.</span>
+    </div>
+    <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 6px">
+      <label for="confirm" style="font-weight: 600; font-size: 14px">Type your email to confirm</label>
+      <input id="confirm" class="field f" type="email" autocomplete="off">
+      <span class="small">If you signed in more than an hour ago, we'll ask you to sign in again first.</span>
+    </div>
+    <span style="flex: 1"></span>
+    <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px">
+      <a href="#delete-now" class="danger f">Delete my account</a>
+      <a href="#keep" class="secondary f">Keep my account</a>
+    </div>
+  </sc-if>
+
+  <!-- Teacher: a student's drawer on the class page, for a parent's or student's request. -->
+  <sc-if value="{{isStudent}}" hint-placeholder-val="{{false}}">
+    <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <span class="small">{{className}}</span>
+      <span class="h">{{studentName}}'s data</span>
+      <span style="color: #3D3B37">For when the student or their parent asks.</span>
+      <span class="small">Example student and class (D29).</span>
+    </div>
+    <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <div class="card">
+        <span style="font-weight: 600">Download their work</span>
+        <span class="small">One file with their display name, class and every attempt. Give it only to the student or their parent.</span>
+        <a href="#download-student" class="secondary f" style="margin-top: 6px">Download</a>
+      </div>
+      <div class="card">
+        <span style="font-weight: 600">Remove from the class</span>
+        <span class="small">Deletes their work for good and signs them out. They can join again with the class code, starting fresh.</span>
+        <a href="#remove" class="f" style="font-size: 14px; color: #B3261E">Remove {{studentName}}…</a>
+      </div>
+    </div>
+    <div style="margin: 16px 20px 0; padding: 14px; border: 1px solid #B3261E; background: #FFFFFF; display: flex; flex-direction: column; gap: 8px">
+      <span style="font-weight: 600">Remove {{studentName}} and delete their work?</span>
+      <span class="small">This can't be undone. Download their work first if it's needed.</span>
+      <div style="display: flex; gap: 8px">
+        <a href="#remove-now" class="danger f" style="flex: 1; height: 44px">Remove</a>
+        <a href="#cancel" class="secondary f" style="flex: 1; height: 44px">Cancel</a>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":420,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { view: 'choice' }; }
+  renderVals() {
+    const { view } = this.state;
+    const show = (v) => () => this.setState({ view: v });
+    // Example data (D29), labelled on the board: the date, counts, student and class are made up
+    // for the mockup. The version is the drafted legal pack's (ADR 0042).
+    return {
+      isChoice: view === 'choice', isNotice: view === 'notice', isData: view === 'data',
+      isDelete: view === 'delete', isStudent: view === 'student',
+      showChoice: show('choice'), showNotice: show('notice'), showData: show('data'),
+      showDelete: show('delete'), showStudent: show('student'),
+      noticeDate: '1 March', version: '2026-11-06 draft',
+      classes: '2 classes', students: '61 students',
+      studentName: 'Kofi_A', className: 'SHS 2 Science A'
+    };
+  }
+}
+</script>
+</body>
+</html>

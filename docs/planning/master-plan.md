@@ -820,7 +820,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 - [x] Event sync and adoption of signed-out work
 - [x] Teacher and lecturer dashboards; live sessions over WebSockets
 - [x] Admin portal: overview, usage, learning, content, support, people, system, audit
-- [ ] Consent, data export and deletion
+- [x] Consent, data export and deletion
 - [ ] k6 load test against the targets
 
 ### Phase 4: AI features
