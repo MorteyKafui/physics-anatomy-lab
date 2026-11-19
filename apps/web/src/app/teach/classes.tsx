@@ -115,6 +115,11 @@ function ClassList() {
           ))}
         </ul>
       )}
+      {classes === "signed-out" ? null : (
+        <Link className={LINK} href="/teach/questions">
+          {t(k("teach.questions.link"))}
+        </Link>
+      )}
       <Link className={LINK} href="/teach/example">
         {t(k("teach.classes.example"))}
       </Link>

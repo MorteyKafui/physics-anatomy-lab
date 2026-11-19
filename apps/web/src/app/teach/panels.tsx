@@ -19,7 +19,7 @@ export const LIVE_EXPERIMENTS = [
   "method-of-mixtures-solid",
 ] as const;
 
-const FIELD =
+export const FIELD =
   "h-9 border border-[var(--pa-line)] bg-[var(--pa-ink-950)] px-2 text-sm text-[var(--pa-text)] focus-visible:outline-2 focus-visible:outline-[var(--pa-accent)]";
 
 export function Shell({ children }: { children: React.ReactNode }) {
