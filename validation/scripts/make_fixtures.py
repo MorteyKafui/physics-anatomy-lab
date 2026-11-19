@@ -47,7 +47,8 @@ from pa_validation.uncertainty import intercept_sum, quoted, worst_case, worst_l
 FIXTURES = Path(__file__).resolve().parent.parent / "fixtures"
 
 LENGTHS = [0.25, 0.5, 0.8, 1.0, 2.0]
-GRAVITY = [9.78, 9.81, 1.62]
+# The lab's g and 9.81; standard gravity and the what-if places (packages/physics gravity.ts).
+GRAVITY = [9.78, 9.81, 1.62, 9.80665, 3.71, 24.79]
 AMPLITUDES_DEG = [0, 2, 5, 10, 30, 60, 90, 150, 179]
 
 

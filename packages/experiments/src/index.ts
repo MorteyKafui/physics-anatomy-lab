@@ -458,3 +458,12 @@ export {
   solidExample,
 } from "./method-of-mixtures-solid-check";
 export type { SolidResult } from "./method-of-mixtures-solid-check";
+export {
+  asSet,
+  checkScenario,
+  PENDULUM_LIMITS,
+  PENDULUM_PLACES,
+  predictPendulum,
+  SMALL_ANGLE_DEG,
+} from "./pendulum-scenarios";
+export type { PendulumPrediction, PendulumScenario } from "./pendulum-scenarios";

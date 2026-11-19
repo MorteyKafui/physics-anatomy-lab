@@ -1,0 +1,85 @@
+/**
+ * What-if scenarios for the simple pendulum (docs/content/ai-tutor-brief.md, decision 6).
+ *
+ * A scenario changes only what the pendulum's model supports, within the limits below, and the
+ * prediction comes from packages/physics: the exact period, as the bench itself uses. Anything
+ * else (a string that stretches, air resistance, a swing that is not in one plane) is not a
+ * scenario: the model treats the string as light and inextensible and the bob as a point.
+ *
+ * These limits are physics content, approved by the physics reviewer.
+ */
+import { periodExact, periodSmallAngle, placeById, type PlaceId } from "@pa/physics";
+
+import { simplePendulum } from "./simple-pendulum";
+
+export const PENDULUM_LIMITS = {
+  /** Pivot to the centre of the bob, m: a short thread to the tallest stand. */
+  length: { min: 0.1, max: 2, step: 0.01 },
+  /** Largest angle from the vertical, degrees. Beyond 60° a thread may go slack in practice. */
+  amplitudeDeg: { min: 1, max: 60, step: 1 },
+  /** The bob's mass, g. It has no effect on the period, which is the point of the slider. */
+  massG: { min: 10, max: 200, step: 10 },
+} as const;
+
+/** Below this the small-angle formula is within 0.2 % of the exact period (the WASSCE limit). */
+export const SMALL_ANGLE_DEG = 10;
+
+export const PENDULUM_PLACES: readonly PlaceId[] = ["earth", "moon", "mars", "jupiter"];
+
+export interface PendulumScenario {
+  readonly length: number;
+  readonly place: PlaceId;
+  readonly amplitudeDeg: number;
+  readonly massG: number;
+}
+
+/** The experiment as set: the bench's length and swing, on the Earth, with the lab's bob. */
+export function asSet(length: number = simplePendulum.length): PendulumScenario {
+  return { length, place: "earth", amplitudeDeg: simplePendulum.amplitudeDeg, massG: 50 };
+}
+
+const within = (x: unknown, { min, max }: { min: number; max: number }) =>
+  typeof x === "number" && Number.isFinite(x) && x >= min && x <= max;
+
+/** The scenario, if every change is one the model supports and inside its limits. */
+export function checkScenario(value: unknown): PendulumScenario | undefined {
+  if (typeof value !== "object" || value === null) return undefined;
+  const v = value as Record<string, unknown>;
+  if (Object.keys(v).some((k) => !["length", "place", "amplitudeDeg", "massG"].includes(k))) {
+    return undefined;
+  }
+  if (!within(v.length, PENDULUM_LIMITS.length)) return undefined;
+  if (!within(v.amplitudeDeg, PENDULUM_LIMITS.amplitudeDeg)) return undefined;
+  if (!within(v.massG, PENDULUM_LIMITS.massG)) return undefined;
+  if (typeof v.place !== "string" || !PENDULUM_PLACES.includes(v.place as PlaceId)) {
+    return undefined;
+  }
+  return {
+    length: v.length as number,
+    place: v.place as PlaceId,
+    amplitudeDeg: v.amplitudeDeg as number,
+    massG: v.massG as number,
+  };
+}
+
+export interface PendulumPrediction {
+  /** The period the model predicts, s: the exact period. */
+  readonly period: number;
+  /** How much longer than 2π√(l/g) the exact period is, as a fraction. */
+  readonly beyondSmallAngle: number;
+  /** Whether the small-angle formula still holds (amplitude at or below 10°). */
+  readonly smallAngle: boolean;
+  readonly g: number;
+}
+
+export function predictPendulum(s: PendulumScenario): PendulumPrediction {
+  const { g } = placeById(s.place);
+  const p = { length: s.length, g, amplitude: (s.amplitudeDeg * Math.PI) / 180 };
+  const period = periodExact(p);
+  return {
+    period,
+    beyondSmallAngle: period / periodSmallAngle(p) - 1,
+    smallAngle: s.amplitudeDeg <= SMALL_ANGLE_DEG,
+    g,
+  };
+}

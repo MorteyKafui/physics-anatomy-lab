@@ -54,3 +54,5 @@ export {
   wireResistanceAt,
 } from "./terminal-pd";
 export type { Polarisation, TerminalPdSetup, WireHeating } from "./terminal-pd";
+export { PLACES, placeById } from "./gravity";
+export type { Place, PlaceId } from "./gravity";
