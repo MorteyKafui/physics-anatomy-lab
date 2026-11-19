@@ -1,12 +1,17 @@
 import { describe, expect, test } from "bun:test";
+import { replay, type Attempt, type Json, type LabEvent } from "@pa/engine";
 import { periodExact, PLACES } from "@pa/physics";
 
 import fixtures from "../../../validation/fixtures/pendulum.json";
 import {
   asSet,
+  benchPeriod,
   checkScenario,
+  lengthProjection,
   PENDULUM_LIMITS,
   predictPendulum,
+  scenarioEvent,
+  scenarioProjection,
   SMALL_ANGLE_DEG,
   simplePendulum,
 } from "../src";
@@ -75,5 +80,51 @@ describe("pendulum what-if scenarios", () => {
     ]) {
       expect(checkScenario(bad)).toBeUndefined();
     }
+  });
+});
+
+const ATTEMPT: Attempt = {
+  id: "w",
+  experimentId: "simple-pendulum",
+  mode: "what-if",
+  seed: 1,
+  createdAt: 0,
+  updatedAt: 0,
+  formatVersion: 1,
+};
+
+describe("a what-if attempt on the bench", () => {
+  const at = (kind: string, data: Json, seq: number): LabEvent => ({
+    kind,
+    data,
+    id: `e${String(seq)}`,
+    attemptId: "w",
+    seq,
+    device: "d",
+    at: seq,
+  });
+  const moon = { length: 0.85, place: "moon" as const, amplitudeDeg: 30, massG: 50 };
+
+  test("the attempt keeps its scenario, the first one only", () => {
+    const events = [
+      at(scenarioEvent(moon).kind, scenarioEvent(moon).data, 1),
+      at("scenario.set", { ...moon, place: "jupiter" }, 2),
+    ];
+    expect(replay(scenarioProjection, ATTEMPT, events)).toEqual(moon);
+    expect(
+      replay(scenarioProjection, ATTEMPT, [at("scenario.set", { length: 9 }, 3)]),
+    ).toBeUndefined();
+  });
+
+  test("the bench starts at the scenario's length, then steps from it", () => {
+    const events = [at("scenario.set", moon, 1)];
+    expect(replay(lengthProjection, ATTEMPT, events)).toBe(0.85);
+  });
+
+  test("the bench's period follows the scenario's swing", () => {
+    expect(benchPeriod(1.62, 0.85, 30)).toBe(
+      periodExact({ length: 0.85, g: 1.62, amplitude: Math.PI / 6 }),
+    );
+    expect(benchPeriod(1.62, 0.85)).toBe(benchPeriod(1.62, 0.85, simplePendulum.amplitudeDeg));
   });
 });

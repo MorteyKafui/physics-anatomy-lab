@@ -8,6 +8,7 @@
  *
  * These limits are physics content, approved by the physics reviewer.
  */
+import type { LabEvent, NewEvent, Projection } from "@pa/engine";
 import { periodExact, periodSmallAngle, placeById, type PlaceId } from "@pa/physics";
 
 import limits from "./pendulum-scenario-limits.json" with { type: "json" };
@@ -63,6 +64,18 @@ export function checkScenario(value: unknown): PendulumScenario | undefined {
     massG: v.massG as number,
   };
 }
+
+/** The event a what-if attempt starts with: its scenario, which the bench then runs. */
+export function scenarioEvent(s: PendulumScenario): NewEvent {
+  return { kind: "scenario.set", data: { ...s } };
+}
+
+/** A what-if attempt's scenario, rebuilt from its events; undefined in any other attempt. */
+export const scenarioProjection: Projection<PendulumScenario | undefined> = {
+  initial: () => undefined,
+  apply: (scenario, e: LabEvent) =>
+    scenario ?? (e.kind === "scenario.set" ? checkScenario(e.data) : undefined),
+};
 
 export interface PendulumPrediction {
   /** The period the model predicts, s: the exact period. */
