@@ -10,3 +10,13 @@ test("without the admin API the portal says so and shows no numbers", async ({ p
   await expect(page.getByText("ADMIN_API_URL is not set on the admin server.")).toBeVisible();
   await expect(page.locator(".ad-big")).toHaveCount(0);
 });
+
+test("the question bank says plainly when the admin API is not there", async ({ page }) => {
+  await page.goto(`${ADMIN}/question-bank`);
+  await expect(page.getByText("The admin API did not answer")).toBeVisible();
+  await expect(page.getByRole("group", { name: "State" }).getByRole("link")).toHaveText([
+    "Waiting",
+    "Approved",
+    "Not approved",
+  ]);
+});
