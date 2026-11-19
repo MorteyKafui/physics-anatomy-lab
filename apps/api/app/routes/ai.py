@@ -11,8 +11,8 @@ without a feature. It is mounted only in local and test, and left out of the Ope
 from collections.abc import Callable
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
 from sse_starlette import EventSourceResponse
 
 from app.ai.claude import Claude, get_claude
@@ -26,6 +26,7 @@ from app.ai.questions import NOT_READY as DRAFT_NOT_READY
 from app.ai.questions import DraftCheck, DraftRequest
 from app.ai.questions import output_schema as draft_schema
 from app.ai.questions import user_message as draft_message
+from app.ai.quotas import budget_reached, enforce, quota, used_today, within_limits
 from app.ai.review import INSTRUCTIONS as REVIEW_INSTRUCTIONS
 from app.ai.review import ReviewCheck, ReviewRequest, user_message
 from app.ai.review import output_schema as review_schema
@@ -34,12 +35,10 @@ from app.ai.scenarios import NOT_READY, SPECS, ScenarioCheck, output_schema
 from app.ai.stream import ReplyCheck, ReplyItem, reply_stream
 from app.ai.tutor import INSTRUCTIONS as TUTOR_INSTRUCTIONS
 from app.ai.tutor import tutor_check
-from app.auth import rate_limit
-from app.auth.sessions import MaybePrincipal, Teacher
+from app.auth.sessions import MaybePrincipal
 from app.config import get_settings
 from app.db import Db
 from app.routes.load_test import TEST_ENVIRONMENTS
-from app.routes.questions import DRAFTS_PER_TEACHER
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 test_router = APIRouter(prefix="/test-only/ai", include_in_schema=False)
@@ -54,20 +53,31 @@ class AiStatus(BaseModel):
     available: bool
     reason: Unavailable | None
     message: str | None
-    features: list[FeatureName]
+    features: list[FeatureName] = Field(description="The features this person may use now.")
+    used_up: dict[FeatureName, str] = Field(
+        default_factory=dict[FeatureName, str],
+        description="Features whose quota is used up today, each with the line to show.",
+    )
 
 
 @router.get("/status")
-async def ai_status(principal: MaybePrincipal) -> AiStatus:
+async def ai_status(principal: MaybePrincipal, db: Db) -> AiStatus:
     """Signed out is an answer here, not an error: the reason is `signed-out`."""
     settings = get_settings()
     reason = why_unavailable(principal, None, settings)
-    return AiStatus(
-        available=reason is None,
-        reason=reason,
-        message=None if reason is None else MESSAGES[reason],
-        features=available_features(principal, settings),
-    )
+    if reason is None and await budget_reached(db, settings):
+        reason = Unavailable.budget_reached
+    if reason is not None or principal is None:
+        message = None if reason is None else MESSAGES[reason]
+        return AiStatus(available=False, reason=reason, message=message, features=[])
+    features: list[FeatureName] = []
+    used_up: dict[FeatureName, str] = {}
+    for name in available_features(principal, settings):
+        if await used_today(db, principal, name) >= quota(principal, name, settings):
+            used_up[name] = MESSAGES[Unavailable.quota_used]
+        else:
+            features.append(name)
+    return AiStatus(available=True, reason=None, message=None, features=features, used_up=used_up)
 
 
 def ai_reply(
@@ -118,10 +128,12 @@ def ai_reply_with(
 @router.post(
     "/tutor",
     response_class=EventSourceResponse,
+    dependencies=[Depends(within_limits(FeatureName.tutor))],
     responses={
         200: {"content": {"text/event-stream": {}}, "description": "The reply (ADR 0043)"},
         401: {"description": "Signed out"},
         403: {"description": "AI is off for this class"},
+        429: {"description": "A quota, the daily budget or the address limit is used up"},
         503: {"description": "AI is switched off or not set up"},
     },
 )
@@ -143,10 +155,12 @@ async def tutor(
 @router.post(
     "/what-if",
     response_class=EventSourceResponse,
+    dependencies=[Depends(within_limits(FeatureName.what_if))],
     responses={
         200: {"content": {"text/event-stream": {}}, "description": "One item (ADR 0043)"},
         401: {"description": "Signed out"},
         403: {"description": "AI is off for this class"},
+        429: {"description": "A quota, the daily budget or the address limit is used up"},
         422: {"description": "What if is not ready for this experiment"},
         503: {"description": "AI is switched off or not set up"},
     },
@@ -173,10 +187,12 @@ async def what_if(
 @router.post(
     "/report-review",
     response_class=EventSourceResponse,
+    dependencies=[Depends(within_limits(FeatureName.report_review))],
     responses={
         200: {"content": {"text/event-stream": {}}, "description": "One item (ADR 0043)"},
         401: {"description": "Signed out"},
         403: {"description": "AI is off for this class"},
+        429: {"description": "A quota, the daily budget or the address limit is used up"},
         503: {"description": "AI is switched off or not set up"},
     },
 )
@@ -206,18 +222,17 @@ async def report_review(
 @router.post(
     "/question-drafting",
     response_class=EventSourceResponse,
+    dependencies=[Depends(within_limits(FeatureName.question_drafting))],
     responses={
         200: {"content": {"text/event-stream": {}}, "description": "One item (ADR 0043)"},
         401: {"description": "Signed out"},
         403: {"description": "Teachers only"},
         422: {"description": "Not ready for this experiment"},
-        429: {"description": "The day's drafts are used"},
         503: {"description": "AI is switched off or not set up"},
     },
 )
 async def question_drafting(
     body: DraftRequest,
-    db: Db,
     principal: MaybePrincipal,
     claude: ClaudeDep,
     ai_log: AiLogDep,
@@ -226,11 +241,6 @@ async def question_drafting(
     facts = QUESTION_FACTS.get(body.experiment_id)
     if facts is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=DRAFT_NOT_READY)
-    reason = why_unavailable(principal, FEATURES[FeatureName.question_drafting], get_settings())
-    if reason is not None:
-        raise refuse(reason)
-    assert isinstance(principal, Teacher)  # students never get drafting (why_unavailable)
-    await rate_limit.take(db, DRAFTS_PER_TEACHER, str(principal.user.id))
     return ai_reply_with(
         FeatureName.question_drafting,
         principal,
@@ -254,10 +264,13 @@ TEST_INSTRUCTIONS = "Answer the student's question about this step in one or two
 async def test_reply(
     feature: FeatureName,
     context: AiContext,
+    request: Request,
+    db: Db,
     principal: MaybePrincipal,
     claude: ClaudeDep,
     ai_log: AiLogDep,
 ) -> EventSourceResponse:
     if get_settings().environment not in TEST_ENVIRONMENTS:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
+    await enforce(db, request, principal, feature)
     return ai_reply(feature, principal, context, TEST_INSTRUCTIONS, claude, ai_log)

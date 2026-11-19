@@ -114,8 +114,8 @@ def claude() -> Iterator[FakeClaude]:
 
 
 @pytest.fixture
-def ai_log() -> Iterator[FakeLog]:
-    fake = FakeLog()
+def ai_log(db: AsyncSession) -> Iterator[FakeLog]:
+    fake = FakeLog(db=db)
     app.dependency_overrides[get_ai_log] = lambda: fake
     yield fake
     app.dependency_overrides.pop(get_ai_log, None)

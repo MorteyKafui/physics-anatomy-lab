@@ -8,7 +8,7 @@
 """
 
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Annotated, Literal
 
 import structlog
@@ -19,7 +19,6 @@ from sqlalchemy import func, select
 from app.admin.access import CurrentStaff, require_staff
 from app.admin.audit import record
 from app.ai.questions import FACTS, NOT_READY, Topic, clean_question
-from app.auth.policy import Limit
 from app.auth.sessions import CurrentTeacher
 from app.db import Db
 from app.models import Question, User
@@ -27,8 +26,8 @@ from app.schemas import Body
 
 log = structlog.get_logger()
 
-# Until item 4's quotas: drafts a teacher may ask for each day, and questions waiting at once.
-DRAFTS_PER_TEACHER = Limit("question-draft:user", 20, timedelta(days=1))
+# Questions a teacher may have waiting for review at once. Drafts per day are a quota
+# (app/ai/quotas.py, settings.ai_quota_teacher).
 MAX_WAITING = 30
 
 router = APIRouter(prefix="/questions", tags=["questions"])

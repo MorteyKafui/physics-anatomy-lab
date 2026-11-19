@@ -81,8 +81,18 @@ export type AiStatus = {
   message: string | null;
   /**
    * Features
+   *
+   * The features this person may use now.
    */
   features: Array<FeatureName>;
+  /**
+   * Used Up
+   *
+   * Features whose quota is used up today, each with the line to show.
+   */
+  used_up?: {
+    [key in FeatureName]?: string;
+  };
 };
 
 /**
@@ -2152,7 +2162,14 @@ export type ThreadTurn = {
  * Unavailable
  */
 export type Unavailable =
-  "signed-out" | "class-off" | "switched-off" | "not-configured" | "not-for-students";
+  | "signed-out"
+  | "class-off"
+  | "switched-off"
+  | "not-configured"
+  | "not-for-students"
+  | "quota-used"
+  | "budget-reached"
+  | "address-busy";
 
 /**
  * Usage
@@ -3603,6 +3620,10 @@ export type TutorErrors = {
    */
   422: HttpValidationError;
   /**
+   * A quota, the daily budget or the address limit is used up
+   */
+  429: unknown;
+  /**
    * AI is switched off or not set up
    */
   503: unknown;
@@ -3638,6 +3659,10 @@ export type WhatIfErrors = {
    */
   422: unknown;
   /**
+   * A quota, the daily budget or the address limit is used up
+   */
+  429: unknown;
+  /**
    * AI is switched off or not set up
    */
   503: unknown;
@@ -3670,6 +3695,10 @@ export type ReportReviewErrors = {
    * Validation Error
    */
   422: HttpValidationError;
+  /**
+   * A quota, the daily budget or the address limit is used up
+   */
+  429: unknown;
   /**
    * AI is switched off or not set up
    */
@@ -3705,10 +3734,6 @@ export type QuestionDraftingErrors = {
    * Not ready for this experiment
    */
   422: unknown;
-  /**
-   * The day's drafts are used
-   */
-  429: unknown;
   /**
    * AI is switched off or not set up
    */

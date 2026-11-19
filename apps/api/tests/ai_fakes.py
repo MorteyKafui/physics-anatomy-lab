@@ -5,10 +5,12 @@ from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.claude import ClaudeError, Finished, Piece, TextPiece
 from app.ai.context import ModelRequest
 from app.ai.log import LogEntry
+from app.models import AiRequest
 
 TEST_KEY = "test-key-not-a-real-one"
 
@@ -44,10 +46,18 @@ class FakeClaude:
 
 @dataclass
 class FakeLog:
+    """Keeps every entry, and writes it to the test's database too, so quotas count it."""
+
     entries: list[LogEntry] = field(default_factory=list[LogEntry])
+    db: AsyncSession | None = None
 
     async def record(self, entry: LogEntry) -> None:
         self.entries.append(entry)
+        if self.db is not None:
+            # Committed, as the real log's own session does, so a later refused request's
+            # rollback does not take it back.
+            self.db.add(AiRequest(**entry.__dict__))
+            await self.db.commit()
 
 
 def context(**changes: object) -> dict[str, object]:

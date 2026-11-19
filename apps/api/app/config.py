@@ -66,6 +66,20 @@ class Settings(BaseSettings):
     ai_model_what_if: str = "claude-haiku-5-5"
     ai_model_report_review: str = "claude-sonnet-5-5"
     ai_model_question_drafting: str = "claude-sonnet-5-5"
+    # Daily quotas per person and feature (docs/content/ai-quotas-brief.md, decision 1). A feature
+    # missing from a list is not for that kind of person.
+    ai_quota_student: dict[str, int] = {"tutor": 30, "what-if": 15, "report-review": 5}
+    ai_quota_teacher: dict[str, int] = {
+        "tutor": 60,
+        "what-if": 30,
+        "report-review": 20,
+        "question-drafting": 20,
+    }
+    # AI requests a day from one network address (decision 2).
+    ai_requests_per_address: int = 1500
+    # The day's spend at which AI switches itself off until midnight, in US dollars: the monthly
+    # ceiling divided by 30. Required when deployed with AI on.
+    ai_daily_budget_usd: float | None = None
 
     @model_validator(mode="after")
     def _deployed_settings(self) -> Self:
@@ -84,6 +98,8 @@ class Settings(BaseSettings):
             raise ValueError("Set ANTHROPIC_API_KEY, or leave AI_ENABLED off.")
         if deployed and self.ai_enabled and not self.ai_log_key:
             raise ValueError("Set AI_LOG_KEY (it keys the AI log's pseudonyms).")
+        if deployed and self.ai_enabled and not self.ai_daily_budget_usd:
+            raise ValueError("Set AI_DAILY_BUDGET_USD (the monthly AI ceiling divided by 30).")
         return self
 
     @property
