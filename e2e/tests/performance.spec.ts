@@ -113,24 +113,30 @@ test.describe("the benchmark phone, emulated", () => {
     await cdp.send("Network.enable");
     await cdp.send("Network.emulateNetworkConditions", SLOW_4G);
 
-    // The bob really moves while the frames are counted.
-    const bob = page.locator('[data-part="bob"]').first();
-    const before = (await bob.boundingBox())!.x;
-    const fps = await page.evaluate(
+    // The bob really moves while the frames are counted. Its position is sampled through the
+    // count, not just before and after: two samples a few periods apart can land on the same
+    // point of the swing (the period is about 1.8 s).
+    const { fps, travel } = await page.evaluate(
       () =>
-        new Promise<number>((resolve) => {
+        new Promise<{ fps: number; travel: number }>((resolve) => {
+          const bob = document.querySelector('[data-part="bob"]');
+          const xs: number[] = [];
           let frames = 0;
           const start = performance.now();
           const tick = () => {
             frames += 1;
+            if (bob && frames % 10 === 0) xs.push(bob.getBoundingClientRect().x);
             if (performance.now() - start < 4000) requestAnimationFrame(tick);
-            else resolve(frames / ((performance.now() - start) / 1000));
+            else
+              resolve({
+                fps: frames / ((performance.now() - start) / 1000),
+                travel: xs.length ? Math.max(...xs) - Math.min(...xs) : 0,
+              });
           };
           requestAnimationFrame(tick);
         }),
     );
-    const after = (await bob.boundingBox())!.x;
-    expect(Math.abs(after - before)).toBeGreaterThan(1);
+    expect(travel).toBeGreaterThan(1);
 
     /*
      * Interaction to Next Paint, as the browser times it: the longest of Start, a count and Stop,
