@@ -160,3 +160,25 @@ provider and a bill, and is not proposed now.
 
 - Quotas, answer caching and per-feature switches (item 4), the evaluation suite (item 5),
   question drafting (item 3), voice input, saving tutor threads, and a teacher reading them.
+
+## Opening a what-if scenario on the bench: design
+
+Decision 6 approved opening a scenario on the bench as an unmarked attempt. How it works, for
+approval before it is built:
+
+1. **A new attempt mode, `what-if`.** "Open on the bench" in the What if panel starts a new
+   attempt with the scenario saved as its first event (`scenario.set`: length, place, amplitude,
+   mass). The lab opens it from then on, like an exam; the student's practice run is kept, and
+   a bar at the top says "What if: the pendulum on the Moon · not marked", with **Back to my
+   practice**.
+2. **The bench runs the scenario.** The period, the bob's swing and the stopwatch follow the
+   scenario's g, length and amplitude (`packages/physics`), so a student can time the pendulum on
+   the Moon and work out g there. The bench is built already; the attempt starts at Measure.
+3. **Not marked, no report.** The coach still helps (counting from zero, timing many swings), but
+   Analyse compares the result with the scenario's own g, Review and Report are not offered,
+   and Conclude and Report stay closed. A teacher's dashboard leaves what-if attempts out of its
+   counts and mistakes.
+4. **Where it changes code beyond the lab:** the mode is added to the step machine's TLA+ model
+   (it behaves as guided, so its properties still hold and are rechecked in CI), to sync's schema,
+   and to the database's check on modes (migration 0008). What-if attempts sync like any other.
+5. **Pendulum first.** The other experiments follow when their scenario models are reviewed.
