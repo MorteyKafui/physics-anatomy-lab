@@ -31,9 +31,20 @@ export function Evaluations({ evaluations }: { evaluations: readonly EvalSummary
           are well formed.
         </p>
       )}
-      {run.map((e) => {
+      {(run.length ? evaluations : []).map((e) => {
         const rate = e.rate ?? 0;
         const good = e.passed === true;
+        if (e.run_at === null)
+          return (
+            <div key={e.feature} style={row}>
+              <span>{FEATURE_NAMES[e.feature]}</span>
+              <span className="ad-sub">No results yet</span>
+              <span />
+              <span style={{ justifySelf: "end" }}>
+                <Chip kind="grey">Not run yet</Chip>
+              </span>
+            </div>
+          );
         return (
           <div key={e.feature} style={row}>
             <span>{FEATURE_NAMES[e.feature]}</span>
