@@ -26,16 +26,19 @@ import {
 const api = createApi();
 
 export function YourData() {
-  const [me, setMe] = useState<MeResponse | "signed-out" | null>(null);
+  const [me, setMe] = useState<MeResponse | { problem: string } | null>(null);
   useEffect(() => {
-    void api.auth.me().then((r) => setMe(r.ok ? r.data : "signed-out"));
+    void api.auth.me().then((r) =>
+      // Only a refused session means signed out; offline or a server fault says so instead.
+      setMe(r.ok ? r.data : { problem: r.status === 401 ? t(k("privacy.signedOut")) : r.detail }),
+    );
   }, []);
   if (me === null) return null;
-  if (me === "signed-out") {
+  if ("problem" in me) {
     return (
       <Page>
         <Heading>{t(k("privacy.title"))}</Heading>
-        <Lead>{t(k("privacy.signedOut"))}</Lead>
+        <Lead>{me.problem}</Lead>
       </Page>
     );
   }

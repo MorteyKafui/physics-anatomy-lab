@@ -22,21 +22,25 @@ import {
 const api = createApi();
 
 export function DeleteAccount() {
-  const [summary, setSummary] = useState<TeacherExport | "not-teacher" | null>(null);
+  const [summary, setSummary] = useState<TeacherExport | { problem: string } | null>(null);
   const { busy, download } = useDownload(
     () => api.privacy.exportMine(),
     (after) => api.privacy.exportMyAttempts(after),
   );
   useEffect(() => {
     void api.privacy.exportMine().then((r) => {
-      setSummary(r.ok && r.data.kind === "teacher" ? r.data : "not-teacher");
+      if (r.ok && r.data.kind === "teacher") setSummary(r.data);
+      else
+        setSummary({
+          problem: r.ok || r.status === 401 ? t(k("privacy.signedOut")) : r.detail,
+        });
     });
   }, []);
   if (summary === null) return null;
-  if (summary === "not-teacher") {
+  if ("problem" in summary) {
     return (
       <Page>
-        <Lead>{t(k("privacy.signedOut"))}</Lead>
+        <Lead>{summary.problem}</Lead>
       </Page>
     );
   }

@@ -22,21 +22,22 @@ import {
 const api = createApi();
 
 export function LeaveClass() {
-  const [me, setMe] = useState<StudentMe | "not-student" | null>(null);
+  const [me, setMe] = useState<StudentMe | { problem: string } | null>(null);
   const { busy, download } = useDownload(
     () => api.privacy.exportMine(),
     (after) => api.privacy.exportMyAttempts(after),
   );
   useEffect(() => {
-    void api.auth
-      .me()
-      .then((r) => setMe(r.ok && r.data.kind === "student" ? r.data : "not-student"));
+    void api.auth.me().then((r) => {
+      if (r.ok && r.data.kind === "student") setMe(r.data);
+      else setMe({ problem: r.ok || r.status === 401 ? t(k("privacy.signedOut")) : r.detail });
+    });
   }, []);
   if (me === null) return null;
-  if (me === "not-student") {
+  if ("problem" in me) {
     return (
       <Page>
-        <Lead>{t(k("privacy.signedOut"))}</Lead>
+        <Lead>{me.problem}</Lead>
       </Page>
     );
   }
