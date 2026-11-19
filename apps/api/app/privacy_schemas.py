@@ -121,3 +121,15 @@ class ExportAttemptsPage(Camel):
 
 class AccountDelete(Body):
     confirm_email: EmailStr = Field(description="The teacher types their email to confirm.")
+
+
+class ClassDelete(Body):
+    confirm_name: Annotated[str, Field(min_length=1, max_length=80)] = Field(
+        description="The teacher types the class's name to confirm."
+    )
+
+
+class LeaveClass(Body):
+    confirm_display_name: Annotated[str, Field(min_length=1, max_length=24)] = Field(
+        description="The student types their display name to confirm."
+    )

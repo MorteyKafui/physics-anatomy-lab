@@ -34,6 +34,8 @@ a{color:#C2361B}a:hover{color:#8F2410}
   <button type="button" class="seg f" onClick="{{showData}}" aria-pressed="{{isData}}">Your data</button>
   <button type="button" class="seg f" onClick="{{showDelete}}" aria-pressed="{{isDelete}}">Delete account</button>
   <button type="button" class="seg f" onClick="{{showStudent}}" aria-pressed="{{isStudent}}">A student's data</button>
+  <button type="button" class="seg f" onClick="{{showClass}}" aria-pressed="{{isClass}}">Delete class</button>
+  <button type="button" class="seg f" onClick="{{showLeave}}" aria-pressed="{{isLeave}}">Student deletes</button>
 </div>
 
 <div style="width: 390px; height: 844px; box-sizing: border-box; background: #FBFBF6; color: #141414; font-family: Geist, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-direction: column; border: 1px solid #E6E4DB">
@@ -100,7 +102,7 @@ a{color:#C2361B}a:hover{color:#8F2410}
         <span class="small">Deletes your classes, your students and all their work. This can't be undone.</span>
         <a href="#delete" class="f" style="font-size: 14px; color: #B3261E">Delete your account…</a>
       </div>
-      <span class="small">A student sees the first two cards, and in place of the third: "To delete your work, ask your teacher. Your parent can ask too."</span>
+      <span class="small">A student sees the first two cards, and in place of the third: "Delete your work: deletes all your work and takes you out of the class. This can't be undone." (see Student deletes).</span>
     </div>
   </sc-if>
 
@@ -158,6 +160,45 @@ a{color:#C2361B}a:hover{color:#8F2410}
       </div>
     </div>
   </sc-if>
+  <!-- Teacher: class settings, deleting one class. -->
+  <sc-if value="{{isClass}}" hint-placeholder-val="{{false}}">
+    <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <span class="h">Delete {{className}}?</span>
+      <span style="color: #3D3B37">This deletes, straight away and for good, the class and the <b>{{classStudents}}</b> in it, with all their work. They'll be signed out. Your other classes stay.</span>
+      <a href="#download-class" class="f" style="font-size: 14px">Download each student's work first</a>
+      <span class="small">Example class and count (D29).</span>
+    </div>
+    <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 6px">
+      <label for="confirm-class" style="font-weight: 600; font-size: 14px">Type the class's name to confirm</label>
+      <input id="confirm-class" class="field f" type="text" autocomplete="off">
+      <span class="small">If you signed in more than an hour ago, we'll ask you to sign in again first.</span>
+    </div>
+    <span style="flex: 1"></span>
+    <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px">
+      <a href="#delete-class-now" class="danger f">Delete the class</a>
+      <a href="#keep-class" class="secondary f">Keep the class</a>
+    </div>
+  </sc-if>
+
+  <!-- Student: Your data, deleting their own work. -->
+  <sc-if value="{{isLeave}}" hint-placeholder-val="{{false}}">
+    <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 8px">
+      <span class="small">You're in <b style="color: #141414">{{className}}</b> as <b style="color: #141414">{{studentName}}</b></span>
+      <span class="h">Delete your work?</span>
+      <span style="color: #3D3B37">This deletes all your work from your account and takes you out of the class, straight away and for good. Your teacher won't see it any more.</span>
+      <span style="color: #3D3B37">Work already on this device stays on it. You can join the class again with its code, starting fresh.</span>
+      <a href="#download" class="f" style="font-size: 14px">Download your work first</a>
+    </div>
+    <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 6px">
+      <label for="confirm-name" style="font-weight: 600; font-size: 14px">Type your display name to confirm</label>
+      <input id="confirm-name" class="field f" type="text" autocomplete="off">
+    </div>
+    <span style="flex: 1"></span>
+    <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px">
+      <a href="#leave-now" class="danger f">Delete my work</a>
+      <a href="#keep-work" class="secondary f">Keep my work</a>
+    </div>
+  </sc-if>
 </div>
 </div>
 </x-dc>
@@ -172,10 +213,12 @@ class Component extends DCLogic {
     return {
       isChoice: view === 'choice', isNotice: view === 'notice', isData: view === 'data',
       isDelete: view === 'delete', isStudent: view === 'student',
+      isClass: view === 'class', isLeave: view === 'leave',
       showChoice: show('choice'), showNotice: show('notice'), showData: show('data'),
       showDelete: show('delete'), showStudent: show('student'),
+      showClass: show('class'), showLeave: show('leave'),
       noticeDate: '1 March', version: '2026-11-06 draft',
-      classes: '2 classes', students: '61 students',
+      classes: '2 classes', students: '61 students', classStudents: '32 students',
       studentName: 'Kofi_A', className: 'SHS 2 Science A'
     };
   }

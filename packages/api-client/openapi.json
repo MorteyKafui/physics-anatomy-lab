@@ -1356,6 +1356,50 @@
         }
       }
     },
+    "/classes/{class_id}/delete": {
+      "post": {
+        "tags": ["privacy"],
+        "summary": "Delete Class",
+        "description": "Delete one class with its students and all their work. Permanent, at once.\n\nThe teacher types the class name to confirm, and must have signed in within the last hour.",
+        "operationId": "deleteClass",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassDelete"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Sign in again first"
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "The class name does not match"
+          }
+        }
+      }
+    },
     "/classes/{class_id}/members/{member_id}": {
       "delete": {
         "tags": ["privacy"],
@@ -1400,6 +1444,35 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/account/leave": {
+      "post": {
+        "tags": ["privacy"],
+        "summary": "Leave Class",
+        "description": "A student deletes their own work and leaves the class. Permanent, at once.\n\nThey type their display name to confirm. Their device keeps its own copy (offline first), and\nthey can join again with the class code, starting fresh.",
+        "operationId": "leaveClass",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveClass"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Only students leave a class this way"
+          },
+          "422": {
+            "description": "The display name does not match"
           }
         }
       }
@@ -2898,6 +2971,21 @@
         "required": ["name", "school_permission_confirmed"],
         "title": "ClassCreate"
       },
+      "ClassDelete": {
+        "properties": {
+          "confirm_name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Confirm Name",
+            "description": "The teacher types the class's name to confirm."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["confirm_name"],
+        "title": "ClassDelete"
+      },
       "ClassMistake": {
         "properties": {
           "rule": {
@@ -3732,6 +3820,21 @@
         "type": "object",
         "required": ["window", "experiment_id", "stages", "mistakes", "skills", "experiments"],
         "title": "Learning"
+      },
+      "LeaveClass": {
+        "properties": {
+          "confirm_display_name": {
+            "type": "string",
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Confirm Display Name",
+            "description": "The student types their display name to confirm."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["confirm_display_name"],
+        "title": "LeaveClass"
       },
       "LiveMessageOut": {
         "properties": {
