@@ -829,7 +829,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 - [x] Tutor (text and voice), what-if scenarios, report review
 - [x] Question drafting with reviewer approval in the admin portal
 - [x] Quotas, caching, feature flags
-- [ ] Evaluation suite in CI
+- [x] Evaluation suite in CI
 
 ### Phase 5: Brand and landing page
 
