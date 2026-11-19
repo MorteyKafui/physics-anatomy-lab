@@ -254,6 +254,8 @@ export class StudentLive {
       onFrame: (frame) => {
         if (frame.type === "state") this.advance(frame.cursor);
         if (frame.type === "message") this.advance(frame.message.id);
+        // The server may have missed telling us something: ask again from our cursor.
+        if (frame.type === "resync") this.socket.send({ type: "hello", after: this.cursor });
         options.onFrame(frame);
       },
     });

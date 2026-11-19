@@ -101,18 +101,23 @@ export const stepName = (step: StepName) => t(key(`lab.steps.${step}`));
 
 // Hints
 
-/** The hints still standing (not undone), by the mistake's rule. */
-export function standingHints(s: LiveSnapshot): Map<string, LiveMessageOut> {
-  const out = new Map<string, LiveMessageOut>();
+/** The hints still standing (not undone), by the mistake's rule, oldest first. A rule can have
+ * several: pushing it again reaches the students the earlier hints did not. */
+export function standingHints(s: LiveSnapshot): Map<string, LiveMessageOut[]> {
+  const out = new Map<string, LiveMessageOut[]>();
   for (const m of s.messages) {
     const rule = m.data.rule;
-    if (m.kind === "hint" && m.undone_at === null && typeof rule === "string") out.set(rule, m);
+    if (m.kind === "hint" && m.undone_at === null && typeof rule === "string")
+      out.set(rule, [...(out.get(rule) ?? []), m]);
   }
   return out;
 }
 
-const reached = (hint: LiveMessageOut | undefined, memberId: string) =>
-  hint !== undefined && (hint.to_member_ids === null || hint.to_member_ids.includes(memberId));
+type Hints = Map<string, LiveMessageOut[]>;
+const reached = (hints: Hints, rule: string, memberId: string) =>
+  (hints.get(rule) ?? []).some(
+    (h) => h.to_member_ids === null || h.to_member_ids.includes(memberId),
+  );
 
 // The board
 
@@ -160,9 +165,9 @@ export interface Board {
 
 const ms = (iso: string) => new Date(iso).getTime();
 
-function card(b: BenchOut, hints: Map<string, LiveMessageOut>): BenchCard {
-  const needs = b.mistakes.find((m) => !reached(hints.get(m.rule), b.member_id)) ?? null;
-  const hinted = b.mistakes.some((m) => reached(hints.get(m.rule), b.member_id));
+function card(b: BenchOut, hints: Hints): BenchCard {
+  const needs = b.mistakes.find((m) => !reached(hints, m.rule, b.member_id)) ?? null;
+  const hinted = b.mistakes.some((m) => reached(hints, m.rule, b.member_id));
   const stepIndex = STEPS.indexOf(b.step);
   const help = b.here && needs !== null;
   const [status, tone]: [string, Tone] = !b.here
@@ -209,20 +214,23 @@ export function board(s: LiveSnapshot, now: number): Board {
     : t(key("teach.tile.help.none"));
 
   // Mistakes happening now: every current mistake on a bench that is here.
-  const rows = new Map<string, { m: Mistake; students: number }>();
+  // A row counts as sent once every student with the mistake has been reached; a student who
+  // makes it later turns it back into "Push hint", for them alone.
+  const rows = new Map<string, { m: Mistake; students: number; waiting: number }>();
   for (const c of cards) {
     if (!c.bench.here) continue;
     for (const m of c.bench.mistakes) {
-      const row = rows.get(m.rule) ?? { m, students: 0 };
+      const row = rows.get(m.rule) ?? { m, students: 0, waiting: 0 };
       row.students += 1;
+      if (!reached(hints, m.rule, c.memberId)) row.waiting += 1;
       rows.set(m.rule, row);
     }
   }
   const mistakes: MistakeRow[] = [...rows.values()]
     .sort((a, b) => b.students - a.students || a.m.rule.localeCompare(b.m.rule))
-    .map(({ m, students }) => {
-      const sent = hints.get(m.rule) ?? null;
-      const reachedCount = sent?.to_member_ids?.length ?? students;
+    .map(({ m, students: all, waiting }) => {
+      const sent = waiting === 0 ? (hints.get(m.rule)?.at(-1) ?? null) : null;
+      const students = sent ? all : waiting;
       return {
         rule: m.rule,
         key: m.key,
@@ -230,7 +238,7 @@ export function board(s: LiveSnapshot, now: number): Board {
         students,
         sent,
         chip: sent
-          ? t(key("teach.mistakes.sentTo"), { count: reachedCount })
+          ? t(key("teach.mistakes.sentTo"), { count: all })
           : students === 1
             ? t(key("teach.mistakes.student"))
             : t(key("teach.mistakes.students"), { count: students }),

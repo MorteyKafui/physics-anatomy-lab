@@ -178,6 +178,24 @@ describe("student live", () => {
     expect(frames.map((f) => f.type)).toEqual(["message"]);
   });
 
+  test("asks again from its cursor when told to resync", () => {
+    const { sockets, clock, factory } = setup();
+    const live = new StudentLive({
+      url: "ws://x",
+      socket: factory,
+      clock,
+      after: 5,
+      onFrame: () => undefined,
+    });
+    live.start();
+    sockets[0]!.open();
+    sockets[0]!.receive({ type: "resync" });
+    expect(sockets[0]!.sent).toEqual([
+      { type: "hello", after: 5 },
+      { type: "hello", after: 5 },
+    ]);
+  });
+
   test("sends at most one bench every two seconds, ending on the latest", () => {
     const { sockets, clock, factory } = setup();
     const live = new StudentLive({

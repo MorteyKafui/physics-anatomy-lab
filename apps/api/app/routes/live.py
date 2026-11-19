@@ -152,9 +152,9 @@ async def _send(
     await db.flush()
     await db.refresh(row)
     out = message_out(row)
-    await publish(
-        db, session.class_id, "all", {"type": "message", "message": out.model_dump(mode="json")}, to
-    )
+    # The recipients ride once, in the envelope; the hub gives them back to teachers only.
+    frame = out.model_dump(mode="json", exclude={"to_member_ids"})
+    await publish(db, session.class_id, "all", {"type": "message", "message": frame}, to)
     log.info(
         "live.sent",
         kind=kind,
@@ -275,20 +275,24 @@ async def push_hint(
     class_id: uuid.UUID, body: HintPush, teacher: CurrentTeacher, db: Db
 ) -> LiveMessageOut:
     """Send one hint to every student whose bench shows this mistake now. Pushing the same
-    mistake again while the first is not undone returns the first."""
+    mistake again reaches only those the standing hints have not; if there are none, it returns
+    the latest hint, so a double click sends one."""
     school_class = await owned_class(db, teacher, class_id)
     await _command(db, teacher)
     session = await _require_open(db, school_class.id)
-    earlier = await db.scalar(
-        select(LiveMessage).where(
-            LiveMessage.session_id == session.id,
-            LiveMessage.kind == "hint",
-            LiveMessage.undone_at.is_(None),
-            LiveMessage.data["rule"].astext == body.rule,
+    earlier = list(
+        await db.scalars(
+            select(LiveMessage)
+            .where(
+                LiveMessage.session_id == session.id,
+                LiveMessage.kind == "hint",
+                LiveMessage.undone_at.is_(None),
+                LiveMessage.data["rule"].astext == body.rule,
+            )
+            .order_by(LiveMessage.id)
         )
     )
-    if earlier is not None:
-        return message_out(earlier)
+    reached = {m for hint in earlier for m in hint.to_member_ids or []}
     recipients = list(
         await db.scalars(
             select(LiveBench.member_id)
@@ -299,7 +303,10 @@ async def push_hint(
             .order_by(LiveBench.member_id)
         )
     )
+    recipients = [m for m in recipients if m not in reached]
     if not recipients:
+        if earlier:
+            return message_out(earlier[-1])
         raise HTTPException(status.HTTP_409_CONFLICT, detail="No one has this mistake now.")
     return await _send(
         db, session, teacher, "hint", {"rule": body.rule, "key": body.key}, recipients
@@ -634,7 +641,10 @@ class _Bench:
         frame, self.pending = self.pending, None
         self.flush = None
         if frame is not None:
-            await self._write(frame)
+            try:
+                await self._write(frame)
+            except Exception:  # a task's error is otherwise never seen
+                log.exception("live.bench_write_failed", member_id=str(self.member_id))
 
     async def _write(self, frame: BenchFrame) -> None:
         self.last_write = time.monotonic()
@@ -643,8 +653,9 @@ class _Bench:
         mistakes = [m.model_dump() for m in frame.mistakes]
         async with get_sessionmaker()() as db:
             row = (
-                await db.execute(
-                    text("""
+                (
+                    await db.execute(
+                        text("""
                         INSERT INTO live_benches AS b
                             (session_id, member_id, attempt_id, step, completed, mistakes,
                              readings, measured_at)
@@ -664,28 +675,25 @@ class _Bench:
                             updated_at = now(),
                             last_seen_at = now(),
                             measured_at = coalesce(b.measured_at, excluded.measured_at)
-                        RETURNING b.session_id
+                        RETURNING b.*
                     """),
-                    {
-                        "member_id": self.member_id,
-                        "attempt_id": frame.attempt_id,
-                        "step": frame.step,
-                        "completed": completed,
-                        "mistakes": _json(mistakes),
-                        "readings": frame.readings,
-                        "class_id": self.class_id,
-                        "experiment_id": frame.experiment_id,
-                    },
-                )
-            ).one_or_none()
-            if row is not None:
-                bench = await db.scalar(
-                    select(LiveBench).where(
-                        LiveBench.session_id == row.session_id,
-                        LiveBench.member_id == self.member_id,
+                        {
+                            "member_id": self.member_id,
+                            "attempt_id": frame.attempt_id,
+                            "step": frame.step,
+                            "completed": completed,
+                            "mistakes": _json(mistakes),
+                            "readings": frame.readings,
+                            "class_id": self.class_id,
+                            "experiment_id": frame.experiment_id,
+                        },
                     )
                 )
-                assert bench is not None
+                .mappings()
+                .one_or_none()
+            )
+            if row is not None:
+                bench = LiveBench(**row)
                 out = bench_out(bench, self.student.member.display_name, datetime.now(UTC))
                 await publish(
                     db,

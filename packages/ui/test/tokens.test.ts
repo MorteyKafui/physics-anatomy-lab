@@ -2,7 +2,14 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { colour, dashTone, figureTone, figureTonePaper, graphPalette, topicHue } from "../src/tokens";
+import {
+  colour,
+  dashTone,
+  figureTone,
+  figureTonePaper,
+  graphPalette,
+  topicHue,
+} from "../src/tokens";
 
 const file = readFileSync(join(import.meta.dir, "../src/tokens.css"), "utf8");
 const block = (selector: string) => {

@@ -1294,7 +1294,7 @@
       "post": {
         "tags": ["live"],
         "summary": "Push Hint",
-        "description": "Send one hint to every student whose bench shows this mistake now. Pushing the same\nmistake again while the first is not undone returns the first.",
+        "description": "Send one hint to every student whose bench shows this mistake now. Pushing the same\nmistake again reaches only those the standing hints have not; if there are none, it returns\nthe latest hint, so a double click sends one.",
         "operationId": "pushHint",
         "parameters": [
           {

@@ -118,9 +118,16 @@ class Hub:
             return
         if not isinstance(message, dict):
             return
+        message = cast(Message, message)
         for sub in tuple(self._subscribers.get(class_id, ())):
-            if sub.wants(audience, members):
-                sub.offer(message)  # pyright: ignore[reportUnknownArgumentType]
+            if not sub.wants(audience, members):
+                continue
+            if sub.role == "teacher" and message.get("type") == "message":
+                # Who a message reached travels once, in the envelope; teachers see it.
+                inner = {**message["message"], "to_member_ids": members}
+                sub.offer({"type": "message", "message": inner})
+            else:
+                sub.offer(message)
 
     def _resync_all(self) -> None:
         for subs in self._subscribers.values():

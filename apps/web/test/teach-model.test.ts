@@ -71,10 +71,20 @@ describe("the live board", () => {
     const s = snapshot([bench("Kofi", { mistakes: [ONE] }), bench("Ama", { mistakes: [ONE] })]);
     const hinted = { ...s, messages: [exampleHint(1, ONE.rule, ONE.key, ["Kofi"], NOW)] };
     const b = board(hinted, NOW);
-    expect(b.helpCount).toBe(1); // Ama joined the mistake after the hint went out
+    expect(b.helpCount).toBe(1); // Ama made the mistake after the hint went out
     expect(b.benches.find((c) => c.name === "Kofi")!.status).toBe("Hint sent");
-    expect(b.mistakes[0]!.chip).toBe("Hint sent to 1");
-    expect(b.mistakes[0]!.sent?.id).toBe(1);
+    // So the row offers the hint again, for Ama alone.
+    expect(b.mistakes[0]!.sent).toBeNull();
+    expect(b.mistakes[0]!.chip).toBe("1 student");
+
+    const again = {
+      ...hinted,
+      messages: [...hinted.messages, exampleHint(2, ONE.rule, ONE.key, ["Ama"], NOW)],
+    };
+    const after = board(again, NOW);
+    expect(after.helpCount).toBe(0);
+    expect(after.mistakes[0]!.chip).toBe("Hint sent to 2");
+    expect(after.mistakes[0]!.sent?.id).toBe(2);
   });
 
   test("an offline bench is not counted as here or as needing help", () => {

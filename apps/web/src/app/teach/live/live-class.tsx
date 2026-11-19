@@ -82,14 +82,13 @@ export function LiveClass() {
       onOpen: () => void refresh(),
       onStatus: (status) => setWaiting(status === "waiting"),
       onFrame: (frame) => {
+        if (frame.type === "resync") {
+          void refresh();
+          return;
+        }
         setSnapshot((s) => {
-          if (s === null) return s;
-          const next = applyFrame(s, frame);
-          if (next === "resync") {
-            void refresh();
-            return s;
-          }
-          return next;
+          const next = s === null ? s : applyFrame(s, frame);
+          return next === "resync" ? s : next;
         });
       },
     });
@@ -132,12 +131,12 @@ export function LiveClass() {
       broadcast: async (text): Promise<Outcome> => {
         const r = await api.live.broadcast(classId, text);
         if (r.ok) keep(r.data);
-        return outcome(r) ?? { ok: true, undo: () => api.live.undo(classId, r.ok ? r.data.id : 0) };
+        return outcome(r) ?? { ok: true };
       },
       note: async (memberId, text): Promise<Outcome> => {
         const r = await api.live.note(classId, memberId, text);
         if (r.ok) keep(r.data);
-        return outcome(r) ?? { ok: true, undo: () => api.live.undo(classId, r.ok ? r.data.id : 0) };
+        return outcome(r) ?? { ok: true };
       },
       readings: (card) => readingsOf(classId, card.bench),
     };

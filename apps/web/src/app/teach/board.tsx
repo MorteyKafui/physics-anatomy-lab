@@ -523,7 +523,7 @@ function Tiles({ model }: { model: ReturnType<typeof board> }) {
         <span className="text-xs text-[var(--pa-text-muted)]">{model.helpCaption}</span>
       </div>
       <div className={tile}>
-        {head(t(k("teach.tile.measured")), t(k("teach.tile.measured.of"), { count: model.here }))}
+        {head(t(k("teach.tile.measured")), t(k("teach.tile.measured.of"), { count: model.joined }))}
         <span className="font-mono text-[28px]">{model.measured}</span>
         <div aria-hidden className="flex h-[26px] items-end gap-[3px]">
           {model.measuredBars.map((v, i) => (
@@ -587,27 +587,35 @@ function Drawer(props: {
   const { card, actions, onClose } = props;
   const [rows, setRows] = useState<ReadingRow[] | number | null | undefined>(undefined);
   const panel = useRef<HTMLElement>(null);
+  // The board re-renders every second (its clock), so the card and onClose are new objects each
+  // time. The effects follow them through refs and run again only when the bench itself changes.
+  const latest = useRef({ card, onClose });
+  useEffect(() => {
+    latest.current = { card, onClose };
+  });
+  const memberId = card.memberId;
+  const readings = card.bench.readings;
   useEffect(() => {
     let live = true;
-    void actions.readings(card).then((r) => {
+    void actions.readings(latest.current.card).then((r) => {
       if (live) setRows(r);
     });
     return () => {
       live = false;
     };
-  }, [actions, card]);
+  }, [actions, memberId, readings]);
   useEffect(() => {
     const before = document.activeElement as HTMLElement | null;
     panel.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") latest.current.onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
       before?.focus();
     };
-  }, [onClose]);
+  }, [memberId]);
   const mistake = card.bench.mistakes[0];
   const fmt = (n: number, d: number) => n.toFixed(d);
   return (

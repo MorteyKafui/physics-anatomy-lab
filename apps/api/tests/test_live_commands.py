@@ -248,3 +248,24 @@ async def test_sessions_ended_30_days_ago_are_removed_on_the_next_start(
         select(LiveSession.id).where(LiveSession.id == uuid.UUID(made["session"]["id"]))
     )
     assert gone is None
+
+
+async def test_pushing_again_reaches_only_those_the_first_hint_missed(
+    client: AsyncClient, outbox: LogSender, db: AsyncSession
+) -> None:
+    made = await _live_class(client, outbox)
+    kofi = await _student(made["code"], "Kofi_A")
+    ama = await _student(made["code"], "Ama.S")
+    sid = made["session"]["id"]
+    await _bench(db, sid, kofi, [ONE])
+    hint = {"rule": ONE["rule"], "key": ONE["key"]}
+    first = (await client.post(f"/classes/{made['id']}/live/hints", json=hint)).json()
+    assert first["to_member_ids"] == [kofi]
+
+    await _bench(db, sid, ama, [ONE])  # Ama makes the mistake after the hint went out
+    second = (await client.post(f"/classes/{made['id']}/live/hints", json=hint)).json()
+    assert second["id"] != first["id"]
+    assert second["to_member_ids"] == [ama]
+
+    third = (await client.post(f"/classes/{made['id']}/live/hints", json=hint)).json()
+    assert third["id"] == second["id"]  # everyone reached: a double click sends nothing new
