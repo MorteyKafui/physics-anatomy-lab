@@ -15,7 +15,7 @@ from app.config import get_settings
 from app.models import AdminAudit, AiRequest
 from tests.ai_fakes import FakeClaude, FakeLog, context, stream
 from tests.helpers import create_class, sign_in_teacher
-from tests.test_admin import STAFF, staff  # noqa: F401  (the staff fixture)
+from tests.test_admin import STAFF, staff  # noqa: F401  # pyright: ignore[reportUnusedImport]
 
 OFF = "AI help is switched off at the moment. The coach still works."
 

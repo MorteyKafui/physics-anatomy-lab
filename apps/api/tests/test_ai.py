@@ -55,6 +55,7 @@ async def test_signed_out_never_gets_ai(
         "message": "Sign in to use AI help.",
         "features": [],
         "used_up": {},
+        "switched_off": {},
     }
     refused = await client.post("/test-only/ai/tutor", json=context())
     assert refused.status_code == 401
@@ -88,6 +89,7 @@ async def test_a_teacher_has_every_feature(
         "message": None,
         "features": ["tutor", "what-if", "report-review", "question-drafting"],
         "used_up": {},
+        "switched_off": {},
     }
 
 
