@@ -72,8 +72,8 @@ def facts(case: Case) -> list[str]:
     row = benches()[(round(case.bench.length, 2), case.bench.place)]
     lines = [
         f"On this bench (length {case.bench.length:.2f} m, {PLACE_NAMES[case.bench.place]}), "
-        f"the period is {row['period']:.3g} s (small-angle formula: "
-        f"{row['period_small_angle']:.3g} s), with g = {row['g']:.4g} m s⁻².",
+        f"the period is {row['period']:#.3g} s (small-angle formula: "
+        f"{row['period_small_angle']:#.3g} s), with g = {row['g']:.4g} m s⁻².",
     ]
     if case.feature is FeatureName.tutor:
         lines.append(
@@ -82,7 +82,7 @@ def facts(case: Case) -> list[str]:
     else:
         length = round(case.bench.length, 2)
         others = [
-            f"{PLACE_NAMES[place]} {benches()[(length, place)]['period']:.3g} s"
+            f"{PLACE_NAMES[place]} {benches()[(length, place)]['period']:#.3g} s"
             for place in PLACE_NAMES
             if place != case.bench.place
         ]

@@ -77,15 +77,15 @@ def check() -> list[str]:
 
 def _baseline(feature: FeatureName) -> float | None:
     """The rate in main's committed results, if there are any."""
-    path = results_path(feature).relative_to(Path(__file__).parents[3]).as_posix()
     try:
+        path = results_path(feature).relative_to(Path(__file__).parents[3]).as_posix()
         shown = subprocess.run(  # noqa: S603
             ["git", "show", f"origin/main:{path}"],  # noqa: S607
             capture_output=True,
             text=True,
             check=True,
         ).stdout
-    except (OSError, subprocess.CalledProcessError):
+    except (OSError, ValueError, subprocess.CalledProcessError):
         return None
     return FeatureResult.from_json(json.loads(shown)).rate
 
