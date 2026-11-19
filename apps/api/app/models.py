@@ -515,7 +515,7 @@ class AiRequest(Base):
         CheckConstraint("principal_kind IN ('teacher', 'student')", name="principal_kind_known"),
         CheckConstraint("octet_length(pseudonym) = 32", name="pseudonym_length"),
         CheckConstraint(
-            "outcome IN ('done', 'cut-short', 'refused', 'held', 'error', 'cancelled')",
+            "outcome IN ('done', 'cut-short', 'refused', 'held', 'error', 'cancelled', 'cached')",
             name="outcome_known",
         ),
         CheckConstraint(
@@ -541,6 +541,29 @@ class AiRequest(Base):
     cost_microdollars: Mapped[int | None] = mapped_column(BigInteger)
     duration_ms: Mapped[int] = mapped_column(Integer, nullable=False)
     outcome: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class AiAnswer(Base):
+    """A checked answer kept to serve the same question again (docs/content/ai-quotas-brief.md,
+    decision 3): what-if scenarios, and tutor first replies with no number in them.
+
+    Keyed by a hash of what the answer depends on, never the question's text, and holding nothing
+    about who asked. Kept for ANSWER_RETENTION (app/ai/answers.py), then deleted.
+    """
+
+    __tablename__ = "ai_answers"
+    __table_args__ = (
+        CheckConstraint("feature IN ('tutor', 'what-if')", name="feature_cached"),
+        CheckConstraint("octet_length(key) = 32", name="key_length"),
+        CheckConstraint("char_length(model) BETWEEN 1 AND 64", name="model_length"),
+        Index("ix_ai_answers_at", "at"),
+    )
+
+    key: Mapped[bytes] = mapped_column(LargeBinary, primary_key=True)
+    at: Mapped[datetime] = _now()
+    feature: Mapped[str] = mapped_column(Text, nullable=False)
+    model: Mapped[str] = mapped_column(Text, nullable=False)
+    answer: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
 
 class Question(Base):

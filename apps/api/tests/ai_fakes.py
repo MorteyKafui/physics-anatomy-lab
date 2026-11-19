@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.ai.answers import Answer
 from app.ai.claude import ClaudeError, Finished, Piece, TextPiece
 from app.ai.context import ModelRequest
 from app.ai.log import LogEntry
@@ -58,6 +59,20 @@ class FakeLog:
             # rollback does not take it back.
             self.db.add(AiRequest(**entry.__dict__))
             await self.db.commit()
+
+
+@dataclass
+class FakeAnswers:
+    """The answer cache in memory, fresh for each test, so no test sees another's answers."""
+
+    kept: dict[bytes, tuple[str, Answer]] = field(default_factory=dict[bytes, tuple[str, Answer]])
+
+    async def get(self, db: AsyncSession, key: bytes) -> Answer | None:
+        found = self.kept.get(key)
+        return None if found is None else found[1]
+
+    async def put(self, feature: str, key: bytes, answer: Answer) -> None:
+        self.kept.setdefault(key, (feature, answer))
 
 
 def context(**changes: object) -> dict[str, object]:

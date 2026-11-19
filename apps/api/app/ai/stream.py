@@ -11,7 +11,8 @@ Four events, and nothing else is ever sent:
 - `error`: {"message": "...", "retry": bool}, no reply; `retry` says whether trying later may help.
 
 Exactly one of done, refused or error ends every stream. Each request is logged once, however it
-ends, including when the browser goes away mid-reply.
+ends, including when the browser goes away mid-reply. An answer from the cache (app/ai/answers.py)
+is sent as the same events.
 """
 
 import asyncio
@@ -23,6 +24,7 @@ from typing import Any
 import structlog
 from sse_starlette import EventSourceResponse, ServerSentEvent
 
+from app.ai.answers import Answer, AnswerStore, Caching
 from app.ai.claude import Claude, ClaudeError, Finished, TextPiece
 from app.ai.context import ModelRequest
 from app.ai.features import Feature
@@ -65,11 +67,14 @@ async def reply_events(
     ai_log: AiLog,
     check: ReplyCheck | None = None,
     to_item: ReplyItem | None = None,
+    caching: Caching | None = None,
+    store: AnswerStore | None = None,
 ) -> AsyncIterator[ServerSentEvent]:
     started = time.monotonic()
     written: list[str] = []
     finished: Finished | None = None
     outcome: Outcome = "error"
+    keep: Answer | None = None
     try:
         async with asyncio.timeout(STREAM_LIMIT):
             async for piece in claude.stream(request):
@@ -97,6 +102,8 @@ async def reply_events(
                 yield _event("refused", {"message": UNUSABLE})
             else:
                 outcome = "done"
+                if caching and caching.keeps_item and caching.keeps_item(item):
+                    keep = Answer(finished.model, {"item": item})
                 yield _event("item", {"item": item})
                 yield _event("done", {"cut_short": False})
         elif to_item is not None:
@@ -105,6 +112,9 @@ async def reply_events(
         else:
             cut_short = finished.stop_reason in CUT_SHORT
             outcome = "cut-short" if cut_short else "done"
+            reply = "".join(written)
+            if not cut_short and caching and caching.keeps_text and caching.keeps_text(reply):
+                keep = Answer(finished.model, {"text": reply})
             yield _event("done", {"cut_short": cut_short})
     except ClaudeError as failure:
         log.warning("ai.failed", feature=feature.name, reason=failure.reason)
@@ -116,6 +126,11 @@ async def reply_events(
         outcome = "cancelled"
         raise
     finally:
+        if keep is not None and caching is not None and store is not None:
+            try:
+                await asyncio.shield(store.put(caching.feature, caching.key, keep))
+            except Exception:  # a reply not kept is only a missed saving
+                log.exception("ai.cache_failed", feature=feature.name)
         model = finished.model if finished else request.model
         tokens = {
             "input_tokens": finished.input_tokens if finished else 0,
@@ -136,10 +151,44 @@ async def reply_events(
             duration_ms=round((time.monotonic() - started) * 1000),
             outcome=outcome,
         )
-        try:
-            await asyncio.shield(ai_log.record(entry))
-        except Exception:  # the reply matters more than its log line
-            log.exception("ai.log_failed", feature=feature.name)
+        await _record(ai_log, entry)
+
+
+async def _record(ai_log: AiLog, entry: LogEntry) -> None:
+    try:
+        await asyncio.shield(ai_log.record(entry))
+    except Exception:  # the reply matters more than its log line
+        log.exception("ai.log_failed", feature=entry.feature)
+
+
+async def cached_events(
+    feature: Feature, principal: Principal, answer: Answer, ai_log: AiLog
+) -> AsyncIterator[ServerSentEvent]:
+    """An answer from the cache, sent as the same events a fresh reply would be. Logged as
+    `cached`, at no cost, so it does not count towards a quota (app/ai/quotas.py)."""
+    try:
+        if "item" in answer.body:
+            yield _event("item", {"item": answer.body["item"]})
+        else:
+            yield _event("text", {"text": answer.body["text"]})
+        yield _event("done", {"cut_short": False})
+    finally:
+        await _record(
+            ai_log,
+            LogEntry(
+                feature=feature.name,
+                model=answer.model,
+                principal_kind="teacher" if isinstance(principal, Teacher) else "student",
+                pseudonym=pseudonym(principal),
+                input_tokens=0,
+                output_tokens=0,
+                cache_read_tokens=0,
+                cache_write_tokens=0,
+                cost_microdollars=0,
+                duration_ms=0,
+                outcome="cached",
+            ),
+        )
 
 
 def reply_stream(
@@ -150,9 +199,23 @@ def reply_stream(
     ai_log: AiLog,
     check: ReplyCheck | None = None,
     to_item: ReplyItem | None = None,
+    caching: Caching | None = None,
+    store: AnswerStore | None = None,
 ) -> EventSourceResponse:
+    return _response(
+        reply_events(feature, principal, request, claude, ai_log, check, to_item, caching, store)
+    )
+
+
+def cached_stream(
+    feature: Feature, principal: Principal, answer: Answer, ai_log: AiLog
+) -> EventSourceResponse:
+    return _response(cached_events(feature, principal, answer, ai_log))
+
+
+def _response(events: AsyncIterator[ServerSentEvent]) -> EventSourceResponse:
     return EventSourceResponse(
-        reply_events(feature, principal, request, claude, ai_log, check, to_item),
+        events,
         ping=PING_SECONDS,
         headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
     )

@@ -15,6 +15,15 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sse_starlette import EventSourceResponse
 
+from app.ai.answers import (
+    AnswerStore,
+    Caching,
+    get_answer_store,
+    tutor_keeps,
+    tutor_key,
+    what_if_keeps,
+    what_if_key,
+)
 from app.ai.claude import Claude, get_claude
 from app.ai.context import AiContext, ModelRequest, build_request, request_with
 from app.ai.features import FEATURES, Feature, FeatureName
@@ -32,7 +41,7 @@ from app.ai.review import ReviewCheck, ReviewRequest, user_message
 from app.ai.review import output_schema as review_schema
 from app.ai.scenarios import INSTRUCTIONS as WHAT_IF_INSTRUCTIONS
 from app.ai.scenarios import NOT_READY, SPECS, ScenarioCheck, output_schema
-from app.ai.stream import ReplyCheck, ReplyItem, reply_stream
+from app.ai.stream import ReplyCheck, ReplyItem, cached_stream, reply_stream
 from app.ai.tutor import INSTRUCTIONS as TUTOR_INSTRUCTIONS
 from app.ai.tutor import tutor_check
 from app.auth.sessions import MaybePrincipal
@@ -45,6 +54,7 @@ test_router = APIRouter(prefix="/test-only/ai", include_in_schema=False)
 
 ClaudeDep = Annotated[Claude | None, Depends(get_claude)]
 AiLogDep = Annotated[AiLog, Depends(get_ai_log)]
+AnswersDep = Annotated[AnswerStore, Depends(get_answer_store)]
 
 
 class AiStatus(BaseModel):
@@ -90,6 +100,8 @@ def ai_reply(
     check: ReplyCheck | None = None,
     to_item: ReplyItem | None = None,
     output_schema: dict[str, Any] | None = None,
+    caching: Caching | None = None,
+    store: AnswerStore | None = None,
 ) -> EventSourceResponse:
     """The one way a feature calls Claude with an AiContext."""
     return ai_reply_with(
@@ -100,6 +112,8 @@ def ai_reply(
         ai_log,
         check,
         to_item,
+        caching,
+        store,
     )
 
 
@@ -111,6 +125,8 @@ def ai_reply_with(
     ai_log: AiLog,
     check: ReplyCheck | None = None,
     to_item: ReplyItem | None = None,
+    caching: Caching | None = None,
+    store: AnswerStore | None = None,
 ) -> EventSourceResponse:
     """Refuses with a plain HTTP error before streaming, or streams the reply to `build`."""
     settings = get_settings()
@@ -122,7 +138,23 @@ def ai_reply_with(
         raise refuse(reason)
     assert principal is not None and claude is not None  # checked by why_unavailable
     request = build(feature, feature.model(settings))
-    return reply_stream(feature, principal, request, claude, ai_log, check, to_item)
+    return reply_stream(feature, principal, request, claude, ai_log, check, to_item, caching, store)
+
+
+async def from_cache(
+    db: Db,
+    store: AnswerStore,
+    name: FeatureName,
+    principal: MaybePrincipal,
+    key: bytes | None,
+    ai_log: AiLog,
+) -> EventSourceResponse | None:
+    """The cached answer for this question, as a stream, if there is one. Runs after the route's
+    gate (app/ai/quotas.py), so only someone who may use the feature gets it."""
+    if key is None or principal is None:
+        return None
+    answer = await store.get(db, key)
+    return None if answer is None else cached_stream(FEATURES[name], principal, answer, ai_log)
 
 
 @router.post(
@@ -138,9 +170,19 @@ def ai_reply_with(
     },
 )
 async def tutor(
-    context: AiContext, principal: MaybePrincipal, claude: ClaudeDep, ai_log: AiLogDep
+    context: AiContext,
+    db: Db,
+    principal: MaybePrincipal,
+    claude: ClaudeDep,
+    ai_log: AiLogDep,
+    answers: AnswersDep,
 ) -> EventSourceResponse:
-    """The tutor's reply about the current step, streamed. Numbers not from the bench are held."""
+    """The tutor's reply about the current step, streamed. Numbers not from the bench are held.
+    A first question with no number may be answered from the cache."""
+    key = tutor_key(context)
+    cached = await from_cache(db, answers, FeatureName.tutor, principal, key, ai_log)
+    if cached is not None:
+        return cached
     return ai_reply(
         FeatureName.tutor,
         principal,
@@ -149,6 +191,8 @@ async def tutor(
         claude,
         ai_log,
         tutor_check(context),
+        caching=None if key is None else Caching("tutor", key, keeps_text=tutor_keeps),
+        store=answers,
     )
 
 
@@ -166,12 +210,22 @@ async def tutor(
     },
 )
 async def what_if(
-    context: AiContext, principal: MaybePrincipal, claude: ClaudeDep, ai_log: AiLogDep
+    context: AiContext,
+    db: Db,
+    principal: MaybePrincipal,
+    claude: ClaudeDep,
+    ai_log: AiLogDep,
+    answers: AnswersDep,
 ) -> EventSourceResponse:
-    """A what-if question turned into a scenario the experiment's model supports, as one item."""
+    """A what-if question turned into a scenario the experiment's model supports, as one item.
+    The same question on the same bench is answered from the cache."""
     spec = SPECS.get(context.experiment_id)
     if spec is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=NOT_READY)
+    key = what_if_key(context)
+    cached = await from_cache(db, answers, FeatureName.what_if, principal, key, ai_log)
+    if cached is not None:
+        return cached
     return ai_reply(
         FeatureName.what_if,
         principal,
@@ -181,6 +235,8 @@ async def what_if(
         ai_log,
         to_item=ScenarioCheck(context, spec),
         output_schema=output_schema(spec),
+        caching=Caching("what-if", key, keeps_item=what_if_keeps(context)),
+        store=answers,
     )
 
 
