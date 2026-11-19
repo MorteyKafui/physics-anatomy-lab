@@ -15,8 +15,7 @@ the AI voice tutor is "online only, with the same quotas as the text tutor"; no 
 users' voices in v1 (D19); "Curious adult: to ask 'what if' and see it happen, without signing
 up".
 
-- **Status:** draft for Mortey's approval. Decisions 1 to 9; the questions for Mortey are marked
-  **Choose**.
+- **Status:** approved by Mortey on 2026-11-19: decisions 1 to 9 as proposed, with the browser's voice for replies and what-if scenarios opening on the bench.
 
 ## The decisions
 
