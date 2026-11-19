@@ -12,7 +12,7 @@ const T = (scenario: Parameters<typeof predictPendulum>[0]) =>
 
 test("a scenario on the Moon, then a wide swing, predicted by the model", async ({ page }) => {
   await page.goto(LAB);
-  await page.getByRole("button", { name: "What if" }).click();
+  await page.getByRole("button", { name: "What if" }).filter({ visible: true }).click();
   const panel = page.getByRole("dialog", { name: "What if" });
   await expect(panel).toBeVisible();
   await expect(panel.getByText(T(asSet()))).toHaveCount(2); // as set, and the what if, the same
@@ -48,7 +48,7 @@ test("a scenario on the Moon, then a wide swing, predicted by the model", async 
 
 test("the Earth in a scenario is standard gravity, not the bench's", async ({ page }) => {
   await page.goto(LAB);
-  await page.getByRole("button", { name: "What if" }).click();
+  await page.getByRole("button", { name: "What if" }).filter({ visible: true }).click();
   const panel = page.getByRole("dialog", { name: "What if" });
   await expect(panel.getByText("g = 9.80665 m s⁻²", { exact: false })).toBeVisible();
   await expect(panel.getByText("not your bench's", { exact: false })).toBeVisible();
