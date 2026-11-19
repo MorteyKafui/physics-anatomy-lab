@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>AI help: the tutor, what if and report review</title>
+<title>AI help: the tutor, what if, report review and reporting an answer</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -129,12 +129,26 @@ body{margin:0;background:#0A0A0A}
             <button type="button" class="outline f" aria-label="Read aloud" style="min-height: 36px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Read aloud</button>
             <span class="small">Captions are the text above.</span>
           </div>
+          <a href="#report-answer" class="f small" onClick="{{showReport}}" style="align-self: flex-start; color: #A3A19B">Report this answer</a>
           </sc-if>
         </div>
       </sc-if>
       <sc-if value="{{isHeld}}" hint-placeholder-val="{{false}}">
         <div class="me">What should my period be?</div>
         <div class="warn" role="status"><b>Answer hidden</b><span>That answer used a number that is not from your bench, so it has been hidden. Try asking again.</span></div>
+      </sc-if>
+      <sc-if value="{{isReport}}" hint-placeholder-val="{{false}}">
+        <div class="card" role="dialog" aria-label="Report this answer">
+          <span style="font-weight: 600">What is wrong with this answer?</span>
+          <div role="radiogroup" aria-label="Reason" style="display: flex; flex-direction: column; gap: 6px">
+            <sc-for list="{{reasons}}" as="rs" hint-placeholder-count="4"><button type="button" role="radio" class="outline f" aria-checked="{{rs.on}}" onClick="{{rs.pick}}" style="justify-content: flex-start; {{rs.style}}">{{rs.label}}</button></sc-for>
+          </div>
+          <span class="small">We keep the answer and your reason so staff can check it. Not your question, and not your name.</span>
+          <div style="display: flex; gap: 8px"><button type="button" class="primary f" onClick="{{sendReport}}">Send report</button><button type="button" class="outline f" onClick="{{cancelReport}}">Cancel</button></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{isReported}}" hint-placeholder-val="{{false}}">
+        <div class="card" role="status"><span style="font-weight: 600">Thanks for telling us</span><span class="muted">Staff will check this answer. The tutor still works, and so does the coach.</span></div>
       </sc-if>
       <sc-if value="{{isOffline}}" hint-placeholder-val="{{false}}">
         <div class="me">Why do I time 20 swings?</div>
@@ -172,7 +186,7 @@ body{margin:0;background:#0A0A0A}
     </div>
     </sc-if>
     <sc-if value="{{isScenario}}" hint-placeholder-val="{{false}}">
-    <div class="card" role="status"><span class="small">From your question</span><span style="font-weight: 600">The pendulum on the Moon</span><span class="small">Gravity changed to the Moon's. Everything else is as you set it.</span></div>
+    <div class="card" role="status"><span class="small">From your question</span><span style="font-weight: 600">The pendulum on the Moon</span><span class="small">Gravity changed to the Moon's. Everything else is as you set it.</span><a href="#report-answer" class="f small" style="align-self: flex-start; color: #A3A19B">Report this answer</a></div>
     </sc-if>
     <div style="display: flex; flex-direction: column; gap: 12px">
       <span class="small">Change one thing at a time and see what the model predicts. Works offline.</span>
@@ -208,6 +222,7 @@ body{margin:0;background:#0A0A0A}
         <span class="small">Note on "The stopwatch was not accurate."</span>
         <span>This is a source of error, not a precaution. A precaution says what you did to avoid an error, in the first person.</span>
         <span class="chip" style="align-self: flex-start">Rule: a precaution is something you did</span>
+        <a href="#report-answer" class="f small" style="align-self: flex-start; color: #A3A19B">Report this note</a>
       </div>
     </div>
     <div class="card">
@@ -253,14 +268,14 @@ body{margin:0;background:#0A0A0A}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":430,"height":940}}'>
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { view: 'help', place: 'moon', classAi: true }; }
+  constructor(props) { super(props); this.state = { view: 'help', place: 'moon', classAi: true, reason: 'physics' }; }
   renderVals() {
-    const { view, place, classAi } = this.state;
+    const { view, place, classAi, reason } = this.state;
     const go = (v) => () => this.setState({ view: v });
     const views = [
       ['help', 'Help menu'], ['help-off', 'Help, AI off'], ['ask-empty', 'Ask'],
       ['ask-guide', 'Guiding question'], ['ask-stream', 'Reply streaming'], ['ask-done', 'Reply'],
-      ['ask-held', 'Held reply'], ['ask-offline', 'Offline'], ['whatif', 'What if'],
+      ['ask-held', 'Held reply'], ['ask-offline', 'Offline'], ['ask-report', 'Report an answer'], ['ask-reported', 'Reported'], ['whatif', 'What if'],
       ['whatif-declined', 'Declined'], ['review', 'Report review'], ['teacher', 'Teacher switch'],
       ['data', 'Your data']
     ];
@@ -280,9 +295,13 @@ class Component extends DCLogic {
       isAsk: view === 'help' || view === 'help-off' || ask,
       isAskEmpty: view === 'ask-empty',
       isInstr: view === 'help' || view === 'help-off', askSelected: ask,
-      hasThread: ['ask-guide', 'ask-stream', 'ask-done'].includes(view),
-      hasSecond: view === 'ask-stream' || view === 'ask-done',
+      hasThread: ['ask-guide', 'ask-stream', 'ask-done', 'ask-report', 'ask-reported'].includes(view),
+      hasSecond: ['ask-stream', 'ask-done', 'ask-report', 'ask-reported'].includes(view),
       isStreaming: view === 'ask-stream', isDone: view === 'ask-done',
+      isReport: view === 'ask-report', isReported: view === 'ask-reported',
+      reasons: [['physics', 'Wrong physics'], ['confusing', 'Confusing'], ['unkind', 'Unkind or unsuitable'], ['other', 'Something else']]
+        .map(([id, label]) => ({ label, on: reason === id, pick: () => this.setState({ reason: id }), style: reason === id ? 'border-color: #F0482A; background: #2A1914' : '' })),
+      showReport: go('ask-report'), sendReport: go('ask-reported'), cancelReport: go('ask-done'),
       cursor: view === 'ask-stream' ? ' ▍' : '',
       isHeld: view === 'ask-held', isOffline: view === 'ask-offline',
       turnsLeft: view === 'ask-done' ? '4 of 6 questions left on this step' : '6 questions on this step',

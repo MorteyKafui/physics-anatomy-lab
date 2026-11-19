@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Admin: AI, use, spend and the switches</title>
+<title>Admin: AI, use, spend, the switches, evaluations and flagged replies</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -90,6 +90,29 @@ body{margin:0;background:#0A0A0A}
   <sc-if value="{{noAttention}}" hint-placeholder-val="{{false}}"><span class="small" style="padding: 12px 16px">Nothing needs attention.</span></sc-if>
 </div>
 
+<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start">
+  <div class="panel" style="flex: 1 1 420px">
+    <div class="ph"><b>Evaluations</b><span class="small">{{evalSub}}</span></div>
+    <sc-if value="{{noKey}}" hint-placeholder-val="{{false}}"><span class="small" style="padding: 12px 16px">Not run yet: the evaluation key is not set. Every pull request still checks that the cases are well formed.</span></sc-if>
+    <sc-for list="{{evals}}" as="e" hint-placeholder-count="4">
+      <div class="row" style="grid-template-columns: 150px 1fr 60px 110px"><span>{{e.name}}</span><div class="meter" role="img" aria-label="{{e.name}}: {{e.rate}} of rubric lines pass, bar 90%"><span style="width: {{e.rate}}; background: {{e.colour}}"></span></div><span class="mono" style="text-align: right">{{e.rate}}</span><span class="chip {{e.kind}}" style="justify-self: end">{{e.chip}}</span></div>
+    </sc-for>
+    <sc-for list="{{failing}}" as="c" hint-placeholder-count="2">
+      <div class="attn"><span class="chip red">Failed</span><span style="flex: 1; display: flex; flex-direction: column"><span class="mono" style="font-size: 12px">{{c.id}}</span><span class="small">{{c.reason}}</span></span></div>
+    </sc-for>
+    <span class="small" style="padding: 10px 16px; border-top: 1px solid #1E1D1D">The bar: every safety case passes, and 90% of rubric lines for each feature. Runs when a prompt changes, and weekly.</span>
+  </div>
+
+  <div class="panel" style="flex: 1 1 420px">
+    <div class="ph"><b>Flagged replies</b><span class="chip {{flagChip}}">{{flagCount}}</span></div>
+    <sc-for list="{{flags}}" as="fl" hint-placeholder-count="2">
+      <div class="attn"><span class="chip amber">{{fl.reason}}</span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span>“{{fl.text}}”</span><span class="small">{{fl.meta}}</span></span><span style="display: flex; gap: 6px"><button type="button" class="f" style="height: 30px; padding: 0 10px; background: transparent; color: #F2F0EA; border: 1px solid #2A2928; font: 13px Geist, sans-serif">Make a case</button><button type="button" class="f" style="height: 30px; padding: 0 10px; background: transparent; color: #F2F0EA; border: 1px solid #2A2928; font: 13px Geist, sans-serif">Dismiss</button></span></div>
+    </sc-for>
+    <sc-if value="{{noFlags}}" hint-placeholder-val="{{false}}"><span class="small" style="padding: 12px 16px">No flagged replies. Students and teachers can report an answer from the tutor, what if and report review.</span></sc-if>
+    <span class="small" style="padding: 10px 16px; border-top: 1px solid #1E1D1D">A flag keeps the reply and the reason, never the question or who sent it. Kept 90 days.</span>
+  </div>
+</div>
+
 <sc-if value="{{isToast}}" hint-placeholder-val="{{false}}">
   <div role="status" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #F2F0EA; color: #0D0D0D; padding: 10px 14px; display: flex; gap: 14px; align-items: center; z-index: 30">What if switched off for everyone. Recorded in the audit log.<button type="button" class="f" style="background: transparent; border: 0; font: 600 13px Geist, sans-serif; text-decoration: underline; cursor: pointer">Undo</button></div>
 </sc-if>
@@ -101,7 +124,7 @@ class Component extends DCLogic {
   renderVals() {
     const { view } = this.state;
     const go = (v) => () => this.setState({ view: v });
-    const views = [['normal', 'Normal'], ['off', 'A switch off'], ['near', 'Budget near'], ['reached', 'Budget reached']];
+    const views = [['normal', 'Normal'], ['off', 'A switch off'], ['near', 'Budget near'], ['reached', 'Budget reached'], ['eval-failing', 'Evaluation below the bar'], ['no-key', 'Evaluations not run']];
     // Example data (D29), labelled on the board: made-up counts at the 1,000-student scenario.
     const spend = { normal: '1.10', off: '1.10', near: '3.10', reached: '3.40' }[view];
     const budget = '3.33';
@@ -134,7 +157,22 @@ class Component extends DCLogic {
       hitRate: '31%', held: '9',
       features, switches, attention,
       attnCount: String(attention.length), attnChip: view === 'reached' ? 'red' : 'amber',
-      noAttention: attention.length === 0
+      noAttention: attention.length === 0,
+      noKey: view === 'no-key',
+      evalSub: view === 'no-key' ? 'Not run yet' : view === 'eval-failing' ? 'Pull request run, today' : 'Last run on main: Monday',
+      evals: view === 'no-key' ? [] : [
+        ['Tutor', view === 'eval-failing' ? 84 : 96], ['What if', 100], ['Report review', 93], ['Question drafting', 100]
+      ].map(([name, r]) => ({ name, rate: r + '%', colour: r >= 90 ? '#7FD39A' : '#FF8A8A', kind: r >= 90 ? 'green' : 'red', chip: r >= 90 ? 'Passing' : 'Below the bar' })),
+      failing: view === 'eval-failing' ? [
+        { id: 'tutor/pendulum-measure-hint-1', reason: 'Gave the period away at the first help level' },
+        { id: 'tutor/safety-upset-student', reason: 'Did not point the student to their teacher' }
+      ] : [],
+      flags: view === 'no-key' ? [] : [
+        { reason: 'Wrong physics', text: 'A heavier bob swings more slowly, so your period will be longer.', meta: 'Tutor · Simple pendulum · Explain · 2 hours ago' },
+        { reason: 'Confusing', text: 'This is a source of error, not a precaution.', meta: 'Report review · Simple pendulum · yesterday' }
+      ],
+      noFlags: view === 'no-key',
+      flagCount: view === 'no-key' ? '0' : '2', flagChip: view === 'no-key' ? '' : 'amber'
     };
   }
 }
