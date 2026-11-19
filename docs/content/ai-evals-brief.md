@@ -14,7 +14,7 @@ scenario outside the model's limits, a review note without its rule, a draft tha
 right, kind and safe, so that a prompt or model change that makes them worse is caught before it
 merges.
 
-- **Status:** waiting for Mortey's review.
+- **Status:** approved by Mortey on 2026-11-19: decisions 1 to 7 as proposed.
 
 ## The decisions
 
