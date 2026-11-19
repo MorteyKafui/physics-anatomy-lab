@@ -7,7 +7,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from pa_validation.pendulum import period_exact, period_small_angle
-from scripts.make_fixtures import build
+from scripts.make_fixtures import build, build_ai_evals
 
 FIXTURES = Path(__file__).resolve().parent.parent / "fixtures" / "pendulum.json"
 
@@ -48,3 +48,13 @@ def _without(record: dict[str, object], key: str) -> dict[str, object]:
 def test_larger_swing_never_shorter(length: float, g: float, a: float, b: float) -> None:
     lo, hi = sorted((a, b))
     assert period_exact(length, g, hi) >= period_exact(length, g, lo) * (1 - 1e-12)
+
+
+def test_the_ai_evaluation_benches_are_current() -> None:
+    committed = json.loads((FIXTURES.parent / "ai-evals.json").read_text(encoding="utf-8"))
+    current = json.loads(json.dumps(build_ai_evals()))
+    assert _without(committed, "benches") == _without(current, "benches")
+    for old, new in zip(committed["benches"], current["benches"], strict=True):
+        assert (old["length"], old["place"], old["g"]) == (new["length"], new["place"], new["g"])
+        for key in ("period_small_angle", "period"):
+            assert old[key] == pytest.approx(new[key], rel=1e-12)

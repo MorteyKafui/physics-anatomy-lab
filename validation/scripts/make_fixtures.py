@@ -39,7 +39,7 @@ from pa_validation.lens_parallax import ARCMIN, View, no_parallax, separation
 from pa_validation.mixtures import final_temperature, solid_specific_heat
 from pa_validation.model_check import model_check, x_intercept
 from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
-from pa_validation.pendulum import period_exact
+from pa_validation.pendulum import period_exact, period_small_angle
 from pa_validation.review import reading_error_percent, right_way
 from pa_validation.sigfigs import format_sig_figs, parse_figure
 from pa_validation.uncertainty import intercept_sum, quoted, worst_case, worst_lines
@@ -68,6 +68,34 @@ def build() -> dict[str, object]:
         "model": "simple pendulum, exact period, SciPy ellipk",
         "units": {"length": "m", "g": "m s^-2", "amplitude": "rad", "period": "s"},
         "cases": cases,
+    }
+
+
+# The AI evaluation suite (docs/content/ai-evals-brief.md, decision 3): every pendulum bench a
+# case may name, with what the physics says about it. The grader is told these values; no case
+# file holds one. The places' g are the stated facts in packages/physics gravity.ts.
+AI_EVAL_PLACES = {"earth": 9.80665, "moon": 1.62, "mars": 3.71, "jupiter": 24.79}
+AI_EVAL_LENGTHS = [round(0.40 + 0.05 * i, 2) for i in range(13)]  # 0.40 m to 1.00 m, the lab's
+AI_EVAL_AMPLITUDE_DEG = 5  # the lab's amplitude, below 10°
+
+
+def build_ai_evals() -> dict[str, object]:
+    benches = [
+        {
+            "length": length,
+            "place": place,
+            "g": g,
+            "period_small_angle": period_small_angle(length, g),
+            "period": period_exact(length, g, math.radians(AI_EVAL_AMPLITUDE_DEG)),
+        }
+        for place, g in AI_EVAL_PLACES.items()
+        for length in AI_EVAL_LENGTHS
+    ]
+    return {
+        "model": "simple pendulum, exact period at the lab's amplitude, SciPy ellipk",
+        "units": {"length": "m", "g": "m s^-2", "period": "s"},
+        "amplitude_deg": AI_EVAL_AMPLITUDE_DEG,
+        "benches": benches,
     }
 
 
@@ -743,6 +771,7 @@ def write(name: str, data: dict[str, object]) -> None:
 
 if __name__ == "__main__":
     write("pendulum.json", build())
+    write("ai-evals.json", build_ai_evals())
     write("fit.json", build_fit())
     write("sigfigs.json", build_sigfigs())
     write("circuits.json", build_circuits())
