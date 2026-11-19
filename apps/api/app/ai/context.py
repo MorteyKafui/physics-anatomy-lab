@@ -10,11 +10,12 @@ as data, and the API strips anything that could close that block early.
 """
 
 from dataclasses import dataclass, field
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from app.ai.features import Feature
+from app.ai.numbers import numbers_in
 from app.live.schemas import StepName
 from app.schemas import Body
 
@@ -28,6 +29,7 @@ Detail = bool | int | float | Slug
 MAX_EVENTS = 40
 MAX_QUANTITIES = 40
 MAX_STUDENT_TEXT = 2000
+MAX_THREAD = 10  # five earlier exchanges, so the sixth question is the last on a step
 STUDENT_TAG = "student_text"
 
 
@@ -51,6 +53,13 @@ class Quantity(Body):
     unit: Unit
 
 
+class ThreadTurn(Body):
+    """One earlier turn of a tutor thread. The thread lives only on the device (ADR 0043)."""
+
+    role: Literal["student", "tutor"]
+    text: Annotated[str, Field(min_length=1, max_length=MAX_STUDENT_TEXT)]
+
+
 class AiContext(Body):
     experiment_id: Slug
     experiment_version: Annotated[int, Field(ge=1)]
@@ -63,6 +72,32 @@ class AiContext(Body):
         default_factory=list[Quantity]
     )
     student_text: Annotated[str, Field(min_length=1, max_length=MAX_STUDENT_TEXT)]
+    # Earlier turns of this thread, oldest first, student and tutor in turn.
+    thread: Annotated[list[ThreadTurn], Field(max_length=MAX_THREAD)] = Field(
+        default_factory=list[ThreadTurn]
+    )
+
+    @model_validator(mode="after")
+    def _turns_alternate(self) -> Self:
+        for i, turn in enumerate(self.thread):
+            if turn.role != ("student" if i % 2 == 0 else "tutor"):
+                raise ValueError("A thread starts with the student and alternates.")
+        if len(self.thread) % 2:
+            raise ValueError("A thread ends with the tutor's reply.")
+        return self
+
+    def numbers_seen(self) -> list[float]:
+        """Every number the context gives: quantities, event details and the student's words."""
+        found = [q.value for q in self.quantities]
+        for event in self.events:
+            found += [
+                float(v)
+                for v in event.detail.values()
+                if isinstance(v, int | float) and not isinstance(v, bool)
+            ]
+        for text in [self.student_text, *(t.text for t in self.thread)]:
+            found += numbers_in(text)
+        return found
 
 
 # The part of every system prompt that never changes, so it is cached (prompt caching).
@@ -99,6 +134,10 @@ def _safe(text: str) -> str:
     return text.replace(chr(0), "")
 
 
+def _tagged(text: str) -> str:
+    return f"<{STUDENT_TAG}>\n{_safe(text)}\n</{STUDENT_TAG}>"
+
+
 def _event_line(event: ContextEvent) -> str:
     detail = ", ".join(f"{key}={value}" for key, value in event.detail.items())
     return f"- {event.step}: {event.kind}" + (f" ({detail})" if detail else "")
@@ -130,12 +169,15 @@ def build_request(
             {"type": "text", "text": instructions, "cache_control": {"type": "ephemeral"}},
         ],
         messages=[
+            *(
+                {"role": "user", "content": _tagged(turn.text)}
+                if turn.role == "student"
+                else {"role": "assistant", "content": turn.text}
+                for turn in context.thread
+            ),
             {
                 "role": "user",
-                "content": (
-                    f"{_context_block(context)}\n\n"
-                    f"<{STUDENT_TAG}>\n{_safe(context.student_text)}\n</{STUDENT_TAG}>"
-                ),
-            }
+                "content": f"{_context_block(context)}\n\n{_tagged(context.student_text)}",
+            },
         ],
     )

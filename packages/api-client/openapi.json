@@ -1960,6 +1960,51 @@
         }
       }
     },
+    "/ai/tutor": {
+      "post": {
+        "tags": ["ai"],
+        "summary": "Tutor",
+        "description": "The tutor's reply about the current step, streamed. Numbers not from the bench are held.",
+        "operationId": "tutor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiContext"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The reply (ADR 0043)",
+            "content": {
+              "text/event-stream": {}
+            }
+          },
+          "401": {
+            "description": "Signed out"
+          },
+          "403": {
+            "description": "AI is off for this class"
+          },
+          "503": {
+            "description": "AI is switched off or not set up"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/me": {
       "get": {
         "tags": ["admin"],
@@ -2503,6 +2548,75 @@
         "type": "object",
         "required": ["confirm_email"],
         "title": "AccountDelete"
+      },
+      "AiContext": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{1,63}$",
+            "title": "Experiment Id"
+          },
+          "experiment_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Experiment Version"
+          },
+          "step": {
+            "type": "string",
+            "enum": [
+              "question",
+              "predict",
+              "build",
+              "check",
+              "measure",
+              "tabulate",
+              "plot",
+              "analyse",
+              "conclude",
+              "report"
+            ],
+            "title": "Step"
+          },
+          "help_level": {
+            "type": "string",
+            "enum": ["auto", "check-my-work", "on-my-own"],
+            "title": "Help Level"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ContextEvent"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "title": "Events"
+          },
+          "quantities": {
+            "items": {
+              "$ref": "#/components/schemas/Quantity"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "title": "Quantities"
+          },
+          "student_text": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Student Text"
+          },
+          "thread": {
+            "items": {
+              "$ref": "#/components/schemas/ThreadTurn"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Thread"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["experiment_id", "experiment_version", "step", "help_level", "student_text"],
+        "title": "AiContext"
       },
       "AiStatus": {
         "properties": {
@@ -3408,6 +3522,60 @@
         "type": "object",
         "required": ["consents"],
         "title": "ConsentsOut"
+      },
+      "ContextEvent": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{1,63}$",
+            "title": "Kind"
+          },
+          "step": {
+            "type": "string",
+            "enum": [
+              "question",
+              "predict",
+              "build",
+              "check",
+              "measure",
+              "tabulate",
+              "plot",
+              "analyse",
+              "conclude",
+              "report"
+            ],
+            "title": "Step"
+          },
+          "detail": {
+            "patternProperties": {
+              "^[a-z][a-z0-9_]{0,31}$": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9.-]{1,63}$"
+                  }
+                ]
+              }
+            },
+            "type": "object",
+            "maxProperties": 12,
+            "title": "Detail"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["kind", "step"],
+        "title": "ContextEvent",
+        "description": "One recent event of the attempt, as the device summarises it: what happened, not who."
       },
       "DisplayNameChange": {
         "properties": {
@@ -4357,6 +4525,36 @@
         "required": ["id", "newEvents", "status"],
         "title": "PushedAttempt"
       },
+      "Quantity": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Symbol"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 24,
+            "title": "Unit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["symbol", "name", "value", "unit"],
+        "title": "Quantity",
+        "description": "A number worked out by packages/physics for this bench, with its unit."
+      },
       "RangeInfo": {
         "properties": {
           "range": {
@@ -5001,6 +5199,26 @@
         "type": "object",
         "required": ["display_name"],
         "title": "TeacherUpdate"
+      },
+      "ThreadTurn": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["student", "tutor"],
+            "title": "Role"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["role", "text"],
+        "title": "ThreadTurn",
+        "description": "One earlier turn of a tutor thread. The thread lives only on the device (ADR 0043)."
       },
       "Unavailable": {
         "type": "string",

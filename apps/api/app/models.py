@@ -515,7 +515,7 @@ class AiRequest(Base):
         CheckConstraint("principal_kind IN ('teacher', 'student')", name="principal_kind_known"),
         CheckConstraint("octet_length(pseudonym) = 32", name="pseudonym_length"),
         CheckConstraint(
-            "outcome IN ('done', 'cut-short', 'refused', 'error', 'cancelled')",
+            "outcome IN ('done', 'cut-short', 'refused', 'held', 'error', 'cancelled')",
             name="outcome_known",
         ),
         CheckConstraint(
