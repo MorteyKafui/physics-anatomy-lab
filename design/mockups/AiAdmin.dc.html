@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin: AI, use, spend and the switches</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+.ai{font-family:Geist,system-ui,sans-serif;font-size:14px;line-height:1.45;color:#F2F0EA}
+.ai .f:focus-visible{outline:2px solid #F0482A;outline-offset:2px}
+.ai .seg{display:inline-flex;gap:2px;background:#111110;border:1px solid #1E1D1D;padding:3px}
+.ai .seg button{height:28px;padding:0 10px;border:0;font:500 12px Geist,sans-serif;cursor:pointer;background:transparent;color:#C9C6BF}
+.ai .seg button[aria-pressed="true"]{background:#F2F0EA;color:#0D0D0D}
+.ai .panel{background:#111110;border:1px solid #1E1D1D;display:flex;flex-direction:column}
+.ai .ph{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #1E1D1D}
+.ai .ph b{font-weight:600;font-size:15px;flex:1}
+.ai .tile{background:#111110;border:1px solid #1E1D1D;padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1 1 200px}
+.ai .label{font-size:12px;color:#8F8D88}
+.ai .big{font-family:'Geist Mono',monospace;font-size:26px}
+.ai .mono{font-family:'Geist Mono',monospace}
+.ai .small{font-size:12px;color:#8F8D88}
+.ai .meter{height:6px;background:#242322;position:relative}
+.ai .meter span{position:absolute;inset:0 auto 0 0;background:#F2F0EA}
+.ai .hatch{height:16px;background:repeating-linear-gradient(135deg,#F2F0EA 0 2px,transparent 2px 6px);border:1px solid #55534F}
+.ai .chip{font-size:12px;padding:2px 8px;border:1px solid #3A3936;color:#C9C6BF}
+.ai .chip.amber{border-color:#6B5A2A;color:#F5C46B}
+.ai .chip.red{border-color:#5A2A2A;color:#FF8A8A}
+.ai .chip.green{border-color:#2A5A3A;color:#7FD39A}
+.ai .row{display:grid;grid-template-columns:150px 1fr 90px 90px;gap:12px;align-items:center;padding:10px 16px;border-top:1px solid #1E1D1D}
+.ai .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid #1E1D1D}
+.ai .switch{width:44px;height:26px;border:1px solid #55534F;background:#1E1D1D;position:relative;padding:0;cursor:pointer;flex:0 0 auto}
+.ai .switch span{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#8F8D88}
+.ai .switch[aria-checked="true"]{background:#F0482A;border-color:#F0482A}
+.ai .switch[aria-checked="true"] span{left:21px;background:#0D0D0D}
+.ai .attn{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-top:1px solid #1E1D1D}
+.ai .banner{background:#2A1414;border:1px solid #5A2A2A;padding:12px 16px;display:flex;gap:12px;align-items:center}
+.ai .example{font-size:11px;color:#8F8D88;border:1px solid #2A2928;padding:2px 6px;background:#111110}
+</style>
+</helmet>
+<div class="ai" style="display: flex; flex-direction: column; gap: 12px; padding: 14px; background: #0A0A0A; min-height: 900px">
+<div role="group" aria-label="Board state (mockup only)" class="seg" style="align-self: center">
+  <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="4"><button type="button" class="f" onClick="{{tb.pick}}" aria-pressed="{{tb.on}}">{{tb.label}}</button></sc-for>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+  <span class="small">Physics Anatomy › <span style="color: #F2F0EA">AI</span></span>
+  <span style="flex: 1"></span>
+  <div role="group" aria-label="Time range" class="seg"><button type="button" class="f" aria-pressed="false">24 hours</button><button type="button" class="f" aria-pressed="true">7 days</button><button type="button" class="f" aria-pressed="false">30 days</button></div>
+  <span class="example">Example data</span>
+</div>
+
+<sc-if value="{{isReached}}" hint-placeholder-val="{{false}}">
+<div class="banner" role="status"><span class="chip red">Budget reached</span><span style="flex: 1">AI switched itself off at 14:20: today's spend passed the daily budget. It comes back at midnight. Students see "AI help has reached today's limit. The coach still works."</span></div>
+</sc-if>
+
+<div style="display: flex; gap: 12px; flex-wrap: wrap">
+  <div class="tile"><span class="label">Requests today</span><span class="big">{{requests}}</span><span class="small">Tutor most: {{tutorShare}}</span></div>
+  <div class="tile"><span class="label">Spend today</span><span class="big">${{spend}} <span class="small">of ${{budget}}</span></span><div class="meter" role="img" aria-label="{{spendPct}} of the daily budget"><span style="width: {{spendPct}}; background: {{meterColour}}"></span></div><span class="small">Daily budget: the monthly ceiling ÷ 30</span></div>
+  <div class="tile"><span class="label">Cache hit rate</span><span class="big">{{hitRate}}</span><span class="small">Served from the cache, at no cost</span></div>
+  <div class="tile"><span class="label">Held replies</span><span class="big">{{held}}</span><span class="small">A number not from the bench, or not runnable</span></div>
+</div>
+
+<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start">
+  <div class="panel" style="flex: 2 1 460px">
+    <div class="ph"><b>By feature, last 7 days</b><span class="small">Requests · cost</span></div>
+    <sc-for list="{{features}}" as="ft" hint-placeholder-count="4">
+      <div class="row"><span>{{ft.name}}</span><div class="hatch" role="img" aria-label="{{ft.name}}: {{ft.requests}} requests" style="width: {{ft.w}}"></div><span class="mono" style="text-align: right">{{ft.requests}}</span><span class="mono" style="text-align: right">${{ft.cost}}</span></div>
+    </sc-for>
+  </div>
+
+  <div class="panel" style="flex: 1 1 300px">
+    <div class="ph"><b>Switches</b><span class="small">Audited, with undo</span></div>
+    <sc-for list="{{switches}}" as="s" hint-placeholder-count="5">
+      <div class="sw"><span style="display: flex; flex-direction: column"><span>{{s.name}}</span><span class="small">{{s.note}}</span></span><button type="button" role="switch" class="switch f" aria-checked="{{s.on}}" aria-label="{{s.name}}" onClick="{{s.flip}}"><span></span></button></div>
+    </sc-for>
+    <span class="small" style="padding: 10px 16px; border-top: 1px solid #1E1D1D">Off takes effect within 10 seconds. AI_ENABLED on the server stays the master switch.</span>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="ph"><b>Needs attention</b><span class="chip {{attnChip}}">{{attnCount}}</span></div>
+  <sc-for list="{{attention}}" as="a" hint-placeholder-count="2">
+    <div class="attn"><span class="chip {{a.kind}}">{{a.chip}}</span><span style="flex: 1; display: flex; flex-direction: column"><span>{{a.title}}</span><span class="small">{{a.meta}}</span></span><button type="button" class="f" style="height: 30px; padding: 0 10px; background: transparent; color: #F2F0EA; border: 1px solid #2A2928; font: 13px Geist, sans-serif">View</button></div>
+  </sc-for>
+  <sc-if value="{{noAttention}}" hint-placeholder-val="{{false}}"><span class="small" style="padding: 12px 16px">Nothing needs attention.</span></sc-if>
+</div>
+
+<sc-if value="{{isToast}}" hint-placeholder-val="{{false}}">
+  <div role="status" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #F2F0EA; color: #0D0D0D; padding: 10px 14px; display: flex; gap: 14px; align-items: center; z-index: 30">What if switched off for everyone. Recorded in the audit log.<button type="button" class="f" style="background: transparent; border: 0; font: 600 13px Geist, sans-serif; text-decoration: underline; cursor: pointer">Undo</button></div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1100,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { view: 'normal' }; }
+  renderVals() {
+    const { view } = this.state;
+    const go = (v) => () => this.setState({ view: v });
+    const views = [['normal', 'Normal'], ['off', 'A switch off'], ['near', 'Budget near'], ['reached', 'Budget reached']];
+    // Example data (D29), labelled on the board: made-up counts at the 1,000-student scenario.
+    const spend = { normal: '1.10', off: '1.10', near: '3.10', reached: '3.40' }[view];
+    const budget = '3.33';
+    const pct = Math.min(100, Math.round((Number(spend) / Number(budget)) * 100)) + '%';
+    const features = [
+      { name: 'Tutor', requests: '2,140', cost: '1.07', w: '100%' },
+      { name: 'What if', requests: '610', cost: '0.22', w: '29%' },
+      { name: 'Report review', requests: '240', cost: '4.80', w: '11%' },
+      { name: 'Question drafting', requests: '18', cost: '0.41', w: '2%' }
+    ];
+    const whatIfOn = view !== 'off';
+    const allOn = view !== 'reached';
+    const switches = [
+      { name: 'All AI', note: allOn ? 'On' : 'Off until midnight: budget reached', on: allOn },
+      { name: 'Tutor', note: 'Haiku 5.5', on: allOn },
+      { name: 'What if', note: 'Haiku 5.5', on: allOn && whatIfOn },
+      { name: 'Report review', note: 'Sonnet 5.5', on: allOn },
+      { name: 'Question drafting', note: 'Sonnet 5.5, teachers only', on: allOn }
+    ].map((s) => ({ ...s, flip: go(view === 'off' ? 'normal' : 'off') }));
+    const attention = view === 'near'
+      ? [{ kind: 'amber', chip: 'Budget', title: "Spend is at 93% of today's budget", meta: 'AI switches itself off when it passes 100%' }]
+      : view === 'reached'
+      ? [{ kind: 'red', chip: 'Budget', title: "Today's budget is reached: AI is off until midnight", meta: 'Raise the monthly ceiling to raise the daily budget' }]
+      : [{ kind: 'amber', chip: 'Held', title: 'Held tutor replies rose to 4% today', meta: 'Usually under 1%. Item 5 evaluations will show which prompts' }];
+    return {
+      tabs: views.map(([id, label]) => ({ label, on: view === id, pick: go(id) })),
+      isReached: view === 'reached', isToast: view === 'off',
+      requests: view === 'reached' ? '612' : '488', tutorShare: '72%',
+      spend, budget, spendPct: pct, meterColour: view === 'normal' || view === 'off' ? '#F2F0EA' : view === 'near' ? '#F5C46B' : '#FF8A8A',
+      hitRate: '31%', held: '9',
+      features, switches, attention,
+      attnCount: String(attention.length), attnChip: view === 'reached' ? 'red' : 'amber',
+      noAttention: attention.length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>
