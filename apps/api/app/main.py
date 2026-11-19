@@ -14,7 +14,7 @@ from app.body_limit import BodyLimit
 from app.config import get_settings
 from app.db import get_engine
 from app.live.hub import Hub, listen_dsn
-from app.routes import auth, classes, live, sync, teacher
+from app.routes import admin, auth, classes, live, sync, teacher
 
 settings = get_settings()
 
@@ -62,6 +62,8 @@ app.include_router(sync.router)
 app.include_router(teacher.router)
 app.include_router(live.router)
 app.include_router(live.socket_router)
+# Staff only, behind Cloudflare Access; reached from the admin portal's server (ADR 0040).
+app.include_router(admin.router)
 
 
 class Health(BaseModel):

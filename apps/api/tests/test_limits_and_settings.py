@@ -52,8 +52,10 @@ def test_the_proxy_header_is_read_only_when_configured(monkeypatch: pytest.Monke
 
 def test_deployed_environments_need_the_client_address_header() -> None:
     with pytest.raises(ValidationError, match="CLIENT_IP_HEADER"):
-        Settings(environment="production", client_ip_header=None)
-    assert Settings(environment="production", client_ip_header="cf-connecting-ip")
+        Settings(environment="production", client_ip_header=None, admin_dev_bypass_email=None)
+    assert Settings(
+        environment="production", client_ip_header="cf-connecting-ip", admin_dev_bypass_email=None
+    )
 
 
 async def test_a_new_rejoin_code_replaces_the_old_one(

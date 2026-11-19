@@ -278,6 +278,13 @@ class AttemptEvent(Base):
             ["attempt_id", "owner_id"], ["attempts.id", "attempts.owner_id"], ondelete="CASCADE"
         ),
         Index("ix_attempt_events_owner_id_pos", "owner_id", "pos"),
+        # For the admin portal's charts (ADR 0040): only the kinds they read.
+        Index(
+            "ix_attempt_events_admin_kind_at_ms",
+            "kind",
+            "at_ms",
+            postgresql_where=text("kind IN ('step.complete', 'coach.hint')"),
+        ),
         CheckConstraint("char_length(event_id) BETWEEN 1 AND 200", name="event_id_length"),
         CheckConstraint("char_length(device) BETWEEN 1 AND 200", name="device_length"),
         CheckConstraint("char_length(kind) BETWEEN 1 AND 200", name="kind_length"),
@@ -409,3 +416,35 @@ class LiveMessage(Base):
     )
     created_at: Mapped[datetime] = _now()
     undone_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AdminAudit(Base):
+    """One staff action in the admin portal: who, what, on what, when (ADR 0040).
+
+    Append-only: a trigger refuses every update, and refuses deletes until an entry is older than
+    the retention period. `detail` never holds a student's name or anything typed by a student.
+    No foreign keys, so the record outlives what it is about (a deleted class keeps its history).
+    """
+
+    __tablename__ = "admin_audit"
+    __table_args__ = (
+        CheckConstraint("char_length(actor_email) BETWEEN 3 AND 254", name="actor_email_length"),
+        CheckConstraint("actor_via IN ('access', 'dev-bypass')", name="actor_via_known"),
+        CheckConstraint("action ~ '^[a-z][a-z0-9.-]{2,63}$'", name="action_format"),
+        CheckConstraint(
+            "target_type IS NULL OR target_type ~ '^[a-z][a-z-]{1,31}$'", name="target_type_format"
+        ),
+        CheckConstraint("jsonb_typeof(detail) = 'object'", name="detail_is_object"),
+        CheckConstraint("octet_length(detail::text) <= 4096", name="detail_size"),
+        Index("ix_admin_audit_at_id", text("at DESC"), text("id DESC")),
+        Index("ix_admin_audit_target_type_target_id", "target_type", "target_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _id()
+    at: Mapped[datetime] = _now()
+    actor_email: Mapped[str] = mapped_column(CITEXT, nullable=False)
+    actor_via: Mapped[str] = mapped_column(Text, nullable=False)
+    action: Mapped[str] = mapped_column(Text, nullable=False)
+    target_type: Mapped[str | None] = mapped_column(Text)
+    target_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    detail: Mapped[Any] = mapped_column(JSONB, nullable=False, server_default=text("'{}'::jsonb"))

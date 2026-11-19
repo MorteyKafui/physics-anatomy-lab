@@ -44,4 +44,5 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0037](./0037-public-repository.md)                   | The repository is public (supersedes 0009)                           | 2026-11-11 |
 | [0038](./0038-sign-in-sessions-and-class-codes.md)    | Sign-in, sessions and class codes (proposed)                         | 2026-11-18 |
 | [0039](./0039-event-sync-and-adoption.md)             | Event sync, and adopting signed-out work (proposed)                  | 2026-11-18 |
+| [0040](./0040-admin-access-audit-aggregates.md)       | The admin API: Access checked, audit, live aggregates (proposed)     | 2026-11-18 |
 | [0041](./0041-live-classes.md)                        | Live classes, and what teachers can read (proposed)                  | 2026-11-18 |
