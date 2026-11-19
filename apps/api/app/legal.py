@@ -54,3 +54,9 @@ def upcoming(purpose: Purpose, today: date) -> Version | None:
     """A published version that is not in force yet: the notice period is running."""
     later = [v for v in DOCUMENTS[purpose].versions if v.effective_from > today]
     return later[0] if later else None
+
+
+def agreeable(purpose: Purpose, today: date) -> tuple[str, ...]:
+    """The versions a person may agree to today: the current one, and an upcoming one early."""
+    soon = upcoming(purpose, today)
+    return (current(purpose, today).version,) + ((soon.version,) if soon else ())

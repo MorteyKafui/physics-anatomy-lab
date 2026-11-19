@@ -1,6 +1,7 @@
 """Consent, data export and deletion (ADR 0042)."""
 
 import uuid
+from collections.abc import AsyncIterator
 from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
@@ -37,8 +38,20 @@ def by_purpose(body: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {c["purpose"]: c for c in body["consents"]}
 
 
+_OPEN: list[AsyncClient] = []
+
+
+@pytest.fixture(autouse=True)
+async def _close_students() -> AsyncIterator[None]:
+    """Every student browser a test opens is closed after it, even when the test fails."""
+    yield
+    while _OPEN:
+        await _OPEN.pop().aclose()
+
+
 async def _student(code: str, name: str = "Kofi_A", attempts: int = 1) -> AsyncClient:
     student = browser()
+    _OPEN.append(student)
     await join(student, code, name)
     pushed = await student.post(
         "/sync/push",
@@ -158,16 +171,27 @@ async def test_a_new_version_gives_notice_then_asks_again(
     assert terms["upcoming_from"] == soon.effective_from.isoformat()
     assert terms["needs_agreement"] is False  # the old version holds during the notice
 
+    # Agreeing early, during the notice, counts, and signing in again does not undo it.
+    early = await client.post(
+        "/consents", json={"purpose": "terms", "version": "next", "granted": True}
+    )
+    assert early.status_code == 200, early.text
+    await sign_in_teacher(client, outbox, TEACHER)
+    terms = by_purpose((await client.get("/consents")).json())["terms"]
+    assert terms["version"] == "next"
+    assert terms["needs_agreement"] is False
+
     monkeypatch.setitem(
         legal.DOCUMENTS,
         "terms",
-        legal.Document(pack.title, (*pack.versions, legal.Version("next", date(2000, 1, 1)))),
+        legal.Document(pack.title, (*pack.versions, legal.Version("later", date(2000, 1, 1)))),
     )
+    # Once a version takes effect, anyone who has not agreed to it is asked.
     terms = by_purpose((await client.get("/consents")).json())["terms"]
-    assert terms["current_version"] == "next"
+    assert terms["current_version"] == "later"
     assert terms["needs_agreement"] is True
     agreed = await client.post(
-        "/consents", json={"purpose": "terms", "version": "next", "granted": True}
+        "/consents", json={"purpose": "terms", "version": "later", "granted": True}
     )
     assert by_purpose(agreed.json())["terms"]["needs_agreement"] is False
 
@@ -205,14 +229,12 @@ async def test_a_student_exports_their_own_work_as_attempt_files(
     # Ama's export holds only Ama's attempt.
     theirs = (await ama.get("/export/attempts")).json()
     assert len(theirs["attempts"]) == 1
-    await kofi.aclose()
-    await ama.aclose()
 
 
 async def test_a_teachers_export_holds_no_students(client: AsyncClient, outbox: LogSender) -> None:
     await sign_in_teacher(client, outbox, TEACHER)
     made = await create_class(client)
-    kofi = await _student(made["code"])
+    await _student(made["code"])
     pushed = await client.post("/sync/push", json={"attempts": [batch("mine")]})
     assert pushed.status_code == 200
     summary = (await client.get("/export")).json()
@@ -236,7 +258,6 @@ async def test_a_teachers_export_holds_no_students(client: AsyncClient, outbox: 
     assert "Kofi_A" not in str(summary)
     page = (await client.get("/export/attempts")).json()
     assert [f["attempt"]["id"] for f in page["attempts"]] == ["mine"]
-    await kofi.aclose()
 
 
 async def test_export_pages_follow_the_cursor(client: AsyncClient, outbox: LogSender) -> None:
@@ -287,7 +308,6 @@ async def test_a_teacher_exports_one_student_for_a_parent(
         wrong_class = f"/classes/{theirs['id']}/members/{member_id}/export"
         assert (await other.get(wrong_class)).status_code == 404
     assert (await kofi.get(base)).status_code == 403
-    await kofi.aclose()
 
 
 # Deletion
@@ -346,8 +366,6 @@ async def test_removing_a_student_deletes_their_work_and_signs_them_out(
     async with browser() as other:
         await sign_in_teacher(other, outbox, "other@example.org")
         assert (await other.delete(f"/classes/{made['id']}/members/{ama_id}")).status_code == 404
-    await kofi.aclose()
-    await ama.aclose()
 
 
 async def test_a_teacher_deletes_their_account_and_everything_in_it(
@@ -382,7 +400,6 @@ async def test_a_teacher_deletes_their_account_and_everything_in_it(
     assert await db.scalar(select(func.count()).select_from(Session)) == 0
     assert await db.scalar(select(func.count()).where(EmailLinkToken.email == TEACHER)) == 0
     assert await db.scalar(select(func.count()).where(RateLimit.key.like(f"%{TEACHER}%"))) == 0
-    await kofi.aclose()
 
 
 async def test_deleting_an_account_needs_a_recent_sign_in(
@@ -409,5 +426,3 @@ async def test_students_cannot_delete_accounts_or_remove_classmates(
     ama_id = (await ama.get("/auth/me")).json()["member_id"]
     assert (await kofi.post("/account/delete", json={"confirm_email": TEACHER})).status_code == 403
     assert (await kofi.delete(f"/classes/{made['id']}/members/{ama_id}")).status_code == 403
-    await kofi.aclose()
-    await ama.aclose()

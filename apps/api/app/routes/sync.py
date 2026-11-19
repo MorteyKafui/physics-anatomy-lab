@@ -36,7 +36,7 @@ def _owner(principal: Principal) -> tuple[str, uuid.UUID]:
     return "member_id", principal.member.id
 
 
-def _owned_by(column: str, owner: uuid.UUID) -> ColumnElement[bool]:
+def owned_by(column: str, owner: uuid.UUID) -> ColumnElement[bool]:
     return (Attempt.user_id if column == "user_id" else Attempt.member_id) == owner
 
 
@@ -63,7 +63,7 @@ async def _attempt_row(
         )
     )
     row = await db.scalar(
-        select(Attempt).where(_owned_by(column, owner), Attempt.client_id == header.id)
+        select(Attempt).where(owned_by(column, owner), Attempt.client_id == header.id)
     )
     assert row is not None
     same = (row.experiment_id, row.mode, row.seed, row.format_version) == (
@@ -180,7 +180,7 @@ async def pull(
     if attempt_ids:
         found = await db.scalars(
             select(Attempt)
-            .where(Attempt.id.in_(attempt_ids), _owned_by(column, owner))
+            .where(Attempt.id.in_(attempt_ids), owned_by(column, owner))
             .order_by(Attempt.client_id)
         )
         headers = [

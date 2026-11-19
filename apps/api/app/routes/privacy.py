@@ -14,7 +14,7 @@ from typing import Annotated
 
 import structlog
 from fastapi import APIRouter, HTTPException, Query, Response, status
-from sqlalchemy import ColumnElement, delete, func, select, text, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import consents, legal
@@ -51,6 +51,7 @@ from app.privacy_schemas import (
     TeacherExport,
 )
 from app.routes.classes import Responses, owned_class
+from app.routes.sync import owned_by
 from app.sync_schemas import AttemptHeader, SyncEvent
 
 router = APIRouter(tags=["privacy"])
@@ -91,8 +92,8 @@ async def record_consent(body: ConsentChoice, principal: CurrentPrincipal, db: D
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="To stop agreeing to this, delete your account.",
         )
-    current = legal.current(body.purpose, datetime.now(UTC).date()).version
-    if body.version != current:
+    # The current version, or an upcoming one agreed to early during its notice period.
+    if body.version not in legal.agreeable(body.purpose, datetime.now(UTC).date()):
         raise HTTPException(
             status.HTTP_409_CONFLICT,
             detail="This page is out of date. Reload it to see the current version.",
@@ -104,7 +105,7 @@ async def record_consent(body: ConsentChoice, principal: CurrentPrincipal, db: D
             user_id=user_id,
             member_id=member_id,
             purpose=body.purpose,
-            version=current,
+            version=body.version,
             granted=body.granted,
             via="choice",
         )
@@ -124,12 +125,8 @@ async def record_consent(body: ConsentChoice, principal: CurrentPrincipal, db: D
 # Export
 
 
-def _owned(column: str, owner: uuid.UUID) -> ColumnElement[bool]:
-    return (Attempt.user_id if column == "user_id" else Attempt.member_id) == owner
-
-
 async def _attempt_count(db: AsyncSession, column: str, owner: uuid.UUID) -> int:
-    return await db.scalar(select(func.count()).where(_owned(column, owner))) or 0
+    return await db.scalar(select(func.count()).where(owned_by(column, owner))) or 0
 
 
 async def _teacher_export(db: AsyncSession, user: User) -> TeacherExport:
@@ -206,12 +203,12 @@ async def _attempts_page(
     """
     since = _export_cursor(after)
     size = (
-        select(func.coalesce(func.sum(func.octet_length(text("attempt_events.data::text"))), 0))
+        select(func.coalesce(func.sum(func.pg_column_size(AttemptEvent.data)), 0))
         .where(AttemptEvent.attempt_id == Attempt.id)
         .correlate(Attempt)
         .scalar_subquery()
     )
-    query = select(Attempt, size).where(_owned(column, owner))
+    query = select(Attempt, size).where(owned_by(column, owner))
     if since is not None:
         query = query.where(Attempt.id > since)
     found = (await db.execute(query.order_by(Attempt.id).limit(EXPORT_PAGE_ATTEMPTS + 1))).all()

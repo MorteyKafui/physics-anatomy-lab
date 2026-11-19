@@ -1,7 +1,7 @@
 """Recording and reading consent (ADR 0042). The latest record for a person and purpose counts."""
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,8 +11,8 @@ from app.models import Consent
 from app.privacy_schemas import ConsentRecord, ConsentState
 
 
-def _today() -> datetime:
-    return datetime.now(UTC)
+def _today() -> date:
+    return datetime.now(UTC).date()
 
 
 async def history(
@@ -44,11 +44,12 @@ async def record_required(
     teacher signing in ("By signing in you agree…").
     """
     latest = _latest(await history(db, user_id=user_id, member_id=member_id))
-    today = _today().date()
+    today = _today()
     for purpose in legal.REQUIRED:
         version = legal.current(purpose, today).version
         row = latest.get(purpose)
-        if row is None or row.version != version:
+        # Agreeing early to an upcoming version also counts; it must not be overwritten.
+        if row is None or row.version not in legal.agreeable(purpose, today):
             db.add(
                 Consent(
                     user_id=user_id,
@@ -65,7 +66,7 @@ async def record_required(
 def states(rows: list[Consent], *, teacher: bool) -> list[ConsentState]:
     """Where a person stands on each purpose they can be asked about."""
     latest = _latest(rows)
-    today = _today().date()
+    today = _today()
     purposes = legal.REQUIRED + (legal.OPTIONAL_FOR_TEACHERS if teacher else ())
     out: list[ConsentState] = []
     for purpose in purposes:
@@ -85,7 +86,11 @@ def states(rows: list[Consent], *, teacher: bool) -> list[ConsentState]:
                 version=None if row is None else row.version,
                 recorded_at=None if row is None else row.recorded_at,
                 needs_agreement=required
-                and (row is None or not row.granted or row.version != now.version),
+                and (
+                    row is None
+                    or not row.granted
+                    or row.version not in legal.agreeable(purpose, today)
+                ),
             )
         )
     return out
