@@ -1,0 +1,148 @@
+# What if in the simple pendulum lab: the question turned into a scenario the model supports, or
+# declined with the nearest variant. Benches name settings only.
+feature = "what-if"
+experiment = "simple-pendulum"
+
+[[case]]
+id = "moon"
+question = "What if I did this on the Moon?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Is a scenario that changes the place to the Moon and nothing else.",
+  "The reason says gravity is weaker there, so the pendulum swings more slowly.",
+  "The title is short and plain.",
+]
+
+[[case]]
+id = "jupiter"
+question = "What happens on Jupiter?"
+bench = { length = 0.60, place = "earth" }
+rubric = [
+  "Is a scenario that changes the place to Jupiter.",
+  "Anything the reason says is right: gravity is stronger, so the period is shorter.",
+]
+
+[[case]]
+id = "mars"
+question = "Would it be different on Mars?"
+bench = { length = 1.00, place = "earth" }
+rubric = [
+  "Is a scenario that changes the place to Mars.",
+  "The reason is right physics and plain.",
+]
+
+[[case]]
+id = "longer-string"
+question = "What if the string were longer?"
+bench = { length = 0.50, place = "earth" }
+rubric = [
+  "Is a scenario that makes the length longer than the bench's, within the model's limits.",
+  "Changes nothing but the length.",
+  "Anything the reason says is right: a longer pendulum has a longer period.",
+]
+
+[[case]]
+id = "shorter-string"
+question = "What if I cut the string shorter?"
+bench = { length = 0.90, place = "earth" }
+rubric = [
+  "Is a scenario that makes the length shorter than the bench's.",
+  "The reason is right physics.",
+]
+
+[[case]]
+id = "heavier-bob"
+question = "What if the bob were much heavier?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Is a scenario that changes only the mass of the bob.",
+  "The reason says the mass does not change the period, or the title invites the student to see that.",
+]
+
+[[case]]
+id = "big-swing"
+question = "What if I pull it back really far before letting go?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Is a scenario that makes the amplitude large.",
+  "The reason says the small-angle formula no longer holds, or the period grows a little.",
+]
+
+[[case]]
+id = "small-swing"
+question = "What if I only pull it back a tiny bit?"
+bench = { length = 0.70, place = "earth" }
+rubric = [
+  "Is a scenario with a smaller amplitude.",
+  "The reason is right physics: for small swings the period hardly depends on the amplitude.",
+]
+
+[[case]]
+id = "moon-and-longer"
+question = "What if it was on the Moon with a longer string?"
+bench = { length = 0.60, place = "earth" }
+rubric = [
+  "Is a scenario that changes the place to the Moon and makes the length longer.",
+  "The reason is right physics and plain.",
+]
+
+[[case]]
+id = "stretchy-string"
+expect = "decline"
+question = "What if the string stretches while it swings?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Declines, because the model treats the string as one that does not stretch.",
+  "Offers the nearest variant the model can show, such as a longer string.",
+  "Says so kindly and plainly.",
+]
+
+[[case]]
+id = "air-resistance"
+expect = "decline"
+question = "What if there was loads of air resistance?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Declines, because the model does not include air resistance.",
+  "Offers a variant the model can show instead.",
+]
+
+[[case]]
+id = "too-long"
+expect = "decline"
+question = "What if the string was as long as a football pitch?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Declines, or offers the longest length the model supports, since that length is outside its limits.",
+  "Says plainly why.",
+]
+
+[[case]]
+id = "sun"
+expect = "decline"
+question = "What if I did it on the Sun?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Declines, because the Sun is not one of the places the model supports.",
+  "Offers a supported place, such as Jupiter.",
+]
+
+[[case]]
+id = "nonsense"
+expect = "decline"
+question = "What if the pendulum was made of happiness?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Declines kindly, without mocking the question.",
+  "Suggests a change the model can show.",
+]
+
+[[case]]
+id = "off-topic"
+expect = "decline"
+question = "What if I skipped school tomorrow?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Declines, because it is not about the experiment.",
+  "Brings the student back to a change they could try on the pendulum.",
+]

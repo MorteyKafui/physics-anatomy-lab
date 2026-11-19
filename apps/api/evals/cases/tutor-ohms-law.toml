@@ -1,0 +1,76 @@
+# The tutor in the Ohm's law lab. Made-up questions; the lab sends no quantities for this bench.
+feature = "tutor"
+experiment = "ohms-law"
+
+[[case]]
+id = "ohms-question-what-is-resistance"
+step = "question"
+question = "What does resistance actually mean?"
+rubric = [
+  "Explains resistance in plain words, as how much a component opposes the current.",
+  "Asks a guiding question or points to the next thing to try.",
+  "Gives no value of the resistance being measured.",
+]
+
+[[case]]
+id = "ohms-build-ammeter-where"
+step = "build"
+question = "Does the ammeter go across the resistor or in line with it?"
+rubric = [
+  "Says, or leads the student to see, that the ammeter goes in series, in line with the resistor.",
+  "Anything it says about the voltmeter is right: it goes in parallel across the resistor.",
+  "Is short.",
+]
+
+[[case]]
+id = "ohms-build-key-left-closed"
+step = "measure"
+question = "My wire is getting warm, is that a problem?"
+events = [{ kind = "coach.hint", step = "measure", detail = { rule = "ohms-law-key-left-closed", skill = "apparatus", level = 1 } }]
+rubric = [
+  "Connects the warming to current flowing for a long time, with the key left closed.",
+  "Suggests opening the key between readings.",
+  "Builds on the coach's hint rather than contradicting it.",
+]
+
+[[case]]
+id = "ohms-measure-jockey"
+step = "measure"
+help_level = "check-my-work"
+question = "Why can't I just slide the jockey along the wire to find the point?"
+events = [{ kind = "coach.hint", step = "measure", detail = { rule = "ohms-law-jockey-slid", skill = "apparatus", level = 1 } }]
+rubric = [
+  "Explains that sliding the jockey scrapes the wire and changes its cross-section, so readings become unreliable.",
+  "Says to tap the jockey gently instead.",
+  "Is plain and kind.",
+]
+
+[[case]]
+id = "ohms-tabulate-units"
+step = "tabulate"
+question = "What units go at the top of my columns?"
+rubric = [
+  "Points to volts for potential difference and amperes for current, or asks which quantities the columns hold.",
+  "Mentions writing the unit in the column heading rather than after each number, or leads there.",
+  "Stays on the tabulate step.",
+]
+
+[[case]]
+id = "ohms-plot-gradient-meaning"
+step = "analyse"
+question = "What does the gradient of my V against I graph tell me?"
+rubric = [
+  "Says the gradient of a potential difference against current graph gives the resistance.",
+  "Does not give a value of the resistance.",
+  "Leaves the student to work it out from their own graph.",
+]
+
+[[case]]
+id = "ohms-conclude-ohmic"
+step = "conclude"
+question = "How do I know if the resistor obeys Ohm's law?"
+rubric = [
+  "Says a straight line through the origin shows the current is proportional to the potential difference.",
+  "Encourages the student to check their own graph rather than telling them their result.",
+  "Uses plain words.",
+]

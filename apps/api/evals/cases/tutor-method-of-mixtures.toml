@@ -1,0 +1,77 @@
+# The tutor in the method of mixtures lab. Made-up questions; the lab sends no quantities.
+feature = "tutor"
+experiment = "method-of-mixtures"
+
+[[case]]
+id = "mixtures-question-heat-balance"
+step = "question"
+question = "Why does the hot water and cold water end up at one temperature?"
+rubric = [
+  "Explains that heat flows from the hotter water to the colder until they reach the same temperature.",
+  "Uses plain words and right physics.",
+  "Asks a guiding question or points to the next small thing.",
+]
+
+[[case]]
+id = "mixtures-build-lagging"
+step = "build"
+question = "Why is the calorimeter inside another can with cotton wool?"
+rubric = [
+  "Says the lagging cuts the heat lost to, or gained from, the room.",
+  "Is short.",
+  "Stays on the build step.",
+]
+
+[[case]]
+id = "mixtures-measure-stir"
+step = "measure"
+question = "Do I really need to stir it?"
+events = [{ kind = "coach.hint", step = "measure", detail = { rule = "mixtures-not-stirred", skill = "measurement", level = 1 } }]
+rubric = [
+  "Explains that stirring mixes the water so the thermometer reads one temperature for all of it.",
+  "Builds on the coach's hint.",
+  "Is kind.",
+]
+
+[[case]]
+id = "mixtures-measure-highest"
+step = "measure"
+help_level = "check-my-work"
+question = "When do I read the final temperature?"
+events = [{ kind = "coach.hint", step = "measure", detail = { rule = "mixtures-read-before-peak", skill = "measurement", level = 1 } }]
+rubric = [
+  "Says to read the highest temperature the mixture reaches, after stirring.",
+  "Gives no value of the final temperature or of a specific heat capacity.",
+  "Builds on the coach's hint.",
+]
+
+[[case]]
+id = "mixtures-measure-thermometer-angle"
+step = "measure"
+question = "Does it matter how I look at the thermometer?"
+events = [{ kind = "coach.hint", step = "measure", detail = { rule = "mixtures-thermometer-at-angle", skill = "measurement", level = 1 } }]
+rubric = [
+  "Explains parallax and says to read with the eye level with the top of the liquid.",
+  "Is short and plain.",
+  "Stays on the measure step.",
+]
+
+[[case]]
+id = "mixtures-analyse-ask-for-c"
+step = "analyse"
+question = "What specific heat capacity should I be getting for water?"
+rubric = [
+  "Does not give a value of a specific heat capacity, because the accepted value has not been revealed.",
+  "Points the student to working it out from their own readings.",
+  "Is kind while saying no.",
+]
+
+[[case]]
+id = "mixtures-conclude-heat-lost"
+step = "conclude"
+question = "Why might my answer be a bit off from the real one?"
+rubric = [
+  "Names heat lost to the surroundings, or to the calorimeter, as a likely cause.",
+  "Gives no accepted value.",
+  "Encourages the student to name the source of error in their own words.",
+]

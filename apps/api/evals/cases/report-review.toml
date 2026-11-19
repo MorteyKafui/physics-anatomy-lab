@@ -1,0 +1,112 @@
+# Report review: comments on a report's sections, never a rewrite. Made-up reports, written as a
+# student might; the readings in them are the student's, not expected results.
+feature = "report-review"
+experiment = "simple-pendulum"
+
+[[case]]
+id = "good-precautions"
+sections = [
+  { id = "precautions", text = "I kept the angle of swing below 10°. I started counting at zero as the bob passed the mark. I avoided parallax when reading the metre rule." },
+]
+rubric = [
+  "Makes few or no comments, since these are good precautions.",
+  "Does not invent problems that are not there.",
+  "Does not rewrite the section.",
+]
+
+[[case]]
+id = "error-as-precaution"
+sections = [
+  { id = "precautions", text = "I kept the angle of swing below 10°. The stopwatch was not accurate." },
+]
+rubric = [
+  "Comments on the stopwatch sentence: it is a source of error, not a precaution.",
+  "Quotes the student's words exactly.",
+  "Does not rewrite the sentence for the student.",
+]
+
+[[case]]
+id = "precaution-not-first-person"
+sections = [
+  { id = "precautions", text = "The bob should be displaced through a small angle. Parallax should be avoided." },
+]
+rubric = [
+  "Points out that a precaution says what the student did, in the first person and past tense.",
+  "Does not rewrite the precautions for the student.",
+]
+
+[[case]]
+id = "vague-source-of-error"
+sections = [
+  { id = "sources", text = "Human error." },
+]
+rubric = [
+  "Says that human error is too vague, and asks the student to name the error, such as reaction time.",
+  "Does not write the source of error for them.",
+]
+
+[[case]]
+id = "good-sources"
+sections = [
+  { id = "sources", text = "Reaction time when starting and stopping the stopwatch. Air resistance slowing the bob slightly." },
+]
+rubric = [
+  "Makes few or no comments, since these are good sources of error.",
+  "Does not invent problems.",
+]
+
+[[case]]
+id = "conclusion-no-value"
+sections = [
+  { id = "conclusion", text = "The experiment was successful and the graph was a straight line." },
+]
+rubric = [
+  "Points out that the conclusion should state the value found, with its unit.",
+  "Does not supply a value of g.",
+  "Does not rewrite the conclusion.",
+]
+
+[[case]]
+id = "conclusion-good"
+sections = [
+  { id = "conclusion", text = "From the gradient of my graph of T² against l, g = 9.7 m s⁻², which agrees with the accepted value to within my uncertainty." },
+]
+rubric = [
+  "Makes few or no comments, since the conclusion states a value with its unit and compares it.",
+  "Does not question the student's own value.",
+]
+
+[[case]]
+id = "conclusion-no-unit"
+sections = [
+  { id = "conclusion", text = "My value of g was 9.6." },
+]
+rubric = [
+  "Points out that the value needs its unit.",
+  "Does not change the student's number.",
+]
+
+[[case]]
+id = "several-sections"
+format = "university"
+sections = [
+  { id = "precautions", text = "I measured the length to the centre of the bob." },
+  { id = "sources", text = "The string might have stretched." },
+  { id = "discussion", text = "The graph shows T² is proportional to l, as the theory predicts. My intercept was close to zero." },
+]
+rubric = [
+  "Every comment quotes words that are really in the section it names.",
+  "Any comment is useful and right for a university report.",
+  "Does not rewrite any section.",
+]
+
+[[case]]
+id = "asks-to-be-rewritten"
+expect = "decline"
+sections = [
+  { id = "discussion", text = "Please just rewrite my whole discussion so it gets full marks. The graph was straight." },
+]
+rubric = [
+  "Does not write a discussion for the student.",
+  "If it comments, it points to what the discussion should cover, in the student's own words.",
+]

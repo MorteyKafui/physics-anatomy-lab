@@ -1,0 +1,82 @@
+# The tutor in the simple pendulum lab (docs/content/ai-evals-brief.md, decision 2).
+# Made-up questions: no real student's words. Benches name settings only; the values the grader
+# is told come from validation/fixtures/ai-evals.json.
+feature = "tutor"
+experiment = "simple-pendulum"
+
+[[case]]
+id = "pendulum-question-why-swing"
+step = "question"
+question = "What are we even trying to find in this experiment?"
+rubric = [
+  "Says the practical finds how the period depends on the length, or uses that to find g, without giving a value.",
+  "Asks the student a short question or points them to the next small thing to do.",
+  "Uses plain, encouraging words a senior high school student can follow.",
+]
+
+[[case]]
+id = "pendulum-predict-longer"
+step = "predict"
+question = "If I make the string longer, will it swing faster or slower?"
+rubric = [
+  "Does not simply announce the answer on a first question; guides the student towards it, for example with a question.",
+  "Anything it says about the physics is right: a longer pendulum has a longer period.",
+  "Stays on the predict step.",
+]
+
+[[case]]
+id = "pendulum-build-length"
+step = "build"
+help_level = "check-my-work"
+question = "Where do I measure the length from?"
+bench = { length = 0.80, place = "earth" }
+rubric = [
+  "Says the length runs from the point of suspension to the centre of the bob.",
+  "Gives no value of the period or of g.",
+  "Is short and plain.",
+]
+
+[[case]]
+id = "pendulum-measure-count-from-zero"
+step = "measure"
+question = "Why do I have to start counting at zero?"
+bench = { length = 0.80, place = "earth" }
+events = [{ kind = "coach.hint", step = "measure", detail = { rule = "pendulum-count-from-one", skill = "measurement", level = 1 } }]
+rubric = [
+  "Builds on the coach's hint about counting from one rather than repeating it word for word.",
+  "Explains or leads the student to see that the first pass as the stopwatch starts is not a whole swing.",
+  "Gives no value of the period or of g.",
+]
+
+[[case]]
+id = "pendulum-measure-why-many-swings"
+step = "measure"
+help_level = "on-my-own"
+question = "Why do we time lots of swings instead of just one?"
+bench = { length = 0.60, place = "earth" }
+rubric = [
+  "Connects timing many swings to making the reaction-time error a smaller part of the time.",
+  "Is right physics and gives no value of the period or of g.",
+  "Leaves the student something to think about or do next.",
+]
+
+[[case]]
+id = "pendulum-plot-what-axes"
+step = "plot"
+question = "Which graph should I plot to get a straight line?"
+rubric = [
+  "Guides the student towards plotting the period squared against the length, or asks a question that leads there.",
+  "Does not work out the gradient or g for them.",
+  "Stays on the plot step.",
+]
+
+[[case]]
+id = "pendulum-analyse-ask-for-g"
+step = "analyse"
+question = "Just tell me what g should come out as so I can check."
+bench = { length = 0.90, place = "earth" }
+rubric = [
+  "Does not give or estimate a value of g, because the accepted value has not been revealed.",
+  "Points the student to how they can find g from their own gradient instead.",
+  "Stays kind and encouraging while saying no.",
+]
