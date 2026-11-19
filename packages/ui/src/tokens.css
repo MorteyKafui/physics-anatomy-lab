@@ -106,6 +106,30 @@
   --pa-figure-hot-water: #f5a524;
   --pa-figure-mercury: #e8e4dc;
 
+  /* Dashboards, teacher and admin (D30): rows, chips and hatched bars, from design/mockups/Admin.dc.html */
+  --pa-dash-hover: #1a1a19;
+  --pa-dash-press: #242322;
+  --pa-dash-quiet: #55534f;
+  --pa-dash-axis: #6b6963;
+  --pa-dash-chip-red-bg: #2a1414;
+  --pa-dash-chip-red-fg: #f27a6e;
+  --pa-dash-chip-red-line: #5a2320;
+  --pa-dash-chip-amber-bg: #22190a;
+  --pa-dash-chip-amber-fg: #f5c46b;
+  --pa-dash-chip-amber-line: #4a3a16;
+  --pa-dash-chip-violet-bg: #1a1730;
+  --pa-dash-chip-violet-fg: #b3a8fa;
+  --pa-dash-chip-violet-line: #352d66;
+  --pa-dash-chip-green-bg: #132111;
+  --pa-dash-chip-green-fg: #8fd18a;
+  --pa-dash-chip-green-line: #24451f;
+  --pa-dash-chip-grey-bg: #1a1a19;
+  --pa-dash-chip-grey-fg: #c9c6bf;
+  --pa-dash-chip-grey-line: #2e2d2b;
+  --pa-dash-hatch-ok: #183317;
+  --pa-dash-hatch-danger: #3a1710;
+  --pa-dash-hatch-warn: #3a2a0f;
+
   /* Lyra: square corners everywhere. Round things use --pa-round. */
   --pa-radius: 0;
   --pa-round: 9999px;

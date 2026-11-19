@@ -26,6 +26,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Adding signed-out work (draft) | `Adopt.dc.html`         | not approved yet       | `apps/web` after sign-in or join |
 | Teacher sign-in (draft)        | `SignIn.dc.html`        | not approved yet       | `apps/web` `/sign-in`            |
 | Teacher live class             | `Teacher.dc.html`       | `screens/Teacher.jpg`  | `apps/web` teacher dashboard     |
+| Teacher classes, start (draft) | `TeacherStart.dc.html`  | not approved yet       | `apps/web` `/teach`, live extras |
 | Admin portal                   | `Admin.dc.html`         | `screens/Admin.jpg`    | `apps/admin`                     |
 | Logo                           | `Logo.dc.html`          | `screens/Logo.jpg`     | `packages/ui` logo component     |
 

@@ -112,6 +112,12 @@ request that introduces it.
 - **Sign-in link.** The email link a teacher signs in with. It works once, for 15 minutes.
 - **Live class.** A teaching session where the teacher sees every bench in real time.
 - **Hint push.** One hint sent to every student who is making the same mistake.
+- **Live session.** In code, one live class from start to end: its experiment, lesson length and
+  whether steps are locked. A class has at most one open at a time.
+- **Bench summary.** What a student's device tells the teacher during a live class: the step,
+  the completed steps, the mistakes the coach sees and how many readings. Never the attempt itself.
+- **Lock steps.** The teacher keeps every student on the step they are on until unlocking.
+- **Broadcast.** One instruction from the teacher to every student in a live class.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.
 
 ## Design

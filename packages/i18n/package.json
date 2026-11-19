@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./ohms-law": "./src/ohms-law.ts",
     "./converging-lens": "./src/converging-lens.ts",
-    "./method-of-mixtures": "./src/method-of-mixtures.ts"
+    "./method-of-mixtures": "./src/method-of-mixtures.ts",
+    "./teach": "./src/teach.ts"
   },
   "scripts": {
     "lint": "eslint .",

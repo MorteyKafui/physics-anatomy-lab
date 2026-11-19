@@ -2,7 +2,14 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { colour, figureTone, figureTonePaper, graphPalette, topicHue } from "../src/tokens";
+import {
+  colour,
+  dashTone,
+  figureTone,
+  figureTonePaper,
+  graphPalette,
+  topicHue,
+} from "../src/tokens";
 
 const file = readFileSync(join(import.meta.dir, "../src/tokens.css"), "utf8");
 const block = (selector: string) => {
@@ -55,5 +62,12 @@ describe("figure tones on paper in tokens.css match tokens.ts", () => {
   test.each(Object.entries(figureTonePaper))("%s", (name, hex) => {
     const variable = `--pa-figure-${name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()}`;
     expect(paper[variable]).toBe(hex);
+  });
+});
+
+describe("dashboard tones in tokens.css match tokens.ts", () => {
+  test.each(Object.entries(dashTone))("%s", (name, hex) => {
+    const variable = `--pa-dash-${name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()}`;
+    expect(declared[variable]).toBe(hex);
   });
 });
