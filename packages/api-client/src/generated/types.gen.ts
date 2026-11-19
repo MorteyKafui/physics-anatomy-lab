@@ -68,6 +68,60 @@ export type AttemptHeader = {
 };
 
 /**
+ * AuditEntry
+ */
+export type AuditEntry = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * At
+   */
+  at: string;
+  /**
+   * Actor Email
+   */
+  actor_email: string;
+  /**
+   * Actor Via
+   */
+  actor_via: string;
+  /**
+   * Action
+   */
+  action: string;
+  /**
+   * Target Type
+   */
+  target_type: string | null;
+  /**
+   * Target Id
+   */
+  target_id: string | null;
+  /**
+   * Detail
+   */
+  detail: {
+    [key: string]: unknown;
+  };
+};
+
+/**
+ * AuditPage
+ */
+export type AuditPage = {
+  /**
+   * Entries
+   */
+  entries: Array<AuditEntry>;
+  /**
+   * Next Before
+   */
+  next_before: string | null;
+};
+
+/**
  * BenchOut
  */
 export type BenchOut = {
@@ -155,6 +209,20 @@ export type BroadcastSend = {
 };
 
 /**
+ * ClassAiChange
+ */
+export type ClassAiChange = {
+  /**
+   * Enabled
+   */
+  enabled: boolean;
+  /**
+   * Reason
+   */
+  reason?: string | null;
+};
+
+/**
  * ClassAttempt
  */
 export type ClassAttempt = {
@@ -216,6 +284,24 @@ export type ClassAttempt = {
     | "analyse"
     | "conclude"
     | "report";
+};
+
+/**
+ * ClassCounts
+ */
+export type ClassCounts = {
+  /**
+   * Total
+   */
+  total: number;
+  /**
+   * Ai On
+   */
+  ai_on: number;
+  /**
+   * Joining Open
+   */
+  joining_open: number;
 };
 
 /**
@@ -301,6 +387,44 @@ export type ClassOut = {
 };
 
 /**
+ * ClassRow
+ */
+export type ClassRow = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Ai Enabled
+   */
+  ai_enabled: boolean;
+  /**
+   * Joining Open
+   */
+  joining_open: boolean;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Teacher Name
+   */
+  teacher_name: string | null;
+  /**
+   * Members
+   */
+  members: number;
+};
+
+/**
  * ClassSummary
  */
 export type ClassSummary = {
@@ -337,6 +461,20 @@ export type ClassUpdate = {
 };
 
 /**
+ * DisplayNameChange
+ */
+export type DisplayNameChange = {
+  /**
+   * Display Name
+   */
+  display_name: string;
+  /**
+   * Reason
+   */
+  reason?: string | null;
+};
+
+/**
  * EmailLinkRequest
  */
 export type EmailLinkRequest = {
@@ -367,6 +505,110 @@ export type EmailLinkVerify = {
 };
 
 /**
+ * ExperimentTotal
+ */
+export type ExperimentTotal = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Attempts
+   */
+  attempts: number;
+  /**
+   * Students
+   */
+  students: number;
+  /**
+   * Last Used Ms
+   */
+  last_used_ms: number | null;
+};
+
+/**
+ * ExperimentUse
+ */
+export type ExperimentUse = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Mode
+   */
+  mode: "guided" | "exam" | "own-data";
+  /**
+   * Attempts
+   */
+  attempts: number;
+  /**
+   * Students
+   */
+  students: number;
+  /**
+   * Reports
+   */
+  reports: number;
+  /**
+   * Multi Device
+   */
+  multi_device: number;
+  /**
+   * Hints
+   */
+  hints: number;
+};
+
+/**
+ * ExportRequest
+ */
+export type ExportRequest = {
+  /**
+   * Report
+   */
+  report: "mistakes" | "stages" | "classes";
+  /**
+   * Range
+   */
+  range?: "24h" | "7d" | "30d";
+  /**
+   * Experiment Id
+   */
+  experiment_id?: string | null;
+};
+
+/**
+ * FlaggedName
+ */
+export type FlaggedName = {
+  /**
+   * Member Id
+   */
+  member_id: string;
+  /**
+   * Display Name
+   */
+  display_name: string;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Class Id
+   */
+  class_id: string;
+  /**
+   * Class Code
+   */
+  class_code: string;
+  /**
+   * Class Name
+   */
+  class_name: string;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -388,6 +630,40 @@ export type Health = {
    * Environment
    */
   environment: string;
+};
+
+/**
+ * HintCount
+ */
+export type HintCount = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Hint
+   */
+  hint: string;
+  /**
+   * Rule
+   */
+  rule: string | null;
+  /**
+   * Skill
+   */
+  skill: string | null;
+  /**
+   * Students
+   */
+  students: number;
+  /**
+   * Attempts
+   */
+  attempts: number;
+  /**
+   * Hints
+   */
+  hints: number;
 };
 
 /**
@@ -443,6 +719,33 @@ export type JoinRequest = {
 };
 
 export type JsonValue = unknown;
+
+/**
+ * Learning
+ */
+export type Learning = {
+  window: RangeInfo;
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Stages
+   */
+  stages: Array<StageCount>;
+  /**
+   * Mistakes
+   */
+  mistakes: Array<HintCount>;
+  /**
+   * Skills
+   */
+  skills: Array<SkillSeries>;
+  /**
+   * Experiments
+   */
+  experiments: Array<ExperimentUse>;
+};
 
 /**
  * LiveMessageOut
@@ -582,6 +885,28 @@ export type MemberOut = {
 };
 
 /**
+ * MemberRow
+ */
+export type MemberRow = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Display Name
+   */
+  display_name: string;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Attempts
+   */
+  attempts: number;
+};
+
+/**
  * Mistake
  *
  * A coach finding on a student's bench: the rule that found it and its message key.
@@ -613,6 +938,43 @@ export type NoteSend = {
    * Text
    */
   text: string;
+};
+
+/**
+ * Overview
+ */
+export type Overview = {
+  window: RangeInfo;
+  students: StudentCounts;
+  classes: ClassCounts;
+  /**
+   * Reports
+   */
+  reports: Array<number>;
+  /**
+   * Experiments
+   */
+  experiments: Array<ExperimentUse>;
+  /**
+   * Stages Experiment
+   */
+  stages_experiment: string;
+  /**
+   * Stages
+   */
+  stages: Array<StageCount>;
+  /**
+   * Mistakes
+   */
+  mistakes: Array<HintCount>;
+  /**
+   * Flagged Names
+   */
+  flagged_names: Array<FlaggedName>;
+  /**
+   * Database Bytes
+   */
+  database_bytes: number;
 };
 
 /**
@@ -682,6 +1044,28 @@ export type PushedAttempt = {
 };
 
 /**
+ * RangeInfo
+ */
+export type RangeInfo = {
+  /**
+   * Range
+   */
+  range: "24h" | "7d" | "30d";
+  /**
+   * Since
+   */
+  since: string;
+  /**
+   * Until
+   */
+  until: string;
+  /**
+   * Bucket Minutes
+   */
+  bucket_minutes: number;
+};
+
+/**
  * RejoinCodeOut
  */
 export type RejoinCodeOut = {
@@ -722,6 +1106,56 @@ export type SignInMethods = {
 };
 
 /**
+ * SkillSeries
+ */
+export type SkillSeries = {
+  /**
+   * Skill
+   */
+  skill: string;
+  /**
+   * Hints
+   */
+  hints: Array<number>;
+};
+
+/**
+ * StaffMe
+ */
+export type StaffMe = {
+  /**
+   * Email
+   */
+  email: string;
+  /**
+   * Via
+   */
+  via: "access" | "dev-bypass";
+  /**
+   * Environment
+   */
+  environment: string;
+};
+
+/**
+ * StageCount
+ */
+export type StageCount = {
+  /**
+   * Step
+   */
+  step: string;
+  /**
+   * Attempts
+   */
+  attempts: number;
+  /**
+   * Students
+   */
+  students: number;
+};
+
+/**
  * StepCount
  */
 export type StepCount = {
@@ -746,6 +1180,48 @@ export type StepCount = {
 };
 
 /**
+ * StepTime
+ */
+export type StepTime = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Step
+   */
+  step: string;
+  /**
+   * N
+   */
+  n: number;
+  /**
+   * Minutes
+   */
+  minutes: number;
+};
+
+/**
+ * StudentCounts
+ *
+ * Class members only: the lab works signed out, and signed-out students are not counted.
+ */
+export type StudentCounts = {
+  /**
+   * Members
+   */
+  members: number;
+  /**
+   * Active 30 Days
+   */
+  active_30_days: number;
+  /**
+   * Teachers
+   */
+  teachers: number;
+};
+
+/**
  * StudentMe
  */
 export type StudentMe = {
@@ -762,6 +1238,22 @@ export type StudentMe = {
    */
   display_name: string;
   school_class: ClassSummary;
+};
+
+/**
+ * Summary
+ *
+ * What the portal's sidebar shows on every page: the last 30 days, and open safeguarding.
+ */
+export type Summary = {
+  /**
+   * Experiments
+   */
+  experiments: Array<ExperimentUse>;
+  /**
+   * Flagged Names
+   */
+  flagged_names: number;
 };
 
 /**
@@ -796,6 +1288,62 @@ export type SyncEvent = {
 };
 
 /**
+ * SystemInfo
+ */
+export type SystemInfo = {
+  /**
+   * Environment
+   */
+  environment: string;
+  /**
+   * Api Version
+   */
+  api_version: string;
+  /**
+   * Database Bytes
+   */
+  database_bytes: number;
+  /**
+   * Postgres
+   */
+  postgres: string;
+  /**
+   * Migration
+   */
+  migration: string | null;
+  /**
+   * Tables
+   */
+  tables: Array<TableSize>;
+  /**
+   * Attempts Synced Per Day
+   */
+  attempts_synced_per_day: Array<number>;
+  /**
+   * Replica
+   */
+  replica: boolean;
+};
+
+/**
+ * TableSize
+ */
+export type TableSize = {
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Rows
+   */
+  rows: number;
+  /**
+   * Bytes
+   */
+  bytes: number;
+};
+
+/**
  * TeacherMe
  */
 export type TeacherMe = {
@@ -818,6 +1366,36 @@ export type TeacherMe = {
 };
 
 /**
+ * TeacherRow
+ */
+export type TeacherRow = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Email
+   */
+  email: string;
+  /**
+   * Display Name
+   */
+  display_name: string | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Last Signed In At
+   */
+  last_signed_in_at: string | null;
+  /**
+   * Classes
+   */
+  classes: number;
+};
+
+/**
  * TeacherUpdate
  */
 export type TeacherUpdate = {
@@ -825,6 +1403,21 @@ export type TeacherUpdate = {
    * Display Name
    */
   display_name: string;
+};
+
+/**
+ * Usage
+ */
+export type Usage = {
+  window: RangeInfo;
+  /**
+   * Experiments
+   */
+  experiments: Array<ExperimentUse>;
+  /**
+   * Step Minutes
+   */
+  step_minutes: Array<StepTime>;
 };
 
 /**
@@ -1907,6 +2500,354 @@ export type UndoMessageResponses = {
 };
 
 export type UndoMessageResponse = UndoMessageResponses[keyof UndoMessageResponses];
+
+export type StaffMeData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/admin/me";
+};
+
+export type StaffMeResponses = {
+  /**
+   * Successful Response
+   */
+  200: StaffMe;
+};
+
+export type StaffMeResponse = StaffMeResponses[keyof StaffMeResponses];
+
+export type AdminSummaryData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/admin/summary";
+};
+
+export type AdminSummaryResponses = {
+  /**
+   * Successful Response
+   */
+  200: Summary;
+};
+
+export type AdminSummaryResponse = AdminSummaryResponses[keyof AdminSummaryResponses];
+
+export type AdminOverviewData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Range
+     */
+    range?: "24h" | "7d" | "30d";
+  };
+  url: "/admin/overview";
+};
+
+export type AdminOverviewErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminOverviewError = AdminOverviewErrors[keyof AdminOverviewErrors];
+
+export type AdminOverviewResponses = {
+  /**
+   * Successful Response
+   */
+  200: Overview;
+};
+
+export type AdminOverviewResponse = AdminOverviewResponses[keyof AdminOverviewResponses];
+
+export type AdminUsageData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Range
+     */
+    range?: "24h" | "7d" | "30d";
+  };
+  url: "/admin/usage";
+};
+
+export type AdminUsageErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminUsageError = AdminUsageErrors[keyof AdminUsageErrors];
+
+export type AdminUsageResponses = {
+  /**
+   * Successful Response
+   */
+  200: Usage;
+};
+
+export type AdminUsageResponse = AdminUsageResponses[keyof AdminUsageResponses];
+
+export type AdminLearningData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Range
+     */
+    range?: "24h" | "7d" | "30d";
+    /**
+     * Experiment
+     */
+    experiment?: string;
+  };
+  url: "/admin/learning";
+};
+
+export type AdminLearningErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminLearningError = AdminLearningErrors[keyof AdminLearningErrors];
+
+export type AdminLearningResponses = {
+  /**
+   * Successful Response
+   */
+  200: Learning;
+};
+
+export type AdminLearningResponse = AdminLearningResponses[keyof AdminLearningResponses];
+
+export type AdminContentData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/admin/content";
+};
+
+export type AdminContentResponses = {
+  /**
+   * Response Admincontent
+   *
+   * Successful Response
+   */
+  200: Array<ExperimentTotal>;
+};
+
+export type AdminContentResponse = AdminContentResponses[keyof AdminContentResponses];
+
+export type AdminTeachersData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/admin/people/teachers";
+};
+
+export type AdminTeachersResponses = {
+  /**
+   * Response Adminteachers
+   *
+   * Successful Response
+   */
+  200: Array<TeacherRow>;
+};
+
+export type AdminTeachersResponse = AdminTeachersResponses[keyof AdminTeachersResponses];
+
+export type AdminClassesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/admin/people/classes";
+};
+
+export type AdminClassesResponses = {
+  /**
+   * Response Adminclasses
+   *
+   * Successful Response
+   */
+  200: Array<ClassRow>;
+};
+
+export type AdminClassesResponse = AdminClassesResponses[keyof AdminClassesResponses];
+
+export type AdminClassMembersData = {
+  body?: never;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/admin/people/classes/{class_id}/members";
+};
+
+export type AdminClassMembersErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminClassMembersError = AdminClassMembersErrors[keyof AdminClassMembersErrors];
+
+export type AdminClassMembersResponses = {
+  /**
+   * Response Adminclassmembers
+   *
+   * Successful Response
+   */
+  200: Array<MemberRow>;
+};
+
+export type AdminClassMembersResponse =
+  AdminClassMembersResponses[keyof AdminClassMembersResponses];
+
+export type AdminSystemData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/admin/system";
+};
+
+export type AdminSystemResponses = {
+  /**
+   * Successful Response
+   */
+  200: SystemInfo;
+};
+
+export type AdminSystemResponse = AdminSystemResponses[keyof AdminSystemResponses];
+
+export type AdminAuditData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Before
+     */
+    before?: string | null;
+    /**
+     * Limit
+     */
+    limit?: number;
+  };
+  url: "/admin/audit";
+};
+
+export type AdminAuditErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminAuditError = AdminAuditErrors[keyof AdminAuditErrors];
+
+export type AdminAuditResponses = {
+  /**
+   * Successful Response
+   */
+  200: AuditPage;
+};
+
+export type AdminAuditResponse = AdminAuditResponses[keyof AdminAuditResponses];
+
+export type AdminSetClassAiData = {
+  body: ClassAiChange;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/admin/classes/{class_id}/ai";
+};
+
+export type AdminSetClassAiErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminSetClassAiError = AdminSetClassAiErrors[keyof AdminSetClassAiErrors];
+
+export type AdminSetClassAiResponses = {
+  /**
+   * Successful Response
+   */
+  200: ClassRow;
+};
+
+export type AdminSetClassAiResponse = AdminSetClassAiResponses[keyof AdminSetClassAiResponses];
+
+export type AdminReplaceDisplayNameData = {
+  body: DisplayNameChange;
+  path: {
+    /**
+     * Member Id
+     */
+    member_id: string;
+  };
+  query?: never;
+  url: "/admin/members/{member_id}/display-name";
+};
+
+export type AdminReplaceDisplayNameErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminReplaceDisplayNameError =
+  AdminReplaceDisplayNameErrors[keyof AdminReplaceDisplayNameErrors];
+
+export type AdminReplaceDisplayNameResponses = {
+  /**
+   * Successful Response
+   */
+  200: MemberRow;
+};
+
+export type AdminReplaceDisplayNameResponse =
+  AdminReplaceDisplayNameResponses[keyof AdminReplaceDisplayNameResponses];
+
+export type AdminExportData = {
+  body: ExportRequest;
+  path?: never;
+  query?: never;
+  url: "/admin/exports";
+};
+
+export type AdminExportErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AdminExportError = AdminExportErrors[keyof AdminExportErrors];
+
+export type AdminExportResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
 
 export type HealthData = {
   body?: never;
