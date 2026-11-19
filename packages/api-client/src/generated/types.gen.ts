@@ -354,6 +354,18 @@ export type ClassCreate = {
 };
 
 /**
+ * ClassDelete
+ */
+export type ClassDelete = {
+  /**
+   * Confirm Name
+   *
+   * The teacher types the class's name to confirm.
+   */
+  confirm_name: string;
+};
+
+/**
  * ClassMistake
  */
 export type ClassMistake = {
@@ -952,6 +964,18 @@ export type Learning = {
    * Experiments
    */
   experiments: Array<ExperimentUse>;
+};
+
+/**
+ * LeaveClass
+ */
+export type LeaveClass = {
+  /**
+   * Confirm Display Name
+   *
+   * The student types their display name to confirm.
+   */
+  confirm_display_name: string;
 };
 
 /**
@@ -2700,6 +2724,42 @@ export type ExportMemberAttemptsResponses = {
 export type ExportMemberAttemptsResponse =
   ExportMemberAttemptsResponses[keyof ExportMemberAttemptsResponses];
 
+export type DeleteClassData = {
+  body: ClassDelete;
+  path: {
+    /**
+     * Class Id
+     */
+    class_id: string;
+  };
+  query?: never;
+  url: "/classes/{class_id}/delete";
+};
+
+export type DeleteClassErrors = {
+  /**
+   * Sign in again first
+   */
+  403: unknown;
+  /**
+   * No such class of yours
+   */
+  404: unknown;
+  /**
+   * The class name does not match
+   */
+  422: unknown;
+};
+
+export type DeleteClassResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type DeleteClassResponse = DeleteClassResponses[keyof DeleteClassResponses];
+
 export type RemoveMemberData = {
   body?: never;
   path: {
@@ -2737,6 +2797,33 @@ export type RemoveMemberResponses = {
 };
 
 export type RemoveMemberResponse = RemoveMemberResponses[keyof RemoveMemberResponses];
+
+export type LeaveClassData = {
+  body: LeaveClass;
+  path?: never;
+  query?: never;
+  url: "/account/leave";
+};
+
+export type LeaveClassErrors = {
+  /**
+   * Only students leave a class this way
+   */
+  403: unknown;
+  /**
+   * The display name does not match
+   */
+  422: unknown;
+};
+
+export type LeaveClassResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type LeaveClassResponse = LeaveClassResponses[keyof LeaveClassResponses];
 
 export type DeleteAccountData = {
   body: AccountDelete;

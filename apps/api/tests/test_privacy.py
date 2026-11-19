@@ -426,3 +426,71 @@ async def test_students_cannot_delete_accounts_or_remove_classmates(
     ama_id = (await ama.get("/auth/me")).json()["member_id"]
     assert (await kofi.post("/account/delete", json={"confirm_email": TEACHER})).status_code == 403
     assert (await kofi.delete(f"/classes/{made['id']}/members/{ama_id}")).status_code == 403
+
+
+async def test_a_student_deletes_their_own_work_and_leaves(
+    client: AsyncClient, outbox: LogSender, db: AsyncSession
+) -> None:
+    await sign_in_teacher(client, outbox, TEACHER)
+    made = await create_class(client)
+    kofi = await _student(made["code"], "Kofi_A")
+    ama = await _student(made["code"], "Ama.S")
+    kofi_id = uuid.UUID((await kofi.get("/auth/me")).json()["member_id"])
+
+    wrong = await kofi.post("/account/leave", json={"confirm_display_name": "Ama.S"})
+    assert wrong.status_code == 422
+    left = await kofi.post("/account/leave", json={"confirm_display_name": "kofi_a"})
+    assert left.status_code == 204, left.text
+    assert "max-age=0" in left.headers["set-cookie"].lower()
+    assert (await kofi.get("/auth/me")).status_code == 401
+    assert await db.get(ClassMember, kofi_id) is None
+    assert await db.scalar(select(func.count()).where(Attempt.member_id == kofi_id)) == 0
+    assert await db.scalar(select(func.count()).where(Consent.member_id == kofi_id)) == 0
+    # Classmates keep their work, and the name is free to join with again.
+    assert len((await ama.get("/export/attempts")).json()["attempts"]) == 1
+    async with browser() as again:
+        await join(again, made["code"], "Kofi_A")
+    # A teacher cannot use it.
+    assert (
+        await client.post("/account/leave", json={"confirm_display_name": "Kofi_A"})
+    ).status_code == 403
+
+
+async def test_a_teacher_deletes_one_class(
+    client: AsyncClient, outbox: LogSender, db: AsyncSession
+) -> None:
+    me = await sign_in_teacher(client, outbox, TEACHER)
+    made = await create_class(client, "SHS 2 Science A")
+    kept = await create_class(client, "SHS 3 Science B")
+    kofi = await _student(made["code"], "Kofi_A")
+    ama = await _student(kept["code"], "Ama.S")
+    url = f"/classes/{made['id']}/delete"
+
+    assert (await client.post(url, json={"confirm_name": "SHS 3 Science B"})).status_code == 422
+    async with browser() as other:
+        await sign_in_teacher(other, outbox, "other@example.org")
+        assert (await other.post(url, json={"confirm_name": made["name"]})).status_code == 404
+    assert (await kofi.post(url, json={"confirm_name": made["name"]})).status_code == 403
+
+    await db.execute(
+        update(Session)
+        .where(Session.user_id == uuid.UUID(me["id"]))
+        .values(created_at=datetime.now(UTC) - timedelta(hours=2))
+    )
+    stale = await client.post(url, json={"confirm_name": made["name"]})
+    assert stale.status_code == 403
+    await db.execute(
+        update(Session)
+        .where(Session.user_id == uuid.UUID(me["id"]))
+        .values(created_at=datetime.now(UTC))
+    )
+
+    deleted = await client.post(url, json={"confirm_name": "  shs 2   science a "})
+    assert deleted.status_code == 204, deleted.text
+    assert await db.get(SchoolClass, uuid.UUID(made["id"])) is None
+    assert (await kofi.get("/auth/me")).status_code == 401
+    # The other class, its student and the teacher are untouched.
+    assert await db.get(SchoolClass, uuid.UUID(kept["id"])) is not None
+    assert (await ama.get("/auth/me")).status_code == 200
+    assert (await client.get("/auth/me")).status_code == 200
+    assert [c["id"] for c in (await client.get("/classes")).json()] == [kept["id"]]
