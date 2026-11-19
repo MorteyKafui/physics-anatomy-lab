@@ -1,4 +1,12 @@
-export { colour, figureTone, figureTonePaper, graphPalette, radius, topicHue } from "./tokens";
+export {
+  colour,
+  dashTone,
+  figureTone,
+  figureTonePaper,
+  graphPalette,
+  radius,
+  topicHue,
+} from "./tokens";
 export type { Topic } from "./tokens";
 export { contrast, luminance, roleVariable, THEMES, themes } from "./themes";
 export type { Theme, ThemeRoles } from "./themes";

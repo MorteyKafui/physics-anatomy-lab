@@ -818,6 +818,709 @@
         }
       }
     },
+    "/classes/{class_id}/attempts": {
+      "get": {
+        "tags": ["teacher"],
+        "summary": "List Class Attempts",
+        "description": "The class members' attempts, latest first, with the step each is on.",
+        "operationId": "listClassAttempts",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only this experiment.",
+              "title": "Experiment Id"
+            },
+            "description": "Only this experiment."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassAttempt"
+                  },
+                  "title": "Response Listclassattempts"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/attempts/{attempt_id}/events": {
+      "get": {
+        "tags": ["teacher"],
+        "summary": "List Attempt Events",
+        "description": "One class member's attempt, as its events, oldest first, a page at a time.",
+        "operationId": "listAttemptEvents",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Attempt Id"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The cursor from the last page.",
+              "title": "After"
+            },
+            "description": "The cursor from the last page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptEventsPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class or attempt of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/mistakes": {
+      "get": {
+        "tags": ["teacher"],
+        "summary": "List Class Mistakes",
+        "description": "The mistakes the coach has noticed in the class, by how many students made each.",
+        "operationId": "listClassMistakes",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only this experiment.",
+              "title": "Experiment Id"
+            },
+            "description": "Only this experiment."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassMistake"
+                  },
+                  "title": "Response Listclassmistakes"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/progress": {
+      "get": {
+        "tags": ["teacher"],
+        "summary": "Get Class Progress",
+        "description": "Who is on which step: each student's latest attempt at the experiment, counted by step.",
+        "operationId": "getClassProgress",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StepCount"
+                  },
+                  "title": "Response Getclassprogress"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/live": {
+      "post": {
+        "tags": ["live"],
+        "summary": "Start Live",
+        "description": "Start a live class, or return the one already running (so a double click starts one).",
+        "operationId": "startLive",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LiveStart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSessionOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["live"],
+        "summary": "Get Live",
+        "description": "The live board: the running session, every bench in it, and what has been sent.",
+        "operationId": "getLive",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/live/end": {
+      "post": {
+        "tags": ["live"],
+        "summary": "End Live",
+        "operationId": "endLive",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSessionOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "409": {
+            "description": "No live class is running"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/live/lock": {
+      "put": {
+        "tags": ["live"],
+        "summary": "Set Live Lock",
+        "description": "Lock steps: students stay on the step they are on until the teacher unlocks.",
+        "operationId": "setLiveLock",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LockSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSessionOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "409": {
+            "description": "No live class is running"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/live/hints": {
+      "post": {
+        "tags": ["live"],
+        "summary": "Push Hint",
+        "description": "Send one hint to every student whose bench shows this mistake now. Pushing the same\nmistake again reaches only those the standing hints have not; if there are none, it returns\nthe latest hint, so a double click sends one.",
+        "operationId": "pushHint",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HintPush"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveMessageOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "409": {
+            "description": "No live class is running"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/live/broadcast": {
+      "post": {
+        "tags": ["live"],
+        "summary": "Broadcast",
+        "description": "An instruction to every student in the class, such as \"everyone measure the wire\".",
+        "operationId": "broadcast",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BroadcastSend"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveMessageOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "409": {
+            "description": "No live class is running"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/live/notes": {
+      "post": {
+        "tags": ["live"],
+        "summary": "Send Note",
+        "description": "A note to one student in the class.",
+        "operationId": "sendNote",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteSend"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveMessageOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "409": {
+            "description": "No live class is running"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classes/{class_id}/live/messages/{message_id}/undo": {
+      "post": {
+        "tags": ["live"],
+        "summary": "Undo Message",
+        "description": "Take back a hint, broadcast or note. Devices hide it if it is still showing.",
+        "operationId": "undoMessage",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Class Id"
+            }
+          },
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Message Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveMessageOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such class of yours"
+          },
+          "409": {
+            "description": "No live class is running"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": ["system"],
@@ -858,6 +1561,28 @@
         "type": "object",
         "required": ["attempt", "events"],
         "title": "AttemptBatch"
+      },
+      "AttemptEventsPage": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SyncEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "cursor": {
+            "type": "string",
+            "title": "Cursor"
+          },
+          "more": {
+            "type": "boolean",
+            "title": "More"
+          }
+        },
+        "type": "object",
+        "required": ["events", "cursor", "more"],
+        "title": "AttemptEventsPage"
       },
       "AttemptHeader": {
         "properties": {
@@ -915,6 +1640,214 @@
         ],
         "title": "AttemptHeader"
       },
+      "BenchOut": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "attempt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt Id"
+          },
+          "step": {
+            "type": "string",
+            "enum": [
+              "question",
+              "predict",
+              "build",
+              "check",
+              "measure",
+              "tabulate",
+              "plot",
+              "analyse",
+              "conclude",
+              "report"
+            ],
+            "title": "Step"
+          },
+          "completed": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "question",
+                "predict",
+                "build",
+                "check",
+                "measure",
+                "tabulate",
+                "plot",
+                "analyse",
+                "conclude",
+                "report"
+              ]
+            },
+            "type": "array",
+            "title": "Completed"
+          },
+          "mistakes": {
+            "items": {
+              "$ref": "#/components/schemas/Mistake"
+            },
+            "type": "array",
+            "title": "Mistakes"
+          },
+          "readings": {
+            "type": "integer",
+            "title": "Readings"
+          },
+          "joined_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Joined At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "last_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Seen At"
+          },
+          "measured_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured At"
+          },
+          "here": {
+            "type": "boolean",
+            "title": "Here",
+            "description": "Heard from in the last minute."
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id",
+          "display_name",
+          "attempt_id",
+          "step",
+          "completed",
+          "mistakes",
+          "readings",
+          "joined_at",
+          "updated_at",
+          "last_seen_at",
+          "measured_at",
+          "here"
+        ],
+        "title": "BenchOut"
+      },
+      "BroadcastSend": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 560,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["text"],
+        "title": "BroadcastSend"
+      },
+      "ClassAttempt": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "client_id": {
+            "type": "string",
+            "title": "Client Id",
+            "description": "The device's attempt id."
+          },
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["guided", "exam", "own-data"],
+            "title": "Mode"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At",
+            "description": "ms since 1970, from the device."
+          },
+          "updated_at": {
+            "type": "integer",
+            "title": "Updated At",
+            "description": "ms since 1970, from the device."
+          },
+          "events": {
+            "type": "integer",
+            "title": "Events"
+          },
+          "step": {
+            "type": "string",
+            "enum": [
+              "question",
+              "predict",
+              "build",
+              "check",
+              "measure",
+              "tabulate",
+              "plot",
+              "analyse",
+              "conclude",
+              "report"
+            ],
+            "title": "Step",
+            "description": "The step of the attempt's latest step.go-to event."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "member_id",
+          "display_name",
+          "client_id",
+          "experiment_id",
+          "mode",
+          "created_at",
+          "updated_at",
+          "events",
+          "step"
+        ],
+        "title": "ClassAttempt"
+      },
       "ClassCreate": {
         "properties": {
           "name": {
@@ -932,6 +1865,35 @@
         "type": "object",
         "required": ["name", "school_permission_confirmed"],
         "title": "ClassCreate"
+      },
+      "ClassMistake": {
+        "properties": {
+          "rule": {
+            "type": "string",
+            "title": "Rule"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "students": {
+            "type": "integer",
+            "title": "Students",
+            "description": "Students the coach has shown it to."
+          },
+          "times": {
+            "type": "integer",
+            "title": "Times",
+            "description": "Times the coach has shown it."
+          }
+        },
+        "type": "object",
+        "required": ["rule", "key", "skill", "students", "times"],
+        "title": "ClassMistake"
       },
       "ClassOut": {
         "properties": {
@@ -1106,6 +2068,27 @@
         "required": ["status", "environment"],
         "title": "Health"
       },
+      "HintPush": {
+        "properties": {
+          "rule": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Rule"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["rule", "key"],
+        "title": "HintPush",
+        "description": "One hint to everyone whose bench shows this mistake now (GLOSSARY.md, \"Hint push\")."
+      },
       "JoinPreview": {
         "properties": {
           "class_name": {
@@ -1156,6 +2139,191 @@
         "title": "JoinRequest"
       },
       "JsonValue": {},
+      "LiveMessageOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["hint", "broadcast", "note"],
+            "title": "Kind"
+          },
+          "data": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Data"
+          },
+          "to_member_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "To Member Ids",
+            "description": "Who it was for; null for everyone."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "undone_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Undone At"
+          }
+        },
+        "type": "object",
+        "required": ["id", "kind", "data", "to_member_ids", "created_at", "undone_at"],
+        "title": "LiveMessageOut"
+      },
+      "LiveSessionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "class_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Class Id"
+          },
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "lesson_minutes": {
+            "type": "integer",
+            "title": "Lesson Minutes"
+          },
+          "steps_locked": {
+            "type": "boolean",
+            "title": "Steps Locked"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "class_id",
+          "experiment_id",
+          "lesson_minutes",
+          "steps_locked",
+          "started_at",
+          "ended_at"
+        ],
+        "title": "LiveSessionOut"
+      },
+      "LiveSnapshot": {
+        "properties": {
+          "session": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LiveSessionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "members": {
+            "type": "integer",
+            "title": "Members",
+            "description": "Students in the class."
+          },
+          "benches": {
+            "items": {
+              "$ref": "#/components/schemas/BenchOut"
+            },
+            "type": "array",
+            "title": "Benches"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/LiveMessageOut"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          }
+        },
+        "type": "object",
+        "required": ["session", "members", "benches", "messages", "server_time"],
+        "title": "LiveSnapshot",
+        "description": "Everything the live board shows, read from the database. The socket sends what changes."
+      },
+      "LiveStart": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Experiment Id"
+          },
+          "lesson_minutes": {
+            "type": "integer",
+            "maximum": 240.0,
+            "minimum": 5.0,
+            "title": "Lesson Minutes",
+            "default": 40
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["experiment_id"],
+        "title": "LiveStart"
+      },
+      "LockSet": {
+        "properties": {
+          "locked": {
+            "type": "boolean",
+            "title": "Locked"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["locked"],
+        "title": "LockSet"
+      },
       "MemberOut": {
         "properties": {
           "id": {
@@ -1176,6 +2344,50 @@
         "type": "object",
         "required": ["id", "display_name", "created_at"],
         "title": "MemberOut"
+      },
+      "Mistake": {
+        "properties": {
+          "rule": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Rule"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Key"
+          },
+          "skill": {
+            "type": "string",
+            "enum": ["apparatus", "measurement", "tabulation", "graph", "analysis", "writing"],
+            "title": "Skill"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["rule", "key", "skill"],
+        "title": "Mistake",
+        "description": "A coach finding on a student's bench: the rule that found it and its message key."
+      },
+      "NoteSend": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 560,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["member_id", "text"],
+        "title": "NoteSend"
       },
       "PullResult": {
         "properties": {
@@ -1307,6 +2519,33 @@
         "type": "object",
         "required": ["email_link", "google"],
         "title": "SignInMethods"
+      },
+      "StepCount": {
+        "properties": {
+          "step": {
+            "type": "string",
+            "enum": [
+              "question",
+              "predict",
+              "build",
+              "check",
+              "measure",
+              "tabulate",
+              "plot",
+              "analyse",
+              "conclude",
+              "report"
+            ],
+            "title": "Step"
+          },
+          "students": {
+            "type": "integer",
+            "title": "Students"
+          }
+        },
+        "type": "object",
+        "required": ["step", "students"],
+        "title": "StepCount"
       },
       "StudentMe": {
         "properties": {
