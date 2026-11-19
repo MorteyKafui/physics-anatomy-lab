@@ -38,7 +38,9 @@ async def student(client: AsyncClient, teacher: dict[str, Any]) -> AsyncIterator
 @pytest.fixture
 def small_quotas(monkeypatch: pytest.MonkeyPatch) -> None:
     settings = get_settings()
-    monkeypatch.setattr(settings, "ai_quota_student", {"tutor": 2, "what-if": 1, "report-review": 1})
+    monkeypatch.setattr(
+        settings, "ai_quota_student", {"tutor": 2, "what-if": 1, "report-review": 1}
+    )
     monkeypatch.setattr(settings, "ai_quota_teacher", {"tutor": 3})
 
 
