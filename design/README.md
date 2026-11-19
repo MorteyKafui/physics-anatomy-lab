@@ -27,6 +27,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Teacher sign-in               | `SignIn.dc.html`        | approved 2026-11-19    | `apps/web` `/sign-in`            |
 | Consent and your data         | `Privacy.dc.html`       | approved 2026-11-19    | `apps/web` settings, class page  |
 | AI help                       | `AI.dc.html`            | approved 2026-11-19    | `apps/web` lab, report, `/teach` |
+| Questions (draft)             | `Questions.dc.html`     | draft, 2026-11-19      | `/teach/questions`, admin bank   |
 | Teacher live class            | `Teacher.dc.html`       | `screens/Teacher.jpg`  | `apps/web` teacher dashboard     |
 | Teacher classes, start        | `TeacherStart.dc.html`  | approved 2026-11-19    | `apps/web` `/teach`, live extras |
 | Admin portal                  | `Admin.dc.html`         | `screens/Admin.jpg`    | `apps/admin`                     |

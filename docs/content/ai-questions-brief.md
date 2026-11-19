@@ -12,8 +12,8 @@ reject". Exam mode already ends with three follow-up questions per experiment, w
 `packages/experiments` and approved by the physics reviewer (for the pendulum: the small-angle
 limit, the seconds pendulum, the mass of the bob).
 
-- **Status:** draft for Mortey's approval. Decisions 1 to 8; the questions for Mortey are marked
-  **Choose**.
+- **Status:** approved by Mortey on 2026-11-19: decisions 1 to 8 as proposed, with approved
+  questions shared with everyone using the experiment.
 
 ## The decisions
 
@@ -57,9 +57,8 @@ other number is held, as the tutor's replies are (the same check, `app/ai/number
 
 ### 5. Where approved questions go
 
-- **Choose:** approved questions are shown in exam mode to **everyone** using that experiment,
-  as part of the shared bank (proposed: the reviewer's approval is the content review), or only to
-  the **classes of the teacher who submitted them**.
+- Approved questions are shown in exam mode to **everyone** using that experiment, as part of the
+  shared bank: the reviewer's approval is the content review.
 - Exam mode keeps its three built-in follow-ups and adds up to three from the bank, picked by the
   attempt's seed, on the exam's result sheet and its PDF.
 - **Offline first:** the lab fetches the approved questions for an experiment when online and
