@@ -10,7 +10,8 @@
     "./method-of-mixtures": "./src/method-of-mixtures.ts",
     "./teach": "./src/teach.ts",
     "./privacy": "./src/privacy.ts",
-    "./tutor": "./src/tutor.ts"
+    "./tutor": "./src/tutor.ts",
+    "./what-if": "./src/what-if.ts"
   },
   "scripts": {
     "lint": "eslint .",
