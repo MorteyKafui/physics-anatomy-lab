@@ -1,0 +1,12 @@
+event: text
+data: {"text": "Start counting at "}
+
+event: text
+data: {"text": "zero. Then T = t / 20 gives "}
+
+event: text
+data: {"text": "1.806 s."}
+
+event: done
+data: {"cut_short": false}
+

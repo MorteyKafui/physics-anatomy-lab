@@ -15,7 +15,7 @@ This item is the plumbing that the tutor, what-if scenarios, report review and q
 first real feature is the tutor, in item 2. Quotas, answer caching and the admin portal's off
 switch are item 4; the evaluation suite is item 5.
 
-- **Status:** draft for Mortey's approval.
+- **Status:** approved by Mortey on 2026-11-19: decisions 1 to 7 and the proposed models, as written.
 
 ## The decisions
 

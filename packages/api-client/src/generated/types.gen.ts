@@ -17,6 +17,27 @@ export type AccountDelete = {
 };
 
 /**
+ * AiStatus
+ *
+ * Whether this person may use AI now, and if not, why, in a sentence to show.
+ */
+export type AiStatus = {
+  /**
+   * Available
+   */
+  available: boolean;
+  reason: Unavailable | null;
+  /**
+   * Message
+   */
+  message: string | null;
+  /**
+   * Features
+   */
+  features: Array<FeatureName>;
+};
+
+/**
  * AttemptBatch
  */
 export type AttemptBatch = {
@@ -802,6 +823,11 @@ export type ExportedClass = {
    */
   students: number;
 };
+
+/**
+ * FeatureName
+ */
+export type FeatureName = "tutor" | "what-if" | "report-review" | "question-drafting";
 
 /**
  * FlaggedName
@@ -1757,6 +1783,12 @@ export type TeacherUpdate = {
    */
   display_name: string;
 };
+
+/**
+ * Unavailable
+ */
+export type Unavailable =
+  "signed-out" | "class-off" | "switched-off" | "not-configured" | "not-for-students";
 
 /**
  * Usage
@@ -3169,6 +3201,22 @@ export type UndoMessageResponses = {
 };
 
 export type UndoMessageResponse = UndoMessageResponses[keyof UndoMessageResponses];
+
+export type AiStatusData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/ai/status";
+};
+
+export type AiStatusResponses = {
+  /**
+   * Successful Response
+   */
+  200: AiStatus;
+};
+
+export type AiStatusResponse = AiStatusResponses[keyof AiStatusResponses];
 
 export type StaffMeData = {
   body?: never;

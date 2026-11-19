@@ -1,4 +1,4 @@
-"""The Physics Anatomy API: accounts, classes, sync and live classes; AI later in Phase 3."""
+"""The Physics Anatomy API: accounts, classes, sync, live classes and AI."""
 
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -14,7 +14,7 @@ from app.body_limit import BodyLimit
 from app.config import get_settings
 from app.db import get_engine
 from app.live.hub import Hub, listen_dsn
-from app.routes import admin, auth, classes, live, load_test, privacy, sync, teacher
+from app.routes import admin, ai, auth, classes, live, load_test, privacy, sync, teacher
 
 settings = get_settings()
 
@@ -63,10 +63,12 @@ app.include_router(teacher.router)
 app.include_router(privacy.router)
 app.include_router(live.router)
 app.include_router(live.socket_router)
+app.include_router(ai.router)
 # Staff only, behind Cloudflare Access; reached from the admin portal's server (ADR 0040).
 app.include_router(admin.router)
 if settings.environment in load_test.TEST_ENVIRONMENTS:
     app.include_router(load_test.router)
+    app.include_router(ai.test_router)
 
 
 class Health(BaseModel):

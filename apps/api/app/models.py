@@ -495,3 +495,49 @@ class Consent(Base):
     granted: Mapped[bool] = mapped_column(Boolean, nullable=False)
     via: Mapped[str] = mapped_column(Text, nullable=False)
     recorded_at: Mapped[datetime] = _now()
+
+
+class AiRequest(Base):
+    """One AI request: what it cost and how it ended, never what was asked or answered (ADR 0043).
+
+    The person is a pseudonym, a keyed hash of their id, so the log cannot be read back to a
+    person without the key, and no foreign key ties it to them. Rows are kept for
+    AI_LOG_RETENTION (app/ai/log.py), then deleted.
+    """
+
+    __tablename__ = "ai_requests"
+    __table_args__ = (
+        CheckConstraint(
+            "feature IN ('tutor', 'what-if', 'report-review', 'question-drafting')",
+            name="feature_known",
+        ),
+        CheckConstraint("char_length(model) BETWEEN 1 AND 64", name="model_length"),
+        CheckConstraint("principal_kind IN ('teacher', 'student')", name="principal_kind_known"),
+        CheckConstraint("octet_length(pseudonym) = 32", name="pseudonym_length"),
+        CheckConstraint(
+            "outcome IN ('done', 'cut-short', 'refused', 'error', 'cancelled')",
+            name="outcome_known",
+        ),
+        CheckConstraint(
+            "input_tokens >= 0 AND output_tokens >= 0 AND cache_read_tokens >= 0"
+            " AND cache_write_tokens >= 0 AND duration_ms >= 0",
+            name="counts_not_negative",
+        ),
+        Index("ix_ai_requests_at", "at"),
+        Index("ix_ai_requests_pseudonym_at", "pseudonym", "at"),
+    )
+
+    id: Mapped[uuid.UUID] = _id()
+    at: Mapped[datetime] = _now()
+    feature: Mapped[str] = mapped_column(Text, nullable=False)
+    model: Mapped[str] = mapped_column(Text, nullable=False)
+    principal_kind: Mapped[str] = mapped_column(Text, nullable=False)
+    pseudonym: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    input_tokens: Mapped[int] = mapped_column(Integer, nullable=False)
+    output_tokens: Mapped[int] = mapped_column(Integer, nullable=False)
+    cache_read_tokens: Mapped[int] = mapped_column(Integer, nullable=False)
+    cache_write_tokens: Mapped[int] = mapped_column(Integer, nullable=False)
+    # Millionths of a US dollar; null when the model's price is not known.
+    cost_microdollars: Mapped[int | None] = mapped_column(BigInteger)
+    duration_ms: Mapped[int] = mapped_column(Integer, nullable=False)
+    outcome: Mapped[str] = mapped_column(Text, nullable=False)
