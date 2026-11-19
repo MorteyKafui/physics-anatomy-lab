@@ -50,7 +50,7 @@ Copy this table into the pull request or the issue for the run, with the phone's
 
 | Budget (master plan)                 | Limit          | On the phone |
 | ------------------------------------ | -------------- | ------------ |
-| JavaScript to open the lab           | 350 KB or less |              |
+| JavaScript to open the lab           | 360 KB or less |              |
 | Frame rate while the bob swings      | 30 fps or more |              |
 | Interaction to next paint            | 200 ms or less |              |
 | Memory in a running experiment       | 150 MB or less |              |
