@@ -12,7 +12,8 @@
     "./privacy": "./src/privacy.ts",
     "./review": "./src/review.ts",
     "./tutor": "./src/tutor.ts",
-    "./what-if": "./src/what-if.ts"
+    "./what-if": "./src/what-if.ts",
+    "./flag": "./src/flag.ts"
   },
   "scripts": {
     "lint": "eslint .",

@@ -21,6 +21,7 @@ import { Input } from "@pa/ui/components/input";
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import { tutorContext, type TutorInput } from "../tutor/context";
+import { ReportAnswer } from "../tutor/report-answer";
 
 const period = (s: number) => t("lab.whatIf.period", { t: s.toFixed(2) });
 
@@ -194,6 +195,15 @@ export function PendulumWhatIf({
                 <span className="text-xs text-muted-foreground">{t("lab.whatIf.ask.from")}</span>
                 <span className="font-semibold">{asked.title}</span>
                 <span className="text-xs text-muted-foreground">{asked.reason}</span>
+                {ai && (
+                  <ReportAnswer
+                    key={asked.title}
+                    feature="what-if"
+                    experimentId={ai.input.experimentId}
+                    step={ai.input.step}
+                    reply={`${asked.title}. ${asked.reason}`}
+                  />
+                )}
               </div>
             )}
             {asked?.kind === "declined" && (

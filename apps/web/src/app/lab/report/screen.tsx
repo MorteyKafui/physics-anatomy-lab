@@ -464,7 +464,7 @@ export function ReportScreen({
                 ) : (
                   <SectionText section={s} />
                 )}
-                <ReviewNotes notes={review.notesFor(s.id)} />
+                <ReviewNotes notes={review.notesFor(s.id)} experimentId={E.id} />
                 {s.id === "precautions" && short > 0 && (
                   <p className="m-0 text-xs text-[var(--pa-warn-fg)]">
                     {short === 1

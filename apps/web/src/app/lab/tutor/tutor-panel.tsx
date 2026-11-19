@@ -12,6 +12,7 @@ import { Textarea } from "@pa/ui/components/textarea";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
 import { QUESTIONS_PER_STEP, tutorContext, type TutorInput } from "./context";
+import { ReportAnswer } from "./report-answer";
 
 type Pending =
   | { readonly status: "writing"; readonly question: string; readonly text: string }
@@ -141,6 +142,15 @@ export function TutorPanel({ stepName, input, readAloud: given }: TutorPanelProp
             </Button>
             <span className="text-xs text-muted-foreground">{t("lab.tutor.captions")}</span>
           </div>
+        )}
+        {lastReply !== undefined && !pending && (
+          <ReportAnswer
+            key={thread.length}
+            feature="tutor"
+            experimentId={input.experimentId}
+            step={input.step}
+            reply={lastReply}
+          />
         )}
         {pending && (
           <p className="max-w-[85%] self-end border border-border bg-muted px-3 py-2.5">
