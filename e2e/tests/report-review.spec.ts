@@ -47,7 +47,9 @@ test("a review comes back as notes beside the section, and the report is unchang
   const asked = await mock(page, ON);
   await toReport(page);
   const paper = page.getByRole("region", { name: "Report preview" });
-  const before = await paper.getByText(NOTE.quote).count();
+  // The precaution is in the report, once, before the review (waited for: the page draws it).
+  const own = paper.getByText(NOTE.quote, { exact: true });
+  await expect(own).toHaveCount(1);
   await page.getByRole("button", { name: "Ask for a review" }).click();
   await expect(page.getByText("1 note on your report.")).toBeVisible();
   const note = paper.locator("[data-review-notes]");
@@ -64,7 +66,7 @@ test("a review comes back as notes beside the section, and the report is unchang
     ["experiment_id", "experiment_version", "format", "sections"].sort(),
   );
   // The report's own text is as it was: the note sits beside it.
-  await expect(paper.getByText(NOTE.quote, { exact: true })).toHaveCount(before);
+  await expect(own).toHaveCount(1);
 });
 
 test("without AI there is no review button, and the report works as before", async ({ page }) => {
