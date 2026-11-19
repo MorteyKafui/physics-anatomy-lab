@@ -10,10 +10,28 @@ const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-br
 
 export const viewport: Viewport = { themeColor: colour.ink950 };
 
+const DESCRIPTION =
+  "Physics from first principles. Build real experiments, take your own readings, and get coached.";
+
+/**
+ * The site's own address, which social cards need in full (logo set brief, decision 6). Set
+ * SITE_URL when building for staging or production; until the domain is chosen, local builds
+ * use the dev server.
+ */
+const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Physics Anatomy",
-  description:
-    "Physics from first principles. Build real experiments, take your own readings, and get coached.",
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "Physics Anatomy",
+    title: "Physics Anatomy",
+    description: DESCRIPTION,
+    locale: "en_GB",
+  },
+  twitter: { card: "summary_large_image", title: "Physics Anatomy", description: DESCRIPTION },
   applicationName: "Physics Anatomy",
   appleWebApp: { capable: true, title: "Physics Anatomy", statusBarStyle: "black" },
 };
