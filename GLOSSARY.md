@@ -128,6 +128,9 @@ request that introduces it.
 - **What if (scenario).** A changed version of an experiment, such as the pendulum on the Moon,
   within the limits its model supports. The panel runs the real model; Ask what if lets Claude
   turn a question into one, and a question the model cannot run is declined with the nearest one.
+- **Report review.** Notes from Claude on the conclusion, precautions, sources of error and
+  discussion of a report, each on the student's own words and the report rule it relies on. They
+  sit beside the report, are not saved and never change it.
 - **AI request log.** One row per AI request: what it cost and how it ended, under a pseudonym,
   never what was asked or answered. Kept 90 days.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.

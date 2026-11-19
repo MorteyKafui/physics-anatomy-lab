@@ -6,6 +6,7 @@ import type { enGBMethodOfMixtures } from "./en-GB-method-of-mixtures";
 import type { enGBOhmsLaw } from "./en-GB-ohms-law";
 import type { enGBPrivacy } from "./en-GB-privacy";
 import type { enGBTeach } from "./en-GB-teach";
+import type { enGBReview } from "./en-GB-review";
 import type { enGBTutor } from "./en-GB-tutor";
 import type { enGBWhatIf } from "./en-GB-what-if";
 
@@ -23,6 +24,7 @@ export type MessageKey =
   | keyof typeof enGBMethodOfMixtures
   | keyof typeof enGBTeach
   | keyof typeof enGBPrivacy
+  | keyof typeof enGBReview
   | keyof typeof enGBTutor
   | keyof typeof enGBWhatIf;
 

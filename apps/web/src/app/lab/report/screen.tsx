@@ -32,6 +32,7 @@ import { makeReportPdf, reportImages } from "./make";
 import type { Paper } from "./pdf";
 import { tableJson } from "../lab-data/json";
 import { tableXlsx } from "./xlsx";
+import { ReviewControls, ReviewNotes, useReportReview } from "./review";
 
 const KINDS = ["pdf", "docx", "figures", "data"] as const;
 type Kind = (typeof KINDS)[number];
@@ -121,6 +122,8 @@ export function ReportScreen({
     () => (attempt && events ? build(attempt, events) : undefined),
     [attempt, events, build],
   );
+  // Report review (ai-tutor-brief.md decision 7): online, only for those AI is on for.
+  const review = useReportReview(content, E);
 
   if (!handle || !content) {
     return (
@@ -384,6 +387,7 @@ export function ReportScreen({
               </li>
             ))}
           </ul>
+          <ReviewControls r={review} />
         </nav>
 
         {/* The paper */}
@@ -460,6 +464,7 @@ export function ReportScreen({
                 ) : (
                   <SectionText section={s} />
                 )}
+                <ReviewNotes notes={review.notesFor(s.id)} />
                 {s.id === "precautions" && short > 0 && (
                   <p className="m-0 text-xs text-[var(--pa-warn-fg)]">
                     {short === 1
