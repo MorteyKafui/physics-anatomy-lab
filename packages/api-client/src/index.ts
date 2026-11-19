@@ -2,6 +2,8 @@
 // contract, and a small typed client over fetch. Regenerate with `bun run generate`.
 export type * from "./generated";
 export { createApi, tokenFromFragment } from "./client";
+export { collectExport, exportFileName } from "./privacy";
+export type { ExportFile } from "./privacy";
 export type { Api, ApiOptions, Fetch, Result } from "./client";
 export { FINAL_CLOSE_CODES, LIVE, LiveSocket, liveSocketUrl, StudentLive } from "./live";
 export type {

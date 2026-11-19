@@ -5,9 +5,11 @@
 import { createApi, type ClassOut } from "@pa/api-client";
 import { t, type MessageKey } from "@pa/i18n";
 import "@pa/i18n/teach";
+import "@pa/i18n/privacy";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { ConsentGate } from "../account/consent-gate";
 import { Notice, Shell } from "./panels";
 
 const api = createApi();
@@ -16,6 +18,14 @@ const LINK =
   "text-[var(--pa-accent-soft)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-[var(--pa-accent)]";
 
 export function Classes() {
+  return (
+    <ConsentGate teacher>
+      <ClassList />
+    </ConsentGate>
+  );
+}
+
+function ClassList() {
   const [classes, setClasses] = useState<ClassOut[] | "signed-out" | null>(null);
   useEffect(() => {
     void api.classes.list().then((r) => setClasses(r.ok ? r.data : "signed-out"));
@@ -39,9 +49,20 @@ export function Classes() {
                 <span>{c.name}</span>
                 <span className="font-mono text-xs text-[var(--pa-text-faint)]">{c.code}</span>
               </span>
-              <Link className={LINK} href={`/teach/live?class=${encodeURIComponent(c.id)}`}>
-                {t(k("teach.classes.open"))}
-              </Link>
+              <span className="flex flex-wrap justify-end gap-x-4 gap-y-1">
+                <Link className={LINK} href={`/teach/live?class=${encodeURIComponent(c.id)}`}>
+                  {t(k("teach.classes.open"))}
+                </Link>
+                <Link className={LINK} href={`/teach/students?class=${encodeURIComponent(c.id)}`}>
+                  {t(k("privacy.students.title"))}
+                </Link>
+                <Link
+                  className={LINK}
+                  href={`/teach/delete-class?class=${encodeURIComponent(c.id)}`}
+                >
+                  {t(k("privacy.deleteClass.link"))}
+                </Link>
+              </span>
             </li>
           ))}
         </ul>
@@ -49,6 +70,11 @@ export function Classes() {
       <Link className={LINK} href="/teach/example">
         {t(k("teach.classes.example"))}
       </Link>
+      {classes === "signed-out" ? null : (
+        <Link className={LINK} href="/account">
+          {t(k("privacy.title"))}
+        </Link>
+      )}
     </Shell>
   );
 }

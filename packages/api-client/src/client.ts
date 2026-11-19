@@ -15,6 +15,11 @@ import type {
   StepCount,
   ClassCreate,
   ClassOut,
+  ConsentChoice,
+  ConsentsOut,
+  ExportAttemptsPage,
+  StudentExport,
+  TeacherExport,
   ClassUpdate,
   EmailLinkSent,
   JoinPreview,
@@ -179,6 +184,29 @@ export function createApi(options: ApiOptions = {}) {
           "GET",
           after === null ? "/sync/pull" : `/sync/pull?after=${encodeURIComponent(after)}`,
         ),
+    },
+    /** Consent, export and deletion (ADR 0042). */
+    privacy: {
+      consents: () => call<ConsentsOut>("GET", "/consents"),
+      choose: (body: ConsentChoice) => call<ConsentsOut>("POST", "/consents", body),
+      exportMine: () => call<TeacherExport | StudentExport>("GET", "/export"),
+      exportMyAttempts: (after: string | null = null) =>
+        call<ExportAttemptsPage>("GET", `/export/attempts${query({ after })}`),
+      exportMember: (classId: string, memberId: string) =>
+        call<StudentExport>("GET", `/classes/${path(classId)}/members/${path(memberId)}/export`),
+      exportMemberAttempts: (classId: string, memberId: string, after: string | null = null) =>
+        call<ExportAttemptsPage>(
+          "GET",
+          `/classes/${path(classId)}/members/${path(memberId)}/export/attempts${query({ after })}`,
+        ),
+      deleteAccount: (confirmEmail: string) =>
+        call<undefined>("POST", "/account/delete", { confirm_email: confirmEmail }),
+      leaveClass: (confirmDisplayName: string) =>
+        call<undefined>("POST", "/account/leave", { confirm_display_name: confirmDisplayName }),
+      deleteClass: (classId: string, confirmName: string) =>
+        call<undefined>("POST", `/classes/${path(classId)}/delete`, { confirm_name: confirmName }),
+      removeMember: (classId: string, memberId: string) =>
+        call<undefined>("DELETE", `/classes/${path(classId)}/members/${path(memberId)}`),
     },
     join: {
       preview: (code: string) => call<JoinPreview>("GET", `/join/${path(code)}`),
