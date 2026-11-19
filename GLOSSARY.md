@@ -118,6 +118,10 @@ request that introduces it.
   the completed steps, the mistakes the coach sees and how many readings. Never the attempt itself.
 - **Lock steps.** The teacher keeps every student on the step they are on until unlocking.
 - **Broadcast.** One instruction from the teacher to every student in a live class.
+- **AI status.** Whether a person may use AI now, and if not, why: signed out, their class has
+  AI off, AI is switched off, or it is not set up. The app shows AI buttons only when it is on.
+- **AI request log.** One row per AI request: what it cost and how it ended, under a pseudonym,
+  never what was asked or answered. Kept 90 days.
 - **Physics reviewer.** The person who approves changes to physics models and experiment content.
 
 ## Design

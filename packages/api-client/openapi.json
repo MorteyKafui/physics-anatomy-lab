@@ -1940,6 +1940,26 @@
         }
       }
     },
+    "/ai/status": {
+      "get": {
+        "tags": ["ai"],
+        "summary": "Ai Status",
+        "description": "Signed out is an answer here, not an error: the reason is `signed-out`.",
+        "operationId": "aiStatus",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/me": {
       "get": {
         "tags": ["admin"],
@@ -2483,6 +2503,46 @@
         "type": "object",
         "required": ["confirm_email"],
         "title": "AccountDelete"
+      },
+      "AiStatus": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Unavailable"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "features": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureName"
+            },
+            "type": "array",
+            "title": "Features"
+          }
+        },
+        "type": "object",
+        "required": ["available", "reason", "message", "features"],
+        "title": "AiStatus",
+        "description": "Whether this person may use AI now, and if not, why, in a sentence to show."
       },
       "AttemptBatch": {
         "properties": {
@@ -3602,6 +3662,11 @@
         ],
         "title": "ExportedClass",
         "description": "A teacher's class. Its students' names and work are theirs, so they are not in it."
+      },
+      "FeatureName": {
+        "type": "string",
+        "enum": ["tutor", "what-if", "report-review", "question-drafting"],
+        "title": "FeatureName"
       },
       "FlaggedName": {
         "properties": {
@@ -4936,6 +5001,11 @@
         "type": "object",
         "required": ["display_name"],
         "title": "TeacherUpdate"
+      },
+      "Unavailable": {
+        "type": "string",
+        "enum": ["signed-out", "class-off", "switched-off", "not-configured", "not-for-students"],
+        "title": "Unavailable"
       },
       "Usage": {
         "properties": {

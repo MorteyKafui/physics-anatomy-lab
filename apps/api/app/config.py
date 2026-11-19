@@ -56,6 +56,17 @@ class Settings(BaseSettings):
     admin_database_url: str | None = None
     admin_statement_timeout_ms: int = 5000
 
+    # AI (ADR 0043, docs/content/ai-api-brief.md). Off unless switched on, and never without the
+    # key, which comes only from the secret store. The model for each feature is a setting.
+    ai_enabled: bool = False
+    anthropic_api_key: SecretStr | None = None
+    # The key for the pseudonyms in the AI request log; required when deployed with AI on.
+    ai_log_key: SecretStr | None = None
+    ai_model_tutor: str = "claude-haiku-5-5"
+    ai_model_what_if: str = "claude-haiku-5-5"
+    ai_model_report_review: str = "claude-sonnet-5-5"
+    ai_model_question_drafting: str = "claude-sonnet-5-5"
+
     @model_validator(mode="after")
     def _deployed_settings(self) -> Self:
         deployed = self.environment in ("preview", "staging", "production")
@@ -69,6 +80,10 @@ class Settings(BaseSettings):
             raise ValueError("ADMIN_DEV_BYPASS_EMAIL works only in local and test.")
         if bool(self.cf_access_team_domain) != bool(self.cf_access_audience):
             raise ValueError("Set both CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUDIENCE, or neither.")
+        if deployed and self.ai_enabled and not self.anthropic_api_key:
+            raise ValueError("Set ANTHROPIC_API_KEY, or leave AI_ENABLED off.")
+        if deployed and self.ai_enabled and not self.ai_log_key:
+            raise ValueError("Set AI_LOG_KEY (it keys the AI log's pseudonyms).")
         return self
 
     @property
