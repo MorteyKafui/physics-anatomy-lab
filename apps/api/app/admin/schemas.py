@@ -233,6 +233,38 @@ class AiSwitchState(BaseModel):
     changed_at: datetime | None
 
 
+class EvalFailure(BaseModel):
+    id: str
+    why: str = Field(description="The rule that failed, or the grader's reason.")
+
+
+class EvalSummary(BaseModel):
+    """A feature's latest evaluation results in this deployment (apps/api/evals/results)."""
+
+    feature: FeatureName
+    cases: int
+    run_at: datetime | None = Field(description="None when the suite has not run yet.")
+    rate: float | None = Field(description="The share of rubric lines that pass.")
+    bar: float
+    passed: bool | None
+    failing: list[EvalFailure]
+
+
+class AiFlagRow(BaseModel):
+    id: uuid.UUID
+    at: datetime
+    feature: FeatureName
+    experiment_id: str
+    step: str | None
+    reason: Literal["wrong-physics", "confusing", "unsuitable", "other"]
+    reply: str
+    dismissed: bool
+
+
+class AiFlagChange(BaseModel):
+    reason: str | None = Reason
+
+
 class AiOverview(BaseModel):
     """The admin AI page (ai-quotas-brief.md, decision 5). Today is since midnight UTC."""
 
@@ -242,6 +274,9 @@ class AiOverview(BaseModel):
     budget_microdollars: int | None = Field(description="AI_DAILY_BUDGET_USD, if set.")
     budget_reached_at: datetime | None = Field(description="When today's spend reached it.")
     switches: list[AiSwitchState]
+    evaluations: list[EvalSummary]
+    flags: list[AiFlagRow] = Field(description="Open flags, newest first, at most 50.")
+    flags_open: int
     server_enabled: bool = Field(description="AI_ENABLED, the server's master switch.")
     configured: bool = Field(description="Whether the Anthropic key is set.")
 

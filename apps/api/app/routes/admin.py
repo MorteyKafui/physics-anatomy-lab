@@ -7,21 +7,26 @@ through `Db`, and each writes its audit entry in the same transaction.
 
 import csv
 import io
+import json
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.admin import queries as q
-from app.admin.access import CurrentStaff, require_staff
+from app.admin.access import CurrentStaff, Staff, require_staff
 from app.admin.audit import record
 from app.admin.db import ReadDb
 from app.admin.schemas import (
     AiFeatureUse,
+    AiFlagChange,
+    AiFlagRow,
     AiOverview,
     AiSwitchChange,
     AiSwitchState,
@@ -30,6 +35,8 @@ from app.admin.schemas import (
     ClassAiChange,
     ClassRow,
     DisplayNameChange,
+    EvalFailure,
+    EvalSummary,
     ExperimentTotal,
     ExperimentUse,
     ExportRequest,
@@ -55,7 +62,7 @@ from app.ai.quotas import midnight
 from app.ai.switches import SWITCHES, SwitchName, forget
 from app.config import get_settings
 from app.db import Db
-from app.models import AiSwitch, ClassMember, SchoolClass
+from app.models import AiFlag, AiSwitch, ClassMember, SchoolClass
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_staff)])
 
@@ -258,6 +265,69 @@ async def _switches(db: Any) -> list[AiSwitchState]:
     return out
 
 
+EVAL_RESULTS = Path(__file__).parents[2] / "evals" / "results"
+EVAL_BAR = 0.9
+FLAG_LIST = 50
+
+
+def _evaluations() -> list[EvalSummary]:
+    """The committed results of the evaluation suite, as this deployment's code holds them."""
+    out: list[EvalSummary] = []
+    for name in FeatureName:
+        path = EVAL_RESULTS / f"{name.value}.json"
+        if not path.exists():
+            out.append(
+                EvalSummary(
+                    feature=name,
+                    cases=0,
+                    run_at=None,
+                    rate=None,
+                    bar=EVAL_BAR,
+                    passed=None,
+                    failing=[],
+                )
+            )
+            continue
+        data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+        cases: list[dict[str, Any]] = data.get("cases", [])
+        failing = [
+            EvalFailure(
+                id=str(c["id"]),
+                why="; ".join(
+                    [k for k, ok in c.get("rules", {}).items() if not ok]
+                    + [str(v["reason"]) for v in c.get("lines", []) if not v["pass"]]
+                ),
+            )
+            for c in cases
+            if not c.get("passed", False)
+        ]
+        out.append(
+            EvalSummary(
+                feature=name,
+                cases=len(cases),
+                run_at=datetime.fromisoformat(data["run_at"]),
+                rate=float(data["rate"]),
+                bar=float(data.get("bar", EVAL_BAR)),
+                passed=bool(data["passed"]),
+                failing=failing,
+            )
+        )
+    return out
+
+
+def _flag_row(f: AiFlag) -> AiFlagRow:
+    return AiFlagRow(
+        id=f.id,
+        at=f.at,
+        feature=FeatureName(f.feature),
+        experiment_id=f.experiment_id,
+        step=f.step,
+        reason=f.reason,  # type: ignore[arg-type]
+        reply=f.reply,
+        dismissed=f.dismissed_at is not None,
+    )
+
+
 @router.get("/ai")
 async def admin_ai(db: ReadDb, range: RangeQuery = "7d") -> AiOverview:
     """Requests, spend, the cache and held replies, by feature; and the switches."""
@@ -276,6 +346,20 @@ async def admin_ai(db: ReadDb, range: RangeQuery = "7d") -> AiOverview:
         budget_microdollars=budget_micro,
         budget_reached_at=reached,
         switches=await _switches(db),
+        evaluations=_evaluations(),
+        flags=[
+            _flag_row(f)
+            for f in await db.scalars(
+                select(AiFlag)
+                .where(AiFlag.dismissed_at.is_(None))
+                .order_by(AiFlag.at.desc())
+                .limit(FLAG_LIST)
+            )
+        ],
+        flags_open=await db.scalar(
+            select(func.count()).select_from(AiFlag).where(AiFlag.dismissed_at.is_(None))
+        )
+        or 0,
         server_enabled=settings.ai_enabled,
         configured=settings.anthropic_api_key is not None,
     )
@@ -311,6 +395,39 @@ async def admin_set_ai_switch(
     )
     forget()
     return await _switches(db)
+
+
+async def _set_flag(
+    flag_id: uuid.UUID, dismissed: bool, reason: str | None, db: AsyncSession, staff: Staff
+) -> AiFlagRow:
+    flag = await db.scalar(select(AiFlag).where(AiFlag.id == flag_id).with_for_update())
+    if flag is None:
+        raise HTTPException(404, "No flag with that id.")
+    flag.dismissed_at = datetime.now(UTC) if dismissed else None
+    await record(
+        db,
+        staff,
+        "ai.flag.dismiss" if dismissed else "ai.flag.restore",
+        "ai-flag",
+        flag_id,
+        {"feature": flag.feature, "flag_reason": flag.reason, "reason": reason},
+    )
+    return _flag_row(flag)
+
+
+@router.post("/ai/flags/{flag_id}/dismiss")
+async def admin_dismiss_flag(
+    flag_id: uuid.UUID, body: AiFlagChange, db: Db, staff: CurrentStaff
+) -> AiFlagRow:
+    """Set a flagged reply aside. Undo is the restore call."""
+    return await _set_flag(flag_id, True, body.reason, db, staff)
+
+
+@router.post("/ai/flags/{flag_id}/restore")
+async def admin_restore_flag(
+    flag_id: uuid.UUID, body: AiFlagChange, db: Db, staff: CurrentStaff
+) -> AiFlagRow:
+    return await _set_flag(flag_id, False, body.reason, db, staff)
 
 
 @router.post("/members/{member_id}/display-name")

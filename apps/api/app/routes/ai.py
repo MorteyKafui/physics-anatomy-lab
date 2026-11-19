@@ -28,6 +28,7 @@ from app.ai.answers import (
 from app.ai.claude import Claude, get_claude
 from app.ai.context import AiContext, ModelRequest, build_request
 from app.ai.features import FEATURES, Feature, FeatureName
+from app.ai.flags import CONTACT_DETAILS, FlagRequest, keep, looks_personal
 from app.ai.log import AiLog, get_ai_log
 from app.ai.policy import MESSAGES, Unavailable, available_features, refuse, why_unavailable
 from app.ai.prepare import Prepared
@@ -323,6 +324,25 @@ async def question_drafting(
     except prepare.NotReadyError:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=DRAFT_NOT_READY) from None
     return reply_to(FeatureName.question_drafting, principal, prepared, claude, ai_log)
+
+
+@router.post(
+    "/flags",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"description": "Signed out"},
+        422: {"description": "The reply looks like it holds contact details"},
+        429: {"description": "Ten reports a day"},
+    },
+)
+async def flag_reply(body: FlagRequest, db: Db, principal: MaybePrincipal) -> None:
+    """Report an AI answer, with a reason. Keeps the reply and the reason, never the question
+    or who sent it (docs/content/ai-evals-brief.md, decision 6)."""
+    if principal is None:
+        raise refuse(Unavailable.signed_out)
+    if looks_personal(body.reply):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=CONTACT_DETAILS)
+    await keep(db, principal, body)
 
 
 TEST_INSTRUCTIONS = "Answer the student's question about this step in one or two sentences."

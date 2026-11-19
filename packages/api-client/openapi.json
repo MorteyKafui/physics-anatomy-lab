@@ -2135,6 +2135,38 @@
         }
       }
     },
+    "/ai/flags": {
+      "post": {
+        "tags": ["ai"],
+        "summary": "Flag Reply",
+        "description": "Report an AI answer, with a reason. Keeps the reply and the reason, never the question\nor who sent it (docs/content/ai-evals-brief.md, decision 6).",
+        "operationId": "flagReply",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Signed out"
+          },
+          "422": {
+            "description": "The reply looks like it holds contact details"
+          },
+          "429": {
+            "description": "Ten reports a day"
+          }
+        }
+      }
+    },
     "/questions": {
       "post": {
         "tags": ["questions"],
@@ -2770,6 +2802,109 @@
         }
       }
     },
+    "/admin/ai/flags/{flag_id}/dismiss": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Dismiss Flag",
+        "description": "Set a flagged reply aside. Undo is the restore call.",
+        "operationId": "adminDismissFlag",
+        "parameters": [
+          {
+            "name": "flag_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Flag Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiFlagChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiFlagRow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/ai/flags/{flag_id}/restore": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Admin Restore Flag",
+        "operationId": "adminRestoreFlag",
+        "parameters": [
+          {
+            "name": "flag_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Flag Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiFlagChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiFlagRow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/members/{member_id}/display-name": {
       "post": {
         "tags": ["admin"],
@@ -3181,6 +3316,81 @@
         "required": ["feature", "requests", "cost_microdollars", "held", "cached"],
         "title": "AiFeatureUse"
       },
+      "AiFlagChange": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "title": "AiFlagChange"
+      },
+      "AiFlagRow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "feature": {
+            "$ref": "#/components/schemas/FeatureName"
+          },
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          },
+          "reason": {
+            "type": "string",
+            "enum": ["wrong-physics", "confusing", "unsuitable", "other"],
+            "title": "Reason"
+          },
+          "reply": {
+            "type": "string",
+            "title": "Reply"
+          },
+          "dismissed": {
+            "type": "boolean",
+            "title": "Dismissed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "at",
+          "feature",
+          "experiment_id",
+          "step",
+          "reason",
+          "reply",
+          "dismissed"
+        ],
+        "title": "AiFlagRow"
+      },
       "AiOverview": {
         "properties": {
           "range": {
@@ -3233,6 +3443,25 @@
             "type": "array",
             "title": "Switches"
           },
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/EvalSummary"
+            },
+            "type": "array",
+            "title": "Evaluations"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/AiFlagRow"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Open flags, newest first, at most 50."
+          },
+          "flags_open": {
+            "type": "integer",
+            "title": "Flags Open"
+          },
           "server_enabled": {
             "type": "boolean",
             "title": "Server Enabled",
@@ -3252,6 +3481,9 @@
           "budget_microdollars",
           "budget_reached_at",
           "switches",
+          "evaluations",
+          "flags",
+          "flags_open",
           "server_enabled",
           "configured"
         ],
@@ -4474,6 +4706,84 @@
         "required": ["token"],
         "title": "EmailLinkVerify"
       },
+      "EvalFailure": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why",
+            "description": "The rule that failed, or the grader's reason."
+          }
+        },
+        "type": "object",
+        "required": ["id", "why"],
+        "title": "EvalFailure"
+      },
+      "EvalSummary": {
+        "properties": {
+          "feature": {
+            "$ref": "#/components/schemas/FeatureName"
+          },
+          "cases": {
+            "type": "integer",
+            "title": "Cases"
+          },
+          "run_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run At",
+            "description": "None when the suite has not run yet."
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate",
+            "description": "The share of rubric lines that pass."
+          },
+          "bar": {
+            "type": "number",
+            "title": "Bar"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "failing": {
+            "items": {
+              "$ref": "#/components/schemas/EvalFailure"
+            },
+            "type": "array",
+            "title": "Failing"
+          }
+        },
+        "type": "object",
+        "required": ["feature", "cases", "run_at", "rate", "bar", "passed", "failing"],
+        "title": "EvalSummary",
+        "description": "A feature's latest evaluation results in this deployment (apps/api/evals/results)."
+      },
       "ExperimentTotal": {
         "properties": {
           "experiment_id": {
@@ -4658,6 +4968,56 @@
         "type": "string",
         "enum": ["tutor", "what-if", "report-review", "question-drafting"],
         "title": "FeatureName"
+      },
+      "FlagRequest": {
+        "properties": {
+          "feature": {
+            "$ref": "#/components/schemas/FeatureName"
+          },
+          "experiment_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{1,63}$",
+            "title": "Experiment Id"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "question",
+                  "predict",
+                  "build",
+                  "check",
+                  "measure",
+                  "tabulate",
+                  "plot",
+                  "analyse",
+                  "conclude",
+                  "report"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          },
+          "reason": {
+            "type": "string",
+            "enum": ["wrong-physics", "confusing", "unsuitable", "other"],
+            "title": "Reason"
+          },
+          "reply": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reply"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["feature", "experiment_id", "reason", "reply"],
+        "title": "FlagRequest"
       },
       "FlaggedName": {
         "properties": {
