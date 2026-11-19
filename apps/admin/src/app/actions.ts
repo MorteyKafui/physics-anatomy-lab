@@ -2,7 +2,7 @@
 
 // Every change the portal makes is one admin API call, which checks the staff member's Access
 // token and writes the audit entry in the same transaction (ADR 0040).
-import type { ClassRow, MemberRow } from "@pa/api-client";
+import type { ClassRow, MemberRow, QuestionReview } from "@pa/api-client";
 import { revalidatePath } from "next/cache";
 
 import { adminGet, adminPost } from "@/lib/api";
@@ -62,4 +62,38 @@ export async function membersOf(classId: string): Promise<ActionResult<MemberRow
 export async function classesForSearch(): Promise<ActionResult<ClassRow[]>> {
   const r = await adminGet<ClassRow[]>("/admin/people/classes");
   return r.ok ? { ok: true, data: r.data } : { ok: false, detail: r.detail };
+}
+
+// The question bank (docs/content/ai-questions-brief.md): each decision is one admin call, in
+// the audit log.
+export async function approveQuestion(
+  id: string,
+  edits?: { question: string; answer: string; marks: number },
+): Promise<ActionResult<QuestionReview>> {
+  const r = await adminPost<QuestionReview>(
+    `/admin/questions/${encodeURIComponent(id)}/approve`,
+    edits ?? {},
+  );
+  revalidatePath("/question-bank");
+  return done(r);
+}
+
+export async function rejectQuestion(
+  id: string,
+  reason: string,
+): Promise<ActionResult<QuestionReview>> {
+  const r = await adminPost<QuestionReview>(`/admin/questions/${encodeURIComponent(id)}/reject`, {
+    reason,
+  });
+  revalidatePath("/question-bank");
+  return done(r);
+}
+
+export async function reopenQuestion(id: string): Promise<ActionResult<QuestionReview>> {
+  const r = await adminPost<QuestionReview>(
+    `/admin/questions/${encodeURIComponent(id)}/reopen`,
+    {},
+  );
+  revalidatePath("/question-bank");
+  return done(r);
 }
