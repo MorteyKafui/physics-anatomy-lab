@@ -7,7 +7,7 @@ This item turns it into the files a website, an installed app and a shared link 
 
 The board for this brief is `design/mockups/LogoSet.dc.html`.
 
-- **Status:** draft, waiting for Mortey.
+- **Status:** approved by Mortey on 2026-11-19: decisions 1 to 7 as proposed, including the red-orange favicon and downloading Bricolage Grotesque ExtraBold.
 
 ## What exists today
 
