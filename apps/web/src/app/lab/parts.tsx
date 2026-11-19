@@ -14,6 +14,7 @@ import {
   ListChecksIcon,
   LockIcon,
   SettingsIcon,
+  SlidersHorizontalIcon,
   type LucideIcon,
 } from "@pa/ui/icons";
 import Link from "next/link";
@@ -59,10 +60,13 @@ function NotBuilt({ icon: Icon, name }: { icon: LucideIcon; name: string }) {
 export const Rail = memo(function Rail({
   current,
   help,
+  onWhatIf,
 }: {
   current: "lab" | "notebook";
   /** The lab's help menu, where a lab has one; otherwise Help says it is not built yet. */
   help?: ReactNode;
+  /** Opens the lab's What if panel, where a lab has one. On a phone it is in the header. */
+  onWhatIf?: () => void;
 }) {
   const here = (on: boolean) =>
     cn(railItem, on && "border-l-2 border-primary bg-raised text-foreground");
@@ -92,6 +96,17 @@ export const Rail = memo(function Rail({
         <BookOpenIcon className="size-5" aria-hidden />
       </Link>
       <NotBuilt icon={BookIcon} name={t("lab.rail.reference")} />
+      {onWhatIf && (
+        <button
+          type="button"
+          aria-label={t("lab.whatIf.open")}
+          title={t("lab.whatIf.open")}
+          onClick={onWhatIf}
+          className={cn(railItem, "hover:bg-raised hover:text-foreground")}
+        >
+          <SlidersHorizontalIcon className="size-5" aria-hidden />
+        </button>
+      )}
       <span className="flex-1" />
       {help ?? <NotBuilt icon={CircleHelpIcon} name={t("lab.rail.help")} />}
       <NotBuilt icon={SettingsIcon} name={t("lab.rail.settings")} />

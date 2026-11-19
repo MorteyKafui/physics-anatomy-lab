@@ -1064,7 +1064,11 @@ export function LabScreen() {
         playSound={playSound}
       />
       <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
-        <Rail current="lab" help={railHelp} />
+        <Rail
+          current="lab"
+          help={railHelp}
+          {...(state.mode === "exam" ? {} : { onWhatIf: openWhatIf })}
+        />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {/* Header */}
           <LabHeader
@@ -2150,9 +2154,10 @@ const LabHeader = memo(function LabHeader({
         coachOn={coachIsOn(state)}
         place="header"
       />
-      {/* What if: offline and signed out too, never in an exam. */}
+      {/* What if: offline and signed out too, never in an exam. On a wide screen it is in the
+          rail, so the header keeps to one row. */}
       {state.mode !== "exam" && (
-        <Button variant="outline" className="h-11 md:h-9" onClick={onWhatIf}>
+        <Button variant="outline" className="h-11 md:hidden" onClick={onWhatIf}>
           {t("lab.whatIf.open")}
         </Button>
       )}
