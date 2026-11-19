@@ -1,5 +1,17 @@
 import { cameraOf, roundedPlan } from "./iso-kit.mjs";
-import { add3, sub3, mul3, dot3, len3, unit3, pathLength, resample, curveRuns, cut as cutAlong, tangentAlong } from "./lathe.mjs";
+import {
+  add3,
+  sub3,
+  mul3,
+  dot3,
+  len3,
+  unit3,
+  pathLength,
+  resample,
+  curveRuns,
+  cut as cutAlong,
+  tangentAlong,
+} from "./lathe.mjs";
 import { runsOf } from "./tube.mjs";
 
 const BIG = 1e9;
@@ -22,7 +34,9 @@ export function traced(meridian, { radius = null, error = 0.02, depth = 6 } = {}
         if (level >= depth) return;
         const ra = at(a);
         const rb = at(b);
-        const deviation = Math.max(...[0.25, 0.5, 0.75].map((t) => Math.abs(at(a + (b - a) * t) - (ra + (rb - ra) * t))));
+        const deviation = Math.max(
+          ...[0.25, 0.5, 0.75].map((t) => Math.abs(at(a + (b - a) * t) - (ra + (rb - ra) * t))),
+        );
         if (deviation <= error) return;
         split(a, mid, level + 1);
         out.push([mid, at(mid)]);
@@ -42,31 +56,82 @@ export function lathe(F, meridian, { radius = null, ...meta } = {}) {
 export function solid(F, profile, { radius = null, ...meta } = {}) {
   const first = profile[0];
   const last = profile[profile.length - 1];
-  return body(F, traced([[first[0], 0], ...profile, [last[0], 0]], { radius: radius && ((s) => radius(Math.max(first[0], Math.min(last[0], s)))) }), meta);
+  return body(
+    F,
+    traced([[first[0], 0], ...profile, [last[0], 0]], {
+      radius: radius && ((s) => radius(Math.max(first[0], Math.min(last[0], s)))),
+    }),
+    meta,
+  );
 }
 
 export function prism(F, polygon, s0, s1, meta = {}) {
-  return { kind: "prism", F, poly: polygon.map(([x, y]) => [x, y]), s0: Math.min(s0, s1), s1: Math.max(s0, s1), ...meta };
+  return {
+    kind: "prism",
+    F,
+    poly: polygon.map(([x, y]) => [x, y]),
+    s0: Math.min(s0, s1),
+    s1: Math.max(s0, s1),
+    ...meta,
+  };
 }
 
 const FLOOR = { o: [0, 0, 0], a: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0] };
 
 export const extruded = (ring, z, height, meta = {}) => prism(FLOOR, ring, z, z + height, meta);
 
-export const slab = (plan, z, height, meta = {}, steps = 8) => extruded(roundedPlan(plan, steps), z, height, meta);
+export const slab = (plan, z, height, meta = {}, steps = 8) =>
+  extruded(roundedPlan(plan, steps), z, height, meta);
 
-export const cylinder = (cx, cy, r, z, height, meta = {}) => disc({ o: [cx, cy, 0], a: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0] }, z, z + height, r, meta);
+export const cylinder = (cx, cy, r, z, height, meta = {}) =>
+  disc({ o: [cx, cy, 0], a: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0] }, z, z + height, r, meta);
 
-export const disc = (F, s0, s1, r, meta = {}) => body(F, [[s0, 0], [s0, r], [s1, r], [s1, 0]], meta);
+export const disc = (F, s0, s1, r, meta = {}) =>
+  body(
+    F,
+    [
+      [s0, 0],
+      [s0, r],
+      [s1, r],
+      [s1, 0],
+    ],
+    meta,
+  );
 
-export const ring = (F, s0, s1, rIn, rOut, meta = {}) => body(F, [[s0, rIn], [s0, rOut], [s1, rOut], [s1, rIn]], meta);
+export const ring = (F, s0, s1, rIn, rOut, meta = {}) =>
+  body(
+    F,
+    [
+      [s0, rIn],
+      [s0, rOut],
+      [s1, rOut],
+      [s1, rIn],
+    ],
+    meta,
+  );
 
 export function box(min, max, meta = {}) {
   const centre = mul3(add3(min, max), 0.5);
-  return { kind: "box", o: centre, axes: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], half: mul3(sub3(max, min), 0.5), ...meta };
+  return {
+    kind: "box",
+    o: centre,
+    axes: [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ],
+    half: mul3(sub3(max, min), 0.5),
+    ...meta,
+  };
 }
 
-export const orientedBox = (centre, axes, half, meta = {}) => ({ kind: "box", o: centre, axes: axes.map(unit3), half, ...meta });
+export const orientedBox = (centre, axes, half, meta = {}) => ({
+  kind: "box",
+  o: centre,
+  axes: axes.map(unit3),
+  half,
+  ...meta,
+});
 
 export const ball = (at, r, meta = {}) => ({ kind: "ball", o: at, r, ...meta });
 
@@ -82,18 +147,50 @@ export function tube(points, radius, meta = {}) {
   return { kind: "tube", points, radii, round: meta.round ?? [false, false], ...meta };
 }
 
-export const slide = (F, from, to, r, meta = {}) => ({ ...disc(F, from, to, r, meta), slide: { from, to, r } });
+export const slide = (F, from, to, r, meta = {}) => ({
+  ...disc(F, from, to, r, meta),
+  slide: { from, to, r },
+});
 
 export function moved(shape, offset) {
   if (!offset || (!offset[0] && !offset[1] && !offset[2])) return shape;
   if (shape.slide) {
     const { from, to, r } = shape.slide;
     const reach = Math.max(from + 1e-3, to + dot3(offset, shape.F.a));
-    return { ...shape, poly: [[from, 0], [from, r], [reach, r], [reach, 0]], slide: { from, to: reach, r }, _b: undefined, _f: undefined };
+    return {
+      ...shape,
+      poly: [
+        [from, 0],
+        [from, r],
+        [reach, r],
+        [reach, 0],
+      ],
+      slide: { from, to: reach, r },
+      _b: undefined,
+      _f: undefined,
+    };
   }
-  const cut = shape.cut ? (Array.isArray(shape.cut) ? shape.cut.map((one) => moved(one, offset)) : moved(shape.cut, offset)) : undefined;
-  if (shape.kind === "body" || shape.kind === "prism") return { ...shape, cut, F: { ...shape.F, o: add3(shape.F.o, offset) }, _b: undefined, _f: undefined };
-  if (shape.kind === "tube") return { ...shape, cut, points: shape.points.map((p) => add3(p, offset)), tips: shape.tips && shape.tips.map((tip) => tip && add3(tip, offset)), _b: undefined };
+  const cut = shape.cut
+    ? Array.isArray(shape.cut)
+      ? shape.cut.map((one) => moved(one, offset))
+      : moved(shape.cut, offset)
+    : undefined;
+  if (shape.kind === "body" || shape.kind === "prism")
+    return {
+      ...shape,
+      cut,
+      F: { ...shape.F, o: add3(shape.F.o, offset) },
+      _b: undefined,
+      _f: undefined,
+    };
+  if (shape.kind === "tube")
+    return {
+      ...shape,
+      cut,
+      points: shape.points.map((p) => add3(p, offset)),
+      tips: shape.tips && shape.tips.map((tip) => tip && add3(tip, offset)),
+      _b: undefined,
+    };
   return { ...shape, cut, o: add3(shape.o, offset), _b: undefined };
 }
 
@@ -149,10 +246,24 @@ function cappedSegment(p, a, b, r, endRadius = r) {
   if (endRadius !== r) {
     const length = Math.sqrt(baba);
     const along = paba / length;
-    const radial = Math.hypot(px - bx * paba / baba, py - by * paba / baba, pz - bz * paba / baba);
-    return polyDistance([[0, 0], [0, r], [length, endRadius], [length, 0]], along, radial);
+    const radial = Math.hypot(
+      px - (bx * paba) / baba,
+      py - (by * paba) / baba,
+      pz - (bz * paba) / baba,
+    );
+    return polyDistance(
+      [
+        [0, 0],
+        [0, r],
+        [length, endRadius],
+        [length, 0],
+      ],
+      along,
+      radial,
+    );
   }
-  const x = Math.hypot(px * baba - bx * paba, py * baba - by * paba, pz * baba - bz * paba) - r * baba;
+  const x =
+    Math.hypot(px * baba - bx * paba, py * baba - by * paba, pz * baba - bz * paba) - r * baba;
   const y = Math.abs(paba - baba * 0.5) - baba * 0.5;
   const x2 = x * x;
   const y2 = y * y * baba;
@@ -190,7 +301,12 @@ function baseSdf(shape, p) {
   }
   if (shape.kind === "ball") {
     let d = len3(sub3(p, shape.o)) - shape.r;
-    if (shape.flats) for (const [nx, ny, nz, cut] of shape.flats) d = Math.max(d, nx * (p[0] - shape.o[0]) + ny * (p[1] - shape.o[1]) + nz * (p[2] - shape.o[2]) - cut);
+    if (shape.flats)
+      for (const [nx, ny, nz, cut] of shape.flats)
+        d = Math.max(
+          d,
+          nx * (p[0] - shape.o[0]) + ny * (p[1] - shape.o[1]) + nz * (p[2] - shape.o[2]) - cut,
+        );
     return d;
   }
   if (shape.kind === "prism") {
@@ -243,10 +359,13 @@ export function boundsOf(shape) {
     for (const s of [shape.s0, shape.s1])
       for (const [x, y] of shape.poly) {
         const p = add3(add3(F.o, mul3(F.a, s)), add3(mul3(F.u, x), mul3(F.v, y)));
-        for (let i = 0; i < 3; i++) (min[i] = Math.min(min[i], p[i])), (max[i] = Math.max(max[i], p[i]));
+        for (let i = 0; i < 3; i++)
+          ((min[i] = Math.min(min[i], p[i])), (max[i] = Math.max(max[i], p[i])));
       }
   } else if (shape.kind === "box") {
-    const extent = [0, 1, 2].map((i) => shape.axes.reduce((sum, axis, j) => sum + Math.abs(axis[i]) * shape.half[j], 0));
+    const extent = [0, 1, 2].map((i) =>
+      shape.axes.reduce((sum, axis, j) => sum + Math.abs(axis[i]) * shape.half[j], 0),
+    );
     min = shape.o.map((v, i) => v - extent[i]);
     max = shape.o.map((v, i) => v + extent[i]);
   } else {
@@ -265,7 +384,13 @@ export function boundsOf(shape) {
 
 export function cameraBasis(P) {
   const { sinA, cosA, sinE, cosE, k } = cameraOf(P);
-  return { R: [sinA, -cosA, 0], D: [cosA * sinE, sinA * sinE, -cosE], V: [cosA * cosE, sinA * cosE, sinE], k, origin: P.origin };
+  return {
+    R: [sinA, -cosA, 0],
+    D: [cosA * sinE, sinA * sinE, -cosE],
+    V: [cosA * cosE, sinA * cosE, sinE],
+    k,
+    origin: P.origin,
+  };
 }
 
 function screenBox(shape, cam, offset) {
@@ -292,7 +417,9 @@ function screenBox(shape, cam, offset) {
       visit(add3(q, mul3(cam.D, -r)));
     });
   } else {
-    for (const x of [min[0], max[0]]) for (const y of [min[1], max[1]]) for (const z of [min[2], max[2]]) visit(add3([x, y, z], offset));
+    for (const x of [min[0], max[0]])
+      for (const y of [min[1], max[1]])
+        for (const z of [min[2], max[2]]) visit(add3([x, y, z], offset));
   }
   return [x0, y0, x1, y1];
 }
@@ -321,7 +448,10 @@ function tubeDistance(shape, p, segments) {
   for (const index of segments) {
     const d = cappedSegment(p, points[index], points[index + 1], radii[index], radii[index + 1]);
     if (d < best) best = d;
-    for (const [joint, flag] of [[0, round[0]], [last, round[1]]]) {
+    for (const [joint, flag] of [
+      [0, round[0]],
+      [last, round[1]],
+    ]) {
       if (!flag || (joint !== index && joint !== index + 1)) continue;
       const q = points[joint];
       const e = Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]) - radii[joint];
@@ -335,7 +465,15 @@ function bodyDepth(shape, c, V, eps) {
   const { F, poly } = shape;
   if (!shape._f || shape._f.view.some((value, index) => value !== V[index])) {
     const s = poly.map(([value]) => value);
-    shape._f = { view: [...V], aV: dot3(F.a, V), uV: dot3(F.u, V), vV: dot3(F.v, V), s0: Math.min(...s), s1: Math.max(...s), rm: Math.max(...poly.map(([, r]) => r)) };
+    shape._f = {
+      view: [...V],
+      aV: dot3(F.a, V),
+      uV: dot3(F.u, V),
+      vV: dot3(F.v, V),
+      s0: Math.min(...s),
+      s1: Math.max(...s),
+      rm: Math.max(...poly.map(([, r]) => r)),
+    };
   }
   const { aV, uV, vV, s0, s1, rm } = shape._f;
   const q = [c[0] - F.o[0], c[1] - F.o[1], c[2] - F.o[2]];
@@ -364,7 +502,8 @@ function bodyDepth(shape, c, V, eps) {
   let t = hi + eps;
   for (let step = 0; step < 160 && t >= lo - eps; step++) {
     let d = polyDistance(poly, sc + t * aV, Math.hypot(xc + t * uV, yc + t * vV));
-    if (shape.cut) d = Math.max(d, -cutDistance(shape, [c[0] + V[0] * t, c[1] + V[1] * t, c[2] + V[2] * t]));
+    if (shape.cut)
+      d = Math.max(d, -cutDistance(shape, [c[0] + V[0] * t, c[1] + V[1] * t, c[2] + V[2] * t]));
     if (d < eps) return t;
     t -= Math.max(d, eps * 0.5);
   }
@@ -393,17 +532,40 @@ function flatDistance(x, y, a, b) {
   return Math.hypot(x - a[0] - dx * t, y - a[1] - dy * t);
 }
 
-export const shareOf = (item, state) => (typeof state === "number" ? state : state.shares[item.ride ?? item.piece] ?? 0);
+export const shareOf = (item, state) =>
+  typeof state === "number" ? state : (state.shares[item.ride ?? item.piece] ?? 0);
 
 export const offsetOf = (item, state) => mul3(item.move ?? [0, 0, 0], shareOf(item, state));
 
-export const labelOf = (state) => (typeof state === "number" ? `share ${Math.round(state * 1000) / 1000}` : state.label);
+export const labelOf = (state) =>
+  typeof state === "number" ? `share ${Math.round(state * 1000) / 1000}` : state.label;
 
-export function springStates(order, { stagger = 0.035, stiffness = 64, damping = 14.2, substeps = 4, fps = 60, settle = 1e-3, stride = 1, reversals = [] } = {}) {
+export function springStates(
+  order,
+  {
+    stagger = 0.035,
+    stiffness = 64,
+    damping = 14.2,
+    substeps = 4,
+    fps = 60,
+    settle = 1e-3,
+    stride = 1,
+    reversals = [],
+  } = {},
+) {
   const out = [];
-  const scripts = [[true], [false], ...reversals.flatMap((at) => [[true, at], [false, at]])];
+  const scripts = [
+    [true],
+    [false],
+    ...reversals.flatMap((at) => [
+      [true, at],
+      [false, at],
+    ]),
+  ];
   for (const [on, back] of scripts) {
-    const springs = Object.fromEntries(order.map((id) => [id, { x: on ? 0 : 1, v: 0, target: on ? 0 : 1, pending: null }]));
+    const springs = Object.fromEntries(
+      order.map((id) => [id, { x: on ? 0 : 1, v: 0, target: on ? 0 : 1, pending: null }]),
+    );
     const toggle = (value, clock) => {
       const goal = value ? 1 : 0;
       let index = 0;
@@ -412,45 +574,73 @@ export function springStates(order, { stagger = 0.035, stiffness = 64, damping =
         else springs[id].pending = { value: goal, at: clock + index++ * stagger };
       }
     };
-    const name = back === undefined ? (on ? "apart" : "together") : `${on ? "apart" : "together"}, back at ${back.toFixed(2)} s,`;
+    const name =
+      back === undefined
+        ? on
+          ? "apart"
+          : "together"
+        : `${on ? "apart" : "together"}, back at ${back.toFixed(2)} s,`;
     const dt = 1 / fps;
     let clock = 0;
     let goal = on ? 1 : 0;
     toggle(on, 0);
     for (let frame = 0; frame < 100000; frame++) {
-      if (back !== undefined && clock < back && clock + dt >= back) toggle(!on, back), (goal = on ? 0 : 1);
+      if (back !== undefined && clock < back && clock + dt >= back)
+        (toggle(!on, back), (goal = on ? 0 : 1));
       clock += dt;
       for (const spring of Object.values(springs)) {
-        if (spring.pending && clock >= spring.pending.at) (spring.target = spring.pending.value), (spring.pending = null);
+        if (spring.pending && clock >= spring.pending.at)
+          ((spring.target = spring.pending.value), (spring.pending = null));
         for (let index = 0; index < substeps; index++) {
           const h = dt / substeps;
           spring.v += ((spring.target - spring.x) * stiffness - spring.v * damping) * h;
           spring.x += spring.v * h;
         }
       }
-      const settled = (back === undefined || clock >= back) && Object.values(springs).every((spring) => !spring.pending && Math.abs(spring.x - goal) < settle && Math.abs(spring.v) < settle);
+      const settled =
+        (back === undefined || clock >= back) &&
+        Object.values(springs).every(
+          (spring) =>
+            !spring.pending && Math.abs(spring.x - goal) < settle && Math.abs(spring.v) < settle,
+        );
       if (settled) break;
-      if ((frame + 1) % stride === 0) out.push({ label: `${name} ${clock.toFixed(3)} s`, shares: Object.fromEntries(Object.entries(springs).map(([id, spring]) => [id, spring.x])) });
+      if ((frame + 1) % stride === 0)
+        out.push({
+          label: `${name} ${clock.toFixed(3)} s`,
+          shares: Object.fromEntries(Object.entries(springs).map(([id, spring]) => [id, spring.x])),
+        });
     }
   }
   return out;
 }
 
-export const uniformStates = (count = 10) => Array.from({ length: count + 1 }, (_, index) => index / count);
+export const uniformStates = (count = 10) =>
+  Array.from({ length: count + 1 }, (_, index) => index / count);
 
-export const reversalsOf = (order, stagger = 0.035, margin = 0.008) => order.flatMap((_, index) => [index * stagger - margin, index * stagger + margin]).filter((at) => at > 0);
+export const reversalsOf = (order, stagger = 0.035, margin = 0.008) =>
+  order
+    .flatMap((_, index) => [index * stagger - margin, index * stagger + margin])
+    .filter((at) => at > 0);
 
 export function prefixStates(order, { shares = [0.25, 0.5, 0.75, 1] } = {}) {
   const out = [];
   for (let count = 1; count < order.length; count++)
     for (const s of shares)
-      out.push({ label: `first ${count - 1} out, ${order[count - 1]} at ${s}`, shares: Object.fromEntries(order.map((id, index) => [id, index < count - 1 ? 1 : index === count - 1 ? s : 0])) });
+      out.push({
+        label: `first ${count - 1} out, ${order[count - 1]} at ${s}`,
+        shares: Object.fromEntries(
+          order.map((id, index) => [id, index < count - 1 ? 1 : index === count - 1 ? s : 0]),
+        ),
+      });
   return out;
 }
 
 function rasterOf(item, cam, step, offset) {
   const shapes = item.shapes.map((shape) => moved(shape, offset));
-  const flat = (p) => [cam.origin[0] + dot3(p, cam.R) * cam.k, cam.origin[1] + dot3(p, cam.D) * cam.k];
+  const flat = (p) => [
+    cam.origin[0] + dot3(p, cam.R) * cam.k,
+    cam.origin[1] + dot3(p, cam.D) * cam.k,
+  ];
   const boxes = shapes.map((shape) => screenBox(shape, cam, [0, 0, 0]));
   const guides = shapes.map((shape) => {
     if (shape.kind === "tube") {
@@ -468,7 +658,13 @@ function rasterOf(item, cam, step, offset) {
     }
     if (shape.kind === "body") {
       const s = shape.poly.map(([value]) => value);
-      return { axis: [flat(add3(shape.F.o, mul3(shape.F.a, Math.min(...s)))), flat(add3(shape.F.o, mul3(shape.F.a, Math.max(...s))))], reach: Math.max(...shape.poly.map(([, r]) => r)) * cam.k };
+      return {
+        axis: [
+          flat(add3(shape.F.o, mul3(shape.F.a, Math.min(...s)))),
+          flat(add3(shape.F.o, mul3(shape.F.a, Math.max(...s)))),
+        ],
+        reach: Math.max(...shape.poly.map(([, r]) => r)) * cam.k,
+      };
     }
     return null;
   });
@@ -490,7 +686,10 @@ function depthAt(raster, cam, step, cx, cy) {
   if (raster.done[cell]) return raster.depth[cell];
   const x = cx * step;
   const y = cy * step;
-  const c = add3(mul3(cam.R, (x - cam.origin[0]) / cam.k), mul3(cam.D, (y - cam.origin[1]) / cam.k));
+  const c = add3(
+    mul3(cam.R, (x - cam.origin[0]) / cam.k),
+    mul3(cam.D, (y - cam.origin[1]) / cam.k),
+  );
   let best = NaN;
   for (let index = 0; index < raster.shapes.length; index++) {
     const shape = raster.shapes[index];
@@ -502,11 +701,25 @@ function depthAt(raster, cam, step, cx, cy) {
       segments = [];
       const boxes = guide.boxes;
       for (let i = 0; i < guide.points.length - 1; i++) {
-        if (x < boxes[i * 4] || x > boxes[i * 4 + 1] || y < boxes[i * 4 + 2] || y > boxes[i * 4 + 3]) continue;
-        if (flatDistance(x, y, guide.points[i], guide.points[i + 1]) <= Math.max(guide.widths[i], guide.widths[i + 1]) + step * 0.5) segments.push(i);
+        if (
+          x < boxes[i * 4] ||
+          x > boxes[i * 4 + 1] ||
+          y < boxes[i * 4 + 2] ||
+          y > boxes[i * 4 + 3]
+        )
+          continue;
+        if (
+          flatDistance(x, y, guide.points[i], guide.points[i + 1]) <=
+          Math.max(guide.widths[i], guide.widths[i + 1]) + step * 0.5
+        )
+          segments.push(i);
       }
       if (!segments.length) continue;
-    } else if (shape.kind === "body" && flatDistance(x, y, guide.axis[0], guide.axis[1]) > guide.reach + step) continue;
+    } else if (
+      shape.kind === "body" &&
+      flatDistance(x, y, guide.axis[0], guide.axis[1]) > guide.reach + step
+    )
+      continue;
     const t = rayDepth(shape, c, cam.V, 0.02, segments);
     if (t !== null && !(t <= best)) best = t;
   }
@@ -520,26 +733,55 @@ function regionOf(flags, gw, gh, value, step) {
   const on = new Uint8Array(n);
   let all = 0;
   let inner = 0;
-  for (let cell = 0; cell < n; cell++) if (flags[cell] === value) (on[cell] = 1), all++;
+  for (let cell = 0; cell < n; cell++) if (flags[cell] === value) ((on[cell] = 1), all++);
   if (!all) return { all, inner, area: 0 };
   const grow = new Uint8Array(n);
   for (let y = 0; y < gh; y++)
     for (let x = 0; x < gw; x++) {
       const cell = y * gw + x;
-      if (on[cell] && x > 0 && x < gw - 1 && y > 0 && y < gh - 1 && on[cell - 1] && on[cell + 1] && on[cell - gw] && on[cell + gw]) inner++;
-      if (on[cell] || (x > 0 && on[cell - 1]) || (x < gw - 1 && on[cell + 1]) || (y > 0 && on[cell - gw]) || (y < gh - 1 && on[cell + gw])) grow[cell] = 1;
+      if (
+        on[cell] &&
+        x > 0 &&
+        x < gw - 1 &&
+        y > 0 &&
+        y < gh - 1 &&
+        on[cell - 1] &&
+        on[cell + 1] &&
+        on[cell - gw] &&
+        on[cell + gw]
+      )
+        inner++;
+      if (
+        on[cell] ||
+        (x > 0 && on[cell - 1]) ||
+        (x < gw - 1 && on[cell + 1]) ||
+        (y > 0 && on[cell - gw]) ||
+        (y < gh - 1 && on[cell + gw])
+      )
+        grow[cell] = 1;
     }
   const shut = new Uint8Array(n);
   for (let y = 0; y < gh; y++)
     for (let x = 0; x < gw; x++) {
       const cell = y * gw + x;
-      shut[cell] = on[cell] || (grow[cell] && (x === 0 || grow[cell - 1]) && (x === gw - 1 || grow[cell + 1]) && (y === 0 || grow[cell - gw]) && (y === gh - 1 || grow[cell + gw])) ? 1 : 0;
+      shut[cell] =
+        on[cell] ||
+        (grow[cell] &&
+          (x === 0 || grow[cell - 1]) &&
+          (x === gw - 1 || grow[cell + 1]) &&
+          (y === 0 || grow[cell - gw]) &&
+          (y === gh - 1 || grow[cell + gw]))
+          ? 1
+          : 0;
     }
   const core = new Uint8Array(n);
   for (let y = 1; y < gh - 1; y++)
     for (let x = 1; x < gw - 1; x++) {
       const cell = y * gw + x;
-      core[cell] = shut[cell] && shut[cell - 1] && shut[cell + 1] && shut[cell - gw] && shut[cell + gw] ? 1 : 0;
+      core[cell] =
+        shut[cell] && shut[cell - 1] && shut[cell + 1] && shut[cell - gw] && shut[cell + gw]
+          ? 1
+          : 0;
     }
   const seen = new Uint8Array(n);
   const stack = new Int32Array(n);
@@ -556,7 +798,7 @@ function regionOf(flags, gw, gh, value, step) {
       const x = cell % gw;
       const y = (cell - x) / gw;
       const visit = (next) => {
-        if (core[next] && !seen[next]) (seen[next] = 1), (stack[top++] = next);
+        if (core[next] && !seen[next]) ((seen[next] = 1), (stack[top++] = next));
       };
       if (x > 0) visit(cell - 1);
       if (x < gw - 1) visit(cell + 1);
@@ -569,7 +811,8 @@ function regionOf(flags, gw, gh, value, step) {
 }
 
 function measure(ra, rb, dx, dy, dz, cam, step, tolerance, least) {
-  if (ra.x1 < rb.x0 + dx || rb.x1 + dx < ra.x0 || ra.y1 < rb.y0 + dy || rb.y1 + dy < ra.y0) return null;
+  if (ra.x1 < rb.x0 + dx || rb.x1 + dx < ra.x0 || ra.y1 < rb.y0 + dy || rb.y1 + dy < ra.y0)
+    return null;
   const ix0 = Math.max(ra.x0, rb.x0 + dx);
   const ix1 = Math.min(ra.x1, rb.x1 + dx);
   const iy0 = Math.max(ra.y0, rb.y0 + dy);
@@ -590,11 +833,11 @@ function measure(ra, rb, dx, dy, dz, cam, step, tolerance, least) {
       if (ta > tb + tolerance) {
         flags[cell] = 1;
         any = true;
-        if (ta - tb > worst[0]) (worst[0] = ta - tb), (at[0] = [x * step, y * step]);
+        if (ta - tb > worst[0]) ((worst[0] = ta - tb), (at[0] = [x * step, y * step]));
       } else if (tb > ta + tolerance) {
         flags[cell] = -1;
         any = true;
-        if (tb - ta > worst[1]) (worst[1] = tb - ta), (at[1] = [x * step, y * step]);
+        if (tb - ta > worst[1]) ((worst[1] = tb - ta), (at[1] = [x * step, y * step]));
       }
     }
   }
@@ -604,13 +847,20 @@ function measure(ra, rb, dx, dy, dz, cam, step, tolerance, least) {
   return front.map((region, side) => ({ ...region, depth: worst[side], at: at[side] }));
 }
 
-export function overlapsOf(items, P, { step = 0.25, tolerance = 0.3, least = 0.25, states = [0], skip = () => false } = {}) {
+export function overlapsOf(
+  items,
+  P,
+  { step = 0.25, tolerance = 0.3, least = 0.25, states = [0], skip = () => false } = {},
+) {
   const cam = cameraBasis(P);
-  const live = items.map((item, index) => ({ item, index })).filter(({ item }) => item.shapes && item.shapes.length);
+  const live = items
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => item.shapes && item.shapes.length);
   const homes = live.map(() => null);
   let uid = 0;
   const stamp = (raster) => Object.assign(raster, { uid: uid++ });
-  const home = (index) => homes[index] ?? (homes[index] = stamp(rasterOf(live[index].item, cam, step, [0, 0, 0])));
+  const home = (index) =>
+    homes[index] ?? (homes[index] = stamp(rasterOf(live[index].item, cam, step, [0, 0, 0])));
   const sliding = live.map(({ item }) => item.shapes.some((shape) => shape.slide));
   const slid = new Map();
   const rasterAt = (index, offset) => {
@@ -619,19 +869,31 @@ export function overlapsOf(items, P, { step = 0.25, tolerance = 0.3, least = 0.2
     if (!slid.has(id)) slid.set(id, stamp(rasterOf(live[index].item, cam, step, offset)));
     return slid.get(id);
   };
-  const shiftOf = (offset) => ({ gx: Math.round((dot3(offset, cam.R) * cam.k) / step), gy: Math.round((dot3(offset, cam.D) * cam.k) / step), dz: dot3(offset, cam.V) });
+  const shiftOf = (offset) => ({
+    gx: Math.round((dot3(offset, cam.R) * cam.k) / step),
+    gy: Math.round((dot3(offset, cam.D) * cam.k) / step),
+    dz: dot3(offset, cam.V),
+  });
   const memo = new Map();
   const pairs = [];
   for (const state of states) {
     const offsets = live.map(({ item }) => offsetOf(item, state));
-    const shifts = live.map((_, index) => (sliding[index] ? { gx: 0, gy: 0, dz: 0 } : shiftOf(offsets[index])));
+    const shifts = live.map((_, index) =>
+      sliding[index] ? { gx: 0, gy: 0, dz: 0 } : shiftOf(offsets[index]),
+    );
     for (let a = 0; a < live.length; a++) {
       const ra = rasterAt(a, offsets[a]);
       const sa = shifts[a];
       for (let b = a + 1; b < live.length; b++) {
         const rb = rasterAt(b, offsets[b]);
         const sb = shifts[b];
-        if (ra.x1 + sa.gx < rb.x0 + sb.gx || rb.x1 + sb.gx < ra.x0 + sa.gx || ra.y1 + sa.gy < rb.y0 + sb.gy || rb.y1 + sb.gy < ra.y0 + sa.gy) continue;
+        if (
+          ra.x1 + sa.gx < rb.x0 + sb.gx ||
+          rb.x1 + sb.gx < ra.x0 + sa.gx ||
+          ra.y1 + sa.gy < rb.y0 + sb.gy ||
+          rb.y1 + sb.gy < ra.y0 + sa.gy
+        )
+          continue;
         if (skip(live[a].item, live[b].item)) continue;
         const dx = sb.gx - sa.gx;
         const dy = sb.gy - sa.gy;
@@ -643,7 +905,15 @@ export function overlapsOf(items, P, { step = 0.25, tolerance = 0.3, least = 0.2
           memo.set(id, hit);
         }
         if (!hit) continue;
-        pairs.push({ state, a: live[a].index, b: live[b].index, front: hit.map((side) => ({ ...side, at: side.at && [side.at[0] + sa.gx * step, side.at[1] + sa.gy * step] })) });
+        pairs.push({
+          state,
+          a: live[a].index,
+          b: live[b].index,
+          front: hit.map((side) => ({
+            ...side,
+            at: side.at && [side.at[0] + sa.gx * step, side.at[1] + sa.gy * step],
+          })),
+        });
       }
     }
   }
@@ -668,13 +938,16 @@ export function orderKeys(items, overlaps, { gap = 0.02, rounds = 0 } = {}) {
     }
     const [front, back] = aFront ? [pair.a, pair.b] : [pair.b, pair.a];
     const weight = pair.front[aFront ? 0 : 1].area;
-    const need = gap + shareOf(items[back], pair.state) * liftOf(items[back], V) - shareOf(items[front], pair.state) * liftOf(items[front], V);
+    const need =
+      gap +
+      shareOf(items[back], pair.state) * liftOf(items[back], V) -
+      shareOf(items[front], pair.state) * liftOf(items[front], V);
     const id = `${front}|${back}`;
     const prior = strongest.get(id);
     if (!prior) strongest.set(id, { front, back, weight, pair, need });
     else {
       prior.weight = Math.max(prior.weight, weight);
-      if (need > prior.need) (prior.need = need), (prior.pair = pair);
+      if (need > prior.need) ((prior.need = need), (prior.pair = pair));
     }
   }
   const rules = [...strongest.values()];
@@ -714,7 +987,9 @@ export function orderKeys(items, overlaps, { gap = 0.02, rounds = 0 } = {}) {
         walk = by[walk].back;
       } while (walk !== node && loop.length <= items.length);
     }
-    const candidates = loop.length ? loop : active.filter((rule) => keys[rule.front] - keys[rule.back] < rule.need - 1e-9);
+    const candidates = loop.length
+      ? loop
+      : active.filter((rule) => keys[rule.front] - keys[rule.back] < rule.need - 1e-9);
     if (!candidates.length) break;
     const victim = candidates.reduce((low, rule) => (rule.weight < low.weight ? rule : low));
     dropped.push(victim);
@@ -727,11 +1002,17 @@ export function depthOrder(items, P, options = {}) {
   const overlaps = options.overlaps ?? overlapsOf(items, P, options);
   const { pairs, least, states, V } = overlaps;
   const allow = options.allow ?? [];
-  const dropped = new Set((options.solved?.dropped ?? []).map((rule) => `${rule.front}|${rule.back}`));
-  const missing = items.filter((item) => !item.shapes || !item.shapes.length).map((item) => item.name);
+  const dropped = new Set(
+    (options.solved?.dropped ?? []).map((rule) => `${rule.front}|${rule.back}`),
+  );
+  const missing = items
+    .filter((item) => !item.shapes || !item.shapes.length)
+    .map((item) => item.name);
   const ranks = new Map();
   for (const state of states) {
-    const order = items.map((item, index) => ({ index, key: keyAt(item, state, V) })).sort((x, y) => x.key - y.key || x.index - y.index);
+    const order = items
+      .map((item, index) => ({ index, key: keyAt(item, state, V) }))
+      .sort((x, y) => x.key - y.key || x.index - y.index);
     const rank = new Int32Array(items.length);
     order.forEach(({ index }, position) => (rank[index] = position));
     ranks.set(state, rank);
@@ -747,7 +1028,11 @@ export function depthOrder(items, P, options = {}) {
     if (wrong.area < least) continue;
     const front = items[aFirst ? pair.a : pair.b];
     const back = items[aFirst ? pair.b : pair.a];
-    const excused = allow.find(([x, y]) => (matches([x], front.name) && matches([y], back.name)) || (matches([y], front.name) && matches([x], back.name)));
+    const excused = allow.find(
+      ([x, y]) =>
+        (matches([x], front.name) && matches([y], back.name)) ||
+        (matches([y], front.name) && matches([x], back.name)),
+    );
     const entry = {
       state: pair.state,
       label: labelOf(pair.state),
@@ -766,7 +1051,10 @@ export function depthOrder(items, P, options = {}) {
     const back_ = aFirst ? pair.b : pair.a;
     entry.unorderable = !rest.includes(pair.state) && dropped.has(`${front_}|${back_}`);
     const replayed = typeof pair.state !== "number";
-    (!excused && (rest.includes(pair.state) || replayed || (!entry.cycle && !entry.unorderable)) ? problems : passing).push(entry);
+    (!excused && (rest.includes(pair.state) || replayed || (!entry.cycle && !entry.unorderable))
+      ? problems
+      : passing
+    ).push(entry);
   }
   return { problems, passing, missing };
 }
@@ -775,7 +1063,8 @@ function samplesOf(shape, spacing) {
   const dense = resample(shape.points, spacing);
   const total = pathLength(shape.points) || 1;
   const lengths = [0];
-  for (let index = 1; index < shape.points.length; index++) lengths.push(lengths[index - 1] + len3(sub3(shape.points[index], shape.points[index - 1])));
+  for (let index = 1; index < shape.points.length; index++)
+    lengths.push(lengths[index - 1] + len3(sub3(shape.points[index], shape.points[index - 1])));
   const radiusAt = (at) => {
     let index = 1;
     while (index < lengths.length - 1 && lengths[index] < at) index++;
@@ -785,18 +1074,28 @@ function samplesOf(shape, spacing) {
   };
   const step = total / Math.max(1, dense.length - 1);
   return dense.map((p, index) => {
-    const t = unit3(sub3(dense[Math.min(dense.length - 1, index + 1)], dense[Math.max(0, index - 1)]));
-    return { p, t, along: index * step, edge: Math.min(index * step, total - index * step), r: radiusAt(index * step) };
+    const t = unit3(
+      sub3(dense[Math.min(dense.length - 1, index + 1)], dense[Math.max(0, index - 1)]),
+    );
+    return {
+      p,
+      t,
+      along: index * step,
+      edge: Math.min(index * step, total - index * step),
+      r: radiusAt(index * step),
+    };
   });
 }
 
-const overlaps = (a, b, pad) => a.min.every((v, i) => v - pad <= b.max[i] && b.min[i] - pad <= a.max[i]);
+const overlaps = (a, b, pad) =>
+  a.min.every((v, i) => v - pad <= b.max[i] && b.min[i] - pad <= a.max[i]);
 
 function centreline(shape, p) {
   let best = { d: BIG, r: 0 };
   for (let index = 0; index < shape.points.length - 1; index++) {
     const { d, t } = segmentPoint(p, shape.points[index], shape.points[index + 1]);
-    if (d < best.d) best = { d, r: shape.radii[index] + (shape.radii[index + 1] - shape.radii[index]) * t };
+    if (d < best.d)
+      best = { d, r: shape.radii[index] + (shape.radii[index + 1] - shape.radii[index]) * t };
   }
   return best;
 }
@@ -805,14 +1104,22 @@ const matches = (list, name) =>
   (list ?? []).some((entry) => {
     if (typeof entry === "function") return entry(name);
     if (entry.endsWith("*")) return name.startsWith(entry.slice(0, -1));
-    return name === entry || name.startsWith(entry + ".") || name.startsWith(entry + ":") || name.startsWith(entry + "#");
+    return (
+      name === entry ||
+      name.startsWith(entry + ".") ||
+      name.startsWith(entry + ":") ||
+      name.startsWith(entry + "#")
+    );
   });
 
-const sameOffset = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]) < 1e-6;
+const sameOffset = (a, b) =>
+  Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]) < 1e-6;
 
-const placed = (shape, state) => (state === undefined || !shape.move ? shape : moved(shape, offsetOf(shape, state)));
+const placed = (shape, state) =>
+  state === undefined || !shape.move ? shape : moved(shape, offsetOf(shape, state));
 
-const offsetAt = (shape, state) => (state === undefined || !shape.move ? [0, 0, 0] : offsetOf(shape, state));
+const offsetAt = (shape, state) =>
+  state === undefined || !shape.move ? [0, 0, 0] : offsetOf(shape, state);
 
 function tipDistance(other, p) {
   if (other.kind === "tube") {
@@ -824,12 +1131,34 @@ function tipDistance(other, p) {
 
 function rimOf(tube, index) {
   const tip = tube.tips[index];
-  const axis = tube.tipAxes ? tube.tipAxes[index] : unit3(index ? sub3(tube.points[tube.points.length - 1], tube.points[tube.points.length - 2]) : sub3(tube.points[1], tube.points[0]));
+  const axis = tube.tipAxes
+    ? tube.tipAxes[index]
+    : unit3(
+        index
+          ? sub3(tube.points[tube.points.length - 1], tube.points[tube.points.length - 2])
+          : sub3(tube.points[1], tube.points[0]),
+      );
   const radius = tube.tipRims ? tube.tipRims[index] : tube.radii[index ? tube.radii.length - 1 : 0];
   const helper = Math.abs(axis[2]) > 0.9 ? [1, 0, 0] : [0, 0, 1];
-  const u = unit3([helper[1] * axis[2] - helper[2] * axis[1], helper[2] * axis[0] - helper[0] * axis[2], helper[0] * axis[1] - helper[1] * axis[0]]);
-  const v = [axis[1] * u[2] - axis[2] * u[1], axis[2] * u[0] - axis[0] * u[2], axis[0] * u[1] - axis[1] * u[0]];
-  return Array.from({ length: 12 }, (_, k) => add3(tip, add3(mul3(u, radius * Math.cos((k * Math.PI) / 6)), mul3(v, radius * Math.sin((k * Math.PI) / 6)))));
+  const u = unit3([
+    helper[1] * axis[2] - helper[2] * axis[1],
+    helper[2] * axis[0] - helper[0] * axis[2],
+    helper[0] * axis[1] - helper[1] * axis[0],
+  ]);
+  const v = [
+    axis[1] * u[2] - axis[2] * u[1],
+    axis[2] * u[0] - axis[0] * u[2],
+    axis[0] * u[1] - axis[1] * u[0],
+  ];
+  return Array.from({ length: 12 }, (_, k) =>
+    add3(
+      tip,
+      add3(
+        mul3(u, radius * Math.cos((k * Math.PI) / 6)),
+        mul3(v, radius * Math.sin((k * Math.PI) / 6)),
+      ),
+    ),
+  );
 }
 
 export function mountsOf(tubes, solids, { tolerance = 0.15 } = {}) {
@@ -842,17 +1171,45 @@ export function mountsOf(tubes, solids, { tolerance = 0.15 } = {}) {
       const rim = rimOf(tube, index);
       let best = null;
       const consider = (other) => {
-        if (other === tube || (other.owner && other.owner === tube.owner) || other.name === tube.owner || other.anchor === false) return;
+        if (
+          other === tube ||
+          (other.owner && other.owner === tube.owner) ||
+          other.name === tube.owner ||
+          other.anchor === false
+        )
+          return;
         const { min, max } = boundsOf(other);
-        if (!overlaps({ min: tip, max: tip }, { min, max }, 3 + (tube.tipRims ? tube.tipRims[index] : 0))) return;
+        if (
+          !overlaps(
+            { min: tip, max: tip },
+            { min, max },
+            3 + (tube.tipRims ? tube.tipRims[index] : 0),
+          )
+        )
+          return;
         const ds = rim.map((p) => tipDistance(other, p));
-        const score = (Math.abs(tipDistance(other, tip)) + ds.reduce((sum, d) => sum + Math.abs(d), 0) / ds.length) / 2;
-        if (!best || score < best.score) best = { shape: other, score, d: tipDistance(other, tip), high: Math.max(...ds), low: Math.min(...ds) };
+        const score =
+          (Math.abs(tipDistance(other, tip)) +
+            ds.reduce((sum, d) => sum + Math.abs(d), 0) / ds.length) /
+          2;
+        if (!best || score < best.score)
+          best = {
+            shape: other,
+            score,
+            d: tipDistance(other, tip),
+            high: Math.max(...ds),
+            low: Math.min(...ds),
+          };
       };
       solids.forEach(consider);
       tubes.forEach(consider);
-      if (best && byName.get(best.shape.owner) && best.shape.kind !== "tube") best.host = byName.get(best.shape.owner);
-      found[index] = best && { ...best, tip, landed: best.high <= tolerance && best.low >= -tolerance };
+      if (best && byName.get(best.shape.owner) && best.shape.kind !== "tube")
+        best.host = byName.get(best.shape.owner);
+      found[index] = best && {
+        ...best,
+        tip,
+        landed: best.high <= tolerance && best.low >= -tolerance,
+      };
     });
     out.set(tube, found);
   }
@@ -862,12 +1219,38 @@ export function mountsOf(tubes, solids, { tolerance = 0.15 } = {}) {
 function ringAround(sample, r) {
   const axis = sample.t;
   const helper = Math.abs(axis[2]) > 0.9 ? [1, 0, 0] : [0, 0, 1];
-  const u = unit3([helper[1] * axis[2] - helper[2] * axis[1], helper[2] * axis[0] - helper[0] * axis[2], helper[0] * axis[1] - helper[1] * axis[0]]);
-  const v = [axis[1] * u[2] - axis[2] * u[1], axis[2] * u[0] - axis[0] * u[2], axis[0] * u[1] - axis[1] * u[0]];
-  return Array.from({ length: 12 }, (_, k) => add3(sample.p, add3(mul3(u, r * Math.cos((k * Math.PI) / 6)), mul3(v, r * Math.sin((k * Math.PI) / 6)))));
+  const u = unit3([
+    helper[1] * axis[2] - helper[2] * axis[1],
+    helper[2] * axis[0] - helper[0] * axis[2],
+    helper[0] * axis[1] - helper[1] * axis[0],
+  ]);
+  const v = [
+    axis[1] * u[2] - axis[2] * u[1],
+    axis[2] * u[0] - axis[0] * u[2],
+    axis[0] * u[1] - axis[1] * u[0],
+  ];
+  return Array.from({ length: 12 }, (_, k) =>
+    add3(
+      sample.p,
+      add3(mul3(u, r * Math.cos((k * Math.PI) / 6)), mul3(v, r * Math.sin((k * Math.PI) / 6))),
+    ),
+  );
 }
 
-export function clearances(tubes, solids, { ratio = 0.5, least = 0.2, spacing = 0.5, touching = -0.05, through = -0.1, state, only, mounts = mountsOf(tubes, solids) } = {}) {
+export function clearances(
+  tubes,
+  solids,
+  {
+    ratio = 0.5,
+    least = 0.2,
+    spacing = 0.5,
+    touching = -0.05,
+    through = -0.1,
+    state,
+    only,
+    mounts = mountsOf(tubes, solids),
+  } = {},
+) {
   const gapOf = (r) => Math.max(least, ratio * r);
   const problems = new Map();
   const note = (tube, other, kind, clearance, need, sample) => {
@@ -879,33 +1262,60 @@ export function clearances(tubes, solids, { ratio = 0.5, least = 0.2, spacing = 
       prior.to = Math.max(prior.to, sample.along);
       return;
     }
-    problems.set(id, { tube: tube.name, other: other.name, kind, clearance, need, at: sample.p, from: prior ? Math.min(prior.from, sample.along) : sample.along, to: prior ? Math.max(prior.to, sample.along) : sample.along, length: pathLength(tube.points), state: state === undefined ? "" : labelOf(state) });
+    problems.set(id, {
+      tube: tube.name,
+      other: other.name,
+      kind,
+      clearance,
+      need,
+      at: sample.p,
+      from: prior ? Math.min(prior.from, sample.along) : sample.along,
+      to: prior ? Math.max(prior.to, sample.along) : sample.along,
+      length: pathLength(tube.points),
+      state: state === undefined ? "" : labelOf(state),
+    });
   };
   const poseOf = new Map([...tubes, ...solids].map((shape) => [shape, placed(shape, state)]));
   const offsets = new Map([...tubes, ...solids].map((shape) => [shape, offsetAt(shape, state)]));
-  const widest = new Map(tubes.map((tube) => [tube, poseOf.get(tube).radii.reduce((r, next) => Math.max(r, next), 0)]));
+  const widest = new Map(
+    tubes.map((tube) => [tube, poseOf.get(tube).radii.reduce((r, next) => Math.max(r, next), 0)]),
+  );
   const together = (a, b) => len3(sub3(offsets.get(a), offsets.get(b))) < 0.05;
   const runsBy = new Map();
   for (const tube of tubes) runsBy.set(tube.owner, [...(runsBy.get(tube.owner) ?? []), tube]);
-  const tipsOf = (owner) => (runsBy.get(owner) ?? []).flatMap((run) => (mounts.get(run) ?? []).filter(Boolean).map((mount) => ({ run, mount })));
-  const seatedOn = (shape, owner) => shape && shape.cut && [shape.cut].flat().some((cut) => cut.owner === owner);
+  const tipsOf = (owner) =>
+    (runsBy.get(owner) ?? []).flatMap((run) =>
+      (mounts.get(run) ?? []).filter(Boolean).map((mount) => ({ run, mount })),
+    );
+  const seatedOn = (shape, owner) =>
+    shape && shape.cut && [shape.cut].flat().some((cut) => cut.owner === owner);
   const zone = (r) => r + gapOf(r) + 1;
   const ownerOf = (other) => other.owner ?? other.name;
   const related = (tube, other, sample) => {
     if (seatedOn(other, tube.owner)) return true;
     const tips = tipsOf(tube.owner);
-    const near = (entry) => len3(sub3(sample.p, add3(entry.mount.tip, offsets.get(entry.run)))) <= zone(sample.r) + (entry.run.tipRims ? Math.max(...entry.run.tipRims) : 0);
+    const near = (entry) =>
+      len3(sub3(sample.p, add3(entry.mount.tip, offsets.get(entry.run)))) <=
+      zone(sample.r) + (entry.run.tipRims ? Math.max(...entry.run.tipRims) : 0);
     for (const entry of tips) {
       if (!near(entry) || !together(tube, entry.mount.shape)) continue;
       const mount = entry.mount.shape;
-      if (mount === other || (entry.mount.host && (entry.mount.host === other || other.owner === entry.mount.host.owner))) return true;
+      if (
+        mount === other ||
+        (entry.mount.host && (entry.mount.host === other || other.owner === entry.mount.host.owner))
+      )
+        return true;
       if (tipsOf(ownerOf(other)).some((theirs) => theirs.mount.shape === mount)) return true;
     }
     for (const entry of tipsOf(ownerOf(other))) {
       const mount = entry.mount.shape;
       const lands = mount.owner === tube.owner || seatedOn(mount, tube.owner);
       if (!lands || !together(entry.run, tube)) continue;
-      if (len3(sub3(sample.p, add3(entry.mount.tip, offsets.get(entry.run)))) <= zone(sample.r) + (entry.run.tipRims ? Math.max(...entry.run.tipRims) : 0) + sample.r) return true;
+      if (
+        len3(sub3(sample.p, add3(entry.mount.tip, offsets.get(entry.run)))) <=
+        zone(sample.r) + (entry.run.tipRims ? Math.max(...entry.run.tipRims) : 0) + sample.r
+      )
+        return true;
     }
     return false;
   };
@@ -930,7 +1340,10 @@ export function clearances(tubes, solids, { ratio = 0.5, least = 0.2, spacing = 
       const ob = boundsOf(other);
       if (!overlaps(tb, ob, Math.max(4, gapOf(widest.get(tube))))) continue;
       for (const sample of samples) {
-        if (!overlaps({ min: sample.p, max: sample.p }, ob, sample.r + Math.max(3, gapOf(sample.r)))) continue;
+        if (
+          !overlaps({ min: sample.p, max: sample.p }, ob, sample.r + Math.max(3, gapOf(sample.r)))
+        )
+          continue;
         const gap = gapOf(sample.r);
         const clearance = clearanceTo(other, sample);
         if (clearance >= gap) continue;
@@ -947,15 +1360,20 @@ export function clearances(tubes, solids, { ratio = 0.5, least = 0.2, spacing = 
       if (a === b) continue;
       const tb = poseOf.get(tubes[b]);
       if (tubes[a].owner && tubes[a].owner === tubes[b].owner && tubes[a].joined) continue;
-      if (matches(tubes[a].touch, tubes[b].name) || matches(tubes[b].touch, tubes[a].name)) continue;
+      if (matches(tubes[a].touch, tubes[b].name) || matches(tubes[b].touch, tubes[a].name))
+        continue;
       const bundled = tubes[a].bundle && tubes[a].bundle === tubes[b].bundle;
       const widestB = widest.get(tubes[b]);
       const envelope = bundled ? 3 : Math.max(3, gapOf(Math.min(widest.get(tubes[a]), widestB)));
       if (!overlaps(boundsOf(ta), boundsOf(tb), envelope)) continue;
       for (const sample of samples) {
         const envelope = bundled ? 3 : Math.max(3, gapOf(Math.min(sample.r, widestB)));
-        if (!overlaps({ min: sample.p, max: sample.p }, boundsOf(tb), sample.r + envelope)) continue;
-        const clearance = sample.edge >= sample.r ? sdf(tb, sample.p) - sample.r : Math.min(...ringAround(sample, sample.r).map((q) => sdf(tb, q)));
+        if (!overlaps({ min: sample.p, max: sample.p }, boundsOf(tb), sample.r + envelope))
+          continue;
+        const clearance =
+          sample.edge >= sample.r
+            ? sdf(tb, sample.p) - sample.r
+            : Math.min(...ringAround(sample, sample.r).map((q) => sdf(tb, q)));
         const r = centreline(tb, sample.p).r;
         const gap = bundled ? touching : gapOf(Math.min(sample.r, r));
         if (clearance >= gap) continue;
@@ -977,12 +1395,24 @@ export function clearances(tubes, solids, { ratio = 0.5, least = 0.2, spacing = 
     });
 }
 
-export function terminals(tubes, solids, { tolerance = 0.15, mounts = mountsOf(tubes, solids, { tolerance }) } = {}) {
+export function terminals(
+  tubes,
+  solids,
+  { tolerance = 0.15, mounts = mountsOf(tubes, solids, { tolerance }) } = {},
+) {
   const out = [];
   for (const tube of tubes) {
     (mounts.get(tube) ?? []).forEach((mount, index) => {
       if (!tube.tips || !tube.tips[index] || (mount && mount.landed)) return;
-      out.push({ tube: tube.name, end: index ? "end" : "start", at: tube.tips[index], d: mount ? mount.d : Infinity, high: mount ? mount.high : Infinity, low: mount ? mount.low : -Infinity, nearest: mount ? mount.shape.name : "nothing" });
+      out.push({
+        tube: tube.name,
+        end: index ? "end" : "start",
+        at: tube.tips[index],
+        d: mount ? mount.d : Infinity,
+        high: mount ? mount.high : Infinity,
+        low: mount ? mount.low : -Infinity,
+        nearest: mount ? mount.shape.name : "nothing",
+      });
     });
   }
   return out;
@@ -1000,7 +1430,14 @@ export function looseEnds(tubes, solids, { state = 1, tolerance = 0.15 } = {}) {
         const { min, max } = boundsOf(shape);
         return overlaps({ min: tip, max: tip }, { min, max }, 1) && sdf(shape, tip) <= tolerance;
       });
-      if (!hit) out.push({ tube: tube.name, end: index ? "end" : "start", at: add3(tip, offset), state: labelOf(state), free: Boolean(tube.free && tube.free[index]) });
+      if (!hit)
+        out.push({
+          tube: tube.name,
+          end: index ? "end" : "start",
+          at: add3(tip, offset),
+          state: labelOf(state),
+          free: Boolean(tube.free && tube.free[index]),
+        });
     });
   }
   return out;
@@ -1011,7 +1448,11 @@ function surfaceOf(shape, spacing = 0.6) {
   if (shape.kind === "body") {
     const { F, poly } = shape;
     const u = F.u ?? unit3(Math.abs(F.a[2]) > 0.9 ? [1, 0, 0] : [-F.a[1], F.a[0], 0]);
-    const v = F.v ?? [F.a[1] * u[2] - F.a[2] * u[1], F.a[2] * u[0] - F.a[0] * u[2], F.a[0] * u[1] - F.a[1] * u[0]];
+    const v = F.v ?? [
+      F.a[1] * u[2] - F.a[2] * u[1],
+      F.a[2] * u[0] - F.a[0] * u[2],
+      F.a[0] * u[1] - F.a[1] * u[0],
+    ];
     for (let i = 0; i < poly.length - 1; i++) {
       const [s0, r0] = poly[i];
       const [s1, r1] = poly[i + 1];
@@ -1022,7 +1463,9 @@ function surfaceOf(shape, spacing = 0.6) {
         const around = Math.max(1, Math.min(160, Math.ceil((2 * Math.PI * r) / spacing)));
         for (let k = 0; k < around; k++) {
           const t = (k / around) * 2 * Math.PI;
-          points.push(add3(add3(F.o, mul3(F.a, s)), add3(mul3(u, r * Math.cos(t)), mul3(v, r * Math.sin(t)))));
+          points.push(
+            add3(add3(F.o, mul3(F.a, s)), add3(mul3(u, r * Math.cos(t)), mul3(v, r * Math.sin(t)))),
+          );
         }
       }
     }
@@ -1039,7 +1482,15 @@ function surfaceOf(shape, spacing = 0.6) {
             c[axis] = sign * shape.half[axis];
             c[o1] = -shape.half[o1] + (2 * shape.half[o1] * i) / n1;
             c[o2] = -shape.half[o2] + (2 * shape.half[o2] * j) / n2;
-            points.push(add3(shape.o, add3(add3(mul3(shape.axes[0], c[0]), mul3(shape.axes[1], c[1])), mul3(shape.axes[2], c[2]))));
+            points.push(
+              add3(
+                shape.o,
+                add3(
+                  add3(mul3(shape.axes[0], c[0]), mul3(shape.axes[1], c[1])),
+                  mul3(shape.axes[2], c[2]),
+                ),
+              ),
+            );
           }
       }
   } else if (shape.kind === "prism") {
@@ -1051,14 +1502,25 @@ function surfaceOf(shape, spacing = 0.6) {
       const [x1, y1] = poly[i];
       const steps = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / spacing));
       for (let k = 0; k < steps; k++)
-        for (let row = 0; row <= rows; row++) points.push(at(s0 + ((s1 - s0) * row) / rows, x0 + ((x1 - x0) * k) / steps, y0 + ((y1 - y0) * k) / steps));
+        for (let row = 0; row <= rows; row++)
+          points.push(
+            at(
+              s0 + ((s1 - s0) * row) / rows,
+              x0 + ((x1 - x0) * k) / steps,
+              y0 + ((y1 - y0) * k) / steps,
+            ),
+          );
     }
     const xs = poly.map(([x]) => x);
     const ys = poly.map(([, y]) => y);
     for (let x = Math.min(...xs); x <= Math.max(...xs); x += spacing)
-      for (let y = Math.min(...ys); y <= Math.max(...ys); y += spacing) if (polygonDistance(poly, x, y) < 0) points.push(at(s0, x, y), at(s1, x, y));
+      for (let y = Math.min(...ys); y <= Math.max(...ys); y += spacing)
+        if (polygonDistance(poly, x, y) < 0) points.push(at(s0, x, y), at(s1, x, y));
   } else if (shape.kind === "ball") {
-    const count = Math.max(24, Math.min(600, Math.ceil((4 * Math.PI * shape.r * shape.r) / (spacing * spacing))));
+    const count = Math.max(
+      24,
+      Math.min(600, Math.ceil((4 * Math.PI * shape.r * shape.r) / (spacing * spacing))),
+    );
     for (let i = 0; i < count; i++) {
       const z = 1 - (2 * (i + 0.5)) / count;
       const ring = Math.sqrt(1 - z * z);
@@ -1066,13 +1528,23 @@ function surfaceOf(shape, spacing = 0.6) {
       points.push(add3(shape.o, mul3([ring * Math.cos(t), ring * Math.sin(t), z], shape.r)));
     }
     if (shape.flats) {
-      const kept = points.filter((p) => shape.flats.every(([nx, ny, nz, cut]) => nx * (p[0] - shape.o[0]) + ny * (p[1] - shape.o[1]) + nz * (p[2] - shape.o[2]) <= cut + 1e-9));
+      const kept = points.filter((p) =>
+        shape.flats.every(
+          ([nx, ny, nz, cut]) =>
+            nx * (p[0] - shape.o[0]) + ny * (p[1] - shape.o[1]) + nz * (p[2] - shape.o[2]) <=
+            cut + 1e-9,
+        ),
+      );
       points.length = 0;
       points.push(...kept);
       for (const [nx, ny, nz, cut] of shape.flats) {
         const n = [nx, ny, nz];
         const helper = Math.abs(nz) > 0.9 ? [1, 0, 0] : [0, 0, 1];
-        const u = unit3([helper[1] * nz - helper[2] * ny, helper[2] * nx - helper[0] * nz, helper[0] * ny - helper[1] * nx]);
+        const u = unit3([
+          helper[1] * nz - helper[2] * ny,
+          helper[2] * nx - helper[0] * nz,
+          helper[0] * ny - helper[1] * nx,
+        ]);
         const v = [ny * u[2] - nz * u[1], nz * u[0] - nx * u[2], nx * u[1] - ny * u[0]];
         const rho = Math.sqrt(Math.max(0, shape.r * shape.r - cut * cut));
         const centre = add3(shape.o, mul3(n, cut));
@@ -1080,7 +1552,14 @@ function surfaceOf(shape, spacing = 0.6) {
           for (let y = -rho; y <= rho; y += spacing) {
             if (x * x + y * y > rho * rho) continue;
             const p = add3(centre, add3(mul3(u, x), mul3(v, y)));
-            if (shape.flats.every(([mx, my, mz, other]) => mx * (p[0] - shape.o[0]) + my * (p[1] - shape.o[1]) + mz * (p[2] - shape.o[2]) <= other + 1e-6)) points.push(p);
+            if (
+              shape.flats.every(
+                ([mx, my, mz, other]) =>
+                  mx * (p[0] - shape.o[0]) + my * (p[1] - shape.o[1]) + mz * (p[2] - shape.o[2]) <=
+                  other + 1e-6,
+              )
+            )
+              points.push(p);
           }
       }
     }
@@ -1090,7 +1569,12 @@ function surfaceOf(shape, spacing = 0.6) {
   return shape.cut ? points.filter((p) => cutDistance(shape, p) >= -1e-3) : points;
 }
 
-const seatedOn = (shape, host) => Boolean(shape.seated && shape.cut && [shape.cut].flat().some((cut) => cut === host || (cut.name && cut.name === host.name)));
+const seatedOn = (shape, host) =>
+  Boolean(
+    shape.seated &&
+    shape.cut &&
+    [shape.cut].flat().some((cut) => cut === host || (cut.name && cut.name === host.name)),
+  );
 
 export const grounded = (shape) => Boolean(shape.ground) || (shape.name ?? "").startsWith("stand.");
 
@@ -1104,13 +1588,23 @@ export function supports(solids, tubes, { ground = grounded, touch = 0.15, sunk 
     for (let b = a + 1; b < nodes.length; b++) {
       const bb = boundsOf(nodes[b]);
       if (!overlaps(ba, bb, touch + 0.05)) continue;
-      const same = (nodes[a].owner && (nodes[a].owner === nodes[b].owner || nodes[a].owner === nodes[b].name)) || (nodes[b].owner && nodes[b].owner === nodes[a].name);
+      const same =
+        (nodes[a].owner &&
+          (nodes[a].owner === nodes[b].owner || nodes[a].owner === nodes[b].name)) ||
+        (nodes[b].owner && nodes[b].owner === nodes[a].name);
       let gap = BIG;
       for (const p of surfaces[a]) gap = Math.min(gap, sdf(nodes[b], p));
       for (const p of surfaces[b]) gap = Math.min(gap, sdf(nodes[a], p));
-      if (gap <= touch) links[a].push(b), links[b].push(a);
+      if (gap <= touch) (links[a].push(b), links[b].push(a));
       const solidPair = nodes[a].kind !== "tube" && nodes[b].kind !== "tube";
-      if (solidPair && !same && gap < -sunk && !seatedOn(nodes[a], nodes[b]) && !seatedOn(nodes[b], nodes[a])) deep.push({ a: nodes[a].name, b: nodes[b].name, depth: -gap });
+      if (
+        solidPair &&
+        !same &&
+        gap < -sunk &&
+        !seatedOn(nodes[a], nodes[b]) &&
+        !seatedOn(nodes[b], nodes[a])
+      )
+        deep.push({ a: nodes[a].name, b: nodes[b].name, depth: -gap });
     }
   }
   const held = new Uint8Array(nodes.length);
@@ -1118,19 +1612,41 @@ export function supports(solids, tubes, { ground = grounded, touch = 0.15, sunk 
   nodes.forEach((shape, index) => ground(shape) && ((held[index] = 1), queue.push(index)));
   while (queue.length) {
     const index = queue.pop();
-    for (const next of links[index]) if (!held[next]) (held[next] = 1), queue.push(next);
+    for (const next of links[index]) if (!held[next]) ((held[next] = 1), queue.push(next));
   }
-  const loose = nodes.filter((_, index) => !held[index] && nodes[index].kind !== "tube").map((shape) => shape.name);
-  const hanging = nodes.filter((_, index) => !held[index] && nodes[index].kind === "tube").map((shape) => shape.name);
+  const loose = nodes
+    .filter((_, index) => !held[index] && nodes[index].kind !== "tube")
+    .map((shape) => shape.name);
+  const hanging = nodes
+    .filter((_, index) => !held[index] && nodes[index].kind === "tube")
+    .map((shape) => shape.name);
   return { loose, hanging, sunk: deep.sort((x, y) => y.depth - x.depth) };
 }
 
 export function folds(routes, P, { fold = 140, turn = 110, pinch = 2, items = null } = {}) {
   const cam = cameraBasis(P);
   const entries = items ? entriesOf(items, cam) : null;
-  const shown = (name, p) => !entries || frontAt(entries, cam, cam.origin[0] + dot3(p, cam.R) * cam.k, cam.origin[1] + dot3(p, cam.D) * cam.k) === name;
+  const shown = (name, p) =>
+    !entries ||
+    frontAt(
+      entries,
+      cam,
+      cam.origin[0] + dot3(p, cam.R) * cam.k,
+      cam.origin[1] + dot3(p, cam.D) * cam.k,
+    ) === name;
   const flat = (p) => [dot3(p, cam.R) * cam.k, dot3(p, cam.D) * cam.k];
-  const angle = (a, b) => (Math.acos(Math.max(-1, Math.min(1, (a[0] * b[0] + a[1] * b[1]) / (Math.hypot(a[0], a[1]) * Math.hypot(b[0], b[1]) || 1)))) * 180) / Math.PI;
+  const angle = (a, b) =>
+    (Math.acos(
+      Math.max(
+        -1,
+        Math.min(
+          1,
+          (a[0] * b[0] + a[1] * b[1]) / (Math.hypot(a[0], a[1]) * Math.hypot(b[0], b[1]) || 1),
+        ),
+      ),
+    ) *
+      180) /
+    Math.PI;
   const out = [];
   for (const { name, points, r } of routes) {
     const step = Math.max(0.25, r * 0.5);
@@ -1154,14 +1670,22 @@ export function folds(routes, P, { fold = 140, turn = 110, pinch = 2, items = nu
         const bend = angle(a, b);
         const area = Math.abs(a[0] * b[1] - a[1] * b[0]) / 2;
         const radius = area > 1e-9 ? (la * lb * Math.hypot(c[0], c[1])) / (4 * area) : Infinity;
-        if (bend > 90 && radius < pinch * width && (!worst || radius < worst.radius) && shown(name, dense[i])) worst = { name, kind: "pinch", flatTurn: bend, radius, width, at: dense[i], index: i };
+        if (
+          bend > 90 &&
+          radius < pinch * width &&
+          (!worst || radius < worst.radius) &&
+          shown(name, dense[i])
+        )
+          worst = { name, kind: "pinch", flatTurn: bend, radius, width, at: dense[i], index: i };
       }
     }
     if (worst) {
       let toStart = 0;
-      for (let i = 1; i <= worst.index; i++) toStart += Math.hypot(screen[i][0] - screen[i - 1][0], screen[i][1] - screen[i - 1][1]);
+      for (let i = 1; i <= worst.index; i++)
+        toStart += Math.hypot(screen[i][0] - screen[i - 1][0], screen[i][1] - screen[i - 1][1]);
       let toEnd = 0;
-      for (let i = worst.index + 1; i < screen.length; i++) toEnd += Math.hypot(screen[i][0] - screen[i - 1][0], screen[i][1] - screen[i - 1][1]);
+      for (let i = worst.index + 1; i < screen.length; i++)
+        toEnd += Math.hypot(screen[i][0] - screen[i - 1][0], screen[i][1] - screen[i - 1][1]);
       if (Math.min(toStart, toEnd) > 3 * width) out.push(worst);
     }
     for (let i = reach; i < dense.length - reach; i++) {
@@ -1171,7 +1695,9 @@ export function folds(routes, P, { fold = 140, turn = 110, pinch = 2, items = nu
       const flatTurn = angle(a, b);
       const A3 = sub3(dense[i], dense[i - reach]);
       const B3 = sub3(dense[i + reach], dense[i]);
-      const realTurn = (Math.acos(Math.max(-1, Math.min(1, dot3(A3, B3) / (len3(A3) * len3(B3) || 1)))) * 180) / Math.PI;
+      const realTurn =
+        (Math.acos(Math.max(-1, Math.min(1, dot3(A3, B3) / (len3(A3) * len3(B3) || 1)))) * 180) /
+        Math.PI;
       if (flatTurn > fold && realTurn < turn && shown(name, dense[i])) {
         out.push({ name, kind: "fold", flatTurn, realTurn, at: dense[i] });
         i += 2 * reach;
@@ -1199,23 +1725,36 @@ export function linksOf(tubes, mounts) {
       link(tube.owner, host);
       if (!seats.has(host)) seats.set(host, []);
       seats.get(host).push(tube.owner);
-      if (mount.shape.cut) for (const cut of [mount.shape.cut].flat()) link(tube.owner, ownerOf(cut));
+      if (mount.shape.cut)
+        for (const cut of [mount.shape.cut].flat()) link(tube.owner, ownerOf(cut));
     }
   for (const owners of seats.values()) for (const a of owners) for (const b of owners) link(a, b);
   return links;
 }
 
-const entriesOf = (items, cam) => items.flatMap((item) => (item.shapes ?? []).map((shape) => ({ shape, box: screenBox(shape, cam, [0, 0, 0]).map((v, i) => v + (i < 2 ? -1 : 1)), owner: item.route ?? shape.owner ?? item.name, bundle: shape.bundle ?? null, item: item.name })));
+const entriesOf = (items, cam) =>
+  items.flatMap((item) =>
+    (item.shapes ?? []).map((shape) => ({
+      shape,
+      box: screenBox(shape, cam, [0, 0, 0]).map((v, i) => v + (i < 2 ? -1 : 1)),
+      owner: item.route ?? shape.owner ?? item.name,
+      bundle: shape.bundle ?? null,
+      item: item.name,
+    })),
+  );
 
 function frontEntry(entries, cam, x, y) {
-  const c = add3(mul3(cam.R, (x - cam.origin[0]) / cam.k), mul3(cam.D, (y - cam.origin[1]) / cam.k));
+  const c = add3(
+    mul3(cam.R, (x - cam.origin[0]) / cam.k),
+    mul3(cam.D, (y - cam.origin[1]) / cam.k),
+  );
   let best = -BIG;
   let who = null;
   for (const entry of entries) {
     const { shape, box } = entry;
     if (x < box[0] || x > box[2] || y < box[1] || y > box[3]) continue;
     const t = rayDepth(shape, c, cam.V, 0.02, null);
-    if (t !== null && t > best) (best = t), (who = entry);
+    if (t !== null && t > best) ((best = t), (who = entry));
   }
   return who;
 }
@@ -1225,12 +1764,24 @@ function frontAt(entries, cam, x, y) {
   return entry ? entry.owner : null;
 }
 
-const belongs = (entry, name, bundle) => Boolean(entry) && (entry.owner === name || entry.item === name || (bundle && entry.bundle === bundle));
+const belongs = (entry, name, bundle) =>
+  Boolean(entry) &&
+  (entry.owner === name || entry.item === name || (bundle && entry.bundle === bundle));
 
 export function slenderOf(solids, { ratio = 4, least = 0.3 } = {}) {
   const out = [];
   const axisLine = (centre, axis, half, r, shape) => {
-    out.push({ name: shape.owner ?? shape.name, solid: shape.name, owners: new Set([shape.name, shape.owner].filter(Boolean)), points: [add3(centre, mul3(axis, -half)), add3(centre, mul3(axis, half))], r, move: shape.move, ride: shape.ride, piece: shape.piece, rod: true });
+    out.push({
+      name: shape.owner ?? shape.name,
+      solid: shape.name,
+      owners: new Set([shape.name, shape.owner].filter(Boolean)),
+      points: [add3(centre, mul3(axis, -half)), add3(centre, mul3(axis, half))],
+      r,
+      move: shape.move,
+      ride: shape.ride,
+      piece: shape.piece,
+      rod: true,
+    });
   };
   for (const shape of solids) {
     if (!shape || shape.kind === "tube" || shape.kind === "ball" || shape.fitting) continue;
@@ -1239,7 +1790,14 @@ export function slenderOf(solids, { ratio = 4, least = 0.3 } = {}) {
       const s0 = Math.min(...s);
       const s1 = Math.max(...s);
       const r = Math.max(...shape.poly.map(([, value]) => value));
-      if (r >= least && s1 - s0 >= ratio * r) axisLine(add3(shape.F.o, mul3(shape.F.a, (s0 + s1) / 2)), shape.F.a, (s1 - s0) / 2, r, shape);
+      if (r >= least && s1 - s0 >= ratio * r)
+        axisLine(
+          add3(shape.F.o, mul3(shape.F.a, (s0 + s1) / 2)),
+          shape.F.a,
+          (s1 - s0) / 2,
+          r,
+          shape,
+        );
       continue;
     }
     let axes;
@@ -1251,7 +1809,13 @@ export function slenderOf(solids, { ratio = 4, least = 0.3 } = {}) {
       const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
       axes = [shape.F.u, shape.F.v, shape.F.a];
       half = [(x1 - x0) / 2, (y1 - y0) / 2, (shape.s1 - shape.s0) / 2];
-      centre = add3(shape.F.o, add3(add3(mul3(shape.F.u, (x0 + x1) / 2), mul3(shape.F.v, (y0 + y1) / 2)), mul3(shape.F.a, (shape.s0 + shape.s1) / 2)));
+      centre = add3(
+        shape.F.o,
+        add3(
+          add3(mul3(shape.F.u, (x0 + x1) / 2), mul3(shape.F.v, (y0 + y1) / 2)),
+          mul3(shape.F.a, (shape.s0 + shape.s1) / 2),
+        ),
+      );
     } else if (shape.kind === "box") {
       axes = shape.axes;
       half = shape.half;
@@ -1259,27 +1823,59 @@ export function slenderOf(solids, { ratio = 4, least = 0.3 } = {}) {
     } else continue;
     const order = [0, 1, 2].sort((a, b) => half[b] - half[a]);
     const r = half[order[1]];
-    if (r >= least && half[order[0]] >= ratio * r) axisLine(centre, axes[order[0]], half[order[0]], r, shape);
+    if (r >= least && half[order[0]] >= ratio * r)
+      axisLine(centre, axes[order[0]], half[order[0]], r, shape);
   }
   return out;
 }
 
-export function crowding(routes, P, { gap = 1, bend = 30, links = new Map(), items = null, allow = [], state, clear = 2, rods = [] } = {}) {
+export function crowding(
+  routes,
+  P,
+  {
+    gap = 1,
+    bend = 30,
+    links = new Map(),
+    items = null,
+    allow = [],
+    state,
+    clear = 2,
+    rods = [],
+  } = {},
+) {
   const cam = cameraBasis(P);
   const shift = (thing) => (state === undefined ? [0, 0, 0] : offsetOf(thing, state));
-  const entries = items ? entriesOf(items.map((item) => ({ ...item, shapes: (item.shapes ?? []).map((shape) => moved(shape, shift(item))) })), cam) : null;
+  const entries = items
+    ? entriesOf(
+        items.map((item) => ({
+          ...item,
+          shapes: (item.shapes ?? []).map((shape) => moved(shape, shift(item))),
+        })),
+        cam,
+      )
+    : null;
   const bundles = new Map(routes.map((route) => [route.name, route.bundle]));
   const shown = (owner, x, y, rod) => {
     if (!entries) return true;
     const entry = frontEntry(entries, cam, x, y);
-    if (rod) return Boolean(entry) && (entry.shape.name === rod.solid || (!entry.shape.name && entry.item === rod.solid));
+    if (rod)
+      return (
+        Boolean(entry) &&
+        (entry.shape.name === rod.solid || (!entry.shape.name && entry.item === rod.solid))
+      );
     return belongs(entry, owner, bundles.get(owner));
   };
-  const flat = (p) => [cam.origin[0] + dot3(p, cam.R) * cam.k, cam.origin[1] + dot3(p, cam.D) * cam.k];
+  const flat = (p) => [
+    cam.origin[0] + dot3(p, cam.R) * cam.k,
+    cam.origin[1] + dot3(p, cam.D) * cam.k,
+  ];
   const lines = [...routes, ...rods].map((route) => {
     const step = Math.max(0.25, route.r * 0.5);
     const offset = shift(route);
-    const dense = resample(route.points.map((p) => add3(p, offset)), step);
+    const dense = resample(
+      route.points.map((p) => add3(p, offset)),
+      step,
+    );
     return { ...route, step, dense, screen: dense.map(flat), width: route.r * cam.k };
   });
   const marksOf = (line) => {
@@ -1293,7 +1889,9 @@ export function crowding(routes, P, { gap = 1, bend = 30, links = new Map(), ite
       }
       const A = sub3(line.dense[i], line.dense[i - reach]);
       const B = sub3(line.dense[i + reach], line.dense[i]);
-      const turn = (Math.acos(Math.max(-1, Math.min(1, dot3(A, B) / (len3(A) * len3(B) || 1)))) * 180) / Math.PI;
+      const turn =
+        (Math.acos(Math.max(-1, Math.min(1, dot3(A, B) / (len3(A) * len3(B) || 1)))) * 180) /
+        Math.PI;
       if (turn > bend) out.push({ i, where: "bend" });
     }
     return out;
@@ -1303,9 +1901,22 @@ export function crowding(routes, P, { gap = 1, bend = 30, links = new Map(), ite
     if (a.rod) continue;
     const marks = marksOf(a);
     for (const b of lines) {
-      if (a === b || (a.bundle && a.bundle === b.bundle) || links.get(a.name)?.has(b.name)) continue;
-      if (b.rod && [...b.owners].some((name) => name === a.name || links.get(a.name)?.has(name))) continue;
-      if (allow.some(([x, y]) => [b.name, b.solid].filter(Boolean).some((name) => (matches([x], a.name) && matches([y], name)) || (matches([y], a.name) && matches([x], name))))) continue;
+      if (a === b || (a.bundle && a.bundle === b.bundle) || links.get(a.name)?.has(b.name))
+        continue;
+      if (b.rod && [...b.owners].some((name) => name === a.name || links.get(a.name)?.has(name)))
+        continue;
+      if (
+        allow.some(([x, y]) =>
+          [b.name, b.solid]
+            .filter(Boolean)
+            .some(
+              (name) =>
+                (matches([x], a.name) && matches([y], name)) ||
+                (matches([y], a.name) && matches([x], name)),
+            ),
+        )
+      )
+        continue;
       for (const { i, where } of marks) {
         const [x, y] = a.screen[i];
         let best = { d: BIG, j: -1 };
@@ -1318,11 +1929,17 @@ export function crowding(routes, P, { gap = 1, bend = 30, links = new Map(), ite
         if (where !== "bend" && touch <= -2 * Math.min(a.width, b.width)) {
           const tip = a.screen[where === "start" ? 0 : a.screen.length - 1];
           let clearTip = BIG;
-          for (const q of b.screen) clearTip = Math.min(clearTip, Math.hypot(q[0] - tip[0], q[1] - tip[1]));
+          for (const q of b.screen)
+            clearTip = Math.min(clearTip, Math.hypot(q[0] - tip[0], q[1] - tip[1]));
           const reachB = Math.max(2, Math.round((2 * b.r) / b.step));
           const j0 = Math.max(0, best.j - reachB);
           const j1 = Math.min(b.dense.length - 1, best.j + reachB);
-          const straight = j1 - j0 >= 2 && dot3(unit3(sub3(b.dense[best.j], b.dense[j0])), unit3(sub3(b.dense[j1], b.dense[best.j]))) > Math.cos((bend * Math.PI) / 180);
+          const straight =
+            j1 - j0 >= 2 &&
+            dot3(
+              unit3(sub3(b.dense[best.j], b.dense[j0])),
+              unit3(sub3(b.dense[j1], b.dense[best.j])),
+            ) > Math.cos((bend * Math.PI) / 180);
           if (straight && clearTip > b.width + a.width + 1) continue;
         }
         const [bx, by] = b.screen[best.j];
@@ -1331,25 +1948,54 @@ export function crowding(routes, P, { gap = 1, bend = 30, links = new Map(), ite
         const inB = Math.max(0.2, b.width - 0.35);
         if (!shown(a.name, x + u[0] * inA, y + u[1] * inA)) continue;
         if (b.rod) {
-          if (!shown(b.name, bx - u[0] * inB, by - u[1] * inB, b) && !shown(b.name, bx + u[0] * inB, by + u[1] * inB, b)) continue;
+          if (
+            !shown(b.name, bx - u[0] * inB, by - u[1] * inB, b) &&
+            !shown(b.name, bx + u[0] * inB, by + u[1] * inB, b)
+          )
+            continue;
         } else if (!shown(b.name, bx - u[0] * inB, by - u[1] * inB)) continue;
         const depth = Math.abs(dot3(sub3(a.dense[i], b.dense[best.j]), cam.V));
         const need = 2 * (a.r + b.r);
         const id = [a.name, b.name].sort().join("|");
         const prior = found.get(id);
-        if (!prior || Math.abs(touch) < Math.abs(prior.gap)) found.set(id, { a: a.name, b: b.rod ? `${b.solid} (rod)` : b.name, where, gap: touch, depth, need, screen: [x, y], at: a.dense[i], state: state === undefined ? "" : labelOf(state) });
+        if (!prior || Math.abs(touch) < Math.abs(prior.gap))
+          found.set(id, {
+            a: a.name,
+            b: b.rod ? `${b.solid} (rod)` : b.name,
+            where,
+            gap: touch,
+            depth,
+            need,
+            screen: [x, y],
+            at: a.dense[i],
+            state: state === undefined ? "" : labelOf(state),
+          });
       }
     }
   }
   if (entries)
-    for (const fitting of entries.filter((entry) => entry.shape.fitting && entry.shape.kind === "body")) {
+    for (const fitting of entries.filter(
+      (entry) => entry.shape.fitting && entry.shape.kind === "body",
+    )) {
       const { shape } = fitting;
       const reach = Math.max(...shape.poly.map(([, r]) => r));
       const [x, y] = flat(shape.F.o);
       for (const b of lines) {
         if (b.rod) continue;
-        if ((fitting.bundle && b.bundle === fitting.bundle) || b.name === fitting.owner || links.get(fitting.owner)?.has(b.name)) continue;
-        if (allow.some(([p, q]) => (matches([p], fitting.item) && matches([q], b.name)) || (matches([q], fitting.item) && matches([p], b.name)))) continue;
+        if (
+          (fitting.bundle && b.bundle === fitting.bundle) ||
+          b.name === fitting.owner ||
+          links.get(fitting.owner)?.has(b.name)
+        )
+          continue;
+        if (
+          allow.some(
+            ([p, q]) =>
+              (matches([p], fitting.item) && matches([q], b.name)) ||
+              (matches([q], fitting.item) && matches([p], b.name)),
+          )
+        )
+          continue;
         let best = { d: BIG, j: -1 };
         for (let j = 0; j < b.screen.length; j++) {
           const d = Math.hypot(b.screen[j][0] - x, b.screen[j][1] - y);
@@ -1361,18 +2007,38 @@ export function crowding(routes, P, { gap = 1, bend = 30, links = new Map(), ite
         if (!(front === fitting || belongs(front, fitting.owner, fitting.bundle))) continue;
         const id = [fitting.item, b.name].sort().join("|");
         const prior = found.get(id);
-        if (!prior || Math.abs(touch) < Math.abs(prior.gap)) found.set(id, { a: fitting.item, b: b.name, where: "fitting", gap: touch, depth: Math.abs(dot3(sub3(shape.F.o, b.dense[best.j]), cam.V)), need: 0, screen: [x, y], at: shape.F.o, state: state === undefined ? "" : labelOf(state) });
+        if (!prior || Math.abs(touch) < Math.abs(prior.gap))
+          found.set(id, {
+            a: fitting.item,
+            b: b.name,
+            where: "fitting",
+            gap: touch,
+            depth: Math.abs(dot3(sub3(shape.F.o, b.dense[best.j]), cam.V)),
+            need: 0,
+            screen: [x, y],
+            at: shape.F.o,
+            state: state === undefined ? "" : labelOf(state),
+          });
       }
     }
   return [...found.values()].sort((x, y) => Math.abs(x.gap) - Math.abs(y.gap));
 }
 
-const multiply = (m, n) => [m[0] * n[0] + m[2] * n[1], m[1] * n[0] + m[3] * n[1], m[0] * n[2] + m[2] * n[3], m[1] * n[2] + m[3] * n[3], m[0] * n[4] + m[2] * n[5] + m[4], m[1] * n[4] + m[3] * n[5] + m[5]];
+const multiply = (m, n) => [
+  m[0] * n[0] + m[2] * n[1],
+  m[1] * n[0] + m[3] * n[1],
+  m[0] * n[2] + m[2] * n[3],
+  m[1] * n[2] + m[3] * n[3],
+  m[0] * n[4] + m[2] * n[5] + m[4],
+  m[1] * n[4] + m[3] * n[5] + m[5],
+];
 
 function matrixOf(text) {
   let m = [1, 0, 0, 1, 0, 0];
   if (!text) return m;
-  for (const [, kind, args] of text.matchAll(/(matrix|translate|scale|rotate|skewX|skewY)\s*\(([^)]*)\)/g)) {
+  for (const [, kind, args] of text.matchAll(
+    /(matrix|translate|scale|rotate|skewX|skewY)\s*\(([^)]*)\)/g,
+  )) {
     const v = (args.match(/-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi) ?? []).map(Number);
     let n = [1, 0, 0, 1, 0, 0];
     if (kind === "matrix" && v.length === 6) n = v;
@@ -1381,10 +2047,12 @@ function matrixOf(text) {
     else if (kind === "rotate") {
       const a = ((v[0] ?? 0) * Math.PI) / 180;
       const [cx, cy] = [v[1] ?? 0, v[2] ?? 0];
-      n = multiply(multiply([1, 0, 0, 1, cx, cy], [Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0]), [1, 0, 0, 1, -cx, -cy]);
-    }
-    else if (kind === "skewX") n = [1, 0, Math.tan((v[0] ?? 0) * Math.PI / 180), 1, 0, 0];
-    else if (kind === "skewY") n = [1, Math.tan((v[0] ?? 0) * Math.PI / 180), 0, 1, 0, 0];
+      n = multiply(
+        multiply([1, 0, 0, 1, cx, cy], [Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0]),
+        [1, 0, 0, 1, -cx, -cy],
+      );
+    } else if (kind === "skewX") n = [1, 0, Math.tan(((v[0] ?? 0) * Math.PI) / 180), 1, 0, 0];
+    else if (kind === "skewY") n = [1, Math.tan(((v[0] ?? 0) * Math.PI) / 180), 0, 1, 0, 0];
     m = multiply(m, n);
   }
   return m;
@@ -1393,7 +2061,9 @@ function matrixOf(text) {
 const NUMBER = /-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi;
 
 const attributeOf = (attrs, name) => {
-  const hit = [...attrs.matchAll(/(?:^|\s)([^\s=/>]+)\s*=\s*(["'])([\s\S]*?)\2/g)].find((match) => match[1] === name);
+  const hit = [...attrs.matchAll(/(?:^|\s)([^\s=/>]+)\s*=\s*(["'])([\s\S]*?)\2/g)].find(
+    (match) => match[1] === name,
+  );
   if (!hit) return null;
   const named = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
   return hit[3].replace(/&(#x[0-9a-fA-F]+|#\d+|amp|lt|gt|quot|apos);/g, (all, code) => {
@@ -1413,7 +2083,9 @@ function pointsOfShape(tag, attrs) {
     let y = 0;
     let sx = 0;
     let sy = 0;
-    for (const [, command, args] of d.matchAll(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]*)/g)) {
+    for (const [, command, args] of d.matchAll(
+      /([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]*)/g,
+    )) {
       const v = (args.match(NUMBER) ?? []).map(Number);
       const rel = command === command.toLowerCase();
       const C = command.toUpperCase();
@@ -1424,7 +2096,9 @@ function pointsOfShape(tag, attrs) {
       };
       if (C === "H") for (const value of v) [x] = take([value + (rel ? x : 0), y]);
       else if (C === "V") for (const value of v) [, y] = take([x, value + (rel ? y : 0)]);
-      else if (C === "A") for (let i = 0; i + 6 < v.length; i += 7) [x, y] = take([v[i + 5] + (rel ? x : 0), v[i + 6] + (rel ? y : 0)]);
+      else if (C === "A")
+        for (let i = 0; i + 6 < v.length; i += 7)
+          [x, y] = take([v[i + 5] + (rel ? x : 0), v[i + 6] + (rel ? y : 0)]);
       else if (C === "Z") {
         x = sx;
         y = sy;
@@ -1445,10 +2119,18 @@ function pointsOfShape(tag, attrs) {
   if (tag === "circle" || tag === "ellipse") {
     const r = Number(get("r") ?? get("rx") ?? 0);
     const ry = Number(get("r") ?? get("ry") ?? 0);
-    return [[num("cx") - r, num("cy") - ry], [num("cx") + r, num("cy") + ry]];
+    return [
+      [num("cx") - r, num("cy") - ry],
+      [num("cx") + r, num("cy") + ry],
+    ];
   }
-  if (tag === "line") return [[num("x1"), num("y1")], [num("x2"), num("y2")]];
-  if (tag === "rect") return cornersOfBox([num("x"), num("y"), num("x") + num("width"), num("y") + num("height")]);
+  if (tag === "line")
+    return [
+      [num("x1"), num("y1")],
+      [num("x2"), num("y2")],
+    ];
+  if (tag === "rect")
+    return cornersOfBox([num("x"), num("y"), num("x") + num("width"), num("y") + num("height")]);
   if (tag === "polyline" || tag === "polygon") {
     const v = (get("points") ?? "").match(NUMBER)?.map(Number) ?? [];
     const out = [];
@@ -1463,11 +2145,18 @@ const boxOfPoints = (points, m) => {
   for (const [x, y] of points) {
     const px = m[0] * x + m[2] * y + m[4];
     const py = m[1] * x + m[3] * y + m[5];
-    box = box ? [Math.min(box[0], px), Math.min(box[1], py), Math.max(box[2], px), Math.max(box[3], py)] : [px, py, px, py];
+    box = box
+      ? [Math.min(box[0], px), Math.min(box[1], py), Math.max(box[2], px), Math.max(box[3], py)]
+      : [px, py, px, py];
   }
   return box;
 };
-const cornersOfBox = ([x0, y0, x1, y1]) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+const cornersOfBox = ([x0, y0, x1, y1]) => [
+  [x0, y0],
+  [x1, y0],
+  [x1, y1],
+  [x0, y1],
+];
 const boxOfShape = (tag, attrs, m) => {
   if (tag !== "circle" && tag !== "ellipse") return boxOfPoints(pointsOfShape(tag, attrs), m);
   const num = (name) => Number(attributeOf(attrs, name) ?? 0);
@@ -1479,10 +2168,20 @@ const boxOfShape = (tag, attrs, m) => {
   const dy = Math.hypot(m[1] * rx, m[3] * ry);
   return [x - dx, y - dy, x + dx, y + dy];
 };
-const unionBox = (a, b) => (!a ? b : !b ? a : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])]);
+const unionBox = (a, b) =>
+  !a
+    ? b
+    : !b
+      ? a
+      : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
 const meetBox = (a, b) => {
   if (!a || !b) return a ?? null;
-  const box = [Math.max(a[0], b[0]), Math.max(a[1], b[1]), Math.min(a[2], b[2]), Math.min(a[3], b[3])];
+  const box = [
+    Math.max(a[0], b[0]),
+    Math.max(a[1], b[1]),
+    Math.min(a[2], b[2]),
+    Math.min(a[3], b[3]),
+  ];
   return box[0] <= box[2] && box[1] <= box[3] ? box : null;
 };
 const areaOf = (box) => (box ? Math.max(0, box[2] - box[0]) * Math.max(0, box[3] - box[1]) : 0);
@@ -1503,7 +2202,13 @@ export function markupBox(svg) {
         clipId = null;
         continue;
       }
-      clips.set(clipId, unionBox(clips.get(clipId), boxOfShape(tag, attrs, matrixOf(attributeOf(attrs, "transform")))));
+      clips.set(
+        clipId,
+        unionBox(
+          clips.get(clipId),
+          boxOfShape(tag, attrs, matrixOf(attributeOf(attrs, "transform"))),
+        ),
+      );
     }
   }
   const stack = [{ m: [1, 0, 0, 1, 0, 0], clip: null, skip: false }];
@@ -1518,8 +2223,28 @@ export function markupBox(svg) {
     const ref = ((attributeOf(attrs, "clip-path") ?? "").match(/url\(#([^)]*)\)/) ?? [])[1];
     const own = ref && clips.get(ref) ? boxOfPoints(cornersOfBox(clips.get(ref)), m) : null;
     const clip = own ? meetBox(top.clip ?? own, own) : top.clip;
-    const empty = ref && clips.has(ref) && (!own || areaOf(own) === 0 || (top.clip && (!clip || areaOf(clip) === 0)));
-    const frame = { m, clip, skip: Boolean(empty) || top.skip || ["defs", "clipPath", "mask", "linearGradient", "radialGradient", "pattern", "text", "title"].includes(tag) || (attributeOf(attrs, "class") ?? "").includes("iso-halo") };
+    const empty =
+      ref &&
+      clips.has(ref) &&
+      (!own || areaOf(own) === 0 || (top.clip && (!clip || areaOf(clip) === 0)));
+    const frame = {
+      m,
+      clip,
+      skip:
+        Boolean(empty) ||
+        top.skip ||
+        [
+          "defs",
+          "clipPath",
+          "mask",
+          "linearGradient",
+          "radialGradient",
+          "pattern",
+          "text",
+          "title",
+        ].includes(tag) ||
+        (attributeOf(attrs, "class") ?? "").includes("iso-halo"),
+    };
     if (!frame.skip) {
       const shape = boxOfShape(tag, attrs, m);
       if (shape) box = unionBox(box, frame.clip ? meetBox(shape, frame.clip) : shape);
@@ -1530,7 +2255,10 @@ export function markupBox(svg) {
 }
 
 export function footprintOf(shape, cam) {
-  const flat = (p) => [cam.origin[0] + dot3(p, cam.R) * cam.k, cam.origin[1] + dot3(p, cam.D) * cam.k];
+  const flat = (p) => [
+    cam.origin[0] + dot3(p, cam.R) * cam.k,
+    cam.origin[1] + dot3(p, cam.D) * cam.k,
+  ];
   if (shape.kind === "body") {
     const { F } = shape;
     const points = [];
@@ -1541,7 +2269,14 @@ export function footprintOf(shape, cam) {
       }
       for (let i = 0; i < 16; i++) {
         const a = (i / 16) * Math.PI * 2;
-        points.push(flat(add3(add3(F.o, mul3(F.a, s)), add3(mul3(F.u, r * Math.cos(a)), mul3(F.v, r * Math.sin(a))))));
+        points.push(
+          flat(
+            add3(
+              add3(F.o, mul3(F.a, s)),
+              add3(mul3(F.u, r * Math.cos(a)), mul3(F.v, r * Math.sin(a))),
+            ),
+          ),
+        );
       }
     }
     return boxOfPoints(points, [1, 0, 0, 1, 0, 0]);
@@ -1549,7 +2284,9 @@ export function footprintOf(shape, cam) {
   if (shape.kind === "prism") {
     const { F } = shape;
     const points = [];
-    for (const s of [shape.s0, shape.s1]) for (const [x, y] of shape.poly) points.push(flat(add3(add3(F.o, mul3(F.a, s)), add3(mul3(F.u, x), mul3(F.v, y)))));
+    for (const s of [shape.s0, shape.s1])
+      for (const [x, y] of shape.poly)
+        points.push(flat(add3(add3(F.o, mul3(F.a, s)), add3(mul3(F.u, x), mul3(F.v, y)))));
     return boxOfPoints(points, [1, 0, 0, 1, 0, 0]);
   }
   const [x0, y0, x1, y1] = screenBox(shape, cam, [0, 0, 0]);
@@ -1560,7 +2297,13 @@ export function coverage(items, P, { least = 0.6, pad = 1, allow = [] } = {}) {
   const cam = cameraBasis(P);
   const out = [];
   for (const item of items) {
-    if (typeof item.svg !== "string" || !item.shapes || !item.shapes.length || matches(allow, item.name)) continue;
+    if (
+      typeof item.svg !== "string" ||
+      !item.shapes ||
+      !item.shapes.length ||
+      matches(allow, item.name)
+    )
+      continue;
     const drawn = markupBox(item.svg);
     if (!drawn) continue;
     const grow = (box) => [box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad];
@@ -1574,10 +2317,14 @@ export function coverage(items, P, { least = 0.6, pad = 1, allow = [] } = {}) {
 export function selfOverlaps(items, P, { entries: given = null, fold = 0.25, least = 0.5 } = {}) {
   const cam = cameraBasis(P);
   const entries = given ?? entriesOf(items, cam);
-  const flat = (p) => [cam.origin[0] + dot3(p, cam.R) * cam.k, cam.origin[1] + dot3(p, cam.D) * cam.k];
+  const flat = (p) => [
+    cam.origin[0] + dot3(p, cam.R) * cam.k,
+    cam.origin[1] + dot3(p, cam.D) * cam.k,
+  ];
   const out = [];
   for (const item of items) {
-    if (!item.route || !item.shapes || !item.shapes.length || item.shapes[0].kind !== "tube") continue;
+    if (!item.route || !item.shapes || !item.shapes.length || item.shapes[0].kind !== "tube")
+      continue;
     const shape = item.shapes[0];
     const r = shape.radii.reduce((sum, value) => sum + value, 0) / shape.radii.length;
     const dense = resample(shape.points, Math.max(0.1, r * 0.2));
@@ -1594,7 +2341,10 @@ export function selfOverlaps(items, P, { entries: given = null, fold = 0.25, lea
     });
     let worst = null;
     for (const side of [1, -1]) {
-      const edge = screen.map((p, i) => [p[0] + side * normals[i][0] * width, p[1] + side * normals[i][1] * width]);
+      const edge = screen.map((p, i) => [
+        p[0] + side * normals[i][0] * width,
+        p[1] + side * normals[i][1] * width,
+      ]);
       for (let i = span; i < n - span - 1; i++) {
         const along = [screen[i + 1][0] - screen[i][0], screen[i + 1][1] - screen[i][1]];
         const step = [edge[i + 1][0] - edge[i][0], edge[i + 1][1] - edge[i][1]];
@@ -1606,9 +2356,18 @@ export function selfOverlaps(items, P, { entries: given = null, fold = 0.25, lea
         const y = (screen[i][1] + screen[i + 1][1]) / 2;
         const front = frontEntry(entries, cam, x, y);
         if (front && front.owner !== item.route && front.item !== item.name) continue;
-        const radius = Math.abs(forward / length - 1) > 1e-6 ? width / Math.abs(1 - forward / length) : Infinity;
+        const radius =
+          Math.abs(forward / length - 1) > 1e-6 ? width / Math.abs(1 - forward / length) : Infinity;
         if (width - radius < least) continue;
-        if (!worst || radius < worst.radius) worst = { name: item.name, route: item.route, radius, width, at: dense[i], screen: [x, y] };
+        if (!worst || radius < worst.radius)
+          worst = {
+            name: item.name,
+            route: item.route,
+            radius,
+            width,
+            at: dense[i],
+            screen: [x, y],
+          };
       }
     }
     if (worst) out.push(worst);
@@ -1618,17 +2377,19 @@ export function selfOverlaps(items, P, { entries: given = null, fold = 0.25, lea
 
 export function solidClearances(solids, { state, sunk = 0.5, spacing = 0.6, cell = 4 } = {}) {
   const stretched = new Set();
-  const list = solids.filter((shape) => shape.kind !== "tube").map((shape) => {
-    if (!(shape.slide && state !== undefined && shape.move)) return shape;
-    const next = { ...moved(shape, offsetOf(shape, state)), move: undefined };
-    if (next.slide.to !== shape.slide.to) stretched.add(next);
-    return next;
-  });
+  const list = solids
+    .filter((shape) => shape.kind !== "tube")
+    .map((shape) => {
+      if (!(shape.slide && state !== undefined && shape.move)) return shape;
+      const next = { ...moved(shape, offsetOf(shape, state)), move: undefined };
+      if (next.slide.to !== shape.slide.to) stretched.add(next);
+      return next;
+    });
   if (!solidClearances.cache) solidClearances.cache = new WeakMap();
   const cache = solidClearances.cache;
   const gridOf = (shape) => {
     let samples = cache.get(shape);
-    if (!samples) cache.set(shape, samples = new Map());
+    if (!samples) cache.set(shape, (samples = new Map()));
     const key = `${spacing}:${cell}`;
     let grid = samples.get(key);
     if (grid) return grid;
@@ -1647,14 +2408,18 @@ export function solidClearances(solids, { state, sunk = 0.5, spacing = 0.6, cell
     const hi = box.max.map((v) => Math.floor(v / cell));
     const out = [];
     if ((hi[0] - lo[0] + 1) * (hi[1] - lo[1] + 1) * (hi[2] - lo[2] + 1) > grid.size) {
-      for (const points of grid.values()) for (const p of points) if (p.every((v, i) => v >= box.min[i] && v <= box.max[i])) out.push(p);
+      for (const points of grid.values())
+        for (const p of points)
+          if (p.every((v, i) => v >= box.min[i] && v <= box.max[i])) out.push(p);
       return out;
     }
     for (let x = lo[0]; x <= hi[0]; x++)
       for (let y = lo[1]; y <= hi[1]; y++)
         for (let z = lo[2]; z <= hi[2]; z++) {
           const points = grid.get(`${x},${y},${z}`);
-          if (points) for (const p of points) if (p.every((v, i) => v >= box.min[i] && v <= box.max[i])) out.push(p);
+          if (points)
+            for (const p of points)
+              if (p.every((v, i) => v >= box.min[i] && v <= box.max[i])) out.push(p);
         }
     return out;
   };
@@ -1664,8 +2429,16 @@ export function solidClearances(solids, { state, sunk = 0.5, spacing = 0.6, cell
   for (let a = 0; a < list.length; a++)
     for (let b = a + 1; b < list.length; b++) {
       const rel = sub3(offsets[a], offsets[b]);
-      if (Math.abs(rel[0]) + Math.abs(rel[1]) + Math.abs(rel[2]) < 1e-6 && !stretched.has(list[a]) && !stretched.has(list[b])) continue;
-      const box = { min: [0, 1, 2].map((i) => Math.max(bounds[a].min[i] + rel[i], bounds[b].min[i])), max: [0, 1, 2].map((i) => Math.min(bounds[a].max[i] + rel[i], bounds[b].max[i])) };
+      if (
+        Math.abs(rel[0]) + Math.abs(rel[1]) + Math.abs(rel[2]) < 1e-6 &&
+        !stretched.has(list[a]) &&
+        !stretched.has(list[b])
+      )
+        continue;
+      const box = {
+        min: [0, 1, 2].map((i) => Math.max(bounds[a].min[i] + rel[i], bounds[b].min[i])),
+        max: [0, 1, 2].map((i) => Math.min(bounds[a].max[i] + rel[i], bounds[b].max[i])),
+      };
       if (box.min.some((v, i) => v > box.max[i] - sunk)) continue;
       if (seatedOn(list[a], list[b]) || seatedOn(list[b], list[a])) continue;
       let worst = -sunk;
@@ -1673,13 +2446,26 @@ export function solidClearances(solids, { state, sunk = 0.5, spacing = 0.6, cell
       const local = { min: sub3(box.min, rel), max: sub3(box.max, rel) };
       for (const p of pointsIn(list[a], local)) {
         const d = sdf(list[b], add3(p, rel));
-        if (d < worst) (worst = d), (at = add3(p, offsets[a]));
+        if (d < worst) ((worst = d), (at = add3(p, offsets[a])));
       }
       for (const p of pointsIn(list[b], box)) {
         const d = sdf(list[a], sub3(p, rel));
-        if (d < worst) (worst = d), (at = add3(p, offsets[b]));
+        if (d < worst) ((worst = d), (at = add3(p, offsets[b])));
       }
-      if (at) found.push({ tube: list[a].name, other: list[b].name, kind: "through", solid: true, clearance: worst, need: -sunk, at, from: 0, to: 0, length: 0, state: state === undefined ? "" : labelOf(state) });
+      if (at)
+        found.push({
+          tube: list[a].name,
+          other: list[b].name,
+          kind: "through",
+          solid: true,
+          clearance: worst,
+          need: -sunk,
+          at,
+          from: 0,
+          to: 0,
+          length: 0,
+          state: state === undefined ? "" : labelOf(state),
+        });
     }
   return found.sort((x, y) => x.clearance - y.clearance);
 }
@@ -1712,7 +2498,13 @@ export function wobble(solids, { samples = 20 } = {}) {
           if (last && sign !== last) turns.push(Math.round(values[i - 1][0] * 100) / 100);
           last = sign;
         }
-        if (turns.length) out.push({ name: shape.name, at: turns, from: profile[run[0]][0], to: profile[run[run.length - 1] + 1][0] });
+        if (turns.length)
+          out.push({
+            name: shape.name,
+            at: turns,
+            from: profile[run[0]][0],
+            to: profile[run[run.length - 1] + 1][0],
+          });
       }
       run = [];
     };
@@ -1729,18 +2521,44 @@ export function seats(solids) {
     for (const host of [shape.cut].flat()) {
       const mine = mul3(shape.move ?? [0, 0, 0], 1);
       const theirs = mul3(host.move ?? [0, 0, 0], 1);
-      if ((shape.ride ?? shape.piece) === (host.ride ?? host.piece) && sameOffset(mine, theirs)) continue;
-      out.push({ name: shape.name, host: host.name, piece: shape.ride ?? shape.piece, hostPiece: host.ride ?? host.piece });
+      if ((shape.ride ?? shape.piece) === (host.ride ?? host.piece) && sameOffset(mine, theirs))
+        continue;
+      out.push({
+        name: shape.name,
+        host: host.name,
+        piece: shape.ride ?? shape.piece,
+        hostPiece: host.ride ?? host.piece,
+      });
     }
   }
   return out;
 }
 
-export function report({ clearance = [], depth = { problems: [], missing: [] }, terminals: ends, folds: bends, supports: held, loose, apart, flight, crowding: crowded, self, wobble: wobbly, seats: seated, cover: covered } = {}, { limit = 4000 } = {}) {
+export function report(
+  {
+    clearance = [],
+    depth = { problems: [], missing: [] },
+    terminals: ends,
+    folds: bends,
+    supports: held,
+    loose,
+    apart,
+    flight,
+    crowding: crowded,
+    self,
+    wobble: wobbly,
+    seats: seated,
+    cover: covered,
+  } = {},
+  { limit = 4000 } = {},
+) {
   const lines = [];
   const f = (v) => (Math.round(v * 100) / 100).toFixed(2);
   const p3 = (p) => `[${p.map((v) => v.toFixed(1)).join(", ")}]`;
-  const clash = (c) => (c.solid ? `  solid   ${c.state ? c.state + "  " : ""}${c.tube}  ×  ${c.other}   sunk ${f(-c.clearance)} deep   at ${p3(c.at)}` : `  ${c.kind.padEnd(7)} ${c.state ? c.state + "  " : ""}${c.tube}  ×  ${c.other}   clearance ${f(c.clearance)} < ${f(c.need)}   along ${f(c.from)}–${f(c.to)} of ${f(c.length)}   at ${p3(c.at)}`);
+  const clash = (c) =>
+    c.solid
+      ? `  solid   ${c.state ? c.state + "  " : ""}${c.tube}  ×  ${c.other}   sunk ${f(-c.clearance)} deep   at ${p3(c.at)}`
+      : `  ${c.kind.padEnd(7)} ${c.state ? c.state + "  " : ""}${c.tube}  ×  ${c.other}   clearance ${f(c.clearance)} < ${f(c.need)}   along ${f(c.from)}–${f(c.to)} of ${f(c.length)}   at ${p3(c.at)}`;
   lines.push(`clearance: ${clearance.length} problem${clearance.length === 1 ? "" : "s"}`);
   for (const c of clearance.slice(0, limit)) lines.push(clash(c));
   if (apart) {
@@ -1749,58 +2567,106 @@ export function report({ clearance = [], depth = { problems: [], missing: [] }, 
   }
   if (ends) {
     lines.push(`terminals: ${ends.length} end${ends.length === 1 ? "" : "s"} not on a mount`);
-    for (const e of ends.slice(0, limit)) lines.push(`  ${e.tube} ${e.end}  ${Number.isFinite(e.d) ? f(e.d) : "∞"} from ${e.nearest} (rim ${Number.isFinite(e.high) ? `${f(e.low)}…${f(e.high)}` : "-"})   at ${p3(e.at)}`);
+    for (const e of ends.slice(0, limit))
+      lines.push(
+        `  ${e.tube} ${e.end}  ${Number.isFinite(e.d) ? f(e.d) : "∞"} from ${e.nearest} (rim ${Number.isFinite(e.high) ? `${f(e.low)}…${f(e.high)}` : "-"})   at ${p3(e.at)}`,
+      );
   }
   if (loose) {
     const hanging = loose.filter((e) => !e.free);
     lines.push(`loose ends: ${hanging.length}`);
-    for (const e of hanging.slice(0, limit)) lines.push(`  ${e.state}  ${e.tube} ${e.end} touches nothing that moves with it   at ${p3(e.at)}`);
+    for (const e of hanging.slice(0, limit))
+      lines.push(
+        `  ${e.state}  ${e.tube} ${e.end} touches nothing that moves with it   at ${p3(e.at)}`,
+      );
   }
   if (bends) {
     lines.push(`screen folds: ${bends.length}`);
     for (const b of bends.slice(0, limit))
-      lines.push(b.kind === "pinch" ? `  ${b.name}  turns ${b.flatTurn.toFixed(0)}° on screen round a ${f(b.radius)} px bend, under ${f(b.width * 2)} px for a ${f(b.width)} px tube   at ${p3(b.at)}` : `  ${b.name}  turns ${b.flatTurn.toFixed(0)}° on screen for ${b.realTurn.toFixed(0)}° in 3D   at ${p3(b.at)}`);
+      lines.push(
+        b.kind === "pinch"
+          ? `  ${b.name}  turns ${b.flatTurn.toFixed(0)}° on screen round a ${f(b.radius)} px bend, under ${f(b.width * 2)} px for a ${f(b.width)} px tube   at ${p3(b.at)}`
+          : `  ${b.name}  turns ${b.flatTurn.toFixed(0)}° on screen for ${b.realTurn.toFixed(0)}° in 3D   at ${p3(b.at)}`,
+      );
   }
   if (held) {
     const hanging = held.hanging ?? [];
-    lines.push(`support: ${held.loose.length} unsupported solid${held.loose.length === 1 ? "" : "s"} · ${hanging.length} hanging tube${hanging.length === 1 ? "" : "s"} · ${held.sunk.length} sunk pair${held.sunk.length === 1 ? "" : "s"}`);
+    lines.push(
+      `support: ${held.loose.length} unsupported solid${held.loose.length === 1 ? "" : "s"} · ${hanging.length} hanging tube${hanging.length === 1 ? "" : "s"} · ${held.sunk.length} sunk pair${held.sunk.length === 1 ? "" : "s"}`,
+    );
     for (const name of held.loose.slice(0, limit)) lines.push(`  loose   ${name}`);
     for (const name of hanging.slice(0, limit)) lines.push(`  hanging ${name}`);
-    for (const d of held.sunk.slice(0, limit)) lines.push(`  sunk    ${d.a} × ${d.b}   ${f(d.depth)} deep`);
+    for (const d of held.sunk.slice(0, limit))
+      lines.push(`  sunk    ${d.a} × ${d.b}   ${f(d.depth)} deep`);
   }
-  lines.push(`depth order: ${depth.problems.length} problem${depth.problems.length === 1 ? "" : "s"}`);
+  lines.push(
+    `depth order: ${depth.problems.length} problem${depth.problems.length === 1 ? "" : "s"}`,
+  );
   for (const d of depth.problems.slice(0, limit))
-    lines.push(`  ${d.cycle ? "cycle " : "order "} ${d.label}  ${d.front} (k ${f(d.frontKey)}) is in front of ${d.back} (k ${f(d.backKey)}) but drawn first   ${f(d.area)} px²${d.against ? ` (${f(d.against)} px² the other way)` : ""}, up to ${f(d.depth)} nearer, at ${d.at.map((v) => v.toFixed(1)).join(",")}`);
+    lines.push(
+      `  ${d.cycle ? "cycle " : "order "} ${d.label}  ${d.front} (k ${f(d.frontKey)}) is in front of ${d.back} (k ${f(d.backKey)}) but drawn first   ${f(d.area)} px²${d.against ? ` (${f(d.against)} px² the other way)` : ""}, up to ${f(d.depth)} nearer, at ${d.at.map((v) => v.toFixed(1)).join(",")}`,
+    );
   if (flight) {
     lines.push(`through in mid-flight: ${flight.length} pair${flight.length === 1 ? "" : "s"}`);
     for (const c of flight.slice(0, limit)) lines.push(clash(c));
   }
   if (self) {
-    lines.push(`self-overlap: ${self.length} chunk${self.length === 1 ? "" : "s"} whose outline crosses itself on screen`);
-    for (const c of self.slice(0, limit)) lines.push(`  ${c.name}  its outline folds back on screen: the line turns on a ${f(c.radius)} px radius, under its ${f(c.width)} px half-width   at ${p3(c.at)}, screen ${c.screen.map((v) => v.toFixed(1)).join(",")}`);
+    lines.push(
+      `self-overlap: ${self.length} chunk${self.length === 1 ? "" : "s"} whose outline crosses itself on screen`,
+    );
+    for (const c of self.slice(0, limit))
+      lines.push(
+        `  ${c.name}  its outline folds back on screen: the line turns on a ${f(c.radius)} px radius, under its ${f(c.width)} px half-width   at ${p3(c.at)}, screen ${c.screen.map((v) => v.toFixed(1)).join(",")}`,
+      );
   }
   if (wobbly) {
-    lines.push(`wobble: ${wobbly.length} smoothed profile${wobbly.length === 1 ? "" : "s"} whose slope turns between its ends`);
-    for (const w of wobbly.slice(0, limit)) lines.push(`  ${w.name}  dr/ds turns at s = ${w.at.join(", ")} on the run ${f(w.from)}–${f(w.to)}; give it an analytic profile and smooth.slope`);
+    lines.push(
+      `wobble: ${wobbly.length} smoothed profile${wobbly.length === 1 ? "" : "s"} whose slope turns between its ends`,
+    );
+    for (const w of wobbly.slice(0, limit))
+      lines.push(
+        `  ${w.name}  dr/ds turns at s = ${w.at.join(", ")} on the run ${f(w.from)}–${f(w.to)}; give it an analytic profile and smooth.slope`,
+      );
   }
   if (seated) {
     lines.push(`saddles off their host apart: ${seated.length}`);
-    for (const d of seated.slice(0, limit)) lines.push(`  ${d.name} (${d.piece}) is cut to ${d.host} (${d.hostPiece}); apart, its cut base is on show`);
+    for (const d of seated.slice(0, limit))
+      lines.push(
+        `  ${d.name} (${d.piece}) is cut to ${d.host} (${d.hostPiece}); apart, its cut base is on show`,
+      );
   }
   if (covered) {
-    lines.push(`stand-in shapes: ${covered.length} item${covered.length === 1 ? "" : "s"} whose recorded shape covers too little of what it draws`);
-    for (const c of covered.slice(0, limit)) lines.push(`  ${c.name}  its shapes cover ${Math.round(c.share * 100)}% of its drawing (drawn ${c.drawn.map((v) => v.toFixed(0)).join(",")}, recorded ${c.shapes.map((v) => v.toFixed(0)).join(",")}); record the true shape of what you draw`);
+    lines.push(
+      `stand-in shapes: ${covered.length} item${covered.length === 1 ? "" : "s"} whose recorded shape covers too little of what it draws`,
+    );
+    for (const c of covered.slice(0, limit))
+      lines.push(
+        `  ${c.name}  its shapes cover ${Math.round(c.share * 100)}% of its drawing (drawn ${c.drawn.map((v) => v.toFixed(0)).join(",")}, recorded ${c.shapes.map((v) => v.toFixed(0)).join(",")}); record the true shape of what you draw`,
+      );
   }
   if (crowded) {
-    lines.push(`crowding: ${crowded.length} pair${crowded.length === 1 ? "" : "s"} where a bend or end touches another line on screen`);
-    for (const c of crowded.slice(0, limit)) lines.push(`  ${c.state ? c.state + "  " : ""}${c.a} ${c.where}  ×  ${c.b}   outlines ${c.gap < 0 ? `overlap ${f(-c.gap)}` : `${f(c.gap)} apart`} px, ${f(c.depth)} apart in depth   at screen ${c.screen.map((v) => v.toFixed(1)).join(",")}`);
+    lines.push(
+      `crowding: ${crowded.length} pair${crowded.length === 1 ? "" : "s"} where a bend or end touches another line on screen`,
+    );
+    for (const c of crowded.slice(0, limit))
+      lines.push(
+        `  ${c.state ? c.state + "  " : ""}${c.a} ${c.where}  ×  ${c.b}   outlines ${c.gap < 0 ? `overlap ${f(-c.gap)}` : `${f(c.gap)} apart`} px, ${f(c.depth)} apart in depth   at screen ${c.screen.map((v) => v.toFixed(1)).join(",")}`,
+      );
   }
   if (depth.passing && depth.passing.length) {
     const pairs = (list) => new Set(list.map((d) => [d.front, d.back].sort().join("|"))).size;
-    lines.push(`in passing (uniform explode states only, not failing): ${pairs(depth.passing.filter((d) => d.cycle))} interlocked pairs, ${pairs(depth.passing.filter((d) => !d.cycle))} pairs no linear key can order`);
-    for (const d of depth.passing.slice(0, limit)) lines.push(`  ${d.cycle ? "cycle " : "unorderable"} ${d.label}  ${d.front} / ${d.back}   ${f(d.area)} px²`);
+    lines.push(
+      `in passing (uniform explode states only, not failing): ${pairs(depth.passing.filter((d) => d.cycle))} interlocked pairs, ${pairs(depth.passing.filter((d) => !d.cycle))} pairs no linear key can order`,
+    );
+    for (const d of depth.passing.slice(0, limit))
+      lines.push(
+        `  ${d.cycle ? "cycle " : "unorderable"} ${d.label}  ${d.front} / ${d.back}   ${f(d.area)} px²`,
+      );
   }
-  if (depth.missing.length) lines.push(`items with no shape: ${depth.missing.length}  ${depth.missing.slice(0, 20).join(", ")}`);
+  if (depth.missing.length)
+    lines.push(
+      `items with no shape: ${depth.missing.length}  ${depth.missing.slice(0, 20).join(", ")}`,
+    );
   if (loose && loose.some((e) => e.free)) {
     const free = loose.filter((e) => e.free);
     lines.push(`free ends apart (marked free, not failing): ${free.length}`);
@@ -1809,15 +2675,56 @@ export function report({ clearance = [], depth = { problems: [], missing: [] }, 
   return lines.join("\n");
 }
 
-export const failures = ({ clearance = [], depth = { problems: [], missing: [] }, terminals: ends = [], folds: bends = [], supports: held = { loose: [], sunk: [] }, loose = [], apart = [], flight = [], crowding: crowded = [], self = [], wobble: wobbly = [], seats: seated = [], cover: covered = [] }) =>
-  covered.length + clearance.length + apart.length + flight.length + crowded.length + ends.length + loose.filter((e) => !e.free).length + bends.length + held.loose.length + (held.hanging ?? []).length + held.sunk.length + depth.problems.length + depth.missing.length + self.length + wobbly.length + seated.length;
+export const failures = ({
+  clearance = [],
+  depth = { problems: [], missing: [] },
+  terminals: ends = [],
+  folds: bends = [],
+  supports: held = { loose: [], sunk: [] },
+  loose = [],
+  apart = [],
+  flight = [],
+  crowding: crowded = [],
+  self = [],
+  wobble: wobbly = [],
+  seats: seated = [],
+  cover: covered = [],
+}) =>
+  covered.length +
+  clearance.length +
+  apart.length +
+  flight.length +
+  crowded.length +
+  ends.length +
+  loose.filter((e) => !e.free).length +
+  bends.length +
+  held.loose.length +
+  (held.hanging ?? []).length +
+  held.sunk.length +
+  depth.problems.length +
+  depth.missing.length +
+  self.length +
+  wobbly.length +
+  seated.length;
 
-export const sameRun = (a, b) => Boolean(a.route) && a.route === b.route && Math.abs(a.chunk - b.chunk) <= 1;
+export const sameRun = (a, b) =>
+  Boolean(a.route) && a.route === b.route && Math.abs(a.chunk - b.chunk) <= 1;
 
 export function recorder(P, { order = [], spring = {}, ground = grounded } = {}) {
   const V = cameraBasis(P).V;
   const counts = new Map();
-  const R = { P, V, order, spring, ground, items: [], solids: [], tubes: [], routes: [], settled: null };
+  const R = {
+    P,
+    V,
+    order,
+    spring,
+    ground,
+    items: [],
+    solids: [],
+    tubes: [],
+    routes: [],
+    settled: null,
+  };
   R.nameFor = (base) => {
     const count = (counts.get(base) ?? 0) + 1;
     counts.set(base, count);
@@ -1827,19 +2734,68 @@ export function recorder(P, { order = [], spring = {}, ground = grounded } = {})
     R.solids.push(shape);
     return shape;
   };
-  R.put = ({ at = null, bias = 0, key, name, piece = "", move = [0, 0, 0], ride, shapes = [], ...rest } = {}) => {
-    const item = { ...rest, piece, ride: ride ?? piece, key: key ?? (at ? dot3(at, V) : 0) + bias, move, shapes, name: name ?? R.nameFor(`${piece || "item"}.item`) };
-    for (const shape of shapes) (shape.move = item.move), (shape.ride = item.ride), (shape.piece = piece);
+  R.put = ({
+    at = null,
+    bias = 0,
+    key,
+    name,
+    piece = "",
+    move = [0, 0, 0],
+    ride,
+    shapes = [],
+    ...rest
+  } = {}) => {
+    const item = {
+      ...rest,
+      piece,
+      ride: ride ?? piece,
+      key: key ?? (at ? dot3(at, V) : 0) + bias,
+      move,
+      shapes,
+      name: name ?? R.nameFor(`${piece || "item"}.item`),
+    };
+    for (const shape of shapes)
+      ((shape.move = item.move), (shape.ride = item.ride), (shape.piece = piece));
     R.items.push(item);
     return item;
   };
-  R.route = (name, points, radius, { owner = name, touch, bundle, limp = false, gaps = [], closed = false, ends = [true, true], rims, free = [false, false], piece = "", move = [0, 0, 0], ride = piece } = {}) => {
+  R.route = (
+    name,
+    points,
+    radius,
+    {
+      owner = name,
+      touch,
+      bundle,
+      limp = false,
+      gaps = [],
+      closed = false,
+      ends = [true, true],
+      rims,
+      free = [false, false],
+      piece = "",
+      move = [0, 0, 0],
+      ride = piece,
+    } = {},
+  ) => {
     const total = pathLength(points);
     const radiusOf = typeof radius === "function" ? radius : () => radius;
     const runs = runsOf(total, gaps);
     const recorded = runs.map(([from, to], index) => ({
-      ...tube(cutAlong(points, from, to), (t) => radiusOf((from + (to - from) * t) / total), { name, owner, touch, bundle, limp, joined: true }),
-      tips: closed ? [null, null] : [index === 0 && ends[0] ? points[0] : null, index === runs.length - 1 && ends[1] ? points[points.length - 1] : null],
+      ...tube(cutAlong(points, from, to), (t) => radiusOf((from + (to - from) * t) / total), {
+        name,
+        owner,
+        touch,
+        bundle,
+        limp,
+        joined: true,
+      }),
+      tips: closed
+        ? [null, null]
+        : [
+            index === 0 && ends[0] ? points[0] : null,
+            index === runs.length - 1 && ends[1] ? points[points.length - 1] : null,
+          ],
       tipAxes: [tangentAlong(points, 0), tangentAlong(points, total)],
       tipRims: rims ?? [radiusOf(0), radiusOf(1)],
       free: [index === 0 && free[0], index === runs.length - 1 && free[1]],
@@ -1861,13 +2817,21 @@ export function explodeStates(order = [], spring = {}, { uniform = 10, stride = 
   const reversals = reversalsOf(order, spring.stagger ?? 0.035);
   const prefix = prefixStates(order);
   return {
-    depth: [...uniformStates(uniform), ...springStates(order, { ...spring, stride, reversals }), ...prefix],
+    depth: [
+      ...uniformStates(uniform),
+      ...springStates(order, { ...spring, stride, reversals }),
+      ...prefix,
+    ],
     frames: [...springStates(order, { ...spring, reversals }), ...prefix],
     apart: true,
   };
 }
 
-export function settle(R, P = R.P, { states = explodeStates(R.order, R.spring).depth, skip = sameRun, ...options } = {}) {
+export function settle(
+  R,
+  P = R.P,
+  { states = explodeStates(R.order, R.spring).depth, skip = sameRun, ...options } = {},
+) {
   const items = R.items.slice();
   const overlaps = overlapsOf(items, P, { states, skip, ...options });
   const solved = orderKeys(items, overlaps);
@@ -1876,17 +2840,53 @@ export function settle(R, P = R.P, { states = explodeStates(R.order, R.spring).d
   return R.settled;
 }
 
-const worstOf = (lists) => [...lists.flat().reduce((all, c) => (all.has(`${c.tube}|${c.other}`) && all.get(`${c.tube}|${c.other}`).clearance <= c.clearance ? all : all.set(`${c.tube}|${c.other}`, c)), new Map()).values()].sort((x, y) => x.clearance - y.clearance);
+const worstOf = (lists) =>
+  [
+    ...lists
+      .flat()
+      .reduce(
+        (all, c) =>
+          all.has(`${c.tube}|${c.other}`) &&
+          all.get(`${c.tube}|${c.other}`).clearance <= c.clearance
+            ? all
+            : all.set(`${c.tube}|${c.other}`, c),
+        new Map(),
+      )
+      .values(),
+  ].sort((x, y) => x.clearance - y.clearance);
 
-export function audit(R, P = R.P, { allow = [], crowd = [], cover = [], ground = R.ground, frames = explodeStates(R.order, R.spring).frames, apart = R.order.length > 0 } = {}) {
+export function audit(
+  R,
+  P = R.P,
+  {
+    allow = [],
+    crowd = [],
+    cover = [],
+    ground = R.ground,
+    frames = explodeStates(R.order, R.spring).frames,
+    apart = R.order.length > 0,
+  } = {},
+) {
   const { items, overlaps, solved } = R.settled ?? settle(R, P);
   const mounts = mountsOf(R.tubes, R.solids);
   const links = linksOf(R.tubes, mounts);
   return {
     clearance: clearances(R.tubes, R.solids, { mounts }),
-    apart: apart ? [...clearances(R.tubes, R.solids, { state: 1, mounts, only: "through" }), ...solidClearances(R.solids, { state: 1 })] : [],
-    flight: worstOf(frames.map((state) => [...clearances(R.tubes, R.solids, { state, mounts, only: "through" }), ...solidClearances(R.solids, { state })])),
-    crowding: (apart ? [0, 1] : [0]).flatMap((state) => crowding(R.routes, P, { links, items, allow: crowd, state, rods: slenderOf(R.solids) })),
+    apart: apart
+      ? [
+          ...clearances(R.tubes, R.solids, { state: 1, mounts, only: "through" }),
+          ...solidClearances(R.solids, { state: 1 }),
+        ]
+      : [],
+    flight: worstOf(
+      frames.map((state) => [
+        ...clearances(R.tubes, R.solids, { state, mounts, only: "through" }),
+        ...solidClearances(R.solids, { state }),
+      ]),
+    ),
+    crowding: (apart ? [0, 1] : [0]).flatMap((state) =>
+      crowding(R.routes, P, { links, items, allow: crowd, state, rods: slenderOf(R.solids) }),
+    ),
     cover: coverage(items, P, { allow: cover }),
     terminals: terminals(R.tubes, R.solids, { mounts }),
     loose: looseEnds(R.tubes, R.solids, { state: 1 }),
@@ -1899,13 +2899,19 @@ export function audit(R, P = R.P, { allow = [], crowd = [], cover = [], ground =
   };
 }
 
-export function auditOrExit(R, P = R.P, { flag = "--audit", argv = process.argv, ...options } = {}) {
+export function auditOrExit(
+  R,
+  P = R.P,
+  { flag = "--audit", argv = process.argv, ...options } = {},
+) {
   if (!argv.includes(flag)) return null;
   const started = Date.now();
   const result = audit(R, P, options);
   const { overlaps, solved, states } = R.settled;
   console.log(report(result));
-  console.log(`audit · ${R.tubes.length} tubes · ${R.solids.length} solids · ${R.items.length} items · ${states.length} depth states · ${overlaps.pairs.length} overlaps · ${solved.rules} order rules · ${((Date.now() - started) / 1000).toFixed(1)} s`);
+  console.log(
+    `audit · ${R.tubes.length} tubes · ${R.solids.length} solids · ${R.items.length} items · ${states.length} depth states · ${overlaps.pairs.length} overlaps · ${solved.rules} order rules · ${((Date.now() - started) / 1000).toFixed(1)} s`,
+  );
   const count = failures(result);
   console.log(count ? `audit failed: ${count} problem${count === 1 ? "" : "s"}` : "audit passed");
   if (count) process.exitCode = 1;

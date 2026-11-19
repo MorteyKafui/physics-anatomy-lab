@@ -8,10 +8,11 @@ const LIGHT = (() => {
 
 const poly = (points, closed = true) => pathOf(points, closed);
 
-const area = (points) => points.reduce((sum, [x, y], index) => {
-  const [nx, ny] = points[(index + 1) % points.length];
-  return sum + x * ny - nx * y;
-}, 0);
+const area = (points) =>
+  points.reduce((sum, [x, y], index) => {
+    const [nx, ny] = points[(index + 1) % points.length];
+    return sum + x * ny - nx * y;
+  }, 0);
 
 function sideOf(frames) {
   const out = { left: [], right: [], shineA: [], shineB: [], shadeA: [], shadeB: [] };
@@ -40,13 +41,20 @@ function capOf(centre, tangent, radius, inward, P) {
   const steps = 28;
   const ring = Array.from({ length: steps }, (_, index) => {
     const angle = (index / steps) * Math.PI * 2;
-    return iso(G.add3(centre, G.add3(G.mul3(n1, radius * Math.cos(angle)), G.mul3(n2, radius * Math.sin(angle)))), P);
+    return iso(
+      G.add3(
+        centre,
+        G.add3(G.mul3(n1, radius * Math.cos(angle)), G.mul3(n2, radius * Math.sin(angle))),
+      ),
+      P,
+    );
   });
   const c = iso(centre, P);
   const probe = iso(G.add3(centre, n2), P);
   const along = (probe[0] - c[0]) * inward[0] + (probe[1] - c[1]) * inward[1];
   const from = along > 0 ? steps / 2 : 0;
-  const half = (start) => Array.from({ length: steps / 2 + 1 }, (_, index) => ring[(start + index) % steps]);
+  const half = (start) =>
+    Array.from({ length: steps / 2 + 1 }, (_, index) => ring[(start + index) % steps]);
   return { ring, arc: half(from), inner: half((from + steps / 2) % steps) };
 }
 
@@ -58,14 +66,21 @@ function stripeEnd(half, centre, nx, ny, from, to) {
   const points = [];
   const cross = (k, level) => {
     const t = (level - values[k]) / (values[k + 1] - values[k] || 1e-9);
-    return [half[k][0] + (half[k + 1][0] - half[k][0]) * t, half[k][1] + (half[k + 1][1] - half[k][1]) * t];
+    return [
+      half[k][0] + (half[k + 1][0] - half[k][0]) * t,
+      half[k][1] + (half[k + 1][1] - half[k][1]) * t,
+    ];
   };
   for (let k = 0; k < half.length; k++) {
     if (values[k] >= lo && values[k] <= hi) points.push(half[k]);
-    if (k < half.length - 1) for (const level of [lo, hi]) if ((values[k] - level) * (values[k + 1] - level) < 0) points.push(cross(k, level));
+    if (k < half.length - 1)
+      for (const level of [lo, hi])
+        if ((values[k] - level) * (values[k + 1] - level) < 0) points.push(cross(k, level));
   }
   const order = points.map((p) => offset(p));
-  const sorted = points.map((p, index) => [p, order[index]]).sort((x, y) => (from > to ? y[1] - x[1] : x[1] - y[1]));
+  const sorted = points
+    .map((p, index) => [p, order[index]])
+    .sort((x, y) => (from > to ? y[1] - x[1] : x[1] - y[1]));
   return sorted.map(([p]) => p);
 }
 
@@ -80,10 +95,15 @@ function spansOf(total, gaps, breaks, maxLength, closed) {
     if (a > at + 1e-6) runs.push([at, a, at > 0, true]);
     at = Math.max(at, b);
   }
-  if (total > at + 1e-6) runs.push([at, total, at > 0, cuts.length > 0 && cuts[cuts.length - 1][1] >= total - 1e-6]);
+  if (total > at + 1e-6)
+    runs.push([at, total, at > 0, cuts.length > 0 && cuts[cuts.length - 1][1] >= total - 1e-6]);
   const pieces = [];
   for (const [from, to, gapStart, gapEnd] of runs) {
-    const stops = [from, ...breaks.filter((b) => b > from + 1e-6 && b < to - 1e-6).sort((x, y) => x - y), to];
+    const stops = [
+      from,
+      ...breaks.filter((b) => b > from + 1e-6 && b < to - 1e-6).sort((x, y) => x - y),
+      to,
+    ];
     for (let index = 0; index < stops.length - 1; index++) {
       const a = stops[index];
       const b = stops[index + 1];
@@ -142,7 +162,14 @@ export function crossingsOf(points, centre, axis, radius) {
   return out;
 }
 
-function ringsOf(dense, total, radiusAt, P, span, { pitch = 3, twist = 0, cross = false, fade = [0.1, 0.55], phase = 0, steps = 16 } = {}) {
+function ringsOf(
+  dense,
+  total,
+  radiusAt,
+  P,
+  span,
+  { pitch = 3, twist = 0, cross = false, fade = [0.1, 0.55], phase = 0, steps = 16 } = {},
+) {
   const V = G.viewOf(P);
   const [lo, hi] = span;
   const margin = twist ? 0 : Math.min(pitch * 0.35, (hi - lo) / 2);
@@ -173,14 +200,22 @@ function ringsOf(dense, total, radiusAt, P, span, { pitch = 3, twist = 0, cross 
       const samples = [];
       for (let step = 0; step <= steps; step++) {
         const theta = (step / steps) * Math.PI;
-        const t = station + hand * twist * radiusAt(Math.max(0, Math.min(1, station / (total || 1)))) * (step / steps - 0.5);
+        const t =
+          station +
+          hand *
+            twist *
+            radiusAt(Math.max(0, Math.min(1, station / (total || 1)))) *
+            (step / steps - 0.5);
         samples.push({ t, theta });
       }
       for (let step = 0; step < steps; step++) {
         let a = samples[step];
         let b = samples[step + 1];
         if ((a.t < from && b.t < from) || (a.t > to && b.t > to)) continue;
-        const clipTo = (x, y, edge) => ({ t: edge, theta: x.theta + ((y.theta - x.theta) * (edge - x.t)) / (y.t - x.t || 1e-9) });
+        const clipTo = (x, y, edge) => ({
+          t: edge,
+          theta: x.theta + ((y.theta - x.theta) * (edge - x.t)) / (y.t - x.t || 1e-9),
+        });
         if (a.t < from) a = clipTo(a, b, from);
         if (b.t < from) b = clipTo(b, a, from);
         if (a.t > to) a = clipTo(a, b, to);
@@ -197,12 +232,29 @@ function ringsOf(dense, total, radiusAt, P, span, { pitch = 3, twist = 0, cross 
   return out;
 }
 
-export function tubePieces(points3, radius, P, { maxLength = 30, spacing = 2.2, closed = false, breaks = [], gaps = [], caps = true, stripes = "auto", rings = null } = {}) {
+export function tubePieces(
+  points3,
+  radius,
+  P,
+  {
+    maxLength = 30,
+    spacing = 2.2,
+    closed = false,
+    breaks = [],
+    gaps = [],
+    caps = true,
+    stripes = "auto",
+    rings = null,
+  } = {},
+) {
   const dense = G.resample(points3, spacing);
   const total = G.pathLength(dense);
   const radiusAt = typeof radius === "function" ? radius : () => radius;
   const k = G.scaleOf(P);
-  const wide = stripes === "auto" ? Math.max(...Array.from({ length: 33 }, (_, index) => radiusAt(index / 32))) * k > 1.3 : Boolean(stripes);
+  const wide =
+    stripes === "auto"
+      ? Math.max(...Array.from({ length: 33 }, (_, index) => radiusAt(index / 32))) * k > 1.3
+      : Boolean(stripes);
   const lead = 0.5;
   const out = [];
   const looped = closed && !gaps.length;
@@ -228,23 +280,40 @@ export function tubePieces(points3, radius, P, { maxLength = 30, spacing = 2.2, 
       return walked;
     });
     const flat = points.map((point) => iso(point, P));
-    const widths = along.map((at) => radiusAt(looped ? wrap(at) / total : Math.min(1, Math.max(0, at / total))) * k);
+    const widths = along.map(
+      (at) => radiusAt(looped ? wrap(at) / total : Math.min(1, Math.max(0, at / total))) * k,
+    );
     const frames = flat.map((p, index) => frameAt(along[index], p, widths[index]));
     return { points, flat, widths, frames };
   };
   for (const piece of spansOf(total, gaps, breaks, maxLength, closed)) {
     const openStart = piece.open0 && (piece.from > 0 || looped);
     const openEnd = piece.open1 && (piece.to < total || looped);
-    const body = partOf(openStart ? piece.from - lead : piece.from, openEnd ? piece.to + lead : piece.to);
+    const body = partOf(
+      openStart ? piece.from - lead : piece.from,
+      openEnd ? piece.to + lead : piece.to,
+    );
     if (body.points.length < 2) continue;
-    const stripe = openStart || openEnd ? partOf(openStart ? piece.from - 2 * lead : piece.from, openEnd ? piece.to + 2 * lead : piece.to) : body;
+    const stripe =
+      openStart || openEnd
+        ? partOf(
+            openStart ? piece.from - 2 * lead : piece.from,
+            openEnd ? piece.to + 2 * lead : piece.to,
+          )
+        : body;
     const { points: part, flat, widths, frames } = body;
     const sides = sideOf(frames);
     const bands = stripe === body ? sides : sideOf(stripe.frames);
     let bodyPath = poly([...sides.left, ...sides.right.slice().reverse()]);
     let edges = pathOf(sides.left) + pathOf(sides.right);
-    const ends = [!piece.open0 && !looped && (piece.from <= 1e-6 || piece.gap0), !piece.open1 && !looped && (piece.to >= total - 1e-6 || piece.gap1)];
-    const capped = [ends[0] && (piece.gap0 || [caps].flat()[0]), ends[1] && (piece.gap1 || [caps].flat().at(-1))];
+    const ends = [
+      !piece.open0 && !looped && (piece.from <= 1e-6 || piece.gap0),
+      !piece.open1 && !looped && (piece.to >= total - 1e-6 || piece.gap1),
+    ];
+    const capped = [
+      ends[0] && (piece.gap0 || [caps].flat()[0]),
+      ends[1] && (piece.gap1 || [caps].flat().at(-1)),
+    ];
     const sign = Math.sign(area([...sides.left, ...sides.right.slice().reverse()]));
     const tips = [null, null];
     [0, 1].forEach((side) => {
@@ -263,14 +332,41 @@ export function tubePieces(points3, radius, P, { maxLength = 30, spacing = 2.2, 
       tips[side] = { half: open ? inner : arc, frame: frames[at] };
     });
     const band = (a, b, offsets) => {
-      const head = tips[1] ? stripeEnd(tips[1].half, tips[1].frame.p, tips[1].frame.nx, tips[1].frame.ny, offsets(tips[1].frame)[0], offsets(tips[1].frame)[1]) : [];
-      const tail = tips[0] ? stripeEnd(tips[0].half, tips[0].frame.p, tips[0].frame.nx, tips[0].frame.ny, offsets(tips[0].frame)[1], offsets(tips[0].frame)[0]) : [];
+      const head = tips[1]
+        ? stripeEnd(
+            tips[1].half,
+            tips[1].frame.p,
+            tips[1].frame.nx,
+            tips[1].frame.ny,
+            offsets(tips[1].frame)[0],
+            offsets(tips[1].frame)[1],
+          )
+        : [];
+      const tail = tips[0]
+        ? stripeEnd(
+            tips[0].half,
+            tips[0].frame.p,
+            tips[0].frame.nx,
+            tips[0].frame.ny,
+            offsets(tips[0].frame)[1],
+            offsets(tips[0].frame)[0],
+          )
+        : [];
       return poly([...a, ...head, ...b.slice().reverse(), ...tail]);
     };
     const toward = ({ nx, ny }) => nx * LIGHT[0] + ny * LIGHT[1];
-    const shineOffsets = (frame) => [frame.half * 0.44 * toward(frame) + frame.half * 0.24, frame.half * 0.44 * toward(frame) - frame.half * 0.24];
-    const shadeOffsets = (frame) => [-frame.half * 0.62 * toward(frame) + frame.half * 0.2, -frame.half * 0.62 * toward(frame) - frame.half * 0.2];
-    const ringSpan = Object.assign([openStart ? piece.from - 2 * lead : piece.from, openEnd ? piece.to + 2 * lead : piece.to], { real0: !openStart, real1: !openEnd });
+    const shineOffsets = (frame) => [
+      frame.half * 0.44 * toward(frame) + frame.half * 0.24,
+      frame.half * 0.44 * toward(frame) - frame.half * 0.24,
+    ];
+    const shadeOffsets = (frame) => [
+      -frame.half * 0.62 * toward(frame) + frame.half * 0.2,
+      -frame.half * 0.62 * toward(frame) - frame.half * 0.2,
+    ];
+    const ringSpan = Object.assign(
+      [openStart ? piece.from - 2 * lead : piece.from, openEnd ? piece.to + 2 * lead : piece.to],
+      { real0: !openStart, real1: !openEnd },
+    );
     out.push({
       rings: rings ? ringsOf(dense, total, radiusAt, P, ringSpan, rings) : [],
       ringTone: rings?.tone ?? "lo",
@@ -297,10 +393,17 @@ export function ringsSvg(rings, tone = "lo") {
     if (level <= 0) continue;
     groups.set(level, (groups.get(level) ?? "") + d);
   }
-  return [...groups].map(([alpha, d]) => `<path class="tb-ring" data-tone="${tone}" d="${d}"${alpha < 1 ? ` opacity="${alpha.toFixed(2)}"` : ""}/>`).join("");
+  return [...groups]
+    .map(
+      ([alpha, d]) =>
+        `<path class="tb-ring" data-tone="${tone}" d="${d}"${alpha < 1 ? ` opacity="${alpha.toFixed(2)}"` : ""}/>`,
+    )
+    .join("");
 }
 
 export function tubeSvg(piece, { tone = "hi" } = {}) {
-  const shine = piece.wide ? `<path class="tb-shine" d="${piece.shine}"/><path class="tb-shade" d="${piece.shade}"/>` : "";
+  const shine = piece.wide
+    ? `<path class="tb-shine" d="${piece.shine}"/><path class="tb-shade" d="${piece.shade}"/>`
+    : "";
   return `<g class="tb"><path class="tb-body" d="${piece.body}"/>${shine}${ringsSvg(piece.rings, piece.ringTone)}<path class="iso-line tb-edge" data-tone="${tone}" d="${piece.edges}"/></g>`;
 }

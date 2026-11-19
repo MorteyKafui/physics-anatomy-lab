@@ -4,6 +4,8 @@
 import type { AiFeatureUse, AiOverview } from "@pa/api-client";
 import Link from "next/link";
 
+import { Evaluations } from "@/components/ai-evals";
+import { AiFlags } from "@/components/ai-flags";
 import { AiSwitches } from "@/components/ai-switches";
 import { ApiProblem, Chip, type ChipKind, Panel, Tile } from "@/components/bits";
 import { TopBar } from "@/components/topbar";
@@ -60,6 +62,26 @@ function attention(a: AiOverview, spentShare: number | null, rangeLong: string):
         href: "#features",
       });
   }
+  for (const e of a.evaluations)
+    if (e.passed === false)
+      items.push({
+        kind: "red",
+        chip: "Evaluation",
+        title: `${FEATURE_NAMES[e.feature]} is below the evaluation bar`,
+        meta: `${String(e.failing.length)} failing cases in the latest results`,
+        href: "#evaluations",
+      });
+  if (a.flags_open > 0)
+    items.push({
+      kind: "amber",
+      chip: "Flagged",
+      title:
+        a.flags_open === 1
+          ? "A student or teacher reported an answer"
+          : `${String(a.flags_open)} answers reported`,
+      meta: "Check each one; turn real problems into evaluation cases",
+      href: "#flags",
+    });
   return items;
 }
 
@@ -280,6 +302,29 @@ export default async function AiPage({
               </div>
             ))}
           </Panel>
+        </div>
+
+        <div className="ad-split">
+          <div id="evaluations" className="ad-wide">
+            <Panel
+              title="Evaluations"
+              sub={
+                a.evaluations.some((e) => e.run_at !== null)
+                  ? "The latest results in this deployment"
+                  : "Not run yet"
+              }
+            >
+              <Evaluations evaluations={a.evaluations} />
+            </Panel>
+          </div>
+          <div id="flags" className="ad-narrow">
+            <Panel
+              title="Flagged replies"
+              action={<Chip kind={a.flags_open ? "amber" : "grey"}>{String(a.flags_open)}</Chip>}
+            >
+              <AiFlags flags={a.flags} open={a.flags_open} />
+            </Panel>
+          </div>
         </div>
       </div>
     </>
