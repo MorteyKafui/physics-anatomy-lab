@@ -35,11 +35,32 @@ const STEP_NAMES: readonly string[] = [
 const SHOWN: Readonly<Record<string, readonly string[]>> = {
   "step.go-to": ["step"],
   "step.complete": ["step"],
-  "reading.record": ["t", "l", "v", "i", "u", "theta"],
+  // A reading's numbers are measurements: every number in it is sent (see READING), no text.
+  "reading.record": [],
   "reading.delete": [],
   "part.place": ["part", "slot"],
   "part.remove": ["part"],
+  // The benches' own actions (packages/experiments): positions, heights and switches.
   "pendulum.set-length": ["length"],
+  "jockey.press": ["at"],
+  "jockey.slide": ["to"],
+  "jockey.lift": [],
+  "key.close": [],
+  "key.open": [],
+  "lead.connect": ["from", "to"],
+  "lead.disconnect": ["from", "to"],
+  "holder.move": ["part", "to"],
+  "pin.tip": ["pin", "to"],
+  "eye.height": ["to"],
+  "gauze.height": ["to"],
+  "balance.weigh": ["what"],
+  "calorimeter.fill": ["to"],
+  "calorimeter.empty": [],
+  "cylinder.fill": ["to"],
+  "hot.pour": ["after"],
+  "lid.set": ["on"],
+  "solid.transfer": [],
+  "stirrer.set": ["on"],
   "coach.hint": ["rule", "skill", "level"],
   "coach.note": ["rule", "skill", "level"],
   "coach.set-level": ["level"],
@@ -61,13 +82,25 @@ function asNumber(value: unknown): number | undefined {
   return Number(value);
 }
 
-function detailOf(kind: string, data: unknown): Record<string, Detail> {
-  const fields = SHOWN[kind] ?? [];
-  // reading.record keeps its numbers one level down, under data.
-  const source =
-    kind === "reading.record" && typeof data === "object" && data !== null && "data" in data
+/** A reading keeps its numbers one level down, under data; only the numbers go. */
+function readingOf(data: unknown): Record<string, Detail> {
+  const inner =
+    typeof data === "object" && data !== null && "data" in data
       ? (data as { data: unknown }).data
-      : data;
+      : undefined;
+  if (typeof inner !== "object" || inner === null) return {};
+  const out: Record<string, Detail> = {};
+  for (const [key, value] of Object.entries(inner)) {
+    if (Object.keys(out).length >= MAX_DETAIL) break;
+    if (KEY.test(key) && typeof value === "number" && Number.isFinite(value)) out[key] = value;
+  }
+  return out;
+}
+
+function detailOf(kind: string, data: unknown): Record<string, Detail> {
+  if (kind === "reading.record") return readingOf(data);
+  const fields = SHOWN[kind] ?? [];
+  const source = data;
   if (typeof source !== "object" || source === null) return {};
   const out: Record<string, Detail> = {};
   for (const field of fields) {

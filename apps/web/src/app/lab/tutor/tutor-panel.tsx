@@ -28,11 +28,26 @@ export interface TutorPanelProps {
   readonly stepName: string;
   /** What the request is built from on the device: the attempt, the step, the bench's numbers. */
   readonly input: Omit<TutorInput, "question" | "thread">;
-  /** Reads a reply aloud with the browser's own voice; undefined when the browser has none. */
+  /**
+   * Reads a reply aloud. A lab with the spoken coach passes its own (the student's speed and
+   * voice); otherwise the browser's own voice reads it, and with no voice the button is hidden.
+   */
   readonly readAloud?: (text: string) => void;
 }
 
-export function TutorPanel({ stepName, input, readAloud }: TutorPanelProps) {
+/** The browser's own voice, in British English; undefined where the browser has none. */
+function browserVoice(): ((text: string) => void) | undefined {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return undefined;
+  return (text) => {
+    window.speechSynthesis.cancel();
+    const line = new SpeechSynthesisUtterance(text);
+    line.lang = "en-GB";
+    window.speechSynthesis.speak(line);
+  };
+}
+
+export function TutorPanel({ stepName, input, readAloud: given }: TutorPanelProps) {
+  const [readAloud] = useState(() => given ?? browserVoice());
   const [thread, setThread] = useState<ThreadTurn[]>([]);
   const [pending, setPending] = useState<Pending>();
   const [cutShort, setCutShort] = useState(false);
