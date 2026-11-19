@@ -48,3 +48,4 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0041](./0041-live-classes.md)                        | Live classes, and what teachers can read (proposed)                  | 2026-11-18 |
 | [0042](./0042-consent-export-and-deletion.md)         | Consent records, data export and deletion                            | 2026-11-19 |
 | [0043](./0043-claude-from-the-api-streamed.md)        | Claude from the API, streamed to the browser                         | 2026-11-19 |
+| [0044](./0044-lab-javascript-budget-160.md)           | The lab's JavaScript budget is 160 KB on top of the shell            | 2026-11-19 |

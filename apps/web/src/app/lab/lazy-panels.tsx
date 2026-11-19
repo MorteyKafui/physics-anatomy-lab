@@ -41,3 +41,8 @@ export const Calculator = lazyPanel(() => import("./analyse").then((m) => m.Calc
 export const QuoteLine = lazyPanel(() => import("./analyse").then((m) => m.QuoteLine), false);
 // The tutor (ADR 0043) loads the first time its Ask tab is opened: most students never open it.
 export const TutorPanel = lazyPanel(() => import("./tutor/tutor-panel").then((m) => m.TutorPanel));
+// The What if panel loads the first time it opens, so the lab does not download it up front.
+export const PendulumWhatIf = lazyPanel(
+  () => import("./what-if/pendulum-sheet").then((m) => m.PendulumWhatIf),
+  false,
+);

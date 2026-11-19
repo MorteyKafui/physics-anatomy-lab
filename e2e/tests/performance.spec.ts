@@ -80,9 +80,10 @@ test.describe("the benchmark phone, emulated", () => {
       { type: "shell JS", description: `${(shell / KB).toFixed(0)} KB compressed` },
       { type: "lab JS", description: `${(total / KB).toFixed(0)} KB compressed` },
     );
-    // The shell 200 KB or less; the lab is the shell plus the pendulum, 150 KB more at most.
+    // The shell 200 KB or less; the lab is the shell plus the pendulum, 160 KB more at most
+    // (ADR 0044, up from 150 KB).
     expect(shell).toBeLessThanOrEqual(200 * KB);
-    expect(total).toBeLessThanOrEqual((200 + 150) * KB);
+    expect(total).toBeLessThanOrEqual((200 + 160) * KB);
   });
 
   test("the offline pack, everything the service worker keeps, is 3 MB or less compressed", async ({

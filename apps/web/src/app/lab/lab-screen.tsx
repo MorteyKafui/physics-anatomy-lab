@@ -134,7 +134,7 @@ import {
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
 import { FormulaBox, Sym } from "./formula";
 import { graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
-import { AnalysePanel, GraphPanel, TableBuilder, TutorPanel } from "./lazy-panels";
+import { AnalysePanel, GraphPanel, PendulumWhatIf, TableBuilder, TutorPanel } from "./lazy-panels";
 import { HelpMenu } from "./tutor/help-menu";
 import { flagsFor, useTable } from "./table-builder";
 import { backToPractice, useAttempt, type AttemptHandle } from "./use-attempt";
@@ -220,6 +220,10 @@ export function LabScreen() {
   const aiStatus = useAiStatus();
   const showHint = useCallback(() => setTab("tips"), []);
   const showAsk = useCallback(() => setTab("ask"), []);
+  // What if (ai-tutor-brief.md decision 6): open, and opened at least once (it then stays
+  // mounted, so it can close smoothly and keep the student's scenario).
+  const [whatIf, setWhatIf] = useState({ open: false, used: false });
+  const openWhatIf = useCallback(() => setWhatIf({ open: true, used: true }), []);
   // Rules the coach has already acted on during this timing: a mistake counts once, however
   // many times the rules are re-checked while the student carries on counting.
   const acted = useRef(new Set<string>());
@@ -1047,6 +1051,7 @@ export function LabScreen() {
       <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
         <Rail
           current="lab"
+          {...(state.mode === "exam" ? {} : { onWhatIf: openWhatIf })}
           help={
             <HelpMenu
               status={aiStatus}
@@ -1080,7 +1085,15 @@ export function LabScreen() {
             aiStatus={aiStatus}
             onHint={showHint}
             onAsk={showAsk}
+            onWhatIf={openWhatIf}
           />
+          {whatIf.used && (
+            <PendulumWhatIf
+              open={whatIf.open}
+              onOpenChange={(open: boolean) => setWhatIf({ open, used: true })}
+              benchLength={length}
+            />
+          )}
           {handle.attempt.mode === "exam" &&
             exam.startedAt !== undefined &&
             exam.handedInAt === undefined && (
@@ -1839,6 +1852,7 @@ const LabHeader = memo(function LabHeader({
   aiStatus,
   onHint,
   onAsk,
+  onWhatIf,
 }: {
   handle: AttemptHandle;
   labels: boolean;
@@ -1860,6 +1874,7 @@ const LabHeader = memo(function LabHeader({
   aiStatus: AiStatus | undefined;
   onHint: () => void;
   onAsk: () => void;
+  onWhatIf: () => void;
 }) {
   const state = handle.state;
   const stepIndex = STEPS.indexOf(state.step);
@@ -2131,6 +2146,13 @@ const LabHeader = memo(function LabHeader({
         coachOn={coachIsOn(state)}
         place="header"
       />
+      {/* What if: offline and signed out too, never in an exam. On a wide screen it is in the
+          rail, so the header keeps to one row. */}
+      {state.mode !== "exam" && (
+        <Button variant="outline" className="h-11 md:hidden" onClick={onWhatIf}>
+          {t("lab.whatIf.open")}
+        </Button>
+      )}
       <Button
         aria-label={t("lab.snapshot.label")}
         aria-keyshortcuts="C"
