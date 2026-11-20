@@ -3,7 +3,8 @@ import "@pa/i18n/landing";
 import Link from "next/link";
 
 import { Anatomy } from "./_landing/anatomy";
-import { cardsData } from "./_landing/cards-data";
+import { Bento } from "./_landing/bento";
+import { bentoData, cardsData } from "./_landing/cards-data";
 import { CoachDemo } from "./_landing/coach-demo";
 import { ExperimentCards } from "./_landing/experiment-cards";
 import { LandingFooter } from "./_landing/footer";
@@ -157,6 +158,16 @@ export default function Home() {
             <p className="m-0 text-[15px] text-[var(--pa-on-paper-muted)]">
               {t("landing.cards.more")}
             </p>
+          </div>
+        </section>
+
+        <section
+          aria-label={t("landing.bento.label")}
+          className="bg-[var(--pa-ink-950)] [contain-intrinsic-size:auto_1100px] [content-visibility:auto]"
+        >
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-10 px-4 py-[104px] sm:px-8">
+            <h2 className={`${H2} max-w-[14em]`}>{t("landing.bento.title")}</h2>
+            <Bento data={bentoData()} />
           </div>
         </section>
       </main>

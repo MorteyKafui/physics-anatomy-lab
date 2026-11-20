@@ -164,6 +164,34 @@ export const enGBLanding = {
   "landing.cards.mixtures.tip.lid": "Lid, stirrer, thermometer",
   "landing.cards.mixtures.tip.lid.note": "Stir, then read the highest steady temperature.",
 
+  "landing.bento.label": "Features",
+  "landing.bento.title": "Everything a real lab gives you. Plus a teacher who never gets tired.",
+  "landing.bento.voice": "Hear the coach",
+  "landing.bento.voice.about":
+    "Every step and every correction read aloud, with the words on screen. Count along while you time 20 swings.",
+  "landing.bento.offline": "Works offline",
+  "landing.bento.offline.about":
+    "Install it once. The lab, sounds and print sheets keep working when the network doesn't.",
+  "landing.bento.online": "Online: your work syncs",
+  "landing.bento.offlineNow": "Offline: your work is kept on this device",
+  "landing.bento.snapshots": "Snapshots, labelled",
+  "landing.bento.snapshots.about":
+    "Capture any moment. Every image you export carries its figure number, caption and our mark.",
+  "landing.bento.snapshots.fig": "Fig. 3",
+  "landing.bento.snapshots.caption": "Set-up",
+  "landing.bento.exam": "Exam mode",
+  "landing.bento.exam.about":
+    "The coach goes quiet, a countdown runs, and your script is marked the way practicals are marked: tabulation, graph, slope and precautions.",
+  "landing.bento.exam.time": "The pendulum paper allows {minutes} minutes.",
+  "landing.bento.results": "Take your results with you",
+  "landing.bento.results.about":
+    "Download the graph in colour or black and white, the table as CSV or Excel, and the whole report as PDF. Every file keeps its labels and units.",
+  "landing.bento.results.graph":
+    "{colour} graph of T² against l for six lengths, with the line of best fit and a slope triangle. Slope {slope} s² m⁻¹ gives g = {g} m s⁻².",
+  "landing.bento.colours": "Graph colours",
+  "landing.bento.colour": "Colour",
+  "landing.bento.mono": "Black and white",
+
   "landing.footer.label": "Site",
   "landing.footer.tagline": "Physics from first principles.",
   "landing.footer.product": "Product",

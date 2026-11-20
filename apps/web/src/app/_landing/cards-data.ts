@@ -1,5 +1,7 @@
+import { fitLine } from "@pa/analysis";
 import {
   benchPeriod,
+  EXAM_MINUTES,
   convergingLens,
   correctBench,
   correctMixturesBench,
@@ -93,5 +95,27 @@ export function cardsData(): CardsData {
       badges: peaks.map((p) => `θ = ${p.toFixed(1)} °C`),
       calorimeterKg: methodOfMixtures.calorimeter.mass,
     },
+  };
+}
+
+export interface BentoData {
+  /** The pendulum's T² against l at the card's six lengths, with its best line and the g it gives. */
+  graph: { points: { x: number; y: number }[]; slope: number; intercept: number; g: number };
+  /** The pendulum exam's time, minutes. */
+  examMinutes: number;
+}
+
+/** The feature tiles' numbers: the graph a student would export, and the exam's time. */
+export function bentoData(): BentoData {
+  const points = PENDULUM_LENGTHS.map((l) => ({ x: l, y: benchPeriod(G, l) ** 2 }));
+  const fit = fitLine(points);
+  return {
+    graph: {
+      points,
+      slope: fit.slope,
+      intercept: fit.intercept,
+      g: (4 * Math.PI ** 2) / fit.slope,
+    },
+    examMinutes: EXAM_MINUTES,
   };
 }
