@@ -1934,6 +1934,7 @@ const LabHeader = memo(function LabHeader({
   return (
     <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
       <Link
+        prefetch={false}
         href="/"
         aria-label={t("lab.header.back")}
         className="flex size-11 items-center justify-center md:hidden"

@@ -5,6 +5,10 @@ import { WEB } from "../playwright.config";
 
 import { LAB, toMeasure } from "./walk";
 
+// Each budget is measured alone, one test after another: a page measured beside another test's
+// animating page would be timed against a busy CPU.
+test.describe.configure({ mode: "default" });
+
 // Master plan section 13: Largest Contentful Paint on the landing page over slow 4G is 2.5 s or less.
 const LCP_BUDGET_MS = 2500;
 

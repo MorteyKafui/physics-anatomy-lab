@@ -8,11 +8,20 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { landing, SCENES, sceneAria, sceneName } from "./scenes";
 import { stillPage } from "./use-lite";
 
-/** Particles per frame while it runs, and in the one finished pattern drawn when still. */
-const PER_FRAME = 70;
+/**
+ * It draws 30 times a second, not 60: a background needs no more, and a low-cost phone keeps the
+ * time for the page. Each draw drops 140 particles (the board's 70 a frame at 60 fps); every
+ * eighth draw dims the old ones, as much as the board's dimming of 0.4% a frame adds up to.
+ */
+const DRAW_MS = 1000 / 30;
+const PER_DRAW = 140;
+const DIM_EVERY = 8;
+const DIM = 1 - Math.pow(1 - 0.004, 2 * DIM_EVERY);
+/** The one finished pattern drawn when still. */
 const FINISHED = 9000;
-/** Frames spent fading the old pattern when the scene changes. */
-const FADE_FRAMES = 45;
+/** Draws spent fading the old pattern when the scene changes, and how much each fades. */
+const FADE_DRAWS = 23;
+const FADE = 1 - Math.pow(1 - 0.09, 2);
 
 const rgba = (hex: string, a: number) =>
   `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${a})`;
@@ -64,17 +73,23 @@ export function HeroStage({ children }: { children: ReactNode }) {
       }
     };
 
-    const frame = () => {
+    let last = 0;
+    let draws = 0;
+    const frame = (now: number) => {
+      raf = requestAnimationFrame(frame);
+      if (now - last < DRAW_MS - 2) return;
+      last = now;
       if (fade > 0) {
-        g.fillStyle = rgba(colour.ink950, 0.09);
+        g.fillStyle = rgba(colour.ink950, FADE);
         g.fillRect(0, 0, w, h);
         fade--;
-      } else {
-        g.fillStyle = rgba(colour.ink950, 0.004);
-        g.fillRect(0, 0, w, h);
-        drop(PER_FRAME);
+        return;
       }
-      raf = requestAnimationFrame(frame);
+      if (++draws % DIM_EVERY === 0) {
+        g.fillStyle = rgba(colour.ink950, DIM);
+        g.fillRect(0, 0, w, h);
+      }
+      drop(PER_DRAW);
     };
 
     const sync = () => {
@@ -89,7 +104,7 @@ export function HeroStage({ children }: { children: ReactNode }) {
       while (n === sceneRef.current) n = Math.floor(Math.random() * SCENES.length);
       sceneRef.current = n;
       setScene(n);
-      fade = FADE_FRAMES;
+      fade = FADE_DRAWS;
       timer = setTimeout(nextScene, 9000 + Math.random() * 5000);
     };
 

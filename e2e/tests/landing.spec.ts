@@ -88,7 +88,11 @@ test("every link goes somewhere real (brief, decision 7)", async ({ page, reques
     if (href.startsWith("#")) {
       await expect(page.locator(href), href).toHaveCount(1);
     } else {
-      const response = await request.get(new URL(href, WEB).href);
+      // A fresh connection each time: a reused keep-alive socket can be closed by the server at the
+      // moment it is reused (Node's 5 s idle timeout), which reads as ECONNRESET.
+      const response = await request.get(new URL(href, WEB).href, {
+        headers: { connection: "close" },
+      });
       expect(response.status(), href).toBe(200);
     }
   }
