@@ -7,6 +7,8 @@ import { LandingHeader } from "./_landing/header";
 import { HeroStage } from "./_landing/hero-stage";
 import "./_landing/landing.css";
 
+// Links here never prefetch: the lab is the biggest download on the site, and a visitor on a
+// low-cost phone pays for it only if they choose to go (Lite mode; brief, decision 9).
 const START = "/lab/simple-pendulum";
 // Until /sign-in is built (landing page brief, decision 6), signing up starts at the teacher's
 // classes, which ask a signed-out visitor to sign in.
@@ -38,12 +40,14 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
+              prefetch={false}
               href={START}
               className={`bg-[var(--pa-accent)] px-[26px] py-4 text-[17px] font-semibold text-[var(--pa-ink-950)] no-underline ${focus}`}
             >
               {t("landing.hero.start")}
             </Link>
             <Link
+              prefetch={false}
               href={SIGN_UP.href}
               className={`border border-[var(--pa-dash-quiet)] bg-[rgba(13,13,13,.85)] px-6 py-[15px] text-[17px] font-medium text-[var(--pa-text)] no-underline ${focus}`}
             >

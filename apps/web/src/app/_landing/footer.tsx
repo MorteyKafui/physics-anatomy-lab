@@ -36,6 +36,7 @@ export function LandingFooter({ product }: { product: NavLink[] }) {
             </span>
             {product.map((l) => (
               <Link
+                prefetch={false}
                 key={l.href}
                 href={l.href}
                 className="text-[var(--pa-text-soft)] no-underline hover:text-[var(--pa-text)]"

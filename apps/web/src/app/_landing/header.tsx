@@ -72,6 +72,7 @@ export function LandingHeader({ links, signUp }: { links: NavLink[]; signUp: Nav
           )}
           <div className="flex items-center gap-1.5">
             <Link
+              prefetch={false}
               href={signUp.href}
               className={`whitespace-nowrap bg-[var(--pa-text)] px-3.5 py-[9px] text-[15px] font-semibold text-[var(--pa-ink-950)] no-underline ${focus}`}
             >
