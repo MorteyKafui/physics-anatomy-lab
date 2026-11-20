@@ -79,6 +79,13 @@ export function TimeIt() {
     amplitude: (simplePendulum.amplitudeDeg * Math.PI) / 180,
     /** +1 when let go on the right, -1 on the left. */
     side: 1,
+    /** The exact period of the current swing, s, worked out once when the bob is let go. */
+    period: periodExact({
+      length: L,
+      g: G,
+      amplitude: (simplePendulum.amplitudeDeg * Math.PI) / 180,
+    }),
+    amplitudeDeg: simplePendulum.amplitudeDeg as number,
     releasedAt: 0,
     held: false,
     swinging: false,
@@ -101,15 +108,8 @@ export function TimeIt() {
         el.height = Math.round(CANVAS_HEIGHT * dpr);
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // The ruled background is CSS on the canvas, so a frame draws only the stand and the bob.
       g.clearRect(0, 0, w, CANVAS_HEIGHT);
-      g.strokeStyle = colour.ink800;
-      g.lineWidth = 1;
-      for (let x = 0; x < w; x += 20) {
-        g.beginPath();
-        g.moveTo(x, 0);
-        g.lineTo(x, CANVAS_HEIGHT);
-        g.stroke();
-      }
       const px = w / 2;
       const bx = px + THREAD_PX * Math.sin(s.angle);
       const by = PIVOT_Y + THREAD_PX * Math.cos(s.angle);
@@ -133,10 +133,8 @@ export function TimeIt() {
 
     const frame = (now: number) => {
       if (s.swinging && !s.held) {
-        const period = periodExact({ length: L, g: G, amplitude: s.amplitude });
-        const deg = (s.amplitude * 180) / Math.PI;
         // bobAngle starts at the far left; a bob let go on the right starts mirrored.
-        s.angle = -s.side * bobAngle((now - s.releasedAt) / 1000, period, deg);
+        s.angle = -s.side * bobAngle((now - s.releasedAt) / 1000, s.period, s.amplitudeDeg);
       }
       draw();
       // Only a swinging bob needs the next frame; a held or still one is drawn when it moves.
@@ -151,6 +149,8 @@ export function TimeIt() {
     s.swinging = !stillPage();
     s.releasedAt = performance.now();
     draw();
+    // Tells tests the demo has hydrated and answers taps.
+    el.closest("figure")?.setAttribute("data-ready", "true");
     const seen = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? false;
       if (visible) kick();
@@ -175,6 +175,8 @@ export function TimeIt() {
     if (!s.held) return;
     s.held = false;
     s.amplitude = Math.max(Math.abs(s.angle), 1e-3);
+    s.amplitudeDeg = (s.amplitude * 180) / Math.PI;
+    s.period = periodExact({ length: L, g: G, amplitude: s.amplitude });
     s.side = s.angle >= 0 ? 1 : -1;
     s.releasedAt = performance.now();
     s.swinging = true;
@@ -208,7 +210,7 @@ export function TimeIt() {
         aria-valuetext={t("landing.timeIt.valueText", { deg: r.swingDeg })}
         width={460}
         height={CANVAS_HEIGHT}
-        className="block h-[300px] w-full cursor-grab touch-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--pa-accent)]"
+        className="block h-[300px] w-full cursor-grab touch-none bg-[linear-gradient(90deg,var(--pa-ink-800)_1px,transparent_1px)] bg-[length:20px_100%] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--pa-accent)]"
         onPointerDown={(e) => {
           e.currentTarget.setPointerCapture(e.pointerId);
           hold(angleAt(e));

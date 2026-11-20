@@ -1,6 +1,6 @@
 import { gzipSync } from "node:zlib";
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { WEB } from "../playwright.config";
 
 import { LAB, toMeasure } from "./walk";
@@ -65,30 +65,51 @@ test("the landing page does not shift as it loads: CLS is 0", async ({ page }) =
 test("the landing page answers a tap within 200 ms on the benchmark phone (INP)", async ({
   page,
 }, info) => {
-  // Landing page brief, decision 9: the slowest of the page's own interactions, at 6× CPU.
+  // Landing page brief, decision 9: the slowest of the page's own interactions, at 6× CPU, once
+  // the demos have hydrated (as the lab's own test measures the lab once it is ready).
   await page.goto(WEB, { waitUntil: "load" });
+  await expect(page.locator("figure[data-ready]")).toHaveCount(1);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Emulation.setCPUThrottlingRate", { rate: 6 });
+  type Seen = { name: string; target: string; duration: number }[];
   await page.evaluate(() => {
-    (window as unknown as { slowest: number }).slowest = 0;
+    const seen: Seen = [];
+    (window as unknown as { seen: Seen }).seen = seen;
     new PerformanceObserver((list) => {
-      for (const e of list.getEntries())
-        (window as unknown as { slowest: number }).slowest = Math.max(
-          (window as unknown as { slowest: number }).slowest,
-          e.duration,
-        );
+      for (const e of list.getEntries() as (PerformanceEntry & { target?: Element })[])
+        seen.push({
+          name: e.name,
+          target: (e.target?.textContent ?? "").trim().slice(0, 24),
+          duration: e.duration,
+        });
     }).observe({ type: "event", buffered: true, durationThreshold: 16 } as PerformanceObserverInit);
   });
+  // A visitor scrolls to a demo and then taps it; scrolling renders the sections that
+  // content-visibility skipped, and is not part of a tap's response.
+  const settle = async (where: Locator) => {
+    await where.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1000);
+  };
   const demo = page.getByRole("figure").filter({ hasText: "Drag the bob" });
+  await settle(demo);
   for (const name of ["one", "zero", "one", "zero"])
     await demo.getByRole("button", { name }).click();
   const part = page.locator("#anatomy").getByRole("button", { name: /^Split cork/ });
+  await settle(part);
   await part.click();
   await page.locator("#anatomy").getByRole("slider").fill("100");
   await page.waitForTimeout(500);
-  const slowest = await page.evaluate(() => (window as unknown as { slowest: number }).slowest);
-  info.annotations.push({ type: "slowest interaction", description: `${Math.round(slowest)} ms` });
-  expect(slowest).toBeLessThanOrEqual(200);
+  const seen = await page.evaluate(() => (window as unknown as { seen: Seen }).seen);
+  const slowest = seen.reduce((a, b) => (b.duration > a.duration ? b : a), {
+    name: "none",
+    target: "",
+    duration: 0,
+  });
+  info.annotations.push({
+    type: "slowest interaction",
+    description: `${Math.round(slowest.duration)} ms (${slowest.name} on "${slowest.target}")`,
+  });
+  expect(slowest.duration).toBeLessThanOrEqual(200);
 });
 
 /*
