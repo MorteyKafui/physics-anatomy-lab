@@ -5,7 +5,7 @@ import "@pa/i18n/landing";
 import { colour, topicHue } from "@pa/ui";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { landing, SCENES, sceneAria, sceneName } from "./scenes";
+import { landing, SCENES, sceneAria } from "./scenes";
 import { stillPage } from "./use-lite";
 
 /**
@@ -169,13 +169,6 @@ export function HeroStage({ children }: { children: ReactNode }) {
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(13,13,13,0)_0%,rgba(13,13,13,.6)_22%,rgba(13,13,13,.97)_34%,rgba(13,13,13,.97)_66%,rgba(13,13,13,.6)_78%,rgba(13,13,13,0)_100%)]"
       />
       <div className="relative mx-auto box-border flex w-full max-w-[1080px] flex-col items-center gap-[26px] px-4 pb-[120px] pt-[140px] text-center sm:px-8">
-        <span className="inline-flex items-center gap-2.5 border border-[var(--pa-dash-chip-grey-line)] bg-[rgba(13,13,13,.85)] px-3 py-[7px] text-sm text-[var(--pa-text-soft)]">
-          <span
-            className="pa-pulse size-2 shrink-0 rounded-full"
-            style={{ background: `var(--pa-topic-${s.topic})` }}
-          />
-          <span>{t("landing.hero.behind", { scene: t(sceneName(s)) })}</span>
-        </span>
         {children}
       </div>
     </section>

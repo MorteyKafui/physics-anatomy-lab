@@ -18,11 +18,6 @@ export const enGBLanding = {
   "landing.hero.lede":
     "Build real experiments piece by piece, take your own readings, and get coached the moment something goes wrong. A full physics lab in your browser, even offline.",
   "landing.hero.start": "Start an experiment",
-  "landing.hero.behind": "Behind this text: {scene}, one particle at a time",
-  "landing.scene.twoSlits": "two slits",
-  "landing.scene.detector": "two slits with a detector watching which slit",
-  "landing.scene.oneSlit": "a single slit",
-  "landing.scene.fourSlits": "four slits",
   "landing.scene.twoSlits.aria":
     "Particles landing one at a time behind two slits, building interference stripes.",
   "landing.scene.detector.aria":
