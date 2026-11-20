@@ -833,7 +833,7 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 
 ### Phase 5: Brand and landing page
 
-- [ ] Final logo set: SVG, favicon, PWA icons, social card
+- [x] Final logo set: SVG, favicon, PWA icons, social card
 - [ ] Landing page: shader hero, isometric cards, product demos
 - [ ] Experiment pages with structured data
 - [ ] Team, partners, contributors and donate pages

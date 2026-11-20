@@ -16,7 +16,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -p .",
     "test": "bun test",
-    "themes": "bun scripts/build-themes.ts && prettier --write src/themes.css"
+    "themes": "bun scripts/build-themes.ts && prettier --write src/themes.css",
+    "brand": "bun scripts/brand.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -27,8 +28,11 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/opentype.js": "^1.3.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "opentype.js": "^2.0.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "tailwindcss": "^4.3.3"
