@@ -16,6 +16,10 @@ validation", levels 1 and 2).
   (heat lost to the room, mixing, a lagging thermometer) as heat flows with SciPy's DOP853, and
   finds the thermometer's peak by event location. `calorimetry.json` is its fixture; the
   TypeScript's closed form must match it to 10⁻⁸ °C (the integrator's own error is about 10⁻⁹).
+- `pa_validation/diffraction.py` integrates each slit's complex amplitude over its opening with
+  SciPy's `quad` and adds the openings as phasors (or, with a which-slit detector, as
+  intensities). `diffraction.json` is its fixture; `slitsIntensity` in `packages/physics` must
+  match it to 10⁻¹⁰.
 - `pa_validation/fit.py` fits straight lines with SciPy's `linregress` and NumPy's least squares.
 - `pa_validation/outliers.py` computes deleted residuals from the hat matrix and the Bonferroni
   critical value from `scipy.stats.t`.

@@ -1,0 +1,2489 @@
+{
+  "model": "Fraunhofer N-slit, SciPy quad over each opening, phasors added (or intensities)",
+  "cases": [
+    {
+      "name": "two slits (hero)",
+      "count": 2,
+      "width": 2e-06,
+      "spacing": 1.1249999999999999e-05,
+      "wavelength": 5.000000000000001e-07,
+      "points": [
+        {
+          "sinTheta": -0.2,
+          "intensity": 4.86406817471433e-31,
+          "whichSlit": 0.05469626250521153
+        },
+        {
+          "sinTheta": -0.195,
+          "intensity": 0.008106135567902371,
+          "whichSlit": 0.06766558765290541
+        },
+        {
+          "sinTheta": -0.19,
+          "intensity": 0.034671176556094786,
+          "whichSlit": 0.08220150093673032
+        },
+        {
+          "sinTheta": -0.185,
+          "intensity": 0.07484820461990349,
+          "whichSlit": 0.09832285737999046
+        },
+        {
+          "sinTheta": -0.18,
+          "intensity": 0.11319710774748824,
+          "whichSlit": 0.11603672861556799
+        },
+        {
+          "sinTheta": -0.175,
+          "intensity": 0.13018691699855225,
+          "whichSlit": 0.13533790946735255
+        },
+        {
+          "sinTheta": -0.17,
+          "intensity": 0.11356285685441944,
+          "whichSlit": 0.15620852663722667
+        },
+        {
+          "sinTheta": -0.165,
+          "intensity": 0.06846013435200743,
+          "whichSlit": 0.17861775566677046
+        },
+        {
+          "sinTheta": -0.16,
+          "intensity": 0.019339096837128155,
+          "whichSlit": 0.2025216513253134
+        },
+        {
+          "sinTheta": -0.155,
+          "intensity": 0.00035121293896226634,
+          "whichSlit": 0.22786309548752082
+        },
+        {
+          "sinTheta": -0.15,
+          "intensity": 0.03728118654044907,
+          "whichSlit": 0.2545718654155197
+        },
+        {
+          "sinTheta": -0.145,
+          "intensity": 0.1301975217881619,
+          "whichSlit": 0.2825648241647887
+        },
+        {
+          "sinTheta": -0.14,
+          "intensity": 0.24749303608571127,
+          "whichSlit": 0.3117462336022783
+        },
+        {
+          "sinTheta": -0.135,
+          "intensity": 0.33728333252572573,
+          "whichSlit": 0.34200818927285326
+        },
+        {
+          "sinTheta": -0.13,
+          "intensity": 0.35289129356251386,
+          "whichSlit": 0.3732311750896548
+        },
+        {
+          "sinTheta": -0.125,
+          "intensity": 0.28019024393976155,
+          "whichSlit": 0.40528473456935127
+        },
+        {
+          "sinTheta": -0.12,
+          "intensity": 0.15133503978275875,
+          "whichSlit": 0.4380282540982754
+        },
+        {
+          "sinTheta": -0.115,
+          "intensity": 0.03472621856221581,
+          "whichSlit": 0.47131185251400726
+        },
+        {
+          "sinTheta": -0.11,
+          "intensity": 0.0031085546941181158,
+          "whichSlit": 0.5049773701326159
+        },
+        {
+          "sinTheta": -0.105,
+          "intensity": 0.09444911580648195,
+          "whichSlit": 0.5388594492575662
+        },
+        {
+          "sinTheta": -0.1,
+          "intensity": 0.2863933485924601,
+          "whichSlit": 0.5727866971849186
+        },
+        {
+          "sinTheta": -0.095,
+          "intensity": 0.5002635082423391,
+          "whichSlit": 0.6065829217825676
+        },
+        {
+          "sinTheta": -0.09,
+          "intensity": 0.6361282766339136,
+          "whichSlit": 0.6400684288800014
+        },
+        {
+          "sinTheta": -0.085,
+          "intensity": 0.6234702635401078,
+          "whichSlit": 0.6730613699692473
+        },
+        {
+          "sinTheta": -0.08,
+          "intensity": 0.4616766330776699,
+          "whichSlit": 0.7053791280962257
+        },
+        {
+          "sinTheta": -0.075,
+          "intensity": 0.22743168630112245,
+          "whichSlit": 0.7368397293222503
+        },
+        {
+          "sinTheta": -0.07,
+          "intensity": 0.04181334515360648,
+          "whichSlit": 0.7672632667641619
+        },
+        {
+          "sinTheta": -0.065,
+          "intensity": 0.011003310671395365,
+          "whichSlit": 0.7964733239834697
+        },
+        {
+          "sinTheta": -0.06,
+          "intensity": 0.1698939752792083,
+          "whichSlit": 0.8242983843933196
+        },
+        {
+          "sinTheta": -0.055,
+          "intensity": 0.45865420928091344,
+          "whichSlit": 0.8505732133889967
+        },
+        {
+          "sinTheta": -0.05,
+          "intensity": 0.7469788850256457,
+          "whichSlit": 0.8751402000833803
+        },
+        {
+          "sinTheta": -0.045,
+          "intensity": 0.896466758892794,
+          "whichSlit": 0.8978506458421074
+        },
+        {
+          "sinTheta": -0.04,
+          "intensity": 0.8308507407053698,
+          "whichSlit": 0.9185659872614369
+        },
+        {
+          "sinTheta": -0.035,
+          "intensity": 0.5779671759862519,
+          "whichSlit": 0.937158941810692
+        },
+        {
+          "sinTheta": -0.03,
+          "intensity": 0.2603140055810825,
+          "whichSlit": 0.9535145650649315
+        },
+        {
+          "sinTheta": -0.025,
+          "intensity": 0.03682446397996937,
+          "whichSlit": 0.967531209275078
+        },
+        {
+          "sinTheta": -0.02,
+          "intensity": 0.023960805505582678,
+          "whichSlit": 0.9791213739536045
+        },
+        {
+          "sinTheta": -0.015,
+          "intensity": 0.23593642927677308,
+          "whichSlit": 0.9882124401842739
+        },
+        {
+          "sinTheta": -0.01,
+          "intensity": 0.5751800201563885,
+          "whichSlit": 0.9947472814836563
+        },
+        {
+          "sinTheta": -0.005,
+          "intensity": 0.8790452916354449,
+          "whichSlit": 0.9986847452380949
+        },
+        {
+          "sinTheta": 0.0,
+          "intensity": 0.9999999999999996,
+          "whichSlit": 0.9999999999999996
+        },
+        {
+          "sinTheta": 0.005,
+          "intensity": 0.8790452916354449,
+          "whichSlit": 0.9986847452380949
+        },
+        {
+          "sinTheta": 0.01,
+          "intensity": 0.5751800201563885,
+          "whichSlit": 0.9947472814836563
+        },
+        {
+          "sinTheta": 0.015,
+          "intensity": 0.23593642927677308,
+          "whichSlit": 0.9882124401842739
+        },
+        {
+          "sinTheta": 0.02,
+          "intensity": 0.023960805505582678,
+          "whichSlit": 0.9791213739536045
+        },
+        {
+          "sinTheta": 0.025,
+          "intensity": 0.03682446397996937,
+          "whichSlit": 0.967531209275078
+        },
+        {
+          "sinTheta": 0.03,
+          "intensity": 0.2603140055810825,
+          "whichSlit": 0.9535145650649315
+        },
+        {
+          "sinTheta": 0.035,
+          "intensity": 0.5779671759862519,
+          "whichSlit": 0.937158941810692
+        },
+        {
+          "sinTheta": 0.04,
+          "intensity": 0.8308507407053698,
+          "whichSlit": 0.9185659872614369
+        },
+        {
+          "sinTheta": 0.045,
+          "intensity": 0.896466758892794,
+          "whichSlit": 0.8978506458421074
+        },
+        {
+          "sinTheta": 0.05,
+          "intensity": 0.7469788850256457,
+          "whichSlit": 0.8751402000833803
+        },
+        {
+          "sinTheta": 0.055,
+          "intensity": 0.45865420928091344,
+          "whichSlit": 0.8505732133889967
+        },
+        {
+          "sinTheta": 0.06,
+          "intensity": 0.1698939752792083,
+          "whichSlit": 0.8242983843933196
+        },
+        {
+          "sinTheta": 0.065,
+          "intensity": 0.011003310671395365,
+          "whichSlit": 0.7964733239834697
+        },
+        {
+          "sinTheta": 0.07,
+          "intensity": 0.04181334515360648,
+          "whichSlit": 0.7672632667641619
+        },
+        {
+          "sinTheta": 0.075,
+          "intensity": 0.22743168630112245,
+          "whichSlit": 0.7368397293222503
+        },
+        {
+          "sinTheta": 0.08,
+          "intensity": 0.4616766330776699,
+          "whichSlit": 0.7053791280962257
+        },
+        {
+          "sinTheta": 0.085,
+          "intensity": 0.6234702635401078,
+          "whichSlit": 0.6730613699692473
+        },
+        {
+          "sinTheta": 0.09,
+          "intensity": 0.6361282766339136,
+          "whichSlit": 0.6400684288800014
+        },
+        {
+          "sinTheta": 0.095,
+          "intensity": 0.5002635082423391,
+          "whichSlit": 0.6065829217825676
+        },
+        {
+          "sinTheta": 0.1,
+          "intensity": 0.2863933485924601,
+          "whichSlit": 0.5727866971849186
+        },
+        {
+          "sinTheta": 0.105,
+          "intensity": 0.09444911580648195,
+          "whichSlit": 0.5388594492575662
+        },
+        {
+          "sinTheta": 0.11,
+          "intensity": 0.0031085546941181158,
+          "whichSlit": 0.5049773701326159
+        },
+        {
+          "sinTheta": 0.115,
+          "intensity": 0.03472621856221581,
+          "whichSlit": 0.47131185251400726
+        },
+        {
+          "sinTheta": 0.12,
+          "intensity": 0.15133503978275875,
+          "whichSlit": 0.4380282540982754
+        },
+        {
+          "sinTheta": 0.125,
+          "intensity": 0.28019024393976155,
+          "whichSlit": 0.40528473456935127
+        },
+        {
+          "sinTheta": 0.13,
+          "intensity": 0.35289129356251386,
+          "whichSlit": 0.3732311750896548
+        },
+        {
+          "sinTheta": 0.135,
+          "intensity": 0.33728333252572573,
+          "whichSlit": 0.34200818927285326
+        },
+        {
+          "sinTheta": 0.14,
+          "intensity": 0.24749303608571127,
+          "whichSlit": 0.3117462336022783
+        },
+        {
+          "sinTheta": 0.145,
+          "intensity": 0.1301975217881619,
+          "whichSlit": 0.2825648241647887
+        },
+        {
+          "sinTheta": 0.15,
+          "intensity": 0.03728118654044907,
+          "whichSlit": 0.2545718654155197
+        },
+        {
+          "sinTheta": 0.155,
+          "intensity": 0.00035121293896226634,
+          "whichSlit": 0.22786309548752082
+        },
+        {
+          "sinTheta": 0.16,
+          "intensity": 0.019339096837128155,
+          "whichSlit": 0.2025216513253134
+        },
+        {
+          "sinTheta": 0.165,
+          "intensity": 0.06846013435200743,
+          "whichSlit": 0.17861775566677046
+        },
+        {
+          "sinTheta": 0.17,
+          "intensity": 0.11356285685441944,
+          "whichSlit": 0.15620852663722667
+        },
+        {
+          "sinTheta": 0.175,
+          "intensity": 0.13018691699855225,
+          "whichSlit": 0.13533790946735255
+        },
+        {
+          "sinTheta": 0.18,
+          "intensity": 0.11319710774748824,
+          "whichSlit": 0.11603672861556799
+        },
+        {
+          "sinTheta": 0.185,
+          "intensity": 0.07484820461990349,
+          "whichSlit": 0.09832285737999046
+        },
+        {
+          "sinTheta": 0.19,
+          "intensity": 0.034671176556094786,
+          "whichSlit": 0.08220150093673032
+        },
+        {
+          "sinTheta": 0.195,
+          "intensity": 0.008106135567902371,
+          "whichSlit": 0.06766558765290541
+        },
+        {
+          "sinTheta": 0.2,
+          "intensity": 4.86406817471433e-31,
+          "whichSlit": 0.05469626250521153
+        }
+      ]
+    },
+    {
+      "name": "one slit (hero)",
+      "count": 1,
+      "width": 6.5e-06,
+      "spacing": 6.5e-06,
+      "wavelength": 5.000000000000001e-07,
+      "points": [
+        {
+          "sinTheta": -0.2,
+          "intensity": 0.013557081590175605,
+          "whichSlit": 0.013557081590175605
+        },
+        {
+          "sinTheta": -0.195,
+          "intensity": 0.015576969768283044,
+          "whichSlit": 0.015576969768283044
+        },
+        {
+          "sinTheta": -0.19,
+          "intensity": 0.016460496858082097,
+          "whichSlit": 0.016460496858082097
+        },
+        {
+          "sinTheta": -0.185,
+          "intensity": 0.016002867068816318,
+          "whichSlit": 0.016002867068816318
+        },
+        {
+          "sinTheta": -0.18,
+          "intensity": 0.014209565046468848,
+          "whichSlit": 0.014209565046468848
+        },
+        {
+          "sinTheta": -0.175,
+          "intensity": 0.011319532307950202,
+          "whichSlit": 0.011319532307950202
+        },
+        {
+          "sinTheta": -0.17,
+          "intensity": 0.007793004843770113,
+          "whichSlit": 0.007793004843770113
+        },
+        {
+          "sinTheta": -0.165,
+          "intensity": 0.0042621715273749045,
+          "whichSlit": 0.0042621715273749045
+        },
+        {
+          "sinTheta": -0.16,
+          "intensity": 0.001448404399339637,
+          "whichSlit": 0.001448404399339637
+        },
+        {
+          "sinTheta": -0.155,
+          "intensity": 5.5374640501757774e-05,
+          "whichSlit": 5.5374640501757774e-05
+        },
+        {
+          "sinTheta": -0.15,
+          "intensity": 0.0006520725444516272,
+          "whichSlit": 0.0006520725444516272
+        },
+        {
+          "sinTheta": -0.145,
+          "intensity": 0.0035628256308226636,
+          "whichSlit": 0.0035628256308226636
+        },
+        {
+          "sinTheta": -0.14,
+          "intensity": 0.008782260875885859,
+          "whichSlit": 0.008782260875885859
+        },
+        {
+          "sinTheta": -0.135,
+          "intensity": 0.0159314629513458,
+          "whichSlit": 0.0159314629513458
+        },
+        {
+          "sinTheta": -0.13,
+          "intensity": 0.024267357418885114,
+          "whichSlit": 0.024267357418885114
+        },
+        {
+          "sinTheta": -0.125,
+          "intensity": 0.032750973666022705,
+          "whichSlit": 0.032750973666022705
+        },
+        {
+          "sinTheta": -0.12,
+          "intensity": 0.04017242720976104,
+          "whichSlit": 0.04017242720976104
+        },
+        {
+          "sinTheta": -0.115,
+          "intensity": 0.04532217120543963,
+          "whichSlit": 0.04532217120543963
+        },
+        {
+          "sinTheta": -0.11,
+          "intensity": 0.047190408232628135,
+          "whichSlit": 0.047190408232628135
+        },
+        {
+          "sinTheta": -0.105,
+          "intensity": 0.04517062743191303,
+          "whichSlit": 0.04517062743191303
+        },
+        {
+          "sinTheta": -0.1,
+          "intensity": 0.03923998558520856,
+          "whichSlit": 0.03923998558520856
+        },
+        {
+          "sinTheta": -0.095,
+          "intensity": 0.03008933696547124,
+          "whichSlit": 0.03008933696547124
+        },
+        {
+          "sinTheta": -0.09,
+          "intensity": 0.019179388983237206,
+          "whichSlit": 0.019179388983237206
+        },
+        {
+          "sinTheta": -0.085,
+          "intensity": 0.008706514005653747,
+          "whichSlit": 0.008706514005653747
+        },
+        {
+          "sinTheta": -0.08,
+          "intensity": 0.0014715196471651543,
+          "whichSlit": 0.0014715196471651543
+        },
+        {
+          "sinTheta": -0.075,
+          "intensity": 0.0006561114548333976,
+          "whichSlit": 0.0006561114548333976
+        },
+        {
+          "sinTheta": -0.07,
+          "intensity": 0.009523535109403486,
+          "whichSlit": 0.009523535109403486
+        },
+        {
+          "sinTheta": -0.065,
+          "intensity": 0.03107050207813212,
+          "whichSlit": 0.03107050207813212
+        },
+        {
+          "sinTheta": -0.06,
+          "intensity": 0.06766558765290527,
+          "whichSlit": 0.06766558765290527
+        },
+        {
+          "sinTheta": -0.055,
+          "intensity": 0.12071369266390716,
+          "whichSlit": 0.12071369266390716
+        },
+        {
+          "sinTheta": -0.05,
+          "intensity": 0.19038613151730335,
+          "whichSlit": 0.19038613151730335
+        },
+        {
+          "sinTheta": -0.045,
+          "intensity": 0.27545121576314197,
+          "whichSlit": 0.27545121576314197
+        },
+        {
+          "sinTheta": -0.04,
+          "intensity": 0.3732311750896546,
+          "whichSlit": 0.3732311750896546
+        },
+        {
+          "sinTheta": -0.035,
+          "intensity": 0.47969877193428034,
+          "whichSlit": 0.47969877193428034
+        },
+        {
+          "sinTheta": -0.03,
+          "intensity": 0.58971235178329,
+          "whichSlit": 0.58971235178329
+        },
+        {
+          "sinTheta": -0.025,
+          "intensity": 0.6973729630216572,
+          "whichSlit": 0.6973729630216572
+        },
+        {
+          "sinTheta": -0.02,
+          "intensity": 0.7964733239834699,
+          "whichSlit": 0.7964733239834699
+        },
+        {
+          "sinTheta": -0.015,
+          "intensity": 0.8809974571800266,
+          "whichSlit": 0.8809974571800266
+        },
+        {
+          "sinTheta": -0.01,
+          "intensity": 0.9456230949913094,
+          "whichSlit": 0.9456230949913094
+        },
+        {
+          "sinTheta": -0.005,
+          "intensity": 0.9861773579652258,
+          "whichSlit": 0.9861773579652258
+        },
+        {
+          "sinTheta": 0.0,
+          "intensity": 1.0,
+          "whichSlit": 1.0
+        },
+        {
+          "sinTheta": 0.005,
+          "intensity": 0.9861773579652258,
+          "whichSlit": 0.9861773579652258
+        },
+        {
+          "sinTheta": 0.01,
+          "intensity": 0.9456230949913094,
+          "whichSlit": 0.9456230949913094
+        },
+        {
+          "sinTheta": 0.015,
+          "intensity": 0.8809974571800266,
+          "whichSlit": 0.8809974571800266
+        },
+        {
+          "sinTheta": 0.02,
+          "intensity": 0.7964733239834699,
+          "whichSlit": 0.7964733239834699
+        },
+        {
+          "sinTheta": 0.025,
+          "intensity": 0.6973729630216572,
+          "whichSlit": 0.6973729630216572
+        },
+        {
+          "sinTheta": 0.03,
+          "intensity": 0.58971235178329,
+          "whichSlit": 0.58971235178329
+        },
+        {
+          "sinTheta": 0.035,
+          "intensity": 0.47969877193428034,
+          "whichSlit": 0.47969877193428034
+        },
+        {
+          "sinTheta": 0.04,
+          "intensity": 0.3732311750896546,
+          "whichSlit": 0.3732311750896546
+        },
+        {
+          "sinTheta": 0.045,
+          "intensity": 0.27545121576314197,
+          "whichSlit": 0.27545121576314197
+        },
+        {
+          "sinTheta": 0.05,
+          "intensity": 0.19038613151730335,
+          "whichSlit": 0.19038613151730335
+        },
+        {
+          "sinTheta": 0.055,
+          "intensity": 0.12071369266390716,
+          "whichSlit": 0.12071369266390716
+        },
+        {
+          "sinTheta": 0.06,
+          "intensity": 0.06766558765290527,
+          "whichSlit": 0.06766558765290527
+        },
+        {
+          "sinTheta": 0.065,
+          "intensity": 0.03107050207813212,
+          "whichSlit": 0.03107050207813212
+        },
+        {
+          "sinTheta": 0.07,
+          "intensity": 0.009523535109403486,
+          "whichSlit": 0.009523535109403486
+        },
+        {
+          "sinTheta": 0.075,
+          "intensity": 0.0006561114548333976,
+          "whichSlit": 0.0006561114548333976
+        },
+        {
+          "sinTheta": 0.08,
+          "intensity": 0.0014715196471651543,
+          "whichSlit": 0.0014715196471651543
+        },
+        {
+          "sinTheta": 0.085,
+          "intensity": 0.008706514005653747,
+          "whichSlit": 0.008706514005653747
+        },
+        {
+          "sinTheta": 0.09,
+          "intensity": 0.019179388983237206,
+          "whichSlit": 0.019179388983237206
+        },
+        {
+          "sinTheta": 0.095,
+          "intensity": 0.03008933696547124,
+          "whichSlit": 0.03008933696547124
+        },
+        {
+          "sinTheta": 0.1,
+          "intensity": 0.03923998558520856,
+          "whichSlit": 0.03923998558520856
+        },
+        {
+          "sinTheta": 0.105,
+          "intensity": 0.04517062743191303,
+          "whichSlit": 0.04517062743191303
+        },
+        {
+          "sinTheta": 0.11,
+          "intensity": 0.047190408232628135,
+          "whichSlit": 0.047190408232628135
+        },
+        {
+          "sinTheta": 0.115,
+          "intensity": 0.04532217120543963,
+          "whichSlit": 0.04532217120543963
+        },
+        {
+          "sinTheta": 0.12,
+          "intensity": 0.04017242720976104,
+          "whichSlit": 0.04017242720976104
+        },
+        {
+          "sinTheta": 0.125,
+          "intensity": 0.032750973666022705,
+          "whichSlit": 0.032750973666022705
+        },
+        {
+          "sinTheta": 0.13,
+          "intensity": 0.024267357418885114,
+          "whichSlit": 0.024267357418885114
+        },
+        {
+          "sinTheta": 0.135,
+          "intensity": 0.0159314629513458,
+          "whichSlit": 0.0159314629513458
+        },
+        {
+          "sinTheta": 0.14,
+          "intensity": 0.008782260875885859,
+          "whichSlit": 0.008782260875885859
+        },
+        {
+          "sinTheta": 0.145,
+          "intensity": 0.0035628256308226636,
+          "whichSlit": 0.0035628256308226636
+        },
+        {
+          "sinTheta": 0.15,
+          "intensity": 0.0006520725444516272,
+          "whichSlit": 0.0006520725444516272
+        },
+        {
+          "sinTheta": 0.155,
+          "intensity": 5.5374640501757774e-05,
+          "whichSlit": 5.5374640501757774e-05
+        },
+        {
+          "sinTheta": 0.16,
+          "intensity": 0.001448404399339637,
+          "whichSlit": 0.001448404399339637
+        },
+        {
+          "sinTheta": 0.165,
+          "intensity": 0.0042621715273749045,
+          "whichSlit": 0.0042621715273749045
+        },
+        {
+          "sinTheta": 0.17,
+          "intensity": 0.007793004843770113,
+          "whichSlit": 0.007793004843770113
+        },
+        {
+          "sinTheta": 0.175,
+          "intensity": 0.011319532307950202,
+          "whichSlit": 0.011319532307950202
+        },
+        {
+          "sinTheta": 0.18,
+          "intensity": 0.014209565046468848,
+          "whichSlit": 0.014209565046468848
+        },
+        {
+          "sinTheta": 0.185,
+          "intensity": 0.016002867068816318,
+          "whichSlit": 0.016002867068816318
+        },
+        {
+          "sinTheta": 0.19,
+          "intensity": 0.016460496858082097,
+          "whichSlit": 0.016460496858082097
+        },
+        {
+          "sinTheta": 0.195,
+          "intensity": 0.015576969768283044,
+          "whichSlit": 0.015576969768283044
+        },
+        {
+          "sinTheta": 0.2,
+          "intensity": 0.013557081590175605,
+          "whichSlit": 0.013557081590175605
+        }
+      ]
+    },
+    {
+      "name": "four slits (hero)",
+      "count": 4,
+      "width": 2e-06,
+      "spacing": 5.6249999999999995e-06,
+      "wavelength": 5.000000000000001e-07,
+      "points": [
+        {
+          "sinTheta": -0.2,
+          "intensity": 5.892460042485856e-31,
+          "whichSlit": 0.05469626250521139
+        },
+        {
+          "sinTheta": -0.195,
+          "intensity": 0.005455903677468048,
+          "whichSlit": 0.06766558765290527
+        },
+        {
+          "sinTheta": -0.19,
+          "intensity": 0.02859415225188106,
+          "whichSlit": 0.08220150093673018
+        },
+        {
+          "sinTheta": -0.185,
+          "intensity": 0.07007648214366849,
+          "whichSlit": 0.0983228573799902
+        },
+        {
+          "sinTheta": -0.18,
+          "intensity": 0.11250028562938702,
+          "whichSlit": 0.11603672861556799
+        },
+        {
+          "sinTheta": -0.175,
+          "intensity": 0.12893616444590447,
+          "whichSlit": 0.13533790946735247
+        },
+        {
+          "sinTheta": -0.17,
+          "intensity": 0.1051955548936457,
+          "whichSlit": 0.1562085266372265
+        },
+        {
+          "sinTheta": -0.165,
+          "intensity": 0.05542169464913648,
+          "whichSlit": 0.1786177556667701
+        },
+        {
+          "sinTheta": -0.16,
+          "intensity": 0.012657603207831675,
+          "whichSlit": 0.20252165132531325
+        },
+        {
+          "sinTheta": -0.155,
+          "intensity": 0.00016871219184320805,
+          "whichSlit": 0.22786309548752046
+        },
+        {
+          "sinTheta": -0.15,
+          "intensity": 0.011507147056253293,
+          "whichSlit": 0.2545718654155196
+        },
+        {
+          "sinTheta": -0.145,
+          "intensity": 0.020909673465907816,
+          "whichSlit": 0.28256482416478845
+        },
+        {
+          "sinTheta": -0.14,
+          "intensity": 0.013487563121077472,
+          "whichSlit": 0.311746233602278
+        },
+        {
+          "sinTheta": -0.135,
+          "intensity": 0.0011689469688939025,
+          "whichSlit": 0.3420081892728531
+        },
+        {
+          "sinTheta": -0.13,
+          "intensity": 0.0048752072660497,
+          "whichSlit": 0.3732311750896546
+        },
+        {
+          "sinTheta": -0.125,
+          "intensity": 0.02361028522010651,
+          "whichSlit": 0.40528473456935143
+        },
+        {
+          "sinTheta": -0.12,
+          "intensity": 0.031191267621679467,
+          "whichSlit": 0.4380282540982752
+        },
+        {
+          "sinTheta": -0.115,
+          "intensity": 0.012650059086787513,
+          "whichSlit": 0.4713118525140071
+        },
+        {
+          "sinTheta": -0.11,
+          "intensity": 0.0016762245422196132,
+          "whichSlit": 0.5049773701326158
+        },
+        {
+          "sinTheta": -0.105,
+          "intensity": 0.06699557892033318,
+          "whichSlit": 0.5388594492575662
+        },
+        {
+          "sinTheta": -0.1,
+          "intensity": 0.24445201373445619,
+          "whichSlit": 0.5727866971849187
+        },
+        {
+          "sinTheta": -0.095,
+          "intensity": 0.47728719918320417,
+          "whichSlit": 0.6065829217825678
+        },
+        {
+          "sinTheta": -0.09,
+          "intensity": 0.6351477910440225,
+          "whichSlit": 0.6400684288800017
+        },
+        {
+          "sinTheta": -0.085,
+          "intensity": 0.6117662417287097,
+          "whichSlit": 0.6730613699692473
+        },
+        {
+          "sinTheta": -0.08,
+          "intensity": 0.4175904375716552,
+          "whichSlit": 0.7053791280962256
+        },
+        {
+          "sinTheta": -0.075,
+          "intensity": 0.17689298062773876,
+          "whichSlit": 0.7368397293222503
+        },
+        {
+          "sinTheta": -0.07,
+          "intensity": 0.025787238363511253,
+          "whichSlit": 0.7672632667641623
+        },
+        {
+          "sinTheta": -0.065,
+          "intensity": 0.004855005085829785,
+          "whichSlit": 0.7964733239834699
+        },
+        {
+          "sinTheta": -0.06,
+          "intensity": 0.04638186226973109,
+          "whichSlit": 0.8242983843933199
+        },
+        {
+          "sinTheta": -0.055,
+          "intensity": 0.06092704967925635,
+          "whichSlit": 0.8505732133889969
+        },
+        {
+          "sinTheta": -0.05,
+          "intensity": 0.028430190966174846,
+          "whichSlit": 0.8751402000833807
+        },
+        {
+          "sinTheta": -0.045,
+          "intensity": 0.00034557169125143427,
+          "whichSlit": 0.8978506458421073
+        },
+        {
+          "sinTheta": -0.04,
+          "intensity": 0.020332364844436634,
+          "whichSlit": 0.9185659872614371
+        },
+        {
+          "sinTheta": -0.035,
+          "intensity": 0.06203988359545879,
+          "whichSlit": 0.9371589418106928
+        },
+        {
+          "sinTheta": -0.03,
+          "intensity": 0.06215015564475384,
+          "whichSlit": 0.9535145650649316
+        },
+        {
+          "sinTheta": -0.025,
+          "intensity": 0.014820183722022942,
+          "whichSlit": 0.9675312092750787
+        },
+        {
+          "sinTheta": -0.02,
+          "intensity": 0.01385455064839076,
+          "whichSlit": 0.979121373953605
+        },
+        {
+          "sinTheta": -0.015,
+          "intensity": 0.17560999013217435,
+          "whichSlit": 0.9882124401842745
+        },
+        {
+          "sinTheta": -0.01,
+          "intensity": 0.5062751693886262,
+          "whichSlit": 0.9947472814836568
+        },
+        {
+          "sinTheta": -0.005,
+          "intensity": 0.8518789840656366,
+          "whichSlit": 0.9986847452380951
+        },
+        {
+          "sinTheta": 0.0,
+          "intensity": 1.0,
+          "whichSlit": 1.0
+        },
+        {
+          "sinTheta": 0.005,
+          "intensity": 0.8518789840656366,
+          "whichSlit": 0.9986847452380951
+        },
+        {
+          "sinTheta": 0.01,
+          "intensity": 0.5062751693886262,
+          "whichSlit": 0.9947472814836568
+        },
+        {
+          "sinTheta": 0.015,
+          "intensity": 0.17560999013217435,
+          "whichSlit": 0.9882124401842745
+        },
+        {
+          "sinTheta": 0.02,
+          "intensity": 0.01385455064839076,
+          "whichSlit": 0.979121373953605
+        },
+        {
+          "sinTheta": 0.025,
+          "intensity": 0.014820183722022942,
+          "whichSlit": 0.9675312092750787
+        },
+        {
+          "sinTheta": 0.03,
+          "intensity": 0.06215015564475384,
+          "whichSlit": 0.9535145650649316
+        },
+        {
+          "sinTheta": 0.035,
+          "intensity": 0.06203988359545879,
+          "whichSlit": 0.9371589418106928
+        },
+        {
+          "sinTheta": 0.04,
+          "intensity": 0.020332364844436634,
+          "whichSlit": 0.9185659872614371
+        },
+        {
+          "sinTheta": 0.045,
+          "intensity": 0.00034557169125143427,
+          "whichSlit": 0.8978506458421073
+        },
+        {
+          "sinTheta": 0.05,
+          "intensity": 0.028430190966174846,
+          "whichSlit": 0.8751402000833807
+        },
+        {
+          "sinTheta": 0.055,
+          "intensity": 0.06092704967925635,
+          "whichSlit": 0.8505732133889969
+        },
+        {
+          "sinTheta": 0.06,
+          "intensity": 0.04638186226973109,
+          "whichSlit": 0.8242983843933199
+        },
+        {
+          "sinTheta": 0.065,
+          "intensity": 0.004855005085829785,
+          "whichSlit": 0.7964733239834699
+        },
+        {
+          "sinTheta": 0.07,
+          "intensity": 0.025787238363511253,
+          "whichSlit": 0.7672632667641623
+        },
+        {
+          "sinTheta": 0.075,
+          "intensity": 0.17689298062773876,
+          "whichSlit": 0.7368397293222503
+        },
+        {
+          "sinTheta": 0.08,
+          "intensity": 0.4175904375716552,
+          "whichSlit": 0.7053791280962256
+        },
+        {
+          "sinTheta": 0.085,
+          "intensity": 0.6117662417287097,
+          "whichSlit": 0.6730613699692473
+        },
+        {
+          "sinTheta": 0.09,
+          "intensity": 0.6351477910440225,
+          "whichSlit": 0.6400684288800017
+        },
+        {
+          "sinTheta": 0.095,
+          "intensity": 0.47728719918320417,
+          "whichSlit": 0.6065829217825678
+        },
+        {
+          "sinTheta": 0.1,
+          "intensity": 0.24445201373445619,
+          "whichSlit": 0.5727866971849187
+        },
+        {
+          "sinTheta": 0.105,
+          "intensity": 0.06699557892033318,
+          "whichSlit": 0.5388594492575662
+        },
+        {
+          "sinTheta": 0.11,
+          "intensity": 0.0016762245422196132,
+          "whichSlit": 0.5049773701326158
+        },
+        {
+          "sinTheta": 0.115,
+          "intensity": 0.012650059086787513,
+          "whichSlit": 0.4713118525140071
+        },
+        {
+          "sinTheta": 0.12,
+          "intensity": 0.031191267621679467,
+          "whichSlit": 0.4380282540982752
+        },
+        {
+          "sinTheta": 0.125,
+          "intensity": 0.02361028522010651,
+          "whichSlit": 0.40528473456935143
+        },
+        {
+          "sinTheta": 0.13,
+          "intensity": 0.0048752072660497,
+          "whichSlit": 0.3732311750896546
+        },
+        {
+          "sinTheta": 0.135,
+          "intensity": 0.0011689469688939025,
+          "whichSlit": 0.3420081892728531
+        },
+        {
+          "sinTheta": 0.14,
+          "intensity": 0.013487563121077472,
+          "whichSlit": 0.311746233602278
+        },
+        {
+          "sinTheta": 0.145,
+          "intensity": 0.020909673465907816,
+          "whichSlit": 0.28256482416478845
+        },
+        {
+          "sinTheta": 0.15,
+          "intensity": 0.011507147056253293,
+          "whichSlit": 0.2545718654155196
+        },
+        {
+          "sinTheta": 0.155,
+          "intensity": 0.00016871219184320805,
+          "whichSlit": 0.22786309548752046
+        },
+        {
+          "sinTheta": 0.16,
+          "intensity": 0.012657603207831675,
+          "whichSlit": 0.20252165132531325
+        },
+        {
+          "sinTheta": 0.165,
+          "intensity": 0.05542169464913648,
+          "whichSlit": 0.1786177556667701
+        },
+        {
+          "sinTheta": 0.17,
+          "intensity": 0.1051955548936457,
+          "whichSlit": 0.1562085266372265
+        },
+        {
+          "sinTheta": 0.175,
+          "intensity": 0.12893616444590447,
+          "whichSlit": 0.13533790946735247
+        },
+        {
+          "sinTheta": 0.18,
+          "intensity": 0.11250028562938702,
+          "whichSlit": 0.11603672861556799
+        },
+        {
+          "sinTheta": 0.185,
+          "intensity": 0.07007648214366849,
+          "whichSlit": 0.0983228573799902
+        },
+        {
+          "sinTheta": 0.19,
+          "intensity": 0.02859415225188106,
+          "whichSlit": 0.08220150093673018
+        },
+        {
+          "sinTheta": 0.195,
+          "intensity": 0.005455903677468048,
+          "whichSlit": 0.06766558765290527
+        },
+        {
+          "sinTheta": 0.2,
+          "intensity": 5.892460042485856e-31,
+          "whichSlit": 0.05469626250521139
+        }
+      ]
+    },
+    {
+      "name": "three slits",
+      "count": 3,
+      "width": 1e-06,
+      "spacing": 4e-06,
+      "wavelength": 5.000000000000001e-07,
+      "points": [
+        {
+          "sinTheta": -0.2,
+          "intensity": 0.024309450002316286,
+          "whichSlit": 0.5727866971849188
+        },
+        {
+          "sinTheta": -0.195,
+          "intensity": 0.048410883350205776,
+          "whichSlit": 0.5897123517832897
+        },
+        {
+          "sinTheta": -0.19,
+          "intensity": 0.06528904844602262,
+          "whichSlit": 0.6065829217825677
+        },
+        {
+          "sinTheta": -0.185,
+          "intensity": 0.06709654089717898,
+          "whichSlit": 0.6233758461430582
+        },
+        {
+          "sinTheta": -0.18,
+          "intensity": 0.05254473295829142,
+          "whichSlit": 0.6400684288800015
+        },
+        {
+          "sinTheta": -0.175,
+          "intensity": 0.027868150298769212,
+          "whichSlit": 0.6566378821719236
+        },
+        {
+          "sinTheta": -0.17,
+          "intensity": 0.005649334015362514,
+          "whichSlit": 0.6730613699692471
+        },
+        {
+          "sinTheta": -0.165,
+          "intensity": 0.0016876643036440838,
+          "whichSlit": 0.6893160520035291
+        },
+        {
+          "sinTheta": -0.16,
+          "intensity": 0.03063867302135712,
+          "whichSlit": 0.7053791280962256
+        },
+        {
+          "sinTheta": -0.155,
+          "intensity": 0.10152746344679509,
+          "whichSlit": 0.7212278826647011
+        },
+        {
+          "sinTheta": -0.15,
+          "intensity": 0.2143412728474374,
+          "whichSlit": 0.7368397293222508
+        },
+        {
+          "sinTheta": -0.145,
+          "intensity": 0.35869111743545185,
+          "whichSlit": 0.7521922554682539
+        },
+        {
+          "sinTheta": -0.14,
+          "intensity": 0.5150429911488899,
+          "whichSlit": 0.7672632667641623
+        },
+        {
+          "sinTheta": -0.135,
+          "intensity": 0.6583726675870089,
+          "whichSlit": 0.7820308313909098
+        },
+        {
+          "sinTheta": -0.13,
+          "intensity": 0.7634591511234972,
+          "whichSlit": 0.79647332398347
+        },
+        {
+          "sinTheta": -0.125,
+          "intensity": 0.8105694691387023,
+          "whichSlit": 0.8105694691387024
+        },
+        {
+          "sinTheta": -0.12,
+          "intensity": 0.7901308504268924,
+          "whichSlit": 0.8242983843933195
+        },
+        {
+          "sinTheta": -0.115,
+          "intensity": 0.7051883514707158,
+          "whichSlit": 0.8376396225697628
+        },
+        {
+          "sinTheta": -0.11,
+          "intensity": 0.5709666955157994,
+          "whichSlit": 0.8505732133889972
+        },
+        {
+          "sinTheta": -0.105,
+          "intensity": 0.41156901218138275,
+          "whichSlit": 0.8630797042507402
+        },
+        {
+          "sinTheta": -0.1,
+          "intensity": 0.2545718654155188,
+          "whichSlit": 0.8751402000833809
+        },
+        {
+          "sinTheta": -0.095,
+          "intensity": 0.12482614693904427,
+          "whichSlit": 0.886736402167868
+        },
+        {
+          "sinTheta": -0.09,
+          "intensity": 0.0389988181734481,
+          "whichSlit": 0.8978506458421077
+        },
+        {
+          "sinTheta": -0.085,
+          "intensity": 0.0022242127228671907,
+          "whichSlit": 0.9084659369949296
+        },
+        {
+          "sinTheta": -0.08,
+          "intensity": 0.007709974615581221,
+          "whichSlit": 0.9185659872614371
+        },
+        {
+          "sinTheta": -0.075,
+          "intensity": 0.03939067983510989,
+          "whichSlit": 0.9281352478345394
+        },
+        {
+          "sinTheta": -0.07,
+          "intensity": 0.07693359665166366,
+          "whichSlit": 0.9371589418106929
+        },
+        {
+          "sinTheta": -0.065,
+          "intensity": 0.10178135559625254,
+          "whichSlit": 0.9456230949913094
+        },
+        {
+          "sinTheta": -0.06,
+          "intensity": 0.10263074741630734,
+          "whichSlit": 0.953514565064932
+        },
+        {
+          "sinTheta": -0.055,
+          "intensity": 0.07887607671082118,
+          "whichSlit": 0.9608210690991259
+        },
+        {
+          "sinTheta": -0.05,
+          "intensity": 0.04106267075186582,
+          "whichSlit": 0.967531209275079
+        },
+        {
+          "sinTheta": -0.045,
+          "intensity": 0.008172191610945985,
+          "whichSlit": 0.9736344968020999
+        },
+        {
+          "sinTheta": -0.04,
+          "intensity": 0.002397199640068652,
+          "whichSlit": 0.979121373953605
+        },
+        {
+          "sinTheta": -0.035,
+          "intensity": 0.04274005193720575,
+          "whichSlit": 0.9839832341707156
+        },
+        {
+          "sinTheta": -0.03,
+          "intensity": 0.1391109589770539,
+          "whichSlit": 0.9882124401842747
+        },
+        {
+          "sinTheta": -0.025,
+          "intensity": 0.2885080262813362,
+          "whichSlit": 0.9918023401109022
+        },
+        {
+          "sinTheta": -0.02,
+          "intensity": 0.47435613882933525,
+          "whichSlit": 0.994747281483657
+        },
+        {
+          "sinTheta": -0.015,
+          "intensity": 0.669287632018097,
+          "whichSlit": 0.9970426231828996
+        },
+        {
+          "sinTheta": -0.01,
+          "intensity": 0.8407683091361292,
+          "whichSlit": 0.9986847452380953
+        },
+        {
+          "sinTheta": -0.005,
+          "intensity": 0.9582342473985025,
+          "whichSlit": 0.9996710564765081
+        },
+        {
+          "sinTheta": 0.0,
+          "intensity": 1.0,
+          "whichSlit": 1.0000000000000002
+        },
+        {
+          "sinTheta": 0.005,
+          "intensity": 0.9582342473985025,
+          "whichSlit": 0.9996710564765081
+        },
+        {
+          "sinTheta": 0.01,
+          "intensity": 0.8407683091361292,
+          "whichSlit": 0.9986847452380953
+        },
+        {
+          "sinTheta": 0.015,
+          "intensity": 0.669287632018097,
+          "whichSlit": 0.9970426231828996
+        },
+        {
+          "sinTheta": 0.02,
+          "intensity": 0.47435613882933525,
+          "whichSlit": 0.994747281483657
+        },
+        {
+          "sinTheta": 0.025,
+          "intensity": 0.2885080262813362,
+          "whichSlit": 0.9918023401109022
+        },
+        {
+          "sinTheta": 0.03,
+          "intensity": 0.1391109589770539,
+          "whichSlit": 0.9882124401842747
+        },
+        {
+          "sinTheta": 0.035,
+          "intensity": 0.04274005193720575,
+          "whichSlit": 0.9839832341707156
+        },
+        {
+          "sinTheta": 0.04,
+          "intensity": 0.002397199640068652,
+          "whichSlit": 0.979121373953605
+        },
+        {
+          "sinTheta": 0.045,
+          "intensity": 0.008172191610945985,
+          "whichSlit": 0.9736344968020999
+        },
+        {
+          "sinTheta": 0.05,
+          "intensity": 0.04106267075186582,
+          "whichSlit": 0.967531209275079
+        },
+        {
+          "sinTheta": 0.055,
+          "intensity": 0.07887607671082118,
+          "whichSlit": 0.9608210690991259
+        },
+        {
+          "sinTheta": 0.06,
+          "intensity": 0.10263074741630734,
+          "whichSlit": 0.953514565064932
+        },
+        {
+          "sinTheta": 0.065,
+          "intensity": 0.10178135559625254,
+          "whichSlit": 0.9456230949913094
+        },
+        {
+          "sinTheta": 0.07,
+          "intensity": 0.07693359665166366,
+          "whichSlit": 0.9371589418106929
+        },
+        {
+          "sinTheta": 0.075,
+          "intensity": 0.03939067983510989,
+          "whichSlit": 0.9281352478345394
+        },
+        {
+          "sinTheta": 0.08,
+          "intensity": 0.007709974615581221,
+          "whichSlit": 0.9185659872614371
+        },
+        {
+          "sinTheta": 0.085,
+          "intensity": 0.0022242127228671907,
+          "whichSlit": 0.9084659369949296
+        },
+        {
+          "sinTheta": 0.09,
+          "intensity": 0.0389988181734481,
+          "whichSlit": 0.8978506458421077
+        },
+        {
+          "sinTheta": 0.095,
+          "intensity": 0.12482614693904427,
+          "whichSlit": 0.886736402167868
+        },
+        {
+          "sinTheta": 0.1,
+          "intensity": 0.2545718654155188,
+          "whichSlit": 0.8751402000833809
+        },
+        {
+          "sinTheta": 0.105,
+          "intensity": 0.41156901218138275,
+          "whichSlit": 0.8630797042507402
+        },
+        {
+          "sinTheta": 0.11,
+          "intensity": 0.5709666955157994,
+          "whichSlit": 0.8505732133889972
+        },
+        {
+          "sinTheta": 0.115,
+          "intensity": 0.7051883514707158,
+          "whichSlit": 0.8376396225697628
+        },
+        {
+          "sinTheta": 0.12,
+          "intensity": 0.7901308504268924,
+          "whichSlit": 0.8242983843933195
+        },
+        {
+          "sinTheta": 0.125,
+          "intensity": 0.8105694691387023,
+          "whichSlit": 0.8105694691387024
+        },
+        {
+          "sinTheta": 0.13,
+          "intensity": 0.7634591511234972,
+          "whichSlit": 0.79647332398347
+        },
+        {
+          "sinTheta": 0.135,
+          "intensity": 0.6583726675870089,
+          "whichSlit": 0.7820308313909098
+        },
+        {
+          "sinTheta": 0.14,
+          "intensity": 0.5150429911488899,
+          "whichSlit": 0.7672632667641623
+        },
+        {
+          "sinTheta": 0.145,
+          "intensity": 0.35869111743545185,
+          "whichSlit": 0.7521922554682539
+        },
+        {
+          "sinTheta": 0.15,
+          "intensity": 0.2143412728474374,
+          "whichSlit": 0.7368397293222508
+        },
+        {
+          "sinTheta": 0.155,
+          "intensity": 0.10152746344679509,
+          "whichSlit": 0.7212278826647011
+        },
+        {
+          "sinTheta": 0.16,
+          "intensity": 0.03063867302135712,
+          "whichSlit": 0.7053791280962256
+        },
+        {
+          "sinTheta": 0.165,
+          "intensity": 0.0016876643036440838,
+          "whichSlit": 0.6893160520035291
+        },
+        {
+          "sinTheta": 0.17,
+          "intensity": 0.005649334015362514,
+          "whichSlit": 0.6730613699692471
+        },
+        {
+          "sinTheta": 0.175,
+          "intensity": 0.027868150298769212,
+          "whichSlit": 0.6566378821719236
+        },
+        {
+          "sinTheta": 0.18,
+          "intensity": 0.05254473295829142,
+          "whichSlit": 0.6400684288800015
+        },
+        {
+          "sinTheta": 0.185,
+          "intensity": 0.06709654089717898,
+          "whichSlit": 0.6233758461430582
+        },
+        {
+          "sinTheta": 0.19,
+          "intensity": 0.06528904844602262,
+          "whichSlit": 0.6065829217825677
+        },
+        {
+          "sinTheta": 0.195,
+          "intensity": 0.048410883350205776,
+          "whichSlit": 0.5897123517832897
+        },
+        {
+          "sinTheta": 0.2,
+          "intensity": 0.024309450002316286,
+          "whichSlit": 0.5727866971849188
+        }
+      ]
+    },
+    {
+      "name": "six close slits",
+      "count": 6,
+      "width": 3e-06,
+      "spacing": 3.5e-06,
+      "wavelength": 5.000000000000001e-07,
+      "points": [
+        {
+          "sinTheta": -0.2,
+          "intensity": 0.0006752625000643251,
+          "whichSlit": 0.024309450002316154
+        },
+        {
+          "sinTheta": -0.195,
+          "intensity": 0.00020263412249973107,
+          "whichSlit": 0.019179388983237178
+        },
+        {
+          "sinTheta": -0.19,
+          "intensity": 2.089292556373428e-06,
+          "whichSlit": 0.014133822144882664
+        },
+        {
+          "sinTheta": -0.185,
+          "intensity": 0.00017924808759087516,
+          "whichSlit": 0.009435869601574077
+        },
+        {
+          "sinTheta": -0.18,
+          "intensity": 0.0002709728830066702,
+          "whichSlit": 0.0053724080875369165
+        },
+        {
+          "sinTheta": -0.175,
+          "intensity": 0.00011758636756122139,
+          "whichSlit": 0.002248984898210634
+        },
+        {
+          "sinTheta": -0.17,
+          "intensity": 6.120024327909681e-06,
+          "whichSlit": 0.00038396183976858127
+        },
+        {
+          "sinTheta": -0.165,
+          "intensity": 6.157526899567422e-07,
+          "whichSlit": 0.00010199684281976734
+        },
+        {
+          "sinTheta": -0.16,
+          "intensity": 0.00021016404688878652,
+          "whichSlit": 0.0017269918081313728
+        },
+        {
+          "sinTheta": -0.155,
+          "intensity": 0.0022217572451664505,
+          "whichSlit": 0.005574653540798399
+        },
+        {
+          "sinTheta": -0.15,
+          "intensity": 0.008874172563946608,
+          "whichSlit": 0.011944829744136845
+        },
+        {
+          "sinTheta": -0.145,
+          "intensity": 0.020572341273763003,
+          "whichSlit": 0.02111379350687433
+        },
+        {
+          "sinTheta": -0.14,
+          "intensity": 0.03181930347279965,
+          "whichSlit": 0.03332665713420184
+        },
+        {
+          "sinTheta": -0.135,
+          "intensity": 0.03396850527756886,
+          "whichSlit": 0.04879009925051073
+        },
+        {
+          "sinTheta": -0.13,
+          "intensity": 0.02376886314655441,
+          "whichSlit": 0.06766558765290513
+        },
+        {
+          "sinTheta": -0.125,
+          "intensity": 0.008541534798700245,
+          "whichSlit": 0.09006327434874481
+        },
+        {
+          "sinTheta": -0.12,
+          "intensity": 0.00021816013497176034,
+          "whichSlit": 0.11603672861556794
+        },
+        {
+          "sinTheta": -0.115,
+          "intensity": 0.003169259689484314,
+          "whichSlit": 0.14557865894576297
+        },
+        {
+          "sinTheta": -0.11,
+          "intensity": 0.009807687392725613,
+          "whichSlit": 0.17861775566676996
+        },
+        {
+          "sinTheta": -0.105,
+          "intensity": 0.010068102848378616,
+          "whichSlit": 0.21501676325770894
+        },
+        {
+          "sinTheta": -0.1,
+          "intensity": 0.0037327592950427073,
+          "whichSlit": 0.2545718654155194
+        },
+        {
+          "sinTheta": -0.095,
+          "intensity": 1.0788456061988608e-05,
+          "whichSlit": 0.2970134373496501
+        },
+        {
+          "sinTheta": -0.09,
+          "intensity": 0.004582871169706386,
+          "whichSlit": 0.34200818927285287
+        },
+        {
+          "sinTheta": -0.085,
+          "intensity": 0.011270068346469623,
+          "whichSlit": 0.38916269333598663
+        },
+        {
+          "sinTheta": -0.08,
+          "intensity": 0.010324137085494213,
+          "whichSlit": 0.4380282540982749
+        },
+        {
+          "sinTheta": -0.075,
+          "intensity": 0.0028118219416106323,
+          "whichSlit": 0.4881070508249904
+        },
+        {
+          "sinTheta": -0.07,
+          "intensity": 0.0005260829986904579,
+          "whichSlit": 0.5388594492575662
+        },
+        {
+          "sinTheta": -0.065,
+          "intensity": 0.0094036775168764,
+          "whichSlit": 0.5897123517832895
+        },
+        {
+          "sinTheta": -0.06,
+          "intensity": 0.018877062828042676,
+          "whichSlit": 0.6400684288800016
+        },
+        {
+          "sinTheta": -0.055,
+          "intensity": 0.014968418475939363,
+          "whichSlit": 0.689316052003529
+        },
+        {
+          "sinTheta": -0.05,
+          "intensity": 0.002461917489694332,
+          "whichSlit": 0.7368397293222504
+        },
+        {
+          "sinTheta": -0.045,
+          "intensity": 0.0035680967703369875,
+          "whichSlit": 0.7820308313909097
+        },
+        {
+          "sinTheta": -0.04,
+          "intensity": 0.02749438692668633,
+          "whichSlit": 0.8242983843933193
+        },
+        {
+          "sinTheta": -0.035,
+          "intensity": 0.04906540076296305,
+          "whichSlit": 0.8630797042507399
+        },
+        {
+          "sinTheta": -0.03,
+          "intensity": 0.035280118542727515,
+          "whichSlit": 0.8978506458421073
+        },
+        {
+          "sinTheta": -0.025,
+          "intensity": 0.002311018619670649,
+          "whichSlit": 0.928135247834539
+        },
+        {
+          "sinTheta": -0.02,
+          "intensity": 0.03390828552624081,
+          "whichSlit": 0.9535145650649315
+        },
+        {
+          "sinTheta": -0.015,
+          "intensity": 0.21710909249787694,
+          "whichSlit": 0.9736344968020999
+        },
+        {
+          "sinTheta": -0.01,
+          "intensity": 0.5411754924015169,
+          "whichSlit": 0.9882124401842743
+        },
+        {
+          "sinTheta": -0.005,
+          "intensity": 0.8640036552252929,
+          "whichSlit": 0.9970426231828988
+        },
+        {
+          "sinTheta": 0.0,
+          "intensity": 0.9999999999999997,
+          "whichSlit": 0.9999999999999998
+        },
+        {
+          "sinTheta": 0.005,
+          "intensity": 0.8640036552252929,
+          "whichSlit": 0.9970426231828988
+        },
+        {
+          "sinTheta": 0.01,
+          "intensity": 0.5411754924015169,
+          "whichSlit": 0.9882124401842743
+        },
+        {
+          "sinTheta": 0.015,
+          "intensity": 0.21710909249787694,
+          "whichSlit": 0.9736344968020999
+        },
+        {
+          "sinTheta": 0.02,
+          "intensity": 0.03390828552624081,
+          "whichSlit": 0.9535145650649315
+        },
+        {
+          "sinTheta": 0.025,
+          "intensity": 0.002311018619670649,
+          "whichSlit": 0.928135247834539
+        },
+        {
+          "sinTheta": 0.03,
+          "intensity": 0.035280118542727515,
+          "whichSlit": 0.8978506458421073
+        },
+        {
+          "sinTheta": 0.035,
+          "intensity": 0.04906540076296305,
+          "whichSlit": 0.8630797042507399
+        },
+        {
+          "sinTheta": 0.04,
+          "intensity": 0.02749438692668633,
+          "whichSlit": 0.8242983843933193
+        },
+        {
+          "sinTheta": 0.045,
+          "intensity": 0.0035680967703369875,
+          "whichSlit": 0.7820308313909097
+        },
+        {
+          "sinTheta": 0.05,
+          "intensity": 0.002461917489694332,
+          "whichSlit": 0.7368397293222504
+        },
+        {
+          "sinTheta": 0.055,
+          "intensity": 0.014968418475939363,
+          "whichSlit": 0.689316052003529
+        },
+        {
+          "sinTheta": 0.06,
+          "intensity": 0.018877062828042676,
+          "whichSlit": 0.6400684288800016
+        },
+        {
+          "sinTheta": 0.065,
+          "intensity": 0.0094036775168764,
+          "whichSlit": 0.5897123517832895
+        },
+        {
+          "sinTheta": 0.07,
+          "intensity": 0.0005260829986904579,
+          "whichSlit": 0.5388594492575662
+        },
+        {
+          "sinTheta": 0.075,
+          "intensity": 0.0028118219416106323,
+          "whichSlit": 0.4881070508249904
+        },
+        {
+          "sinTheta": 0.08,
+          "intensity": 0.010324137085494213,
+          "whichSlit": 0.4380282540982749
+        },
+        {
+          "sinTheta": 0.085,
+          "intensity": 0.011270068346469623,
+          "whichSlit": 0.38916269333598663
+        },
+        {
+          "sinTheta": 0.09,
+          "intensity": 0.004582871169706386,
+          "whichSlit": 0.34200818927285287
+        },
+        {
+          "sinTheta": 0.095,
+          "intensity": 1.0788456061988608e-05,
+          "whichSlit": 0.2970134373496501
+        },
+        {
+          "sinTheta": 0.1,
+          "intensity": 0.0037327592950427073,
+          "whichSlit": 0.2545718654155194
+        },
+        {
+          "sinTheta": 0.105,
+          "intensity": 0.010068102848378616,
+          "whichSlit": 0.21501676325770894
+        },
+        {
+          "sinTheta": 0.11,
+          "intensity": 0.009807687392725613,
+          "whichSlit": 0.17861775566676996
+        },
+        {
+          "sinTheta": 0.115,
+          "intensity": 0.003169259689484314,
+          "whichSlit": 0.14557865894576297
+        },
+        {
+          "sinTheta": 0.12,
+          "intensity": 0.00021816013497176034,
+          "whichSlit": 0.11603672861556794
+        },
+        {
+          "sinTheta": 0.125,
+          "intensity": 0.008541534798700245,
+          "whichSlit": 0.09006327434874481
+        },
+        {
+          "sinTheta": 0.13,
+          "intensity": 0.02376886314655441,
+          "whichSlit": 0.06766558765290513
+        },
+        {
+          "sinTheta": 0.135,
+          "intensity": 0.03396850527756886,
+          "whichSlit": 0.04879009925051073
+        },
+        {
+          "sinTheta": 0.14,
+          "intensity": 0.03181930347279965,
+          "whichSlit": 0.03332665713420184
+        },
+        {
+          "sinTheta": 0.145,
+          "intensity": 0.020572341273763003,
+          "whichSlit": 0.02111379350687433
+        },
+        {
+          "sinTheta": 0.15,
+          "intensity": 0.008874172563946608,
+          "whichSlit": 0.011944829744136845
+        },
+        {
+          "sinTheta": 0.155,
+          "intensity": 0.0022217572451664505,
+          "whichSlit": 0.005574653540798399
+        },
+        {
+          "sinTheta": 0.16,
+          "intensity": 0.00021016404688878652,
+          "whichSlit": 0.0017269918081313728
+        },
+        {
+          "sinTheta": 0.165,
+          "intensity": 6.157526899567422e-07,
+          "whichSlit": 0.00010199684281976734
+        },
+        {
+          "sinTheta": 0.17,
+          "intensity": 6.120024327909681e-06,
+          "whichSlit": 0.00038396183976858127
+        },
+        {
+          "sinTheta": 0.175,
+          "intensity": 0.00011758636756122139,
+          "whichSlit": 0.002248984898210634
+        },
+        {
+          "sinTheta": 0.18,
+          "intensity": 0.0002709728830066702,
+          "whichSlit": 0.0053724080875369165
+        },
+        {
+          "sinTheta": 0.185,
+          "intensity": 0.00017924808759087516,
+          "whichSlit": 0.009435869601574077
+        },
+        {
+          "sinTheta": 0.19,
+          "intensity": 2.089292556373428e-06,
+          "whichSlit": 0.014133822144882664
+        },
+        {
+          "sinTheta": 0.195,
+          "intensity": 0.00020263412249973107,
+          "whichSlit": 0.019179388983237178
+        },
+        {
+          "sinTheta": 0.2,
+          "intensity": 0.0006752625000643251,
+          "whichSlit": 0.024309450002316154
+        }
+      ]
+    },
+    {
+      "name": "touching slits",
+      "count": 2,
+      "width": 2e-06,
+      "spacing": 2e-06,
+      "wavelength": 5.000000000000001e-07,
+      "points": [
+        {
+          "sinTheta": -0.2,
+          "intensity": 0.03579916857405743,
+          "whichSlit": 0.05469626250521137
+        },
+        {
+          "sinTheta": -0.195,
+          "intensity": 0.04017242720976105,
+          "whichSlit": 0.06766558765290524
+        },
+        {
+          "sinTheta": -0.19,
+          "intensity": 0.04368148794331826,
+          "whichSlit": 0.08220150093673004
+        },
+        {
+          "sinTheta": -0.185,
+          "intensity": 0.04607455704174699,
+          "whichSlit": 0.09832285737999025
+        },
+        {
+          "sinTheta": -0.18,
+          "intensity": 0.04714680693367783,
+          "whichSlit": 0.11603672861556782
+        },
+        {
+          "sinTheta": -0.175,
+          "intensity": 0.046758097729381075,
+          "whichSlit": 0.13533790946735236
+        },
+        {
+          "sinTheta": -0.17,
+          "intensity": 0.044849085414602155,
+          "whichSlit": 0.15620852663722648
+        },
+        {
+          "sinTheta": -0.165,
+          "intensity": 0.04145478806075152,
+          "whichSlit": 0.1786177556667701
+        },
+        {
+          "sinTheta": -0.16,
+          "intensity": 0.03671474616351942,
+          "whichSlit": 0.20252165132531313
+        },
+        {
+          "sinTheta": -0.155,
+          "intensity": 0.030879023764994226,
+          "whichSlit": 0.22786309548752043
+        },
+        {
+          "sinTheta": -0.15,
+          "intensity": 0.02430945000231606,
+          "whichSlit": 0.2545718654155196
+        },
+        {
+          "sinTheta": -0.145,
+          "intensity": 0.01747569060188221,
+          "whichSlit": 0.28256482416478823
+        },
+        {
+          "sinTheta": -0.14,
+          "intensity": 0.010945958017326994,
+          "whichSlit": 0.31174623360227804
+        },
+        {
+          "sinTheta": -0.135,
+          "intensity": 0.0053724080875369,
+          "whichSlit": 0.34200818927285326
+        },
+        {
+          "sinTheta": -0.13,
+          "intensity": 0.0014715196471651612,
+          "whichSlit": 0.3732311750896544
+        },
+        {
+          "sinTheta": -0.125,
+          "intensity": 6.301390623686628e-32,
+          "whichSlit": 0.40528473456935127
+        },
+        {
+          "sinTheta": -0.12,
+          "intensity": 0.0017269918081313817,
+          "whichSlit": 0.4380282540982751
+        },
+        {
+          "sinTheta": -0.115,
+          "intensity": 0.007403564264299498,
+          "whichSlit": 0.47131185251400726
+        },
+        {
+          "sinTheta": -0.11,
+          "intensity": 0.017730642738810785,
+          "whichSlit": 0.5049773701326159
+        },
+        {
+          "sinTheta": -0.105,
+          "intensity": 0.03332665713420189,
+          "whichSlit": 0.5388594492575665
+        },
+        {
+          "sinTheta": -0.1,
+          "intensity": 0.05469626250521137,
+          "whichSlit": 0.5727866971849189
+        },
+        {
+          "sinTheta": -0.095,
+          "intensity": 0.08220150093673007,
+          "whichSlit": 0.6065829217825677
+        },
+        {
+          "sinTheta": -0.09,
+          "intensity": 0.11603672861556787,
+          "whichSlit": 0.6400684288800017
+        },
+        {
+          "sinTheta": -0.085,
+          "intensity": 0.15620852663722654,
+          "whichSlit": 0.6730613699692474
+        },
+        {
+          "sinTheta": -0.08,
+          "intensity": 0.20252165132531325,
+          "whichSlit": 0.7053791280962258
+        },
+        {
+          "sinTheta": -0.075,
+          "intensity": 0.2545718654155197,
+          "whichSlit": 0.7368397293222506
+        },
+        {
+          "sinTheta": -0.07,
+          "intensity": 0.31174623360227804,
+          "whichSlit": 0.7672632667641621
+        },
+        {
+          "sinTheta": -0.065,
+          "intensity": 0.3732311750896544,
+          "whichSlit": 0.7964733239834699
+        },
+        {
+          "sinTheta": -0.06,
+          "intensity": 0.4380282540982751,
+          "whichSlit": 0.8242983843933198
+        },
+        {
+          "sinTheta": -0.055,
+          "intensity": 0.5049773701326158,
+          "whichSlit": 0.8505732133889969
+        },
+        {
+          "sinTheta": -0.05,
+          "intensity": 0.5727866971849187,
+          "whichSlit": 0.8751402000833808
+        },
+        {
+          "sinTheta": -0.045,
+          "intensity": 0.6400684288800017,
+          "whichSlit": 0.8978506458421076
+        },
+        {
+          "sinTheta": -0.04,
+          "intensity": 0.7053791280962257,
+          "whichSlit": 0.9185659872614372
+        },
+        {
+          "sinTheta": -0.035,
+          "intensity": 0.7672632667641623,
+          "whichSlit": 0.9371589418106927
+        },
+        {
+          "sinTheta": -0.03,
+          "intensity": 0.8242983843933196,
+          "whichSlit": 0.9535145650649315
+        },
+        {
+          "sinTheta": -0.025,
+          "intensity": 0.8751402000833806,
+          "whichSlit": 0.9675312092750784
+        },
+        {
+          "sinTheta": -0.02,
+          "intensity": 0.9185659872614372,
+          "whichSlit": 0.979121373953605
+        },
+        {
+          "sinTheta": -0.015,
+          "intensity": 0.9535145650649318,
+          "whichSlit": 0.9882124401842747
+        },
+        {
+          "sinTheta": -0.01,
+          "intensity": 0.9791213739536045,
+          "whichSlit": 0.9947472814836568
+        },
+        {
+          "sinTheta": -0.005,
+          "intensity": 0.9947472814836568,
+          "whichSlit": 0.9986847452380949
+        },
+        {
+          "sinTheta": 0.0,
+          "intensity": 1.0,
+          "whichSlit": 1.0
+        },
+        {
+          "sinTheta": 0.005,
+          "intensity": 0.9947472814836568,
+          "whichSlit": 0.9986847452380949
+        },
+        {
+          "sinTheta": 0.01,
+          "intensity": 0.9791213739536045,
+          "whichSlit": 0.9947472814836568
+        },
+        {
+          "sinTheta": 0.015,
+          "intensity": 0.9535145650649318,
+          "whichSlit": 0.9882124401842747
+        },
+        {
+          "sinTheta": 0.02,
+          "intensity": 0.9185659872614372,
+          "whichSlit": 0.979121373953605
+        },
+        {
+          "sinTheta": 0.025,
+          "intensity": 0.8751402000833806,
+          "whichSlit": 0.9675312092750784
+        },
+        {
+          "sinTheta": 0.03,
+          "intensity": 0.8242983843933196,
+          "whichSlit": 0.9535145650649315
+        },
+        {
+          "sinTheta": 0.035,
+          "intensity": 0.7672632667641623,
+          "whichSlit": 0.9371589418106927
+        },
+        {
+          "sinTheta": 0.04,
+          "intensity": 0.7053791280962257,
+          "whichSlit": 0.9185659872614372
+        },
+        {
+          "sinTheta": 0.045,
+          "intensity": 0.6400684288800017,
+          "whichSlit": 0.8978506458421076
+        },
+        {
+          "sinTheta": 0.05,
+          "intensity": 0.5727866971849187,
+          "whichSlit": 0.8751402000833808
+        },
+        {
+          "sinTheta": 0.055,
+          "intensity": 0.5049773701326158,
+          "whichSlit": 0.8505732133889969
+        },
+        {
+          "sinTheta": 0.06,
+          "intensity": 0.4380282540982751,
+          "whichSlit": 0.8242983843933198
+        },
+        {
+          "sinTheta": 0.065,
+          "intensity": 0.3732311750896544,
+          "whichSlit": 0.7964733239834699
+        },
+        {
+          "sinTheta": 0.07,
+          "intensity": 0.31174623360227804,
+          "whichSlit": 0.7672632667641621
+        },
+        {
+          "sinTheta": 0.075,
+          "intensity": 0.2545718654155197,
+          "whichSlit": 0.7368397293222506
+        },
+        {
+          "sinTheta": 0.08,
+          "intensity": 0.20252165132531325,
+          "whichSlit": 0.7053791280962258
+        },
+        {
+          "sinTheta": 0.085,
+          "intensity": 0.15620852663722654,
+          "whichSlit": 0.6730613699692474
+        },
+        {
+          "sinTheta": 0.09,
+          "intensity": 0.11603672861556787,
+          "whichSlit": 0.6400684288800017
+        },
+        {
+          "sinTheta": 0.095,
+          "intensity": 0.08220150093673007,
+          "whichSlit": 0.6065829217825677
+        },
+        {
+          "sinTheta": 0.1,
+          "intensity": 0.05469626250521137,
+          "whichSlit": 0.5727866971849189
+        },
+        {
+          "sinTheta": 0.105,
+          "intensity": 0.03332665713420189,
+          "whichSlit": 0.5388594492575665
+        },
+        {
+          "sinTheta": 0.11,
+          "intensity": 0.017730642738810785,
+          "whichSlit": 0.5049773701326159
+        },
+        {
+          "sinTheta": 0.115,
+          "intensity": 0.007403564264299498,
+          "whichSlit": 0.47131185251400726
+        },
+        {
+          "sinTheta": 0.12,
+          "intensity": 0.0017269918081313817,
+          "whichSlit": 0.4380282540982751
+        },
+        {
+          "sinTheta": 0.125,
+          "intensity": 6.301390623686628e-32,
+          "whichSlit": 0.40528473456935127
+        },
+        {
+          "sinTheta": 0.13,
+          "intensity": 0.0014715196471651612,
+          "whichSlit": 0.3732311750896544
+        },
+        {
+          "sinTheta": 0.135,
+          "intensity": 0.0053724080875369,
+          "whichSlit": 0.34200818927285326
+        },
+        {
+          "sinTheta": 0.14,
+          "intensity": 0.010945958017326994,
+          "whichSlit": 0.31174623360227804
+        },
+        {
+          "sinTheta": 0.145,
+          "intensity": 0.01747569060188221,
+          "whichSlit": 0.28256482416478823
+        },
+        {
+          "sinTheta": 0.15,
+          "intensity": 0.02430945000231606,
+          "whichSlit": 0.2545718654155196
+        },
+        {
+          "sinTheta": 0.155,
+          "intensity": 0.030879023764994226,
+          "whichSlit": 0.22786309548752043
+        },
+        {
+          "sinTheta": 0.16,
+          "intensity": 0.03671474616351942,
+          "whichSlit": 0.20252165132531313
+        },
+        {
+          "sinTheta": 0.165,
+          "intensity": 0.04145478806075152,
+          "whichSlit": 0.1786177556667701
+        },
+        {
+          "sinTheta": 0.17,
+          "intensity": 0.044849085414602155,
+          "whichSlit": 0.15620852663722648
+        },
+        {
+          "sinTheta": 0.175,
+          "intensity": 0.046758097729381075,
+          "whichSlit": 0.13533790946735236
+        },
+        {
+          "sinTheta": 0.18,
+          "intensity": 0.04714680693367783,
+          "whichSlit": 0.11603672861556782
+        },
+        {
+          "sinTheta": 0.185,
+          "intensity": 0.04607455704174699,
+          "whichSlit": 0.09832285737999025
+        },
+        {
+          "sinTheta": 0.19,
+          "intensity": 0.04368148794331826,
+          "whichSlit": 0.08220150093673004
+        },
+        {
+          "sinTheta": 0.195,
+          "intensity": 0.04017242720976105,
+          "whichSlit": 0.06766558765290524
+        },
+        {
+          "sinTheta": 0.2,
+          "intensity": 0.03579916857405743,
+          "whichSlit": 0.05469626250521137
+        }
+      ]
+    }
+  ]
+}

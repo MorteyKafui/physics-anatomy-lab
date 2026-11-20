@@ -56,3 +56,5 @@ export {
 export type { Polarisation, TerminalPdSetup, WireHeating } from "./terminal-pd";
 export { PLACES, placeById } from "./gravity";
 export type { Place, PlaceId } from "./gravity";
+export { singleSlitIntensity, slitsIntensity, whichSlitIntensity } from "./diffraction";
+export type { Slits } from "./diffraction";
