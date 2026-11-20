@@ -41,6 +41,23 @@ test("landing page LCP over slow 4G is within budget", async ({ page, browserNam
   expect(lcp).toBeLessThanOrEqual(LCP_BUDGET_MS);
 });
 
+test("the landing page does not shift as it loads: CLS is 0", async ({ page }) => {
+  // Landing page brief, decision 9: explicit sizes everywhere, nothing pushed down once painted.
+  await page.addInitScript(() => {
+    (window as unknown as { cls: number }).cls = 0;
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries() as (PerformanceEntry & {
+        value: number;
+        hadRecentInput: boolean;
+      })[])
+        if (!e.hadRecentInput) (window as unknown as { cls: number }).cls += e.value;
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  await page.goto(WEB, { waitUntil: "load" });
+  await page.waitForTimeout(3000);
+  expect(await page.evaluate(() => (window as unknown as { cls: number }).cls)).toBe(0);
+});
+
 /*
  * The benchmark phone, emulated (master plan, "Performance budgets"): a low-cost Android phone
  * with 2 GB of RAM on slow 4G. Chrome's CPU is slowed 6× and the network set to slow 4G; each

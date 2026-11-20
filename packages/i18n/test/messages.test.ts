@@ -5,6 +5,7 @@ import { enGBConvergingLens } from "../src/converging-lens";
 import { enGBMethodOfMixtures } from "../src/method-of-mixtures";
 import { enGBOhmsLaw } from "../src/ohms-law";
 import { enGBPrivacy } from "../src/privacy";
+import { enGBLanding } from "../src/landing";
 import { enGBTeach } from "../src/teach";
 
 describe("t", () => {
@@ -58,6 +59,12 @@ describe("the en-GB messages", () => {
 
   test("the privacy file repeats no shared or teacher key", () => {
     expect(Object.keys(enGBPrivacy).filter((k) => k in enGB || k in enGBTeach)).toEqual([]);
+  });
+
+  test("the landing page's file repeats no shared key, and its copy is in sentence case", () => {
+    expect(Object.keys(enGBLanding).filter((k) => k in enGB)).toEqual([]);
+    // AGENTS.md rule 6: no all-caps labels.
+    expect(Object.values(enGBLanding).filter((v) => /[A-Z]{3,}/.test(v))).toEqual([]);
   });
 
   test("the teacher's file repeats no shared key", () => {

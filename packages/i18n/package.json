@@ -13,7 +13,8 @@
     "./review": "./src/review.ts",
     "./tutor": "./src/tutor.ts",
     "./what-if": "./src/what-if.ts",
-    "./flag": "./src/flag.ts"
+    "./flag": "./src/flag.ts",
+    "./landing": "./src/landing.ts"
   },
   "scripts": {
     "lint": "eslint .",
