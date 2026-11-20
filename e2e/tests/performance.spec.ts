@@ -62,6 +62,35 @@ test("the landing page does not shift as it loads: CLS is 0", async ({ page }) =
   expect(await page.evaluate(() => (window as unknown as { cls: number }).cls)).toBe(0);
 });
 
+test("the landing page answers a tap within 200 ms on the benchmark phone (INP)", async ({
+  page,
+}, info) => {
+  // Landing page brief, decision 9: the slowest of the page's own interactions, at 6× CPU.
+  await page.goto(WEB, { waitUntil: "load" });
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Emulation.setCPUThrottlingRate", { rate: 6 });
+  await page.evaluate(() => {
+    (window as unknown as { slowest: number }).slowest = 0;
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries())
+        (window as unknown as { slowest: number }).slowest = Math.max(
+          (window as unknown as { slowest: number }).slowest,
+          e.duration,
+        );
+    }).observe({ type: "event", buffered: true, durationThreshold: 16 } as PerformanceObserverInit);
+  });
+  const demo = page.getByRole("figure").filter({ hasText: "Drag the bob" });
+  for (const name of ["one", "zero", "one", "zero"])
+    await demo.getByRole("button", { name }).click();
+  const part = page.locator("#anatomy").getByRole("button", { name: /^Split cork/ });
+  await part.click();
+  await page.locator("#anatomy").getByRole("slider").fill("100");
+  await page.waitForTimeout(500);
+  const slowest = await page.evaluate(() => (window as unknown as { slowest: number }).slowest);
+  info.annotations.push({ type: "slowest interaction", description: `${Math.round(slowest)} ms` });
+  expect(slowest).toBeLessThanOrEqual(200);
+});
+
 /*
  * The benchmark phone, emulated (master plan, "Performance budgets"): a low-cost Android phone
  * with 2 GB of RAM on slow 4G. Chrome's CPU is slowed 6× and the network set to slow 4G; each

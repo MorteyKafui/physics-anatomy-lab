@@ -131,7 +131,7 @@ export function CoachDemo() {
             </span>
             <span>{demo.rows[1]!.T}</span>
           </div>
-          <div className={`${cols} text-[var(--pa-dash-quiet)]`}>
+          <div className={`${cols} text-[var(--pa-text-faint)]`}>
             <span>0.700</span>
             <span>…</span>
             <span>…</span>

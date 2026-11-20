@@ -1,3 +1,5 @@
+import { benchPeriod, simplePendulum } from "@pa/experiments";
+import { gFromPeriod, periodExact, recordedPeriod } from "@pa/physics";
 import { expect, test, type Page } from "@playwright/test";
 
 import { WEB } from "../playwright.config";
@@ -104,4 +106,67 @@ test("the header becomes a floating bar once the page scrolls", async ({ page })
   await expect(bar).toHaveAttribute("data-scrolled", "false");
   await page.mouse.wheel(0, 400);
   await expect(bar).toHaveAttribute("data-scrolled", "true");
+});
+
+test.describe("Time it yourself", () => {
+  const figure = (page: Page) => page.getByRole("figure").filter({ hasText: "Drag the bob" });
+
+  test("its readings are the physics', and counting from one makes g about 11% too high", async ({
+    page,
+  }) => {
+    await page.goto(WEB);
+    const T = periodExact({ length: 0.8, g: 9.81, amplitude: (8 * Math.PI) / 180 });
+    const f = figure(page);
+    await expect(f).toContainText(`${T.toFixed(3)} s`);
+    await expect(f).toContainText(gFromPeriod(0.8, T).toFixed(2));
+    await f.getByRole("button", { name: "one" }).click();
+    await expect(f.getByRole("button", { name: "one" })).toHaveAttribute("aria-pressed", "true");
+    const T19 = recordedPeriod(T, 20, 1);
+    await expect(f).toContainText(`${T19.toFixed(3)} s`);
+    await expect(f.getByRole("status")).toContainText("Your g is about 11% too high");
+  });
+
+  test("works from the keyboard: the arrows pull the bob, Enter lets it go", async ({ page }) => {
+    await page.goto(WEB);
+    const bob = figure(page).getByRole("slider");
+    await bob.focus();
+    for (let i = 0; i < 6; i++) await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Enter");
+    await expect(bob).toHaveAttribute("aria-valuenow", "14");
+    await expect(figure(page).getByRole("status")).toContainText("That swing is 14°");
+  });
+});
+
+test("Every part has a job: each part's note, and the stand pulled apart", async ({ page }) => {
+  await page.goto(WEB);
+  const section = page.locator("#anatomy");
+  await section.getByRole("button", { name: /^Stopwatch/ }).focus();
+  await expect(section.getByRole("tooltip")).toContainText(
+    `Reads to ${simplePendulum.stopwatch.resolution} s`,
+  );
+  const bob = section.locator('[data-part="bob"]');
+  const at = async () => bob.evaluate((el) => (el as SVGGElement).style.transform);
+  await section.getByRole("slider").fill("0");
+  await expect.poll(at).toBe("translate(0px, 0px)");
+  await section.getByRole("slider").fill("100");
+  await expect.poll(at).toBe("translate(90px, 6px)");
+});
+
+test("Caught the moment it happens: the coach says what the lab says", async ({ page }) => {
+  await page.goto(WEB);
+  const slip = (simplePendulum.swings * benchPeriod(9.81, 0.8)).toFixed(2);
+  await expect(page.getByRole("img", { name: /A results table being filled in/ })).toContainText(
+    `Row 2, mean t: ${slip} needs 3 decimal places`,
+  );
+});
+
+test.describe("with reduced motion, the demos hold still", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("the coach demo shows the corrected mean and its note", async ({ page }) => {
+    await page.goto(WEB);
+    const fixed = `${(simplePendulum.swings * benchPeriod(9.81, 0.8)).toFixed(2)}0 ✓`;
+    await expect(page.getByText(fixed)).toBeVisible();
+    await expect(page.locator(".pa-toast")).toHaveCSS("opacity", "1");
+  });
 });
