@@ -18,7 +18,7 @@ The approved board, `design/mockups/Main.dc.html` (D28, ADR 0028), is the specif
 Today `/` is a holding page. The decisions below are what the board leaves open, or where it no
 longer matches the code or the rules.
 
-- **Status:** draft, waiting for Mortey.
+- **Status:** approved by Mortey on 2026-11-20: decisions 1 to 10 as proposed. Four cards; `/sign-in` and `/join` built in this item; three pull requests. Until Mortey confirms the claims in decision 7, the WASSCE line is softened, and "Made in Winneba, Ghana." and "Free for every student and every school." stay out.
 
 ## The decisions
 
