@@ -20,3 +20,112 @@
     animation: none;
   }
 }
+
+/* The coach demo's ten-second loop (Main.dc.html, "Caught the moment it happens"). */
+@keyframes pa-cursor {
+  0%,
+  8% {
+    transform: translate(60px, 250px);
+  }
+  22%,
+  30% {
+    transform: translate(318px, 206px);
+  }
+  33% {
+    transform: translate(318px, 206px) scale(0.86);
+  }
+  36%,
+  58% {
+    transform: translate(318px, 206px);
+  }
+  70%,
+  80% {
+    transform: translate(470px, 128px);
+  }
+  83% {
+    transform: translate(470px, 128px) scale(0.86);
+  }
+  86%,
+  100% {
+    transform: translate(470px, 128px);
+  }
+}
+@keyframes pa-wrong {
+  0%,
+  34% {
+    opacity: 0;
+  }
+  36%,
+  82% {
+    opacity: 1;
+  }
+  85%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pa-right {
+  0%,
+  84% {
+    opacity: 0;
+  }
+  86%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes pa-toast {
+  0%,
+  38% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  42%,
+  82% {
+    opacity: 1;
+    transform: none;
+  }
+  86%,
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+.pa-cursor {
+  animation: pa-cursor 10s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+.pa-wrong {
+  animation: pa-wrong 10s linear infinite;
+}
+.pa-right {
+  animation: pa-right 10s linear infinite;
+}
+.pa-toast {
+  animation: pa-toast 10s ease infinite;
+}
+/* The loop runs only while the demo is on screen (data-playing, set by the page), and never with
+   reduced motion or in Lite mode: then it shows the corrected mean and the coach's note. */
+[data-playing="false"] :is(.pa-cursor, .pa-wrong, .pa-right, .pa-toast) {
+  animation-play-state: paused;
+}
+[data-still="true"] .pa-cursor,
+[data-still="true"] .pa-wrong {
+  display: none;
+}
+[data-still="true"] :is(.pa-right, .pa-toast) {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pa-cursor,
+  .pa-wrong {
+    display: none;
+  }
+  .pa-right,
+  .pa-toast {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

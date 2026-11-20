@@ -40,14 +40,14 @@ export function LandingHeader({ links, signUp }: { links: NavLink[]; signUp: Nav
           data-scrolled={scrolled}
           className={`mx-auto box-border flex items-center justify-between gap-4 border transition-[max-width,background-color,border-color,padding] duration-[350ms] max-sm:gap-2 ${
             scrolled
-              ? "max-w-[1040px] border-[var(--pa-dash-chip-grey-line)] bg-[rgba(13,13,13,.88)] py-2 pl-4 pr-2.5 shadow-[0_12px_30px_-18px_rgba(0,0,0,.8)] backdrop-blur-[14px]"
+              ? "max-w-[1040px] border-[var(--pa-dash-chip-grey-line)] bg-[color-mix(in_srgb,var(--pa-ink-950)_88.0%,transparent)] py-2 pl-4 pr-2.5 shadow-[0_12px_30px_-18px_color-mix(in_srgb,var(--pa-ink-1000)_80%,transparent)] backdrop-blur-[14px]"
               : "max-w-[1280px] border-transparent bg-transparent px-4 py-2"
           }`}
         >
           <a
             href="#top"
             aria-label={t("landing.home")}
-            className={`flex items-center gap-2.5 text-[var(--pa-text)] no-underline ${focus}`}
+            className={`flex min-w-0 items-center gap-2.5 text-[var(--pa-text)] no-underline max-[400px]:gap-2 ${focus}`}
           >
             <Logo size={28} />
             <span className="whitespace-nowrap font-display text-lg font-bold">
@@ -74,7 +74,7 @@ export function LandingHeader({ links, signUp }: { links: NavLink[]; signUp: Nav
             <Link
               prefetch={false}
               href={signUp.href}
-              className={`whitespace-nowrap bg-[var(--pa-text)] px-3.5 py-[9px] text-[15px] font-semibold text-[var(--pa-ink-950)] no-underline ${focus}`}
+              className={`whitespace-nowrap bg-[var(--pa-text)] px-3.5 py-[9px] text-[15px] max-[400px]:px-2.5 font-semibold text-[var(--pa-ink-950)] no-underline ${focus}`}
             >
               {signUp.label}
             </Link>
@@ -107,7 +107,7 @@ export function LandingHeader({ links, signUp }: { links: NavLink[]; signUp: Nav
           <nav
             id={menu}
             aria-label={t("landing.nav.small")}
-            className="mt-1.5 flex flex-col border border-[var(--pa-dash-chip-grey-line)] bg-[rgba(13,13,13,.94)] p-2 min-[821px]:hidden"
+            className="mt-1.5 flex flex-col border border-[var(--pa-dash-chip-grey-line)] bg-[color-mix(in_srgb,var(--pa-ink-950)_94.0%,transparent)] p-2 min-[821px]:hidden"
           >
             {links.map((l) => (
               <a
