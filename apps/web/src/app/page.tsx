@@ -1,5 +1,11 @@
 import { t } from "@pa/i18n";
 import "@pa/i18n/landing";
+import {
+  CircuitStage,
+  LensStage,
+  MixturesStage,
+  PendulumStage,
+} from "@pa/ui/illustrations/landing-cards";
 import Link from "next/link";
 
 import { Anatomy } from "./_landing/anatomy";
@@ -155,7 +161,15 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <ExperimentCards data={cardsData()} />
+            <ExperimentCards
+              data={cardsData()}
+              stages={{
+                pendulum: <PendulumStage />,
+                circuit: <CircuitStage />,
+                lens: <LensStage />,
+                mixtures: <MixturesStage />,
+              }}
+            />
             <p className="m-0 text-[15px] text-[var(--pa-on-paper-muted)]">
               {t("landing.cards.more")}
             </p>

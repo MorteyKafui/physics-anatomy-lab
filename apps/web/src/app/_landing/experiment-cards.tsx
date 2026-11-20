@@ -3,12 +3,6 @@
 import { t, type MessageKey } from "@pa/i18n";
 import "@pa/i18n/landing";
 import { topicHue, type Topic } from "@pa/ui";
-import {
-  CircuitStage,
-  LensStage,
-  MixturesStage,
-  PendulumStage,
-} from "@pa/ui/illustrations/landing-cards";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { CardsData, FeedRow } from "./cards-data";
@@ -61,7 +55,15 @@ const tint = (topic: Topic, percent: number) =>
  * lab's own models. The feeds move on only while the cards are on screen, and never in Lite mode or
  * with reduced motion.
  */
-export function ExperimentCards({ data }: { data: CardsData }) {
+/** The four stages' drawings, rendered on the server and passed in, so they ship as HTML only. */
+export interface Stages {
+  pendulum: ReactNode;
+  circuit: ReactNode;
+  lens: ReactNode;
+  mixtures: ReactNode;
+}
+
+export function ExperimentCards({ data, stages }: { data: CardsData; stages: Stages }) {
   const root = useRef<HTMLDivElement>(null);
   const [tick, setTick] = useState(0);
   const [squared, setSquared] = useState(true);
@@ -210,7 +212,8 @@ export function ExperimentCards({ data }: { data: CardsData }) {
             </div>
           }
           stage={
-            <PendulumStage>
+            <>
+              {stages.pendulum}
               {bars}
               <polyline
                 points={tops.map(([a, b]) => `${a.toFixed(1)},${b.toFixed(1)}`).join(" ")}
@@ -220,7 +223,7 @@ export function ExperimentCards({ data }: { data: CardsData }) {
                 strokeDasharray="4 3"
                 pointerEvents="none"
               />
-            </PendulumStage>
+            </>
           }
           label={t("landing.cards.pendulum.figure", { what: squared ? "T²" : "T" })}
         />
@@ -231,7 +234,7 @@ export function ExperimentCards({ data }: { data: CardsData }) {
           tick={tick}
           tip={tip?.card === "circuit" ? tip : null}
           corner={<Badge>{data.circuit.badge}</Badge>}
-          stage={<CircuitStage />}
+          stage={stages.circuit}
           stageEvents={stageEvents("circuit")}
           label={t("landing.cards.circuit.figure")}
           positions={data.circuit.positions}
@@ -243,7 +246,7 @@ export function ExperimentCards({ data }: { data: CardsData }) {
           tick={tick}
           tip={tip?.card === "lens" ? tip : null}
           corner={<Badge>{data.lens.badge}</Badge>}
-          stage={<LensStage />}
+          stage={stages.lens}
           stageEvents={stageEvents("lens")}
           label={t("landing.cards.lens.figure")}
         />
@@ -254,7 +257,7 @@ export function ExperimentCards({ data }: { data: CardsData }) {
           tick={tick}
           tip={tip?.card === "mixtures" ? tip : null}
           corner={<Badge>{data.mixtures.badges[tick % data.mixtures.badges.length]}</Badge>}
-          stage={<MixturesStage />}
+          stage={stages.mixtures}
           stageEvents={stageEvents("mixtures")}
           label={t("landing.cards.mixtures.figure")}
         />
