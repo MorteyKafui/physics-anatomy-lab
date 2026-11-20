@@ -6,9 +6,6 @@ import { WEB } from "../playwright.config";
 
 // The landing page (design/mockups/Main.dc.html; docs/content/landing-page-brief.md).
 
-const SCENE_NOTE =
-  /Behind this text: (two slits|two slits with a detector watching which slit|a single slit|four slits), one particle at a time/;
-
 /** A checksum of the hero's canvas, to tell one frame from another. */
 const checksum = (page: Page) =>
   page.locator("#top canvas").evaluate((c: HTMLCanvasElement) => {
@@ -28,10 +25,9 @@ const litPixels = (page: Page) =>
     return lit;
   });
 
-test("the hero: the headline, its two actions, and the scene behind it", async ({ page }) => {
+test("the hero: the headline, its two actions, and the live slits behind it", async ({ page }) => {
   await page.goto(WEB);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Physics fromfirst principles.");
-  await expect(page.getByText(SCENE_NOTE)).toBeVisible();
   const canvas = page.locator("#top canvas");
   await expect(canvas).toHaveAttribute("aria-label", /^Particles landing/);
   await expect(canvas).toHaveAttribute("data-scene", /^(twoSlits|detector|oneSlit|fourSlits)$/);

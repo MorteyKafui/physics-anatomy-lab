@@ -39,7 +39,6 @@ export const SCENES: readonly Scene[] = [
   },
 ];
 
-export const sceneName = (s: Scene) => `landing.scene.${s.id}` as MessageKey;
 export const sceneAria = (s: Scene) => `landing.scene.${s.id}.aria` as MessageKey;
 
 /**
