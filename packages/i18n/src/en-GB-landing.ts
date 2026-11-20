@@ -94,6 +94,7 @@ export const enGBLanding = {
     "A results table being filled in. The student writes a mean time of {slip} s; the coach points out that a mean takes one more decimal place than its readings, and it becomes {fixed} s.",
 
   "landing.nav.experiments": "Experiments",
+  "landing.nav.research": "For researchers",
   "landing.cards.label": "Experiments",
   "landing.cards.title": "Four experiments, built deep.",
   "landing.cards.lede":

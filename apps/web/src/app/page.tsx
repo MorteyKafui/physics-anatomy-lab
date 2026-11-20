@@ -41,6 +41,7 @@ export default function Home() {
         links={[
           { href: "#anatomy", label: t("landing.nav.howItWorks") },
           { href: "#experiments", label: t("landing.nav.experiments") },
+          { href: "#research", label: t("landing.nav.research") },
         ]}
         signUp={SIGN_UP}
       />
