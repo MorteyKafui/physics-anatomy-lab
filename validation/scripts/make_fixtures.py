@@ -10,6 +10,7 @@ sigfigs.json   significant figures (Python decimal)        read by packages/anal
 student_t.json Student's t CDF and quantiles (SciPy)      read by packages/analysis
 outliers.json  Bonferroni outlier test (hat matrix)       read by packages/analysis
 review.json    the review's effects and the right way     read by packages/experiments
+diffraction.json  N-slit far field (SciPy quad over openings)  read by packages/physics
 """
 
 import itertools
@@ -26,6 +27,7 @@ from pa_validation.circuits import (
     random_network,
     terminal_pd_readings,
 )
+from pa_validation.diffraction import intensity, which_slit
 from pa_validation.fit import fit_line, fit_through_origin
 from pa_validation.lens import image
 from pa_validation.lens_exact import (
@@ -760,6 +762,42 @@ def build_uncertainty() -> dict[str, object]:
     }
 
 
+def build_diffraction() -> dict[str, object]:
+    """The landing page's four hero scenes (docs/content/landing-page-brief.md, decision 1) and
+    three more geometries, from sin θ = -0.2 to 0.2 in steps of 0.005."""
+    nm, um = 1e-9, 1e-6
+    geometries = [
+        {"name": "two slits (hero)", "count": 2, "width": 2 * um, "spacing": 11.25 * um},
+        {"name": "one slit (hero)", "count": 1, "width": 6.5 * um, "spacing": 6.5 * um},
+        {"name": "four slits (hero)", "count": 4, "width": 2 * um, "spacing": 5.625 * um},
+        {"name": "three slits", "count": 3, "width": 1 * um, "spacing": 4 * um},
+        {"name": "six close slits", "count": 6, "width": 3 * um, "spacing": 3.5 * um},
+        {"name": "touching slits", "count": 2, "width": 2 * um, "spacing": 2 * um},
+    ]
+    points = [round(-0.2 + 0.005 * i, 3) for i in range(81)]
+    cases = []
+    for g in geometries:
+        args = (g["count"], g["width"], g["spacing"], 500 * nm)
+        cases.append(
+            {
+                **g,
+                "wavelength": 500 * nm,
+                "points": [
+                    {
+                        "sinTheta": s,
+                        "intensity": intensity(*args, s),
+                        "whichSlit": which_slit(*args, s),
+                    }
+                    for s in points
+                ],
+            }
+        )
+    return {
+        "model": "Fraunhofer N-slit, SciPy quad over each opening, phasors added (or intensities)",
+        "cases": cases,
+    }
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -785,3 +823,4 @@ if __name__ == "__main__":
     write("review.json", build_review())
     write("model-check.json", build_model_check())
     write("uncertainty.json", build_uncertainty())
+    write("diffraction.json", build_diffraction())
