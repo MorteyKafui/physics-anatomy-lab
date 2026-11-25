@@ -23,6 +23,8 @@ export function proxy(request: NextRequest) {
     dev: process.env.NODE_ENV === "development",
     https: request.nextUrl.protocol === "https:",
     frames: WITH_TURNSTILE.test(request.nextUrl.pathname) ? [TURNSTILE_ORIGIN] : [],
+    // The print sheets preview their PDF in an <object> (src/app/lab/sheets/screen.tsx).
+    objects: ["blob:"],
   });
   const header = cspHeaderName(cspMode(process.env.CSP_MODE));
 

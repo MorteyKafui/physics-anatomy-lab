@@ -21,6 +21,11 @@ export interface CspOptions {
   https: boolean;
   /** Extra origins a page may frame, such as Cloudflare Turnstile's challenge. */
   frames?: readonly string[];
+  /**
+   * Sources an `<object>` may show. The print sheets preview their own PDF from a `blob:` URL,
+   * which only this origin's scripts can make; plugins from anywhere else stay refused.
+   */
+  objects?: readonly string[];
 }
 
 /** Cloudflare Turnstile loads its script from, and draws its challenge in a frame on, this origin. */
@@ -41,10 +46,16 @@ export function newNonce(): string {
  * - Styles allow `'unsafe-inline'`: React writes `style` attributes for the bench and the graphs,
  *   and a nonce cannot cover an attribute. Injected CSS cannot run code, so the gain from going
  *   further is small (recorded in the ASVS checklist).
- * - Everything else is this origin only. The page cannot be framed, and plugins and `<base>` are
- *   refused.
+ * - Everything else is this origin only. The page cannot be framed, and plugins (except the
+ *   `objects` asked for) and `<base>` are refused.
  */
-export function contentSecurityPolicy({ nonce, dev, https, frames = [] }: CspOptions): string {
+export function contentSecurityPolicy({
+  nonce,
+  dev,
+  https,
+  frames = [],
+  objects = [],
+}: CspOptions): string {
   const directives: [string, ...string[]][] = [
     ["default-src", "'self'"],
     ["script-src", `'nonce-${nonce}'`, "'strict-dynamic'", ...(dev ? ["'unsafe-eval'"] : [])],
@@ -56,7 +67,7 @@ export function contentSecurityPolicy({ nonce, dev, https, frames = [] }: CspOpt
     ["worker-src", "'self'"],
     ["manifest-src", "'self'"],
     ["frame-src", ...(frames.length > 0 ? frames : ["'none'"])],
-    ["object-src", "'none'"],
+    ["object-src", ...(objects.length > 0 ? objects : ["'none'"])],
     ["base-uri", "'none'"],
     ["form-action", "'self'"],
     ["frame-ancestors", "'none'"],

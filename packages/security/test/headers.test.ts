@@ -46,6 +46,13 @@ describe("the content security policy", () => {
     expect(p.get("frame-src")).toEqual([TURNSTILE_ORIGIN]);
   });
 
+  test("an <object> may show only the sources asked for", () => {
+    const p = directives(
+      contentSecurityPolicy({ nonce, dev: false, https: true, objects: ["blob:"] }),
+    );
+    expect(p.get("object-src")).toEqual(["blob:"]);
+  });
+
   test("upgrades subresources only over HTTPS, so local http runs still load", () => {
     expect(prod.has("upgrade-insecure-requests")).toBe(true);
     const local = directives(contentSecurityPolicy({ nonce, dev: false, https: false }));
