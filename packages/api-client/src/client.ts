@@ -126,8 +126,12 @@ export function createApi(options: ApiOptions = {}) {
       me: () => call<MeResponse>("GET", "/auth/me"),
       setName: (displayName: string) =>
         call<TeacherMe>("PATCH", "/auth/me", { display_name: displayName }),
-      requestEmailLink: (email: string) =>
-        call<EmailLinkSent>("POST", "/auth/email-link", { email }),
+      /** `turnstileToken` from the page's Turnstile widget, when Turnstile is on. */
+      requestEmailLink: (email: string, turnstileToken?: string | null) =>
+        call<EmailLinkSent>("POST", "/auth/email-link", {
+          email,
+          ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
+        }),
       verifyEmailLink: (token: string) =>
         call<TeacherMe>("POST", "/auth/email-link/verify", { token }),
       /** A full-page navigation, not a fetch: Google's pages cannot be fetched. */
