@@ -19,7 +19,7 @@ The rule for this item is that partners, team and donate details come only from 
 nothing is invented (AGENTS.md rule 2). Most of the details aren't in yet, so the pages are built
 to show their details when they arrive and a plain empty state until then.
 
-- **Status:** draft, waiting for Mortey.
+- **Status:** approved by Mortey on 2026-11-25, as proposed, including publishing the two partner rules. The details in "What I need from you" (2 to 6) follow later, so the pages are built in their empty states.
 
 ## The decisions
 
