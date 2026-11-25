@@ -1,6 +1,7 @@
 import { colour } from "@pa/ui";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
+import { connection } from "next/server";
 import "./globals.css";
 import { Offline } from "./offline";
 import { SITE_URL } from "./site";
@@ -30,7 +31,12 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "Physics Anatomy", statusBarStyle: "black" },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+/**
+ * Every page renders on its request, so it can carry that request's CSP nonce (src/proxy.ts and
+ * docs/security/asvs-review-brief.md). The service worker still keeps every page for offline use.
+ */
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  await connection();
   return (
     <html lang="en-GB" className={`${geist.variable} ${geistMono.variable} ${bricolage.variable}`}>
       <body className="font-sans antialiased">

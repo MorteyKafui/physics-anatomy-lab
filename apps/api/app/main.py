@@ -15,6 +15,7 @@ from app.config import get_settings
 from app.db import get_engine
 from app.live.hub import Hub, listen_dsn
 from app.routes import admin, ai, auth, classes, live, load_test, privacy, questions, sync, teacher
+from app.security_headers import SecurityHeaders
 
 settings = get_settings()
 
@@ -46,6 +47,7 @@ app = FastAPI(
     generate_unique_id_function=operation_id,
 )
 # Added last, runs first: CORS answers preflights before the origin guard sees the request.
+app.add_middleware(SecurityHeaders)
 app.add_middleware(BodyLimit, max_bytes=MAX_BODY_BYTES)
 app.add_middleware(OriginGuard)
 app.add_middleware(

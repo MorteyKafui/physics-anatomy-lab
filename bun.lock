@@ -24,6 +24,7 @@
         "@pa/i18n": "workspace:*",
         "@pa/instruments": "workspace:*",
         "@pa/physics": "workspace:*",
+        "@pa/security": "workspace:*",
         "@pa/ui": "workspace:*",
         "@react-three/fiber": "9.8.2",
         "next": "16.4.5",
@@ -56,6 +57,7 @@
         "@pa/i18n": "workspace:*",
         "@pa/instruments": "workspace:*",
         "@pa/physics": "workspace:*",
+        "@pa/security": "workspace:*",
         "@pa/ui": "workspace:*",
         "@pdf-lib/fontkit": "1.1.1",
         "fflate": "0.8.3",
@@ -169,6 +171,10 @@
       "devDependencies": {
         "@pa/analysis": "workspace:*",
       },
+    },
+    "packages/security": {
+      "name": "@pa/security",
+      "version": "0.0.0",
     },
     "packages/ui": {
       "name": "@pa/ui",
@@ -413,6 +419,8 @@
     "@pa/instruments": ["@pa/instruments@workspace:packages/instruments"],
 
     "@pa/physics": ["@pa/physics@workspace:packages/physics"],
+
+    "@pa/security": ["@pa/security@workspace:packages/security"],
 
     "@pa/ui": ["@pa/ui@workspace:packages/ui"],
 

@@ -1,6 +1,3 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-
 import { parse } from "yaml";
 import { z } from "zod";
 
@@ -38,20 +35,14 @@ export type Partner = z.infer<typeof Partner>;
 export type Contributor = z.infer<typeof Contributor>;
 
 /** A list file's entries, checked against its schema; a bad entry names its file and fails. */
-export function readList<T>(file: string, schema: z.ZodType<T>, text?: string): T[] {
-  const raw: unknown = parse(text ?? readFileSync(file, "utf8")) ?? [];
+export function readList<T>(file: string, schema: z.ZodType<T>, text: string): T[] {
+  const raw: unknown = parse(text) ?? [];
   const result = z.array(schema).safeParse(raw);
   if (!result.success) {
     throw new Error(`${file} has an entry the site can't show:\n${z.prettifyError(result.error)}`);
   }
   return result.data;
 }
-
-// Read when the pages are built (they are static). Literal paths, so the build traces only these.
-const cwd = process.cwd();
-export const team = () => readList(join(cwd, "content/team.yml"), TeamMember);
-export const partners = () => readList(join(cwd, "content/partners.yml"), Partner);
-export const contributors = () => readList(join(cwd, "../../CONTRIBUTORS.yml"), Contributor);
 
 /** The project's public repository (ADR 0037). */
 export const REPOSITORY = "https://github.com/MorteyKafui/physics-anatomy-lab";

@@ -2,7 +2,7 @@ import { t } from "@pa/i18n";
 import "@pa/i18n/people";
 import type { Metadata } from "next";
 
-import { team } from "../_people/people-data";
+import { team } from "../_people/people-files";
 import { BOX, Empty, MUTED, PeoplePage } from "../_people/people-page";
 import { absolute } from "../site";
 

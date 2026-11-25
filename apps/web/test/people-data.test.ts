@@ -1,21 +1,20 @@
 import { describe, expect, test } from "bun:test";
 
-import {
-  Contributor,
-  contributors,
-  Partner,
-  partners,
-  readList,
-  team,
-  TeamMember,
-} from "../src/app/_people/people-data";
+import { readFileSync } from "node:fs";
+
+import { Contributor, Partner, readList, TeamMember } from "../src/app/_people/people-data";
+
+const text = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
 // docs/content/people-pages-brief.md, decision 2: nobody on the site without their agreement.
 describe("the people pages' data", () => {
   test("the three files parse and pass their schemas as they stand", () => {
-    expect(Array.isArray(team())).toBe(true);
-    expect(Array.isArray(partners())).toBe(true);
-    expect(Array.isArray(contributors())).toBe(true);
+    // The same files people-files.ts bundles.
+    expect(readList("team.yml", TeamMember, text("../content/team.yml"))).toBeArray();
+    expect(readList("partners.yml", Partner, text("../content/partners.yml"))).toBeArray();
+    expect(
+      readList("CONTRIBUTORS.yml", Contributor, text("../../../CONTRIBUTORS.yml")),
+    ).toBeArray();
   });
 
   test("a person without the date they agreed is refused", () => {
