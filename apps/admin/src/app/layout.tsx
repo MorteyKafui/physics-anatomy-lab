@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./admin.css";
@@ -12,7 +13,9 @@ export const metadata: Metadata = {
   description: "Admin portal for the Physics Anatomy team. Runs behind Cloudflare Access.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+/** Every page renders on its request, so it can carry that request's CSP nonce (src/proxy.ts). */
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  await connection();
   return (
     <html
       lang="en-GB"

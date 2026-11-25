@@ -17,6 +17,7 @@
     "@pa/i18n": "workspace:*",
     "@pa/instruments": "workspace:*",
     "@pa/physics": "workspace:*",
+    "@pa/security": "workspace:*",
     "@pa/ui": "workspace:*",
     "@react-three/fiber": "9.8.2",
     "next": "16.4.5",

@@ -2,7 +2,8 @@ import { t, type MessageKey } from "@pa/i18n";
 import "@pa/i18n/people";
 import type { Metadata } from "next";
 
-import { partners, REPOSITORY } from "../_people/people-data";
+import { REPOSITORY } from "../_people/people-data";
+import { partners } from "../_people/people-files";
 import { BOX, Empty, H2, MUTED, PeoplePage } from "../_people/people-page";
 import { absolute } from "../site";
 
