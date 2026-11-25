@@ -4,36 +4,37 @@ The screens in `mockups/` were designed and approved on the Phase 0 design canva
 (claude.ai/artifact/NUVrA7XN8LsNdYNFzJ19iJ). **They are the specification.** Each screen in the
 apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and interactions.
 
-| Board                         | File                    | Screenshot             | Builds into                      |
-| ----------------------------- | ----------------------- | ---------------------- | -------------------------------- |
-| Landing page                  | `Main.dc.html`          | `screens/Main.jpg`     | `apps/web` `/`                   |
-| Lab, desktop                  | `Lab.dc.html`           | `screens/Lab.jpg`      | `apps/web` lab                   |
-| Lab, phone                    | `LabPhone.dc.html`      | `screens/LabPhone.jpg` | `apps/web` lab at phone width    |
-| Joining a class               | `Join.dc.html`          | `screens/Join.jpg`     | `apps/web` join flow             |
-| Table builder and graph sheet | `Table.dc.html`         | `screens/Table.jpg`    | `apps/web` steps 6 and 7         |
-| Report and labelled export    | `Report.dc.html`        | `screens/Report.jpg`   | `apps/web` step 10               |
-| Snapshot notebook             | `Notebook.dc.html`      | `screens/Notebook.jpg` | `apps/web` notebook              |
-| Review, retry and compare     | `Review.dc.html`        | on the canvas only     | `apps/web` review                |
-| Exam mode                     | `Exam.dc.html`          | on the canvas only     | `apps/web` exam                  |
-| Ohm's law: wiring, measuring  | `Ohms.dc.html`          | on the canvas only     | `apps/web` `/lab/ohms-law`       |
-| Converging lens: the image    | `Lens.dc.html`          | on the canvas only     | `apps/web` lens lab              |
-| Converging lens: two pins     | `Pins.dc.html`          | on the canvas only     | `apps/web` lens lab, pins        |
-| Method of mixtures            | `Mixtures.dc.html`      | on the canvas only     | `apps/web` mixtures lab          |
-| Mixtures, a hot solid         | `MixturesSolid.dc.html` | on the canvas only     | `apps/web` hot-solid lab         |
-| Model check, your lab data    | `ModelCheck.dc.html`    | on the canvas only     | `apps/web` `/lab/<id>/check`     |
-| Uncertainties, advanced layer | `Uncertainty.dc.html`   | on the canvas only     | `apps/web` steps 6 to 8          |
-| First-run tour                | `Tour.dc.html`          | `screens/Tour.jpg`     | `apps/web` onboarding            |
-| Adding signed-out work        | `Adopt.dc.html`         | approved 2026-11-19    | `apps/web` after sign-in or join |
-| Teacher sign-in               | `SignIn.dc.html`        | approved 2026-11-19    | `apps/web` `/sign-in` (built)    |
-| Consent and your data         | `Privacy.dc.html`       | approved 2026-11-19    | `apps/web` settings, class page  |
-| AI help                       | `AI.dc.html`            | approved 2026-11-19    | `apps/web` lab, report, `/teach` |
-| Questions                     | `Questions.dc.html`     | approved 2026-11-19    | `/teach/questions`, admin bank   |
-| Admin AI                      | `AiAdmin.dc.html`       | approved 2026-11-19    | `apps/admin` `/ai`               |
-| Teacher live class            | `Teacher.dc.html`       | `screens/Teacher.jpg`  | `apps/web` teacher dashboard     |
-| Teacher classes, start        | `TeacherStart.dc.html`  | approved 2026-11-19    | `apps/web` `/teach`, live extras |
-| Admin portal                  | `Admin.dc.html`         | `screens/Admin.jpg`    | `apps/admin`                     |
-| Logo                          | `Logo.dc.html`          | `screens/Logo.jpg`     | `packages/ui` logo component     |
-| Logo set                      | `LogoSet.dc.html`       | approved 2026-11-19    | `packages/ui/brand`, app icons   |
+| Board                         | File                     | Screenshot             | Builds into                      |
+| ----------------------------- | ------------------------ | ---------------------- | -------------------------------- |
+| Landing page                  | `Main.dc.html`           | `screens/Main.jpg`     | `apps/web` `/`                   |
+| Lab, desktop                  | `Lab.dc.html`            | `screens/Lab.jpg`      | `apps/web` lab                   |
+| Lab, phone                    | `LabPhone.dc.html`       | `screens/LabPhone.jpg` | `apps/web` lab at phone width    |
+| Joining a class               | `Join.dc.html`           | `screens/Join.jpg`     | `apps/web` join flow             |
+| Table builder and graph sheet | `Table.dc.html`          | `screens/Table.jpg`    | `apps/web` steps 6 and 7         |
+| Report and labelled export    | `Report.dc.html`         | `screens/Report.jpg`   | `apps/web` step 10               |
+| Snapshot notebook             | `Notebook.dc.html`       | `screens/Notebook.jpg` | `apps/web` notebook              |
+| Review, retry and compare     | `Review.dc.html`         | on the canvas only     | `apps/web` review                |
+| Exam mode                     | `Exam.dc.html`           | on the canvas only     | `apps/web` exam                  |
+| Ohm's law: wiring, measuring  | `Ohms.dc.html`           | on the canvas only     | `apps/web` `/lab/ohms-law`       |
+| Converging lens: the image    | `Lens.dc.html`           | on the canvas only     | `apps/web` lens lab              |
+| Converging lens: two pins     | `Pins.dc.html`           | on the canvas only     | `apps/web` lens lab, pins        |
+| Method of mixtures            | `Mixtures.dc.html`       | on the canvas only     | `apps/web` mixtures lab          |
+| Mixtures, a hot solid         | `MixturesSolid.dc.html`  | on the canvas only     | `apps/web` hot-solid lab         |
+| Model check, your lab data    | `ModelCheck.dc.html`     | on the canvas only     | `apps/web` `/lab/<id>/check`     |
+| Uncertainties, advanced layer | `Uncertainty.dc.html`    | on the canvas only     | `apps/web` steps 6 to 8          |
+| First-run tour                | `Tour.dc.html`           | `screens/Tour.jpg`     | `apps/web` onboarding            |
+| Adding signed-out work        | `Adopt.dc.html`          | approved 2026-11-19    | `apps/web` after sign-in or join |
+| Teacher sign-in               | `SignIn.dc.html`         | approved 2026-11-19    | `apps/web` `/sign-in` (built)    |
+| Consent and your data         | `Privacy.dc.html`        | approved 2026-11-19    | `apps/web` settings, class page  |
+| AI help                       | `AI.dc.html`             | approved 2026-11-19    | `apps/web` lab, report, `/teach` |
+| Questions                     | `Questions.dc.html`      | approved 2026-11-19    | `/teach/questions`, admin bank   |
+| Admin AI                      | `AiAdmin.dc.html`        | approved 2026-11-19    | `apps/admin` `/ai`               |
+| Teacher live class            | `Teacher.dc.html`        | `screens/Teacher.jpg`  | `apps/web` teacher dashboard     |
+| Teacher classes, start        | `TeacherStart.dc.html`   | approved 2026-11-19    | `apps/web` `/teach`, live extras |
+| Admin portal                  | `Admin.dc.html`          | `screens/Admin.jpg`    | `apps/admin`                     |
+| Logo                          | `Logo.dc.html`           | `screens/Logo.jpg`     | `packages/ui` logo component     |
+| Logo set                      | `LogoSet.dc.html`        | approved 2026-11-19    | `packages/ui/brand`, app icons   |
+| Experiment page               | `ExperimentPage.dc.html` | approved 2026-11-25    | `apps/web` `/experiments/<id>`   |
 
 The `.dc.html` files are the source: open them on the canvas to see every state and interaction.
 The screenshots were taken without web fonts, so type looks slightly different; the canvas is
