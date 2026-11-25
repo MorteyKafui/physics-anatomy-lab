@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Offline } from "./offline";
+import { SITE_URL } from "./site";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -12,13 +13,6 @@ export const viewport: Viewport = { themeColor: colour.ink950 };
 
 const DESCRIPTION =
   "Physics from first principles. Build real experiments, take your own readings, and get coached.";
-
-/**
- * The site's own address, which social cards need in full (logo set brief, decision 6). Set
- * SITE_URL when building for staging or production; until the domain is chosen, local builds
- * use the dev server.
- */
-const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -100,6 +100,7 @@ export const enGBLanding = {
   "landing.cards.lede":
     "Each one runs the real equations. Point at any part to see what it does. The readings on each card come straight from the simulation.",
   "landing.cards.open": "Open the lab",
+  "landing.cards.all": "See every experiment",
   "landing.cards.more":
     "More experiments from the WASSCE and university practical lists are on the way.",
   "landing.cards.live": "Live from the simulation",

@@ -70,9 +70,12 @@ import { quoteWithUncertainty } from "../uncertainty-format";
  */
 
 const E = methodOfMixtures;
+import { mixturesApparatus } from "./apparatus";
+
 const P = "experiments.method-of-mixtures";
 const R = `${P}.report`;
 const lines = (...xs: (string | false | undefined)[]) => xs.filter(Boolean).join("\n");
+
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 const SEVERE = new Set(["error", "warning"]);
 const EARLY = "mixtures-read-before-peak";
@@ -338,15 +341,7 @@ export function mixturesReport(attempt: Attempt, events: readonly LabEvent[]): R
         : t(`${R}.method.analyseOther`, { y: symbol(columns.y), x: symbol(columns.x) })),
   );
 
-  const apparatus = lines(
-    t(`${R}.apparatus.calorimeter`, { g: (E.calorimeter.mass * 1000).toFixed(0) }),
-    t(`${R}.apparatus.thermometer`, { celsius: MIXTURES_THERMOMETER.resolution }),
-    t(`${R}.apparatus.cylinder`, {
-      capacity: E.cylinderCapacity,
-      cm3: MEASURING_CYLINDER.resolution,
-    }),
-    t(`${R}.apparatus.beaker`),
-  );
+  const apparatus = lines(...mixturesApparatus());
 
   // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7):
   // the slope and where the line meets the V axis by least squares, and W = −(intercept) − V₀ with

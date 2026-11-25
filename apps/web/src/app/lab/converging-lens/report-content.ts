@@ -68,9 +68,12 @@ import { figureDate, type FigureScene } from "../snapshot-figure";
  */
 
 const E = convergingLens;
+import { lensApparatus } from "./apparatus";
+
 const P = "experiments.converging-lens";
 const R = `${P}.report`;
 const lines = (...xs: (string | false | undefined)[]) => xs.filter(Boolean).join("\n");
+
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 const SEVERE = new Set(["error", "warning"]);
 const FROM_EDGE = "lens-read-from-edge";
@@ -331,12 +334,7 @@ export function convergingLensReport(attempt: Attempt, events: readonly LabEvent
         : t(`${R}.method.analyseOther`, { y: symbol(columns.y), x: symbol(columns.x) })),
   );
 
-  const apparatus = lines(
-    t(`${R}.apparatus.rayBox`),
-    t(`${R}.apparatus.lens`, { d: cm(E.lens.aperture) }),
-    t(`${R}.apparatus.screen`),
-    t(`${R}.apparatus.bench`, { length: cm(E.benchLength) }),
-  );
+  const apparatus = lines(...lensApparatus());
 
   // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7).
   // The lab never reveals the lens's own focal length, so there is no accepted value to agree with.
