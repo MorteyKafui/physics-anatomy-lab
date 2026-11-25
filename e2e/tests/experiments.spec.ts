@@ -63,6 +63,9 @@ test("the sitemap lists every page, and robots keeps the lab's screens out", asy
 });
 
 test("every link on an experiment page goes somewhere real", async ({ page, request }) => {
+  // Each link is a page rendered on its request (ADR 0046); with the whole suite running against
+  // one local server, ten of them can take longer than the default 30 s. Alone it takes about 6 s.
+  test.setTimeout(90_000);
   await page.goto(`${WEB}/experiments/converging-lens`);
   const hrefs = await page
     .locator("main a[href]")

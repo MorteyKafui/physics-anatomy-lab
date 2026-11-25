@@ -51,6 +51,8 @@ test("the fixed security headers are on pages, files and the API", async ({ requ
 test("every page has a nonce of its own, and every script it sends carries it", async ({
   request,
 }) => {
+  // Two renders of every page; about 9 s alone, much longer with the whole suite running.
+  test.setTimeout(180_000);
   const pages = await webPages();
   expect(pages.length).toBeGreaterThan(50);
   for (const path of pages) {

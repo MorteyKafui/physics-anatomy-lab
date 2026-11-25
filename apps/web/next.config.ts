@@ -9,6 +9,9 @@ const API_URL = process.env.API_URL ?? "http://localhost:8000";
 const nextConfig: NextConfig = {
   // Workspace packages ship TypeScript source; Next compiles them.
   transpilePackages: ["@pa/ui", "@pa/apparatus", "@pa/security"],
+  // Metadata arrives with each page, never streamed after it. Pages render on each request
+  // (ADR 0046), and a streamed title leaves a navigation briefly without one (WCAG 2.4.2).
+  htmlLimitedBots: /.*/,
   turbopack: {
     // `import text from "./file.md?raw"` bundles a file's text (src/raw.d.ts). Pages render on
     // each request for their CSP nonce, and the server has no files to read.
