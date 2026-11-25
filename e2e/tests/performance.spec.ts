@@ -5,6 +5,10 @@ import { WEB } from "../playwright.config";
 
 import { LAB, toMeasure } from "./walk";
 
+// Each budget is measured alone, one test after another: a page measured beside another test's
+// animating page would be timed against a busy CPU.
+test.describe.configure({ mode: "default" });
+
 // Master plan section 13: Largest Contentful Paint on the landing page over slow 4G is 2.5 s or less.
 const LCP_BUDGET_MS = 2500;
 
@@ -39,6 +43,23 @@ test("landing page LCP over slow 4G is within budget", async ({ page, browserNam
 
   info.annotations.push({ type: "LCP", description: `${Math.round(lcp)} ms` });
   expect(lcp).toBeLessThanOrEqual(LCP_BUDGET_MS);
+});
+
+test("the landing page does not shift as it loads: CLS is 0", async ({ page }) => {
+  // Landing page brief, decision 9: explicit sizes everywhere, nothing pushed down once painted.
+  await page.addInitScript(() => {
+    (window as unknown as { cls: number }).cls = 0;
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries() as (PerformanceEntry & {
+        value: number;
+        hadRecentInput: boolean;
+      })[])
+        if (!e.hadRecentInput) (window as unknown as { cls: number }).cls += e.value;
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  await page.goto(WEB, { waitUntil: "load" });
+  await page.waitForTimeout(3000);
+  expect(await page.evaluate(() => (window as unknown as { cls: number }).cls)).toBe(0);
 });
 
 /*

@@ -1,0 +1,22 @@
+/* The landing page's own motion and type (design/mockups/Main.dc.html). Reduced motion stops it. */
+@keyframes pa-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.pa-pulse {
+  animation: pa-pulse 2.4s ease-in-out infinite;
+}
+.pa-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.6px var(--pa-text);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pa-pulse {
+    animation: none;
+  }
+}

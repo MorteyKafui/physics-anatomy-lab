@@ -229,6 +229,7 @@ export function NotebookScreen() {
       {/* Header */}
       <header className="flex flex-wrap items-center gap-x-3.5 gap-y-2.5 border border-border bg-[var(--pa-ink-900)] px-4 py-3">
         <Link
+          prefetch={false}
           href="/"
           aria-label={t("lab.rail.home")}
           className="flex size-[30px] items-center justify-center bg-foreground text-background"

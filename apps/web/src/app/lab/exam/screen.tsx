@@ -142,6 +142,7 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
     <main className="flex min-h-dvh flex-col gap-3.5 bg-[var(--pa-ink-1000)] p-3.5 text-foreground">
       <header className="flex flex-wrap items-center gap-x-3.5 gap-y-2.5 border border-border bg-[var(--pa-ink-900)] px-4 py-3">
         <Link
+          prefetch={false}
           href="/"
           aria-label={t("lab.rail.home")}
           className="flex size-[30px] items-center justify-center bg-foreground text-background"
