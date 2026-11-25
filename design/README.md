@@ -34,7 +34,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Admin portal                  | `Admin.dc.html`          | `screens/Admin.jpg`    | `apps/admin`                     |
 | Logo                          | `Logo.dc.html`           | `screens/Logo.jpg`     | `packages/ui` logo component     |
 | Logo set                      | `LogoSet.dc.html`        | approved 2026-11-19    | `packages/ui/brand`, app icons   |
-| Experiment page               | `ExperimentPage.dc.html` | draft for approval     | `apps/web` `/experiments/<id>`   |
+| Experiment page               | `ExperimentPage.dc.html` | approved 2026-11-25    | `apps/web` `/experiments/<id>`   |
 
 The `.dc.html` files are the source: open them on the canvas to see every state and interaction.
 The screenshots were taken without web fonts, so type looks slightly different; the canvas is

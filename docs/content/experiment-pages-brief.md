@@ -6,7 +6,7 @@ with structured data (`LearningResource`) and a social image, so search engines 
 is no approved board for these pages, so a draft board comes with this brief:
 `design/mockups/ExperimentPage.dc.html`.
 
-- **Status:** draft, waiting for Mortey.
+- **Status:** approved by Mortey on 2026-11-25, as proposed: model cards now (decision 3a), for his physics review before merge, and the two second-method labs on pages of their own.
 
 ## The decisions
 
