@@ -16,7 +16,8 @@
     "./flag": "./src/flag.ts",
     "./landing": "./src/landing.ts",
     "./access": "./src/access.ts",
-    "./catalogue": "./src/catalogue.ts"
+    "./catalogue": "./src/catalogue.ts",
+    "./people": "./src/people.ts"
   },
   "scripts": {
     "lint": "eslint .",

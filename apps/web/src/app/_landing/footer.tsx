@@ -1,5 +1,6 @@
 import { t } from "@pa/i18n";
 import "@pa/i18n/landing";
+import "@pa/i18n/people";
 import { Logo } from "@pa/ui";
 import Link from "next/link";
 
@@ -37,6 +38,24 @@ export function LandingFooter({ product }: { product: NavLink[] }) {
               <Link
                 prefetch={false}
                 key={l.href}
+                href={l.href}
+                className="text-[var(--pa-text-soft)] no-underline hover:text-[var(--pa-text)]"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+          <nav aria-label={t("people.footer.about")} className="flex flex-col gap-2.5 text-[15px]">
+            <span className="font-semibold text-[var(--pa-text)]">{t("people.footer.about")}</span>
+            {[
+              { href: "/about", label: t("people.footer.team") },
+              { href: "/partners", label: t("people.footer.partners") },
+              { href: "/contribute", label: t("people.footer.contribute") },
+              { href: "/donate", label: t("people.footer.donate") },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                prefetch={false}
                 href={l.href}
                 className="text-[var(--pa-text-soft)] no-underline hover:text-[var(--pa-text)]"
               >
