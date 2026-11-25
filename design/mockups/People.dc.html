@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team, partners, contributors and donate </title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#FBFBF6}
+.pp .col{background:#FBFBF6;border:1px solid #E6E4DB;display:flex;flex-direction:column}
+.pp .bar{background:#0D0D0D;color:#F2F0EA;padding:10px 14px;font:700 14px 'Bricolage Grotesque',sans-serif;display:flex;gap:8px;align-items:center}
+.pp .in{padding:24px 20px 28px;display:flex;flex-direction:column;gap:14px}
+.pp h1{margin:0;font:800 34px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-0.02em}
+.pp h2{margin:0;font:700 19px 'Bricolage Grotesque',sans-serif}
+.pp .muted{color:#4A4843}
+.pp .empty{border:1px dashed #BDBAB1;background:#FFFFFF;padding:16px;display:flex;flex-direction:column;gap:6px}
+.pp .box{border:1px solid #E6E4DB;background:#FFFFFF;padding:16px;display:flex;flex-direction:column;gap:8px}
+.pp .tag{font:500 12px 'Geist Mono',monospace;color:#4A4843}
+.pp ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+</style>
+</helmet>
+<div class="pp" style="width: 1440px; box-sizing: border-box; background: #F3F1E8; color: #141414; font-family: Geist, system-ui, sans-serif; font-size: 15px; line-height: 1.5; padding: 32px; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; justify-content: space-between; align-items: baseline">
+    <span style="font: 800 30px 'Bricolage Grotesque', sans-serif; letter-spacing: -0.02em">Team, partners, contributors and donate</span>
+    <span class="tag">Each page as it opens: empty until Mortey's details are in. Draft, 25 Nov 2026.</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: start">
+
+    <div class="col">
+      <div class="bar">Physics Anatomy</div>
+      <div class="in">
+        <span class="tag">/about</span>
+        <h1>The team</h1>
+        <div class="empty">
+          <b>The team's page is being written.</b>
+          <span class="muted">Names appear here once each person has agreed to be listed.</span>
+        </div>
+        <div class="box">
+          <span class="tag">With an entry (team.yml)</span>
+          <div style="display: flex; gap: 12px; align-items: center">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: #E6E4DB; flex: none"></div>
+            <div style="display: flex; flex-direction: column"><b>Name, as given</b><span class="muted">Role, as given</span></div>
+          </div>
+        </div>
+        <span class="muted" style="font-size: 13px">How Physics Anatomy relates to UEW: Mortey's words, once UEW agrees.</span>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="bar">Physics Anatomy</div>
+      <div class="in">
+        <span class="tag">/partners</span>
+        <h1>Partners and sponsors</h1>
+        <div class="box">
+          <h2>Two rules we keep</h2>
+          <ul>
+            <li>No ads are ever shown to students.</li>
+            <li>No sponsor has a say in the content.</li>
+          </ul>
+        </div>
+        <div class="empty">
+          <b>No partners or sponsors yet.</b>
+          <span class="muted">Organisations that support the lab are listed here, with their permission.</span>
+        </div>
+        <div class="box">
+          <h2>Become a partner</h2>
+          <span class="muted">Write to <b>[contact address]</b>.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="bar">Physics Anatomy</div>
+      <div class="in">
+        <span class="tag">/contribute</span>
+        <h1>Contributors</h1>
+        <div class="empty">
+          <b>CONTRIBUTORS.yml</b>
+          <span class="muted">Everyone who has helped, in their own words, once they have agreed to be listed.</span>
+        </div>
+        <div class="box">
+          <h2>How to help</h2>
+          <ul>
+            <li>Report a problem or suggest an experiment on GitHub.</li>
+            <li>Lecturers can review the physics: every model is checked before it ships.</li>
+            <li>Code contributions open once the licence is agreed with UEW.</li>
+          </ul>
+          <span style="align-self: flex-start; border: 1px solid #141414; padding: 8px 12px; font-weight: 500">The code on GitHub</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="bar">Physics Anatomy</div>
+      <div class="in">
+        <span class="tag">/donate</span>
+        <h1>Donate</h1>
+        <p style="margin: 0">Physics Anatomy is free for every student and every school.</p>
+        <div class="empty">
+          <b>Donations open once the route is agreed with the university.</b>
+          <span class="muted">We'll take gifts only through a route the University of Education, Winneba has agreed.</span>
+        </div>
+        <div class="box">
+          <span class="muted">An organisation that wants to support the lab can become a partner.</span>
+          <span style="align-self: flex-start; border: 1px solid #141414; padding: 8px 12px; font-weight: 500">Partners and sponsors</span>
+        </div>
+        <span class="tag">No payment details, no provider, no account.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
