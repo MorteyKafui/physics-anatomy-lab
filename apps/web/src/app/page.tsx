@@ -18,14 +18,15 @@ import { LandingHeader } from "./_landing/header";
 import { HeroStage } from "./_landing/hero-stage";
 import "./_landing/landing.css";
 import { PlayWhenSeen } from "./_landing/play-when-seen";
+import { SignUpForms } from "./_landing/sign-up";
 import { TimeIt } from "./_landing/time-it";
 
 // Links here never prefetch: the lab is the biggest download on the site, and a visitor on a
 // low-cost phone pays for it only if they choose to go (Lite mode; brief, decision 9).
 const START = "/lab/simple-pendulum";
-// Until /sign-in is built (landing page brief, decision 6), signing up starts at the teacher's
-// classes, which ask a signed-out visitor to sign in.
-const SIGN_UP = { href: "/teach", label: t("landing.signUp") };
+// "Sign up free" goes to the page's own sign-up section, as on the board; it hands on to /sign-in.
+const SIGN_UP = { href: "#signup", label: t("landing.signUp") };
+const LOG_IN = { href: "/sign-in", label: t("landing.logIn") };
 
 const H2 =
   "m-0 text-balance font-display text-[clamp(38px,5vw,64px)] font-extrabold leading-[0.95] tracking-[-0.03em]";
@@ -48,8 +49,10 @@ export default function Home() {
           { href: "#anatomy", label: t("landing.nav.howItWorks") },
           { href: "#experiments", label: t("landing.nav.experiments") },
           { href: "#research", label: t("landing.nav.research") },
+          { href: "#signup", label: t("landing.nav.teachers") },
         ]}
         signUp={SIGN_UP}
+        logIn={LOG_IN}
       />
       <main id="content">
         <HeroStage>
@@ -72,7 +75,7 @@ export default function Home() {
             <Link
               prefetch={false}
               href={SIGN_UP.href}
-              className={`border border-[var(--pa-dash-quiet)] bg-[rgba(13,13,13,.85)] px-6 py-[15px] text-[17px] font-medium text-[var(--pa-text)] no-underline ${focus}`}
+              className={`border border-[var(--pa-dash-quiet)] bg-[color-mix(in_srgb,var(--pa-ink-950)_85%,transparent)] px-6 py-[15px] text-[17px] font-medium text-[var(--pa-text)] no-underline ${focus}`}
             >
               {SIGN_UP.label}
             </Link>
@@ -183,6 +186,22 @@ export default function Home() {
           <div className="mx-auto flex max-w-[1280px] flex-col gap-10 px-4 py-[104px] sm:px-8">
             <h2 className={`${H2} max-w-[14em]`}>{t("landing.bento.title")}</h2>
             <Bento data={bentoData()} />
+          </div>
+        </section>
+
+        <section
+          id="signup"
+          aria-label={t("landing.signUp.label")}
+          className="bg-[var(--pa-accent)] text-[var(--pa-ink-950)] [contain-intrinsic-size:auto_560px] [content-visibility:auto]"
+        >
+          <div className="mx-auto flex max-w-[1280px] flex-wrap items-stretch gap-8 px-4 py-24 sm:px-8">
+            <div className="flex min-w-0 flex-[1_1_360px] flex-col justify-center gap-4">
+              <h2 className="m-0 font-display text-[clamp(40px,5.4vw,72px)] font-extrabold leading-[0.92] tracking-[-0.035em]">
+                {t("landing.signUp.title")}
+              </h2>
+              <p className="m-0 max-w-[26em] text-lg">{t("landing.signUp.lede")}</p>
+            </div>
+            <SignUpForms />
           </div>
         </section>
       </main>
