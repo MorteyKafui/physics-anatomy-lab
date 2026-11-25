@@ -1,0 +1,9 @@
+# Partners, sponsors and donors (/partners; docs/partners.md). Add one only with their written
+# permission to show their name and logo, and the date it was given. Empty until there is one.
+#
+# - name: As they want it shown
+#   kind: partner        # partner, sponsor or donor
+#   logo: /partners/file-name.svg   # under apps/web/public/partners/
+#   link: https://example.org        # optional
+#   permission: 2026-11-25           # the date written permission was given
+[]

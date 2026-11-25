@@ -1,5 +1,7 @@
-# Generates the credits page. Add yourself in the same pull request as your first contribution.
-- name: Mortey Kafui
-  roles: [lead developer]
-- name: Dr Isaac Kwesi Acquah
-  roles: [lead supervisor, physics reviewer]
+# Everyone who has helped build Physics Anatomy, shown on /contribute (master plan, "People joining
+# later"). Add a person only with their agreement, in their own words, and the date they agreed.
+#
+# - name: As they want it shown
+#   contribution: What they did, in a few words
+#   agreed: 2026-11-25
+[]

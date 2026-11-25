@@ -1,0 +1,8 @@
+# The team page (/about; docs/content/people-pages-brief.md, decision 2). Add a person only with
+# their agreement, in the words they chose, and the date they agreed. Empty until Mortey confirms.
+#
+# - name: As they want it shown
+#   role: As they want it shown
+#   photo: /people/file-name.jpg   # optional, under apps/web/public/people/
+#   agreed: 2026-11-25             # the date they agreed to be listed
+[]

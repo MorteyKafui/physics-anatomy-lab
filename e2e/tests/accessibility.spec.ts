@@ -11,6 +11,10 @@ const pages = [
   { name: "privacy policy", url: `${WEB}/privacy` },
   { name: "experiments", url: `${WEB}/experiments` },
   { name: "an experiment page", url: `${WEB}/experiments/ohms-law` },
+  { name: "the team", url: `${WEB}/about` },
+  { name: "partners", url: `${WEB}/partners` },
+  { name: "contribute", url: `${WEB}/contribute` },
+  { name: "donate", url: `${WEB}/donate` },
   { name: "admin home", url: ADMIN },
   { name: "design system catalogue", url: `${ADMIN}/design-system` },
 ];
