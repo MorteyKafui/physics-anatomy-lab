@@ -6,7 +6,7 @@ import { contentSecurityPolicy, cspHeaderName, cspMode, newNonce } from "@pa/sec
  * Every page gets a new nonce and a Content Security Policy that names it
  * (docs/security/asvs-review-brief.md, option A). Next reads the policy from the request and adds
  * the nonce to its own scripts; the response carries the same policy to the browser.
- * `CSP_MODE=enforce` turns it from Report-Only to enforced.
+ * It is enforced; `CSP_MODE=report` turns it back to Report-Only (ADR 0046).
  */
 export function proxy(request: NextRequest) {
   const nonce = newNonce();

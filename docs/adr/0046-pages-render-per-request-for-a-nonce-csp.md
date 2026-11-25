@@ -24,8 +24,9 @@ at build time has no nonce, so its scripts would be blocked.
 - **The fixed headers** (HSTS, `nosniff`, Referrer-Policy, Permissions-Policy, X-Frame-Options,
   COOP, CORP) are set in `next.config.ts`, so static files carry them too. The API adds its own
   (`app/security_headers.py`), with `Cache-Control: no-store` unless a route sets one.
-- **Report-Only first.** `CSP_MODE=enforce` switches it on. The next pull request enforces it,
-  once a release has shown no violations.
+- **Report-Only first, then enforced.** It shipped as Report-Only in #133, with no violations on
+  any page. It is enforced from the next pull request; `CSP_MODE=report` turns it back to
+  Report-Only if a release finds a page the policy breaks.
 - **The offline pack is unchanged.** The service worker's list now comes from Next's list of
   pages (`app-path-routes-manifest.json`), each dynamic page expanded by its own
   `generateStaticParams`. The worker fetches every page when it installs, so each saved page

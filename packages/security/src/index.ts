@@ -9,7 +9,10 @@
  *   app's proxy sets it, and Next adds the nonce to its own scripts (docs/security/asvs-l2.md).
  */
 
-/** Whether the policy is enforced or only reported (the brief ships it as Report-Only first). */
+/**
+ * Whether the policy is enforced or only reported. Enforced by default; `report` is the way back
+ * if a release finds a page the policy breaks (ADR 0046).
+ */
 export type CspMode = "enforce" | "report";
 
 export interface CspOptions {
@@ -82,9 +85,9 @@ export function cspHeaderName(mode: CspMode): string {
   return mode === "enforce" ? "Content-Security-Policy" : "Content-Security-Policy-Report-Only";
 }
 
-/** Reads `CSP_MODE`; anything but `enforce` reports only. */
+/** Reads `CSP_MODE`: only `report` turns enforcement off. */
 export function cspMode(value: string | undefined): CspMode {
-  return value === "enforce" ? "enforce" : "report";
+  return value === "report" ? "report" : "enforce";
 }
 
 /**
