@@ -2,10 +2,14 @@ import { t } from "@pa/i18n";
 import "@pa/i18n/landing";
 import Link from "next/link";
 
+import { Anatomy } from "./_landing/anatomy";
+import { CoachDemo } from "./_landing/coach-demo";
 import { LandingFooter } from "./_landing/footer";
 import { LandingHeader } from "./_landing/header";
 import { HeroStage } from "./_landing/hero-stage";
 import "./_landing/landing.css";
+import { PlayWhenSeen } from "./_landing/play-when-seen";
+import { TimeIt } from "./_landing/time-it";
 
 // Links here never prefetch: the lab is the biggest download on the site, and a visitor on a
 // low-cost phone pays for it only if they choose to go (Lite mode; brief, decision 9).
@@ -13,6 +17,9 @@ const START = "/lab/simple-pendulum";
 // Until /sign-in is built (landing page brief, decision 6), signing up starts at the teacher's
 // classes, which ask a signed-out visitor to sign in.
 const SIGN_UP = { href: "/teach", label: t("landing.signUp") };
+
+const H2 =
+  "m-0 text-balance font-display text-[clamp(38px,5vw,64px)] font-extrabold leading-[0.95] tracking-[-0.03em]";
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[var(--pa-accent)]";
@@ -27,7 +34,10 @@ export default function Home() {
       >
         {t("landing.skip")}
       </a>
-      <LandingHeader links={[]} signUp={SIGN_UP} />
+      <LandingHeader
+        links={[{ href: "#anatomy", label: t("landing.nav.howItWorks") }]}
+        signUp={SIGN_UP}
+      />
       <main id="content">
         <HeroStage>
           <h1 className="m-0 text-balance font-display text-[clamp(52px,9vw,132px)] font-extrabold leading-[0.9] tracking-[-0.04em]">
@@ -55,6 +65,69 @@ export default function Home() {
             </Link>
           </div>
         </HeroStage>
+
+        <section
+          aria-label={t("landing.timeIt.label")}
+          className="border-t border-[var(--pa-ink-800)] bg-[var(--pa-ink-900)] [contain-intrinsic-size:auto_640px] [content-visibility:auto]"
+        >
+          <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-14 px-4 py-[104px] sm:px-8">
+            <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-5">
+              <h2 className={H2}>{t("landing.timeIt.title")}</h2>
+              <p className="m-0 max-w-[30em] text-lg text-[var(--pa-text-soft)]">
+                {t("landing.timeIt.lede")}
+              </p>
+              <p className="m-0 max-w-[34em] text-[15px] text-[var(--pa-text-muted)]">
+                {t("landing.timeIt.wassce")}
+              </p>
+            </div>
+            <TimeIt />
+          </div>
+        </section>
+
+        <section
+          id="anatomy"
+          aria-label={t("landing.anatomy.label")}
+          className="bg-[var(--pa-paper)] text-[var(--pa-on-paper)] [contain-intrinsic-size:auto_900px] [content-visibility:auto]"
+        >
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-10 px-4 py-[104px] sm:px-8">
+            <div className="flex flex-wrap items-end justify-between gap-x-16 gap-y-6">
+              <h2 className={`${H2} max-w-[11em] text-[clamp(38px,5vw,68px)]`}>
+                {t("landing.anatomy.title")}
+              </h2>
+              <p className="m-0 max-w-[26em] text-lg text-[var(--pa-on-paper-muted)]">
+                {t("landing.anatomy.lede")}
+              </p>
+            </div>
+            <Anatomy />
+          </div>
+        </section>
+
+        <section
+          aria-label={t("landing.coach.label")}
+          className="bg-[var(--pa-paper-2)] text-[var(--pa-on-paper)] [contain-intrinsic-size:auto_640px] [content-visibility:auto]"
+        >
+          <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-14 px-4 py-[104px] sm:px-8">
+            <div className="flex min-w-0 flex-[1_1_380px] flex-col gap-5">
+              <h2 className={H2}>{t("landing.coach.title")}</h2>
+              <p className="m-0 text-lg text-[var(--pa-on-paper-muted)]">
+                {t("landing.coach.lede")}
+              </p>
+              <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                {(["voice", "levels", "exam"] as const).map((c) => (
+                  <li
+                    key={c}
+                    className="border border-[var(--pa-paper-line)] bg-white px-3.5 py-2 text-sm"
+                  >
+                    {t(`landing.coach.chip.${c}`)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <PlayWhenSeen className="flex min-w-0 flex-[1_1_600px]">
+              <CoachDemo />
+            </PlayWhenSeen>
+          </div>
+        </section>
       </main>
       <LandingFooter
         product={[

@@ -166,7 +166,7 @@ export function HeroStage({ children }: { children: ReactNode }) {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(13,13,13,0)_0%,rgba(13,13,13,.6)_22%,rgba(13,13,13,.97)_34%,rgba(13,13,13,.97)_66%,rgba(13,13,13,.6)_78%,rgba(13,13,13,0)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,color-mix(in_srgb,var(--pa-ink-950)_0%,transparent)_0%,color-mix(in_srgb,var(--pa-ink-950)_60.0%,transparent)_22%,color-mix(in_srgb,var(--pa-ink-950)_97.0%,transparent)_34%,color-mix(in_srgb,var(--pa-ink-950)_97.0%,transparent)_66%,color-mix(in_srgb,var(--pa-ink-950)_60.0%,transparent)_78%,color-mix(in_srgb,var(--pa-ink-950)_0%,transparent)_100%)]"
       />
       <div className="relative mx-auto box-border flex w-full max-w-[1080px] flex-col items-center gap-[26px] px-4 pb-[120px] pt-[140px] text-center sm:px-8">
         {children}
