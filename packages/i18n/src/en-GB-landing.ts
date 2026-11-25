@@ -93,6 +93,106 @@ export const enGBLanding = {
   "landing.coach.figure":
     "A results table being filled in. The student writes a mean time of {slip} s; the coach points out that a mean takes one more decimal place than its readings, and it becomes {fixed} s.",
 
+  "landing.nav.experiments": "Experiments",
+  "landing.nav.research": "For researchers",
+  "landing.cards.label": "Experiments",
+  "landing.cards.title": "Four experiments, built deep.",
+  "landing.cards.lede":
+    "Each one runs the real equations. Point at any part to see what it does. The readings on each card come straight from the simulation.",
+  "landing.cards.open": "Open the lab",
+  "landing.cards.more":
+    "More experiments from the WASSCE and university practical lists are on the way.",
+  "landing.cards.live": "Live from the simulation",
+  "landing.cards.plot": "Plot",
+  "landing.cards.pendulum.topic": "Mechanics",
+  "landing.cards.pendulum.title": "Simple pendulum",
+  "landing.cards.pendulum.about":
+    "Time 20 swings at six lengths, plot T² against l, and find g from the slope.",
+  "landing.cards.pendulum.figure":
+    "A 3D bar chart of the pendulum's {what} at six lengths, standing on stacked plates. Point at a bar for its values.",
+  "landing.cards.circuit.topic": "Electricity",
+  "landing.cards.circuit.title": "Ohm's law and the potentiometer",
+  "landing.cards.circuit.about":
+    "Press the jockey at {positions} points along the wire, read I and V, and find the cells' emf and internal resistance from the graph.",
+  "landing.cards.circuit.figure":
+    "An isometric circuit: cells, a key, a potentiometer wire, a resistor, an ammeter and a voltmeter. Point at a part to learn what it does.",
+  "landing.cards.circuit.tip.cell": "Cells",
+  "landing.cards.circuit.tip.cell.note":
+    "Two cells in series. Part of their emf drives the current through the cells themselves.",
+  "landing.cards.circuit.tip.key": "Key",
+  "landing.cards.circuit.tip.key.note":
+    "Open it as soon as each reading is taken, or the cells run down.",
+  "landing.cards.circuit.tip.rheo": "Potentiometer wire",
+  "landing.cards.circuit.tip.rheo.note": "Pressing the jockey along it changes the current I.",
+  "landing.cards.circuit.tip.res": "Resistor R, {R} Ω",
+  "landing.cards.circuit.tip.res.note": "It keeps the current within the ammeter's range.",
+  "landing.cards.circuit.tip.amm": "Ammeter",
+  "landing.cards.circuit.tip.amm.note": "In series with the cells. Reads the current I.",
+  "landing.cards.circuit.tip.volt": "Voltmeter",
+  "landing.cards.circuit.tip.volt.note": "Across the cells, so it reads their terminal p.d. V.",
+  "landing.cards.lens.topic": "Light",
+  "landing.cards.lens.title": "Converging lens",
+  "landing.cards.lens.about":
+    "Move the screen until the image is sharp, or line up two pins with no parallax, then find f from u and v.",
+  "landing.cards.lens.figure":
+    "An isometric optical bench: an illuminated object, a converging lens, a screen and a metre rule, with rays through the lens. Point at a part to learn what it does.",
+  "landing.cards.lens.tip.obj": "Illuminated object",
+  "landing.cards.lens.tip.obj.note": "Its distance from the lens is u.",
+  "landing.cards.lens.tip.lens": "Converging lens, f = {f} cm",
+  "landing.cards.lens.tip.lens.note":
+    "A ray through the centre goes straight on. A ray parallel to the axis passes through F.",
+  "landing.cards.lens.tip.screen": "Screen",
+  "landing.cards.lens.tip.screen.note":
+    "Move it until the image is sharp. Its distance from the lens is v.",
+  "landing.cards.lens.tip.rule": "Metre rule",
+  "landing.cards.lens.tip.rule.note": "Read u and v from the centre of the lens.",
+  "landing.cards.mixtures.topic": "Heat",
+  "landing.cards.mixtures.title": "Method of mixtures",
+  "landing.cards.mixtures.about":
+    "Mix hot water into cold and find the calorimeter's water equivalent, or drop in a hot solid and find its specific heat capacity.",
+  "landing.cards.mixtures.figure":
+    "An exploded calorimeter: outer can, lagging, copper calorimeter, hot and cold water, and the lid with its stirrer and thermometer. Point at a part to learn what it does.",
+  "landing.cards.mixtures.tip.can": "Outer can",
+  "landing.cards.mixtures.tip.can.note": "The air gap and lagging cut heat lost to the room.",
+  "landing.cards.mixtures.tip.lag": "Lagging",
+  "landing.cards.mixtures.tip.lag.note": "Felt or cotton wool: a poor conductor of heat.",
+  "landing.cards.mixtures.tip.cal": "Copper calorimeter, {kg} kg",
+  "landing.cards.mixtures.tip.cal.note":
+    "It warms up too, so its heat capacity goes into the calculation.",
+  "landing.cards.mixtures.tip.water": "Hot meets cold",
+  "landing.cards.mixtures.tip.water.note":
+    "Heat lost by the hot water = heat gained by the cold water and the calorimeter.",
+  "landing.cards.mixtures.tip.lid": "Lid, stirrer, thermometer",
+  "landing.cards.mixtures.tip.lid.note": "Stir, then read the highest steady temperature.",
+
+  "landing.bento.label": "Features",
+  "landing.bento.title": "Everything a real lab gives you. Plus a teacher who never gets tired.",
+  "landing.bento.voice": "Hear the coach",
+  "landing.bento.voice.about":
+    "Every step and every correction read aloud, with the words on screen. Count along while you time 20 swings.",
+  "landing.bento.offline": "Works offline",
+  "landing.bento.offline.about":
+    "Install it once. The lab, sounds and print sheets keep working when the network doesn't.",
+  "landing.bento.online": "Online: your work syncs",
+  "landing.bento.offlineNow": "Offline: your work is kept on this device",
+  "landing.bento.snapshots": "Snapshots, labelled",
+  "landing.bento.snapshots.about":
+    "Capture any moment. Every image you export carries its figure number, caption and our mark.",
+  "landing.bento.snapshots.fig": "Fig. 3",
+  "landing.bento.snapshots.caption": "Set-up",
+  "landing.bento.exam": "Exam mode",
+  "landing.bento.exam.about":
+    "The coach goes quiet, a countdown runs, and your script is marked the way practicals are marked: tabulation, graph, slope and precautions.",
+  "landing.bento.exam.time": "The pendulum paper allows {minutes} minutes.",
+  "landing.bento.results": "Take your results with you",
+  "landing.bento.results.about":
+    "Download the graph in colour or black and white, the table as CSV or Excel, and the whole report as PDF. Every file keeps its labels and units.",
+  "landing.bento.results.graph":
+    "{colour} graph of T² against l for six lengths, with the line of best fit and a slope triangle. Slope {slope} s² m⁻¹ gives g = {g} m s⁻².",
+  "landing.bento.colours": "Graph colours",
+  "landing.bento.colour": "Colour",
+  "landing.bento.mono": "Black and white",
+
   "landing.footer.label": "Site",
   "landing.footer.tagline": "Physics from first principles.",
   "landing.footer.product": "Product",

@@ -129,3 +129,108 @@
     transform: none;
   }
 }
+
+/* The experiment cards' small loops (Main.dc.html): current along the wires, rays through the
+   lens, the calorimeter's layers floating apart, the hot water's colour, and a new feed row. */
+@keyframes pa-flow {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+@keyframes pa-ray {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+@keyframes pa-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes pa-heat {
+  0%,
+  100% {
+    fill: var(--pa-topic-heat);
+  }
+  50% {
+    fill: var(--pa-topic-mechanics);
+  }
+}
+/* The new row slides in without fading: a fade would dip its text below the contrast floor for
+   half a second, and an accessibility check run in that moment fails it. */
+@keyframes pa-row-in {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: none;
+  }
+}
+.pa-flow {
+  animation: pa-flow 0.9s linear infinite;
+}
+.pa-ray {
+  animation: pa-ray 1.1s linear infinite;
+}
+.pa-float {
+  animation: pa-float 3.2s ease-in-out infinite;
+}
+.pa-f2 {
+  animation-delay: 0.25s;
+}
+.pa-f3 {
+  animation-delay: 0.5s;
+}
+.pa-f4 {
+  animation-delay: 0.75s;
+}
+.pa-f5 {
+  animation-delay: 1s;
+}
+.pa-heat {
+  animation: pa-heat 3.6s ease-in-out infinite;
+}
+.pa-row-in {
+  animation: pa-row-in 0.5s ease both;
+}
+[data-playing="false"] :is(.pa-flow, .pa-ray, .pa-float, .pa-heat, .pa-pulse) {
+  animation-play-state: paused;
+}
+[data-still="true"] :is(.pa-flow, .pa-ray, .pa-float, .pa-heat, .pa-row-in, .pa-pulse) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.pa-flow, .pa-ray, .pa-float, .pa-heat, .pa-row-in) {
+    animation: none;
+  }
+}
+
+/* The voice tile's level meter (Main.dc.html, the feature bento). */
+@keyframes pa-wave {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.pa-bar {
+  transform-origin: 50% 100%;
+  animation: pa-wave 1.1s ease-in-out infinite;
+}
+[data-playing="false"] .pa-bar {
+  animation-play-state: paused;
+}
+[data-still="true"] .pa-bar {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pa-bar {
+    animation: none;
+  }
+}

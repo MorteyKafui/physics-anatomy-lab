@@ -1,4 +1,4 @@
-import { benchPeriod, simplePendulum } from "@pa/experiments";
+import { benchPeriod, EXAM_MINUTES, simplePendulum } from "@pa/experiments";
 import { gFromPeriod, periodExact, recordedPeriod } from "@pa/physics";
 import { expect, test, type Page } from "@playwright/test";
 
@@ -164,5 +164,63 @@ test.describe("with reduced motion, the demos hold still", () => {
     const fixed = `${(simplePendulum.swings * benchPeriod(9.81, 0.8)).toFixed(2)}0 ✓`;
     await expect(page.getByText(fixed)).toBeVisible();
     await expect(page.locator(".pa-toast")).toHaveCSS("opacity", "1");
+  });
+});
+
+test.describe("the experiment cards", () => {
+  test("the pendulum's bars follow the T and T² switch, and a bar shows its values", async ({
+    page,
+  }) => {
+    await page.goto(WEB);
+    const card = page.locator('[data-card="pendulum"]');
+    const top = () => card.locator('[data-bar="5"] polygon').nth(2).getAttribute("points");
+    const squared = await top();
+    await card.getByRole("button", { name: "T", exact: true }).click();
+    await expect.poll(top).not.toBe(squared);
+    await card.locator('[data-bar="0"]').hover();
+    const T = benchPeriod(9.81, 0.5);
+    await expect(card.getByRole("tooltip")).toHaveText(
+      `l = 0.500 mT = ${T.toFixed(3)} s,  T² = ${(T * T).toFixed(3)} s²`,
+    );
+  });
+
+  test("pointing at a part of the circuit says what it does", async ({ page }) => {
+    await page.goto(WEB);
+    const card = page.locator('[data-card="circuit"]');
+    await card.locator('[data-tip="key"]').hover();
+    await expect(card.getByRole("tooltip")).toContainText("Open it as soon as each reading");
+  });
+
+  test("each feed shows the lab's readings", async ({ page }) => {
+    await page.goto(WEB);
+    const T = benchPeriod(9.81, 0.5);
+    await expect(page.locator('[data-card="pendulum"]')).toContainText(`T ${T.toFixed(3)} s`);
+    await expect(page.locator('[data-card="lens"]')).toContainText("u 20.0 cm");
+  });
+});
+
+test.describe("the feature bento", () => {
+  test("the graph switches between colour and black and white", async ({ page }) => {
+    await page.goto(WEB);
+    const graph = page.getByRole("img", { name: /graph of T² against l/ });
+    await expect(graph).toHaveAttribute("aria-label", /^Colour graph/);
+    await page.getByRole("button", { name: "Black and white" }).click();
+    await expect(graph).toHaveAttribute("aria-label", /^Black and white graph/);
+  });
+
+  test("the connection tile shows the real connection", async ({ page, context }) => {
+    await page.goto(WEB);
+    const tile = page.locator("[data-online]");
+    await expect(tile).toHaveText("Online: your work syncs");
+    await context.setOffline(true);
+    await expect(tile).toHaveText("Offline: your work is kept on this device");
+    await context.setOffline(false);
+  });
+
+  test("the exam countdown starts from the paper's time", async ({ page }) => {
+    await page.goto(WEB);
+    await expect(
+      page.getByText(`The pendulum paper allows ${EXAM_MINUTES} minutes.`),
+    ).toBeVisible();
   });
 });

@@ -9,6 +9,7 @@
     "./tokens.css": "./src/tokens.css",
     "./themes.css": "./src/themes.css",
     "./components/*": "./src/components/*.tsx",
+    "./illustrations/*": "./src/illustrations/*.tsx",
     "./lib/*": "./src/lib/*.ts",
     "./icons": "./src/icons.ts"
   },

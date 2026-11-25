@@ -1,9 +1,18 @@
 import { t } from "@pa/i18n";
 import "@pa/i18n/landing";
+import {
+  CircuitStage,
+  LensStage,
+  MixturesStage,
+  PendulumStage,
+} from "@pa/ui/illustrations/landing-cards";
 import Link from "next/link";
 
 import { Anatomy } from "./_landing/anatomy";
+import { Bento } from "./_landing/bento";
+import { bentoData, cardsData } from "./_landing/cards-data";
 import { CoachDemo } from "./_landing/coach-demo";
+import { ExperimentCards } from "./_landing/experiment-cards";
 import { LandingFooter } from "./_landing/footer";
 import { LandingHeader } from "./_landing/header";
 import { HeroStage } from "./_landing/hero-stage";
@@ -35,7 +44,11 @@ export default function Home() {
         {t("landing.skip")}
       </a>
       <LandingHeader
-        links={[{ href: "#anatomy", label: t("landing.nav.howItWorks") }]}
+        links={[
+          { href: "#anatomy", label: t("landing.nav.howItWorks") },
+          { href: "#experiments", label: t("landing.nav.experiments") },
+          { href: "#research", label: t("landing.nav.research") },
+        ]}
         signUp={SIGN_UP}
       />
       <main id="content">
@@ -126,6 +139,50 @@ export default function Home() {
             <PlayWhenSeen className="flex min-w-0 flex-[1_1_600px]">
               <CoachDemo />
             </PlayWhenSeen>
+          </div>
+        </section>
+
+        <section
+          id="experiments"
+          aria-label={t("landing.cards.label")}
+          className="bg-[var(--pa-paper)] text-[var(--pa-on-paper)] [contain-intrinsic-size:auto_1100px] [content-visibility:auto]"
+        >
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-9 px-4 py-[104px] sm:px-8">
+            <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-5">
+              <h2 className={`${H2} max-w-[12em]`}>{t("landing.cards.title")}</h2>
+              <div className="flex max-w-[26em] flex-col items-start gap-3.5">
+                <p className="m-0 text-[var(--pa-on-paper-muted)]">{t("landing.cards.lede")}</p>
+                <Link
+                  prefetch={false}
+                  href={START}
+                  className={`bg-[var(--pa-on-paper)] px-[18px] py-[11px] text-[15px] font-semibold text-[var(--pa-paper)] no-underline ${focus}`}
+                >
+                  {t("landing.cards.open")}
+                </Link>
+              </div>
+            </div>
+            <ExperimentCards
+              data={cardsData()}
+              stages={{
+                pendulum: <PendulumStage />,
+                circuit: <CircuitStage />,
+                lens: <LensStage />,
+                mixtures: <MixturesStage />,
+              }}
+            />
+            <p className="m-0 text-[15px] text-[var(--pa-on-paper-muted)]">
+              {t("landing.cards.more")}
+            </p>
+          </div>
+        </section>
+
+        <section
+          aria-label={t("landing.bento.label")}
+          className="bg-[var(--pa-ink-950)] [contain-intrinsic-size:auto_1100px] [content-visibility:auto]"
+        >
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-10 px-4 py-[104px] sm:px-8">
+            <h2 className={`${H2} max-w-[14em]`}>{t("landing.bento.title")}</h2>
+            <Bento data={bentoData()} />
           </div>
         </section>
       </main>
