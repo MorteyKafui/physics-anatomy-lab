@@ -24,7 +24,7 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Uncertainties, advanced layer | `Uncertainty.dc.html`   | on the canvas only     | `apps/web` steps 6 to 8          |
 | First-run tour                | `Tour.dc.html`          | `screens/Tour.jpg`     | `apps/web` onboarding            |
 | Adding signed-out work        | `Adopt.dc.html`         | approved 2026-11-19    | `apps/web` after sign-in or join |
-| Teacher sign-in               | `SignIn.dc.html`        | approved 2026-11-19    | `apps/web` `/sign-in`            |
+| Teacher sign-in               | `SignIn.dc.html`        | approved 2026-11-19    | `apps/web` `/sign-in` (built)    |
 | Consent and your data         | `Privacy.dc.html`       | approved 2026-11-19    | `apps/web` settings, class page  |
 | AI help                       | `AI.dc.html`            | approved 2026-11-19    | `apps/web` lab, report, `/teach` |
 | Questions                     | `Questions.dc.html`     | approved 2026-11-19    | `/teach/questions`, admin bank   |
