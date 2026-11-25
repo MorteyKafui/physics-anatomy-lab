@@ -193,6 +193,10 @@ export const enGBLanding = {
   "landing.bento.colour": "Colour",
   "landing.bento.mono": "Black and white",
 
+  "legal.draft":
+    "Draft for review by the University of Education, Winneba's legal office. It is not in force yet. Highlighted parts are still to be filled in.",
+  "legal.blank": "Still to be filled in",
+
   "landing.footer.label": "Site",
   "landing.footer.tagline": "Physics from first principles.",
   "landing.footer.product": "Product",
