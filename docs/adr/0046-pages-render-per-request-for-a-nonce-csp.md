@@ -36,6 +36,11 @@ at build time has no nonce, so its scripts would be blocked.
 
 ## Consequences
 
+- **Moving between pages waits one round trip.** A link's prefetch of a page rendered on request
+  fetches only its outline, so the click waits for the render: about one network round trip
+  plus 10 ms of rendering. Prefetching whole pages (`prefetch` on every link) was tried and
+  dropped: a lab screen would ask for about seven renders on every visit. Offline, the service
+  worker serves the page it saved.
 - Cloudflare cannot cache the HTML, so each page costs a render on a Worker. Scripts, styles and
   fonts are still cached by name. The landing page's LCP is measured in the pull request.
 - A page module's top-level code runs on the server when it loads, not once at build. The
