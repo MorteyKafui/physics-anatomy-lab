@@ -198,7 +198,7 @@ export function CheckScreen({ experiment: E }: { experiment: CheckExperiment }) 
           aria-label={t("review.back")}
           className="flex items-center gap-2 text-muted-foreground"
         >
-          <Link prefetch href={`/lab/${E.id}`} className="hover:text-foreground">
+          <Link href={`/lab/${E.id}`} className="hover:text-foreground">
             {E.title}
           </Link>
           <span aria-hidden>›</span>

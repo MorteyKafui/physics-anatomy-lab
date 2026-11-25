@@ -128,14 +128,14 @@ function Cards({ teacher }: { teacher: boolean }) {
         {teacher ? (
           <Card title={t(k("privacy.delete.title"))}>
             <Small>{t(k("privacy.delete.body"))}</Small>
-            <Link prefetch className={DANGER_LINK} href="/account/delete">
+            <Link className={DANGER_LINK} href="/account/delete">
               {t(k("privacy.delete.link"))}
             </Link>
           </Card>
         ) : (
           <Card title={t(k("privacy.leave.title"))}>
             <Small>{t(k("privacy.leave.body"))}</Small>
-            <Link prefetch className={DANGER_LINK} href="/account/leave">
+            <Link className={DANGER_LINK} href="/account/leave">
               {t(k("privacy.leave.link"))}
             </Link>
           </Card>

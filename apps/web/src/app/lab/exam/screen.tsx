@@ -153,7 +153,7 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
           aria-label={t("review.back")}
           className="flex items-center gap-2 text-muted-foreground"
         >
-          <Link prefetch href={`/lab/${E.id}`} className="hover:text-foreground">
+          <Link href={`/lab/${E.id}`} className="hover:text-foreground">
             {E.title}
           </Link>
           <span aria-hidden>›</span>
@@ -275,7 +275,6 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
                   {t("exam.download")}
                 </Button>
                 <Link
-                  prefetch
                   href={`/lab/${E.id}/review`}
                   className="flex h-[38px] items-center border border-input px-3.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring"
                 >
@@ -289,7 +288,6 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
         <section className="flex flex-col items-start gap-3 border border-border bg-[var(--pa-ink-900)] p-5">
           <p>{t("exam.running", { left: mmss(examClock(exam.startedAt!, now).left) })}</p>
           <Link
-            prefetch
             href={`/lab/${E.id}`}
             className="flex h-10 items-center bg-primary px-4 text-sm font-semibold text-primary-foreground"
           >
@@ -314,7 +312,6 @@ export function ExamScreen({ experiment: E }: { experiment: ExamExperiment }) {
                 {t("exam.start")}
               </Button>
               <Link
-                prefetch
                 href={`/lab/${E.id}`}
                 className="flex h-10 items-center border border-input px-3.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring"
               >

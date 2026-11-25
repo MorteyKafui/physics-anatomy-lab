@@ -153,7 +153,7 @@ export function LiveBoard(props: BoardProps) {
             aria-label="Breadcrumb"
             className="flex items-center gap-2 text-sm text-[var(--pa-text-muted)]"
           >
-            <Link prefetch href="/teach" className={cn("hover:text-[var(--pa-text)]", FOCUS)}>
+            <Link href="/teach" className={cn("hover:text-[var(--pa-text)]", FOCUS)}>
               {t(k("teach.crumb.classes"))}
             </Link>
             <span aria-hidden>›</span>
@@ -454,7 +454,6 @@ function Rail() {
         <House className="size-[19px]" aria-hidden />
       </Link>
       <Link
-        prefetch
         href="/teach"
         aria-label={t(k("teach.nav.classes"))}
         aria-current="page"
@@ -467,7 +466,6 @@ function Rail() {
         <Users className="size-[19px]" aria-hidden />
       </Link>
       <Link
-        prefetch
         href="/#experiments"
         aria-label={t(k("teach.nav.experiments"))}
         className={cn(item, FOCUS)}
