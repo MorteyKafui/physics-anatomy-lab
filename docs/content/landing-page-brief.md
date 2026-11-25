@@ -19,6 +19,13 @@ Today `/` is a holding page. The decisions below are what the board leaves open,
 longer matches the code or the rules.
 
 - **Status:** approved by Mortey on 2026-11-20: decisions 1 to 10 as proposed. Four cards; `/sign-in` and `/join` built in this item; three pull requests. Until Mortey confirms the claims in decision 7, the WASSCE line is softened, and "Made in Winneba, Ghana." and "Free for every student and every school." stay out.
+- **Later answers (Mortey, 2026-11-20 to 25):**
+  - "Free for every student and every school." stays, as the sign-up section's headline.
+  - "Made in Winneba, Ghana." stays out.
+  - The hero's "Behind this text" note is removed.
+  - Four pull requests instead of three: the fourth adds sign-up, `/sign-in` and `/join`, and ticks the item.
+  - The Terms of Use and Privacy Policy from the Legal and Policy Pack go up at `/terms` and `/privacy` as drafts awaiting UEW's review.
+  - The domain is bought later, and the team, partner and donation details follow.
 
 ## The decisions
 

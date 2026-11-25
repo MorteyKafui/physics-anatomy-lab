@@ -8,8 +8,7 @@ import { StatusLight } from "./status-light";
 
 /**
  * The large-type footer with a live status light (Main.dc.html, after efferd Footer 14). Only
- * pages that exist are linked (landing page brief, decision 7); Help and Legal join when their
- * pages do.
+ * pages that exist are linked (landing page brief, decision 7); Help joins when its pages do.
  */
 export function LandingFooter({ product }: { product: NavLink[] }) {
   return (
@@ -38,6 +37,22 @@ export function LandingFooter({ product }: { product: NavLink[] }) {
               <Link
                 prefetch={false}
                 key={l.href}
+                href={l.href}
+                className="text-[var(--pa-text-soft)] no-underline hover:text-[var(--pa-text)]"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+          <nav aria-label={t("landing.footer.legal")} className="flex flex-col gap-2.5 text-[15px]">
+            <span className="font-semibold text-[var(--pa-text)]">{t("landing.footer.legal")}</span>
+            {[
+              { href: "/terms", label: t("landing.footer.terms") },
+              { href: "/privacy", label: t("landing.footer.privacy") },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                prefetch={false}
                 href={l.href}
                 className="text-[var(--pa-text-soft)] no-underline hover:text-[var(--pa-text)]"
               >

@@ -19,7 +19,15 @@ const focus =
  * efferd Header 4). `links` are only sections and pages that exist (landing page brief,
  * decision 7), so the list grows as the page does.
  */
-export function LandingHeader({ links, signUp }: { links: NavLink[]; signUp: NavLink }) {
+export function LandingHeader({
+  links,
+  signUp,
+  logIn,
+}: {
+  links: NavLink[];
+  signUp: NavLink;
+  logIn?: NavLink;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menu = useId();
@@ -71,6 +79,15 @@ export function LandingHeader({ links, signUp }: { links: NavLink[]; signUp: Nav
             </nav>
           )}
           <div className="flex items-center gap-1.5">
+            {logIn && (
+              <Link
+                prefetch={false}
+                href={logIn.href}
+                className={`hidden px-3.5 py-[9px] text-[15px] text-[var(--pa-text)] no-underline min-[821px]:inline ${focus}`}
+              >
+                {logIn.label}
+              </Link>
+            )}
             <Link
               prefetch={false}
               href={signUp.href}
@@ -119,6 +136,15 @@ export function LandingHeader({ links, signUp }: { links: NavLink[]; signUp: Nav
                 {l.label}
               </a>
             ))}
+            {logIn && (
+              <a
+                href={logIn.href}
+                onClick={() => setOpen(false)}
+                className={`p-3 text-[var(--pa-text)] no-underline ${focus}`}
+              >
+                {logIn.label}
+              </a>
+            )}
           </nav>
         )}
       </div>

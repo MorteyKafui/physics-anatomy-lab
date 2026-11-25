@@ -5,6 +5,10 @@ import { ADMIN, WEB } from "../playwright.config";
 // Every page we ship. Add each new route here when it is built.
 const pages = [
   { name: "landing", url: WEB },
+  { name: "teacher sign-in", url: `${WEB}/sign-in` },
+  { name: "joining a class", url: `${WEB}/join` },
+  { name: "terms of use", url: `${WEB}/terms` },
+  { name: "privacy policy", url: `${WEB}/privacy` },
   { name: "admin home", url: ADMIN },
   { name: "design system catalogue", url: `${ADMIN}/design-system` },
 ];

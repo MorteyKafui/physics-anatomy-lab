@@ -193,6 +193,27 @@ export const enGBLanding = {
   "landing.bento.colour": "Colour",
   "landing.bento.mono": "Black and white",
 
+  "legal.draft":
+    "Draft for review by the University of Education, Winneba's legal office. It is not in force yet. Highlighted parts are still to be filled in.",
+  "legal.blank": "Still to be filled in",
+
+  "landing.signUp.label": "Sign up",
+  "landing.signUp.title": "Free for every student and every school.",
+  "landing.signUp.lede":
+    "Students can start without an account. Teachers sign up to run classes and see every bench, live.",
+  "landing.signUp.teachers": "Teachers and lecturers",
+  "landing.signUp.email": "School email",
+  "landing.signUp.withEmail": "Sign up with email",
+  "landing.signUp.agree":
+    "By signing up you agree to the [Terms](/terms) and [Privacy Policy](/privacy).",
+  "landing.signUp.students": "Students",
+  "landing.signUp.join": "Join a class",
+  "landing.logIn": "Log in",
+  "landing.nav.teachers": "For teachers",
+  "landing.footer.legal": "Legal",
+  "landing.footer.terms": "Terms of Use",
+  "landing.footer.privacy": "Privacy",
+
   "landing.footer.label": "Site",
   "landing.footer.tagline": "Physics from first principles.",
   "landing.footer.product": "Product",
