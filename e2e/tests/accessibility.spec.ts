@@ -9,6 +9,8 @@ const pages = [
   { name: "joining a class", url: `${WEB}/join` },
   { name: "terms of use", url: `${WEB}/terms` },
   { name: "privacy policy", url: `${WEB}/privacy` },
+  { name: "experiments", url: `${WEB}/experiments` },
+  { name: "an experiment page", url: `${WEB}/experiments/ohms-law` },
   { name: "admin home", url: ADMIN },
   { name: "design system catalogue", url: `${ADMIN}/design-system` },
 ];

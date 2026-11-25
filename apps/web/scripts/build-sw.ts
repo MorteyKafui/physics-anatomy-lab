@@ -3,7 +3,7 @@
  *
  * The list is Next's own output, so nothing is listed by hand: every file under .next/static
  * (served at /_next/static/…, named by content), every route Next prerendered
- * (.next/prerender-manifest.json), and the public files the app needs offline (the report's
+ * (.next/prerender-manifest.json) except the ones only crawlers read, and the public files the app needs offline (the report's
  * fonts). Pages are versioned by the build id.
  */
 import { readFileSync } from "node:fs";
@@ -17,7 +17,12 @@ const buildId = readFileSync(join(NEXT, "BUILD_ID"), "utf8").trim();
 const prerendered = JSON.parse(readFileSync(join(NEXT, "prerender-manifest.json"), "utf8")) as {
   routes: Record<string, unknown>;
 };
-const routes = Object.keys(prerendered.routes).filter((r) => !r.startsWith("/_"));
+// Social cards, the sitemap and robots.txt are for crawlers and link previews, never needed
+// offline, so they stay out of the offline pack.
+const forCrawlers = /(^|\/)(opengraph-image|twitter-image)$|^\/(sitemap\.xml|robots\.txt)$/;
+const routes = Object.keys(prerendered.routes).filter(
+  (r) => !r.startsWith("/_") && !forCrawlers.test(r),
+);
 
 const bundle = await Bun.build({ entrypoints: ["pwa/sw.ts"], target: "browser", minify: true });
 if (!bundle.success) {
