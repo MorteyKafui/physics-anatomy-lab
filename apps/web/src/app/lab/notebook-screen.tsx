@@ -240,7 +240,7 @@ export function NotebookScreen() {
           aria-label={t("notebook.back")}
           className="flex items-center gap-2 text-muted-foreground"
         >
-          <Link href={`/lab/${E.id}`} className="hover:text-foreground">
+          <Link prefetch href={`/lab/${E.id}`} className="hover:text-foreground">
             {t("experiments.simple-pendulum.title")}
           </Link>
           <span aria-hidden>›</span>

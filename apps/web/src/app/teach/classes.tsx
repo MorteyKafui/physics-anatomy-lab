@@ -98,13 +98,22 @@ function ClassList() {
                 />
               </span>
               <span className="flex flex-wrap justify-end gap-x-4 gap-y-1">
-                <Link className={LINK} href={`/teach/live?class=${encodeURIComponent(c.id)}`}>
+                <Link
+                  prefetch
+                  className={LINK}
+                  href={`/teach/live?class=${encodeURIComponent(c.id)}`}
+                >
                   {t(k("teach.classes.open"))}
                 </Link>
-                <Link className={LINK} href={`/teach/students?class=${encodeURIComponent(c.id)}`}>
+                <Link
+                  prefetch
+                  className={LINK}
+                  href={`/teach/students?class=${encodeURIComponent(c.id)}`}
+                >
                   {t(k("privacy.students.title"))}
                 </Link>
                 <Link
+                  prefetch
                   className={LINK}
                   href={`/teach/delete-class?class=${encodeURIComponent(c.id)}`}
                 >
@@ -116,15 +125,15 @@ function ClassList() {
         </ul>
       )}
       {classes === "signed-out" ? null : (
-        <Link className={LINK} href="/teach/questions">
+        <Link prefetch className={LINK} href="/teach/questions">
           {t(k("teach.questions.link"))}
         </Link>
       )}
-      <Link className={LINK} href="/teach/example">
+      <Link prefetch className={LINK} href="/teach/example">
         {t(k("teach.classes.example"))}
       </Link>
       {classes === "signed-out" ? null : (
-        <Link className={LINK} href="/account">
+        <Link prefetch className={LINK} href="/account">
           {t(k("privacy.title"))}
         </Link>
       )}

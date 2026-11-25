@@ -123,7 +123,7 @@ export function ReviewScreen() {
     return (
       <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-6 text-foreground">
         <p>{t("review.noResult")}</p>
-        <Link href={`/lab/${E.id}`} className="underline">
+        <Link prefetch href={`/lab/${E.id}`} className="underline">
           {t("review.back")}
         </Link>
       </main>
@@ -265,7 +265,7 @@ export function ReviewScreen() {
           aria-label={t("review.back")}
           className="flex items-center gap-2 text-muted-foreground"
         >
-          <Link href={`/lab/${E.id}`} className="hover:text-foreground">
+          <Link prefetch href={`/lab/${E.id}`} className="hover:text-foreground">
             {t("experiments.simple-pendulum.title")}
           </Link>
           <span aria-hidden>›</span>
@@ -278,6 +278,7 @@ export function ReviewScreen() {
         </span>
         <span className="flex-1" />
         <Link
+          prefetch
           href={`/lab/${E.id}`}
           className="flex h-8 items-center border border-input px-3 text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-ring"
         >

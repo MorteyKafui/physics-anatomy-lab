@@ -58,6 +58,7 @@ export function StudentData() {
       <Page>
         <Heading>{t(k("privacy.student.removed"), { name })}</Heading>
         <Link
+          prefetch
           className={`${LINK} pt-4`}
           href={`/teach/students?class=${encodeURIComponent(classId)}`}
         >

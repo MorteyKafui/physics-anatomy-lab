@@ -50,6 +50,7 @@ export function DeleteClass() {
       </Lead>
       {found.students > 0 ? (
         <Link
+          prefetch
           className={`${LINK} self-start`}
           href={`/teach/students?class=${encodeURIComponent(classId)}`}
         >

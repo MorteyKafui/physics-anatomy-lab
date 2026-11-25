@@ -120,7 +120,7 @@ export function SheetsScreen({
           aria-label={t("review.back")}
           className="flex items-center gap-2 text-muted-foreground"
         >
-          <Link href={`/lab/${E.id}`} className="hover:text-foreground">
+          <Link prefetch href={`/lab/${E.id}`} className="hover:text-foreground">
             {E.title}
           </Link>
           <span aria-hidden>›</span>
@@ -139,6 +139,7 @@ export function SheetsScreen({
           <p className="text-sm text-soft">{t("sheets.intro")}</p>
           {E.check && (
             <Link
+              prefetch
               href={`/lab/${E.id}/check`}
               className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
             >

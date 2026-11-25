@@ -43,6 +43,7 @@ export function Students() {
             >
               <span>{m.display_name}</span>
               <Link
+                prefetch
                 className={LINK}
                 href={`/teach/student?class=${encodeURIComponent(classId)}&member=${encodeURIComponent(m.id)}`}
               >
@@ -52,7 +53,7 @@ export function Students() {
           ))}
         </ul>
       )}
-      <Link className={LINK} href="/teach">
+      <Link prefetch className={LINK} href="/teach">
         {t(k("privacy.back"))}
       </Link>
     </Shell>

@@ -207,7 +207,7 @@ export function ConfirmScreen(props: {
     return (
       <Page>
         <Heading>{props.done}</Heading>
-        <Link className={`${LINK} pt-4`} href={props.after.href}>
+        <Link prefetch className={`${LINK} pt-4`} href={props.after.href}>
           {props.after.label}
         </Link>
       </Page>

@@ -80,6 +80,7 @@ export const Rail = memo(function Rail({
         <HouseIcon className="size-5" aria-hidden />
       </Link>
       <Link
+        prefetch
         href="/lab/simple-pendulum"
         aria-current={current === "lab" ? "page" : undefined}
         aria-label={t("lab.rail.experiments")}
@@ -88,6 +89,7 @@ export const Rail = memo(function Rail({
         <FlaskConicalIcon className="size-5" aria-hidden />
       </Link>
       <Link
+        prefetch
         href="/lab/simple-pendulum/notebook"
         aria-current={current === "notebook" ? "page" : undefined}
         aria-label={t("lab.rail.notebook")}
@@ -187,6 +189,7 @@ export const StepStrip = memo(function StepStrip({
       {review &&
         (review.open ? (
           <Link
+            prefetch
             href={review.href}
             className="flex shrink-0 items-center gap-2.5 border border-border px-3.5 py-2 text-muted-foreground hover:text-foreground pointer-coarse:min-h-11"
           >

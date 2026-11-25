@@ -317,7 +317,7 @@ export function ReportScreen({
           aria-label={t("review.back")}
           className="flex items-center gap-2 text-muted-foreground"
         >
-          <Link href={`/lab/${E.id}`} className="hover:text-foreground">
+          <Link prefetch href={`/lab/${E.id}`} className="hover:text-foreground">
             {E.title}
           </Link>
           <span aria-hidden>›</span>
@@ -593,6 +593,7 @@ export function ReportScreen({
             <span className="text-xs text-muted-foreground">{t("report.offline")}</span>
             {E.check && (
               <Link
+                prefetch
                 href={`/lab/${E.id}/check`}
                 className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
               >

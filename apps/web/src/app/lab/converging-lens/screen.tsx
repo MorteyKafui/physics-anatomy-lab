@@ -601,7 +601,11 @@ export function ConvergingLensScreen() {
         {handle.attempt.mode === "exam" && exam.handedInAt !== undefined && (
           <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
             <span>{exam.auto ? t("exam.timeUp") : t("exam.handedIn")}</span>
-            <Link href={`/lab/${E.id}/exam`} className="font-semibold underline underline-offset-2">
+            <Link
+              prefetch
+              href={`/lab/${E.id}/exam`}
+              className="font-semibold underline underline-offset-2"
+            >
               {t("exam.seeScript")}
             </Link>
             <button
@@ -1083,6 +1087,7 @@ export function ConvergingLensScreen() {
                     </p>
                     {state.step === "report" && (
                       <Link
+                        prefetch
                         href={`/lab/${E.id}/report`}
                         className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
                       >
@@ -1130,12 +1135,14 @@ export function ConvergingLensScreen() {
                 </div>
                 <p className="text-soft">{t(`${P}.explain.graph`)}</p>
                 <Link
+                  prefetch
                   href={`/lab/${E.id}/sheets`}
                   className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
                 >
                   {t("sheets.link")}
                 </Link>
                 <Link
+                  prefetch
                   href={`/lab/${E.id}/check`}
                   className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
                 >
@@ -1143,6 +1150,7 @@ export function ConvergingLensScreen() {
                 </Link>
                 {handle.attempt.mode !== "exam" && (
                   <Link
+                    prefetch
                     href={`/lab/${E.id}/exam`}
                     className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
                   >
