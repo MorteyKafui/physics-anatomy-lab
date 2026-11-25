@@ -5,7 +5,7 @@ is built. The plan says OWASP ASVS Level 2 is the checklist where data is kept, 
 a short threat model, and an external penetration test is commissioned before wider rollout
 ("Security, privacy and minors").
 
-- **Status:** draft for Mortey's approval.
+- **Status:** approved by Mortey on 2026-11-25, with option A (nonces on every page), ASVS 5.0.0, and the item unticked until the pen test is done.
 
 ## What this item delivers
 
