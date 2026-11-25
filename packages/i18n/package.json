@@ -15,7 +15,8 @@
     "./what-if": "./src/what-if.ts",
     "./flag": "./src/flag.ts",
     "./landing": "./src/landing.ts",
-    "./access": "./src/access.ts"
+    "./access": "./src/access.ts",
+    "./catalogue": "./src/catalogue.ts"
   },
   "scripts": {
     "lint": "eslint .",

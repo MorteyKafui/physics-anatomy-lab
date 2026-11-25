@@ -162,6 +162,13 @@ export default function Home() {
                 >
                   {t("landing.cards.open")}
                 </Link>
+                <Link
+                  prefetch={false}
+                  href="/experiments"
+                  className={`text-[15px] font-medium text-[var(--pa-on-paper)] underline ${focus}`}
+                >
+                  {t("landing.cards.all")}
+                </Link>
               </div>
             </div>
             <ExperimentCards

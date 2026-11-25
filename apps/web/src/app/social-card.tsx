@@ -28,7 +28,21 @@ export function builtTopics(): Topic[] {
   return (Object.keys(topicHue) as Topic[]).filter((topic) => built.has(topic));
 }
 
-export async function socialCard() {
+/** What a card says: the site's, by default, or one experiment's (its page's card). */
+export interface CardText {
+  title: string;
+  line: string;
+  more: string;
+  strip: string[];
+}
+
+export async function socialCard(text?: CardText) {
+  const say: CardText = text ?? {
+    title: "Physics Anatomy",
+    line: "Physics from first principles.",
+    more: "Build real experiments, take your own readings, and get coached.",
+    strip: builtTopics().map((topic) => topicHue[topic]),
+  };
   // Read when the card is built (it is static), never in the browser. Literal paths, so the
   // build traces only these files.
   const cwd = process.cwd();
@@ -61,22 +75,20 @@ export async function socialCard() {
         <span
           style={{ fontFamily: "Bricolage", fontSize: 80, lineHeight: 1, letterSpacing: "-0.02em" }}
         >
-          Physics Anatomy
+          {say.title}
         </span>
-        <span style={{ fontFamily: "Noto Sans", fontWeight: 700, fontSize: 40 }}>
-          Physics from first principles.
-        </span>
+        <span style={{ fontFamily: "Noto Sans", fontWeight: 700, fontSize: 40 }}>{say.line}</span>
         <span
           style={{ fontFamily: "Noto Sans", fontSize: 28, color: colour.onPaperMuted, width: 660 }}
         >
-          Build real experiments, take your own readings, and get coached.
+          {say.more}
         </span>
       </div>
       <div
         style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 14, display: "flex" }}
       >
-        {builtTopics().map((topic) => (
-          <div key={topic} style={{ flex: 1, background: topicHue[topic] }} />
+        {say.strip.map((hue, i) => (
+          <div key={i} style={{ flex: 1, background: hue }} />
         ))}
       </div>
     </div>,

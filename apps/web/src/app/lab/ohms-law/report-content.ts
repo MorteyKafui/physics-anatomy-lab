@@ -69,9 +69,12 @@ import { quoteWithUncertainty } from "../uncertainty-format";
  */
 
 const E = ohmsLaw;
+import { ohmsLawApparatus } from "./apparatus";
+
 const P = "experiments.ohms-law";
 const R = `${P}.report`;
 const lines = (...xs: (string | false | undefined)[]) => xs.filter(Boolean).join("\n");
+
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 const SEVERE = new Set(["error", "warning"]);
 /** A negative number printed with the minus sign, not a hyphen, as a report is typeset. */
@@ -324,16 +327,7 @@ export function ohmsLawReport(attempt: Attempt, events: readonly LabEvent[]): Re
         : t(`${R}.method.analyseOther`, { y: symbol(columns.y), x: symbol(columns.x) })),
   );
 
-  const apparatus = lines(
-    t(`${R}.apparatus.cells`, { emf: (E.cell.emf / 2).toFixed(1) }),
-    t(`${R}.apparatus.resistor`, { r: E.resistor.toFixed(1) }),
-    t(`${R}.apparatus.ammeter`, { max: world.ammeter.scale?.[1] ?? 1 }),
-    t(`${R}.apparatus.voltmeter`, { max: world.voltmeter.scale?.[1] ?? 3 }),
-    t(`${R}.apparatus.wire`, { length: world.wireLength.toFixed(3) }),
-    t(`${R}.apparatus.jockey`),
-    t(`${R}.apparatus.key`),
-    t(`${R}.apparatus.leads`),
-  );
+  const apparatus = lines(...ohmsLawApparatus(world));
 
   // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7):
   // the slope's least-squares uncertainty, E's where the line meets the V axis, r's the slope's

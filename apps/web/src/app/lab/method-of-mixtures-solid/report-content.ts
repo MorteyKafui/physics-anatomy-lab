@@ -70,9 +70,12 @@ import { quoteWithUncertainty } from "../uncertainty-format";
  */
 
 const H = hotSolid;
+import { hotSolidApparatus } from "./apparatus";
+
 const P = "experiments.method-of-mixtures-solid";
 const R = `${P}.report`;
 const lines = (...xs: (string | false | undefined)[]) => xs.filter(Boolean).join("\n");
+
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 const SEVERE = new Set(["error", "warning"]);
 const EARLY = "solid-read-before-peak";
@@ -337,15 +340,7 @@ export function solidReport(attempt: Attempt, events: readonly LabEvent[]): Repo
         : t(`${R}.method.analyseOther`, { y: symbol(columns.y), x: symbol(columns.x) })),
   );
 
-  const apparatus = lines(
-    t(`${R}.apparatus.solid`, { grams: H.solidMass }),
-    t(`${R}.apparatus.balance`, { grams: BALANCE.resolution }),
-    t(`${R}.apparatus.calorimeter`, {
-      grams: (methodOfMixtures.calorimeter.mass * 1000).toFixed(0),
-    }),
-    t(`${R}.apparatus.thermometer`, { celsius: MIXTURES_THERMOMETER.resolution }),
-    t(`${R}.apparatus.heater`),
-  );
+  const apparatus = lines(...hotSolidApparatus());
 
   // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7):
   // c through the book's equation from each reading's own uncertainty, worst case.

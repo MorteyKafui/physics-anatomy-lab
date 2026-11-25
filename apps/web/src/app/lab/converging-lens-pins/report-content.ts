@@ -70,9 +70,12 @@ import { figureDate, type FigureScene } from "../snapshot-figure";
  */
 
 const E = lensPins;
+import { pinsApparatus } from "./apparatus";
+
 const P = "experiments.converging-lens-pins";
 const R = `${P}.report`;
 const lines = (...xs: (string | false | undefined)[]) => xs.filter(Boolean).join("\n");
+
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
 const SEVERE = new Set(["error", "warning"]);
 const EYE_OFF = "pins-eye-off-axis";
@@ -322,11 +325,7 @@ export function lensPinsReport(attempt: Attempt, events: readonly LabEvent[]): R
         : t(`${R}.method.analyseOther`, { y: symbol(columns.y), x: symbol(columns.x) })),
   );
 
-  const apparatus = lines(
-    t(`${R}.apparatus.pins`),
-    t(`${R}.apparatus.lens`, { d: cm(convergingLens.lens.aperture) }),
-    t(`${R}.apparatus.bench`, { length: cm(convergingLens.benchLength) }),
-  );
+  const apparatus = lines(...pinsApparatus());
 
   // The university format's uncertainty working (docs/content/uncertainty-brief.md, decision 7).
   // The lab never reveals the lens's own focal length, so there is no accepted value to agree with.

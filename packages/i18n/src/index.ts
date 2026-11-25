@@ -4,6 +4,7 @@ import { enGB, type MessageKey as SharedKey } from "./en-GB";
 import type { enGBConvergingLens } from "./en-GB-converging-lens";
 import type { enGBFlag } from "./en-GB-flag";
 import type { enGBAccess } from "./en-GB-access";
+import type { enGBCatalogue } from "./en-GB-catalogue";
 import type { enGBLanding } from "./en-GB-landing";
 import type { enGBMethodOfMixtures } from "./en-GB-method-of-mixtures";
 import type { enGBOhmsLaw } from "./en-GB-ohms-law";
@@ -32,7 +33,8 @@ export type MessageKey =
   | keyof typeof enGBWhatIf
   | keyof typeof enGBFlag
   | keyof typeof enGBLanding
-  | keyof typeof enGBAccess;
+  | keyof typeof enGBAccess
+  | keyof typeof enGBCatalogue;
 
 const messages: Record<string, string> = { ...enGB };
 

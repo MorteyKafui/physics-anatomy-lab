@@ -6,6 +6,7 @@ import { topicHue, type Topic } from "@pa/ui";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { CardsData, FeedRow } from "./cards-data";
+import { barShape, tint } from "./pendulum-bars";
 import { stillPage } from "./use-lite";
 
 /** How often each card's feed moves on to its next reading, ms (the board's 2.6 s). */
@@ -35,19 +36,6 @@ interface Tip {
   title: string;
   text: string;
 }
-
-/** The isometric projection of the pendulum card's bar chart (the board's). */
-const project = (x: number, y: number, z: number) =>
-  [150 + (x - y) * 0.8660254, 92 + (x + y) * 0.5 - z] as const;
-const points = (corners: readonly (readonly [number, number, number])[]) =>
-  corners
-    .map(([x, y, z]) => project(x, y, z))
-    .map(([a, b]) => `${a.toFixed(1)},${b.toFixed(1)}`)
-    .join(" ");
-
-/** A topic hue mixed with white, for the cards' tinted stages and the pendulum's bars. */
-const tint = (topic: Topic, percent: number) =>
-  `color-mix(in srgb, ${topicHue[topic]} ${percent}%, white)`;
 
 /**
  * The four experiment cards (Main.dc.html, after the Pulseboard reference; landing page brief,
@@ -114,14 +102,8 @@ export function ExperimentCards({ data, stages }: { data: CardsData; stages: Sta
   const lit = tick % data.pendulum.bars.length;
   const tops: (readonly [number, number])[] = [];
   const bars = data.pendulum.bars.map((b, i) => {
-    const x = 8 + i * 15;
-    const y = 44;
-    const z = 58;
-    const w = 11;
-    const h = squared ? (b.T2 - 1) * 19 : (b.T - 1.2) * 70;
-    const top = project(x + w / 2, y + w / 2, z + h);
-    tops.push(top);
-    const on = i === lit;
+    const shape = barShape(i, b, squared, i === lit);
+    tops.push(shape.top);
     return (
       <g
         key={b.l}
@@ -133,40 +115,16 @@ export function ExperimentCards({ data, stages }: { data: CardsData; stages: Sta
         onPointerEnter={() =>
           setTip({
             card: "pendulum",
-            at: top,
+            at: shape.top,
             title: `l = ${b.l.toFixed(3)} m`,
             text: `T = ${b.T.toFixed(3)} s,  T² = ${b.T2.toFixed(3)} s²`,
           })
         }
         onPointerLeave={() => setTip(null)}
       >
-        <polygon
-          points={points([
-            [x, y + w, z],
-            [x + w, y + w, z],
-            [x + w, y + w, z + h],
-            [x, y + w, z + h],
-          ])}
-          fill={tint("mechanics", on ? 85 : 35)}
-        />
-        <polygon
-          points={points([
-            [x + w, y, z],
-            [x + w, y + w, z],
-            [x + w, y + w, z + h],
-            [x + w, y, z + h],
-          ])}
-          fill={tint("mechanics", on ? 95 : 65)}
-        />
-        <polygon
-          points={points([
-            [x, y, z + h],
-            [x + w, y, z + h],
-            [x + w, y + w, z + h],
-            [x, y + w, z + h],
-          ])}
-          fill={tint("mechanics", on ? 100 : 15)}
-        />
+        {shape.faces.map((f, k) => (
+          <polygon key={k} points={f.points} fill={f.fill} />
+        ))}
       </g>
     );
   });
