@@ -18,7 +18,8 @@ from tests.conftest import browser
 from tests.helpers import create_class, join, sign_in_teacher
 
 START = {"experiment_id": "simple-pendulum", "lesson_minutes": 40}
-ONE = {"rule": "counts-from-one", "key": "pendulum.counts-from-one", "skill": "measurement"}
+ONE = {"rule": "counts-from-one", "key": "findings.pendulum.countFromOne", "skill": "measurement"}
+OTHER = "findings.pendulum.stoppedEarly"
 
 
 async def _live_class(client: AsyncClient, outbox: LogSender) -> dict[str, Any]:
@@ -90,7 +91,12 @@ async def test_a_hint_goes_to_everyone_with_that_mistake_only(
     esi = await _student(made["code"], "Esi")
     sid = made["session"]["id"]
     await _bench(db, sid, kofi, [ONE])
-    await _bench(db, sid, ama, [ONE, {**ONE, "rule": "length-to-top", "key": "k"}])
+    await _bench(
+        db,
+        sid,
+        ama,
+        [ONE, {**ONE, "rule": "length-to-top", "key": OTHER}],
+    )
     await _bench(db, sid, esi, [])
 
     sent = await client.post(
@@ -109,7 +115,8 @@ async def test_a_hint_goes_to_everyone_with_that_mistake_only(
     assert again.json()["id"] == hint["id"]
 
     nobody = await client.post(
-        f"/classes/{made['id']}/live/hints", json={"rule": "swing-too-big", "key": "k"}
+        f"/classes/{made['id']}/live/hints",
+        json={"rule": "swing-too-big", "key": OTHER},
     )
     assert nobody.status_code == 409
 
@@ -200,7 +207,7 @@ async def test_another_teacher_cannot_watch_or_command_the_class(
         assert (await other.post(f"{base}/end")).status_code == 404
         assert (await other.put(f"{base}/lock", json={"locked": True})).status_code == 404
         assert (
-            await other.post(f"{base}/hints", json={"rule": ONE["rule"], "key": "k"})
+            await other.post(f"{base}/hints", json={"rule": ONE["rule"], "key": OTHER})
         ).status_code == 404
         assert (await other.post(f"{base}/broadcast", json={"text": "Hi"})).status_code == 404
         assert (
@@ -269,3 +276,34 @@ async def test_pushing_again_reaches_only_those_the_first_hint_missed(
 
     third = (await client.post(f"/classes/{made['id']}/live/hints", json=hint)).json()
     assert third["id"] == second["id"]  # everyone reached: a double click sends nothing new
+
+
+# Mistakes are the lab's own (ASVS review, finding H)
+
+
+async def test_a_bench_shows_only_mistakes_the_lab_words(
+    client: AsyncClient, outbox: LogSender, db: AsyncSession
+) -> None:
+    made = await _live_class(client, outbox)
+    kofi = await _student(made["code"], "Kofi_A")
+    # Stored by an older API, or written by hand: shown without the made-up ones, never a 500.
+    made_up = [
+        {"rule": "counts-from-one", "key": "Call me on 024 412 3456", "skill": "measurement"},
+        {"rule": "Kofi is not here", "key": ONE["key"], "skill": "measurement"},
+    ]
+    await _bench(db, made["session"]["id"], kofi, [*made_up, ONE])
+    snap = await client.get(f"/classes/{made['id']}/live")
+    assert snap.status_code == 200, snap.text
+    [bench] = snap.json()["benches"]
+    assert bench["mistakes"] == [ONE]
+
+
+async def test_a_hint_must_name_a_mistake_the_lab_words(
+    client: AsyncClient, outbox: LogSender
+) -> None:
+    made = await _live_class(client, outbox)
+    hints = f"/classes/{made['id']}/live/hints"
+    made_up = await client.post(hints, json={"rule": "counts-from-one", "key": "Any words"})
+    assert made_up.status_code == 422
+    spaced = await client.post(hints, json={"rule": "not a slug", "key": ONE["key"]})
+    assert spaced.status_code == 422

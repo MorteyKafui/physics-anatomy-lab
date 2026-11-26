@@ -4,9 +4,12 @@ REST bodies become the OpenAPI schema. WebSocket frames are not in OpenAPI; thei
 mirror is `packages/api-client/src/live.ts`, and the ADR lists every frame.
 """
 
+import json
+import re
 import uuid
 from datetime import datetime
-from typing import Annotated, Literal
+from pathlib import Path
+from typing import Annotated, Any, Literal, cast
 
 from pydantic import AfterValidator, BaseModel, Field, JsonValue, model_validator
 
@@ -40,12 +43,46 @@ def _text(value: str) -> str:
 
 Text = Annotated[str, Field(max_length=MAX_TEXT * 2), AfterValidator(_text)]
 
+# A mistake names its rule and its message key (ASVS review, finding H). A rule is a plain slug,
+# and a key must be one the lab words: packages/i18n exports the coach's keys here
+# (bun run export:finding-keys), so a teacher's board shows only the lab's own wording, never
+# text a device made up. Short ASCII also keeps a bench frame's NOTIFY far under its limit, so
+# a device cannot make every teacher's board resync.
+RULE_PATTERN = r"^[a-z][a-z0-9-]{1,63}$"
+FINDING_KEYS = frozenset(
+    json.loads((Path(__file__).parent / "finding_keys.json").read_text(encoding="utf-8"))
+)
+
+
+def _known_key(key: str) -> str:
+    if key not in FINDING_KEYS:
+        raise ValueError("Not a mistake the lab knows.")
+    return key
+
+
+Rule = Annotated[str, Field(pattern=RULE_PATTERN)]
+FindingKey = Annotated[str, Field(max_length=128), AfterValidator(_known_key)]
+
+
+def is_known_mistake(raw: object) -> bool:
+    """Whether a mistake, as sent or stored, names a slug rule and a key the lab words."""
+    if not isinstance(raw, dict):
+        return False
+    m = cast(dict[str, Any], raw)
+    rule, key = m.get("rule"), m.get("key")
+    return (
+        isinstance(rule, str)
+        and re.fullmatch(RULE_PATTERN, rule) is not None
+        and isinstance(key, str)
+        and key in FINDING_KEYS
+    )
+
 
 class Mistake(Body):
     """A coach finding on a student's bench: the rule that found it and its message key."""
 
-    rule: Id
-    key: Id
+    rule: Rule
+    key: FindingKey
     skill: Skill
 
 
@@ -72,9 +109,24 @@ class BenchFrame(Body):
     ]
     readings: Annotated[int, Field(ge=0, le=10_000)] = 0
 
+    @model_validator(mode="before")
+    @classmethod
+    def _known_mistakes(cls, data: Any) -> Any:
+        """Mistakes the lab does not know are left out, not refused: a lab built after this API
+        still reaches the board, with only the mistakes this API can word."""
+        if not isinstance(data, dict):
+            return data
+        frame = cast(dict[str, Any], data)
+        found = frame.get("mistakes")
+        if not isinstance(found, list):
+            return frame
+        kept = [m for m in cast(list[object], found) if is_known_mistake(m)]
+        return {**frame, "mistakes": kept}
+
     @model_validator(mode="after")
     def _distinct(self) -> "BenchFrame":
         self.completed = list(dict.fromkeys(self.completed))
+        self.mistakes = list({m.rule: m for m in reversed(self.mistakes)}.values())[::-1]
         return self
 
 
@@ -102,8 +154,8 @@ class LockSet(Body):
 class HintPush(Body):
     """One hint to everyone whose bench shows this mistake now (GLOSSARY.md, "Hint push")."""
 
-    rule: Id
-    key: Id
+    rule: Rule
+    key: FindingKey
 
 
 class BroadcastSend(Body):

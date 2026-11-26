@@ -108,6 +108,10 @@ describe("the live board", () => {
     expect(mistakeName({ rule: "unknown-rule", key: "findings.pendulum.stoppedEarly" })).toBe(
       "You stopped at {count} of {target}",
     );
+    // A rule and key the lab does not word are never shown as they came (finding H).
+    expect(mistakeName({ rule: "call-me-on-0244", key: "made.up" })).toBe(
+      "Another mistake the coach found",
+    );
   });
 });
 
