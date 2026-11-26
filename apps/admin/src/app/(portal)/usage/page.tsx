@@ -1,7 +1,8 @@
-// Usage: most-used experiments, time per step, devices (master plan, admin portal table).
-import type { ExperimentUse, Usage } from "@pa/api-client";
+// Usage: anonymous counts from the lab (ADR 0048): visitors, the most-used experiments, where
+// people stop, exports and devices. Read from usage_events, never from synced attempts.
+import type { Usage, UsageCount, UsageExperiment } from "@pa/api-client";
 
-import { ApiProblem, Empty, Panel, Ring, Tile } from "@/components/bits";
+import { ApiProblem, Empty, Panel, Ring, SegBar, Spark, Tile } from "@/components/bits";
 import { TopBar } from "@/components/topbar";
 import { adminGet, staffMe } from "@/lib/api";
 import { EXPERIMENTS, experiment, titleOf } from "@/lib/experiments";
@@ -9,20 +10,166 @@ import { n, percent } from "@/lib/format";
 import { rangeOf } from "@/lib/range";
 import { STEPS, stepName } from "@/lib/steps";
 
-const MODES = ["guided", "exam", "own-data"] as const;
+const FORMATS: Readonly<Record<string, string>> = {
+  pdf: "PDF report",
+  docx: "Word report",
+  figures: "Figures",
+  data: "Data",
+};
+const DEVICES = [
+  { key: "phone", label: "Phone", colour: "var(--pa-accent)" },
+  { key: "tablet", label: "Tablet", colour: "var(--pa-warn)" },
+  { key: "desktop", label: "Desktop", colour: "var(--pa-ok)" },
+] as const;
 
-function byExperiment(rows: readonly ExperimentUse[]) {
-  const ids = [...new Set(rows.map((r) => r.experiment_id))];
-  return ids
-    .map((id) => {
-      const mine = rows.filter((r) => r.experiment_id === id);
-      const sum = (pick: (r: ExperimentUse) => number) => mine.reduce((s, r) => s + pick(r), 0);
-      const mode = Object.fromEntries(
-        MODES.map((m) => [m, mine.filter((r) => r.mode === m).reduce((s, r) => s + r.attempts, 0)]),
-      ) as Record<(typeof MODES)[number], number>;
-      return { id, attempts: sum((r) => r.attempts), reports: sum((r) => r.reports), mode };
-    })
-    .sort((a, b) => b.attempts - a.attempts);
+const colourOf = (id: string) => {
+  const e = experiment(id);
+  return e ? `var(--pa-topic-${e.topic})` : "var(--pa-ok)";
+};
+const countOf = (rows: readonly UsageCount[], key: string) =>
+  rows.find((r) => r.key === key)?.n ?? 0;
+
+function Number({ value, note }: { value: number; note?: string }) {
+  return (
+    <span style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+      <span className="ad-big">{n(value)}</span>
+      {note && <span style={{ fontSize: 13, color: "var(--pa-text-faint)" }}>{note}</span>}
+    </span>
+  );
+}
+
+function Header({ cols, cells }: { cols: string; cells: readonly string[] }) {
+  return (
+    <div role="row" className="ad-tr ad-th" style={{ gridTemplateColumns: cols }}>
+      {cells.map((h, i) => (
+        <span key={h} role="columnheader" style={{ textAlign: i > 0 ? "right" : undefined }}>
+          {h}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function Ranked({ rows }: { rows: readonly UsageExperiment[] }) {
+  const cols = "minmax(200px, 2fr) repeat(4, minmax(80px, 1fr)) 120px";
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <div
+        role="table"
+        aria-label="Most-used experiments"
+        className="ad-table"
+        style={{ minWidth: 720 }}
+      >
+        <Header
+          cols={cols}
+          cells={[
+            "Experiment",
+            "Opens",
+            "Visitors",
+            "Reached the report",
+            "Completed",
+            "Completion",
+          ]}
+        />
+        {rows.map((row) => (
+          <div
+            key={row.experiment_id}
+            role="row"
+            className="ad-tr ad-row"
+            style={{ gridTemplateColumns: cols }}
+          >
+            <span role="cell">{titleOf(row.experiment_id)}</span>
+            {[row.opens, row.visitors, row.reached_report, row.completed].map((v, i) => (
+              <span key={i} role="cell" className="ad-mono" style={{ textAlign: "right" }}>
+                {n(v)}
+              </span>
+            ))}
+            <span
+              role="cell"
+              className="ad-mono"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: 8,
+              }}
+            >
+              <Ring
+                share={row.visitors ? row.completed / row.visitors : null}
+                colour={colourOf(row.experiment_id)}
+              />
+              {percent(row.completed, row.visitors)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Steps({ u }: { u: Usage }) {
+  const opened = u.experiments.filter((e) => e.visitors > 0);
+  const cols = `minmax(180px, 2fr) repeat(${String(STEPS.length)}, minmax(64px, 1fr))`;
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <div
+        role="table"
+        aria-label="Where people stop"
+        className="ad-table"
+        style={{ minWidth: 900 }}
+      >
+        <Header cols={cols} cells={["Experiment", ...STEPS.map(stepName)]} />
+        {opened.map((e) => (
+          <div
+            key={e.experiment_id}
+            role="row"
+            className="ad-tr ad-row"
+            style={{ gridTemplateColumns: cols }}
+          >
+            <span role="cell">
+              {titleOf(e.experiment_id)}
+              <span style={{ color: "var(--pa-text-faint)" }}> ({n(e.visitors)})</span>
+            </span>
+            {STEPS.map((step) => {
+              const done =
+                u.steps.find((s) => s.experiment_id === e.experiment_id && s.step === step)
+                  ?.visitors ?? 0;
+              const share = Math.min(1, done / e.visitors);
+              return (
+                <span
+                  key={step}
+                  role="cell"
+                  className="ad-mono"
+                  title={`${n(done)} of ${n(e.visitors)} visitors finished ${stepName(step)}`}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: 4,
+                  }}
+                >
+                  {percent(Math.min(done, e.visitors), e.visitors)}
+                  <span
+                    aria-hidden="true"
+                    style={{ width: "100%", height: 4, background: "var(--pa-ink-800)" }}
+                  >
+                    <span
+                      style={{
+                        display: "block",
+                        height: 4,
+                        width: `${(share * 100).toFixed(1)}%`,
+                        background: colourOf(e.experiment_id),
+                      }}
+                    />
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default async function UsagePage({
@@ -48,216 +195,97 @@ export default async function UsagePage({
       </>
     );
   const u = r.data;
-  const table = byExperiment(u.experiments);
-  const total = (pick: (r: ExperimentUse) => number) =>
-    u.experiments.reduce((s, row) => s + pick(row), 0);
-  const attempts = total((x) => x.attempts);
-  const reports = total((x) => x.reports);
-  const exam = total((x) => (x.mode === "exam" ? x.attempts : 0));
-  const multi = total((x) => x.multi_device);
-  const timed = [...new Set(u.step_minutes.map((t) => t.experiment_id))];
-  const cols = `minmax(200px, 2fr) repeat(5, minmax(70px, 1fr)) 110px`;
+  const reached = u.experiments.reduce((s, e) => s + e.reached_report, 0);
+  const completed = u.experiments.reduce((s, e) => s + e.completed, 0);
+  const exports = u.exports.reduce((s, e) => s + e.n, 0);
+  const nothing = (
+    <div style={{ padding: 16 }}>
+      <Empty title="Nothing counted in this range">
+        Counts arrive when someone opens an experiment in the lab with a connection. Browsers with
+        Do Not Track or Global Privacy Control send nothing.
+      </Empty>
+    </div>
+  );
 
   return (
     <>
       {top}
       <div className="ad-body">
+        <p style={{ margin: 0, fontSize: 13, color: "var(--pa-text-soft)" }}>
+          Anonymous counts. A visitor gets a new id every day, so returning visitors are counted
+          again.
+        </p>
         <div className="ad-tiles">
-          <Tile title="Attempts started" when={range.long} href="#experiments" link="By experiment">
-            <span className="ad-big">{n(attempts)}</span>
+          <Tile title="Visitors" when={range.long} href="#devices" link="Devices">
+            <Number value={u.visitors} note="day ids" />
+            <Spark values={u.visitors_series} />
           </Tile>
-          <Tile title="Reached the report" when={range.long} href="#experiments" link="Completion">
-            <span style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span className="ad-big">{n(reports)}</span>
-              <span style={{ fontSize: 13, color: "var(--pa-text-faint)" }}>
-                {percent(reports, attempts)} of attempts
-              </span>
-            </span>
+          <Tile
+            title="Experiments opened"
+            when={range.long}
+            href="#experiments"
+            link="By experiment"
+          >
+            <Number value={u.opens} />
+            <Spark values={u.opens_series} />
           </Tile>
-          <Tile title="Exam mode" when={range.long} href="/learning" link="View learning">
-            <span className="ad-big">{n(exam)}</span>
+          <Tile title="Reached the report" when={range.long} href="#steps" link="Where people stop">
+            <Number value={reached} note="visitors" />
           </Tile>
-          <Tile title="On a second device" when={range.long} href="#devices" link="Devices">
-            <span style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span className="ad-big">{n(multi)}</span>
-              <span style={{ fontSize: 13, color: "var(--pa-text-faint)" }}>attempts</span>
-            </span>
+          <Tile title="Completed" when={range.long} href="#experiments" link="Completion">
+            <Number value={completed} note="visitors" />
           </Tile>
         </div>
 
         <div id="experiments">
           <Panel
             title="Most-used experiments"
-            sub={`Attempts started in the ${range.long.toLowerCase()}, by students in classes and signed-in teachers`}
+            sub={`By opens in the ${range.long.toLowerCase()}. Reached the report and completed count visitors.`}
           >
-            {table.length === 0 ? (
-              <div style={{ padding: 16 }}>
-                <Empty title="No attempts in this range">
-                  Attempts appear here once a signed-in student or teacher syncs one. Signed-out
-                  work stays on the device and is not counted.
-                </Empty>
-              </div>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <div
-                  role="table"
-                  aria-label="Most-used experiments"
-                  className="ad-table"
-                  style={{ minWidth: 720 }}
-                >
-                  <div role="row" className="ad-tr ad-th" style={{ gridTemplateColumns: cols }}>
-                    {[
-                      "Experiment",
-                      "Attempts",
-                      "Guided",
-                      "Exam",
-                      "Own data",
-                      "Reports",
-                      "Completion",
-                    ].map((h, i) => (
-                      <span
-                        key={h}
-                        role="columnheader"
-                        style={{ textAlign: i > 0 && i < 6 ? "right" : undefined }}
-                      >
-                        {h}
-                      </span>
-                    ))}
-                  </div>
-                  {table.map((row) => {
-                    const e = experiment(row.id);
-                    return (
-                      <div
-                        key={row.id}
-                        role="row"
-                        className="ad-tr ad-row"
-                        style={{ gridTemplateColumns: cols }}
-                      >
-                        <span role="cell">{titleOf(row.id)}</span>
-                        {[
-                          row.attempts,
-                          row.mode.guided,
-                          row.mode.exam,
-                          row.mode["own-data"],
-                          row.reports,
-                        ].map((v, i) => (
-                          <span
-                            key={i}
-                            role="cell"
-                            className="ad-mono"
-                            style={{ textAlign: "right" }}
-                          >
-                            {n(v)}
-                          </span>
-                        ))}
-                        <span
-                          role="cell"
-                          className="ad-mono"
-                          style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
-                        >
-                          <Ring
-                            share={row.attempts ? row.reports / row.attempts : null}
-                            colour={e ? `var(--pa-topic-${e.topic})` : "var(--pa-ok)"}
-                          />
-                          {percent(row.reports, row.attempts)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            {u.experiments.length === 0 ? nothing : <Ranked rows={u.experiments} />}
           </Panel>
         </div>
 
         <div id="steps">
           <Panel
-            title="Time per step"
-            sub="Median minutes from finishing one step to finishing the next, by the device's clock"
+            title="Where people stop"
+            sub="The share of visitors who opened an experiment and finished each step"
           >
-            {timed.length === 0 ? (
-              <div style={{ padding: 16 }}>
-                <Empty title="No finished steps in this range">
-                  Times appear once synced attempts have finished steps.
-                </Empty>
-              </div>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <div
-                  role="table"
-                  aria-label="Time per step"
-                  className="ad-table"
-                  style={{ minWidth: 560 }}
-                >
-                  <div
-                    role="row"
-                    className="ad-tr ad-th"
-                    style={{
-                      gridTemplateColumns: `120px repeat(${String(timed.length)}, minmax(120px, 1fr))`,
-                    }}
-                  >
-                    <span role="columnheader">Step</span>
-                    {timed.map((id) => (
-                      <span key={id} role="columnheader" style={{ textAlign: "right" }}>
-                        {titleOf(id)}
-                      </span>
-                    ))}
-                  </div>
-                  {STEPS.map((step) => (
-                    <div
-                      key={step}
-                      role="row"
-                      className="ad-tr ad-row"
-                      style={{
-                        gridTemplateColumns: `120px repeat(${String(timed.length)}, minmax(120px, 1fr))`,
-                      }}
-                    >
-                      <span role="cell">{stepName(step)}</span>
-                      {timed.map((id) => {
-                        const t = u.step_minutes.find(
-                          (x) => x.experiment_id === id && x.step === step,
-                        );
-                        return (
-                          <span
-                            key={id}
-                            role="cell"
-                            className="ad-mono"
-                            style={{ textAlign: "right" }}
-                          >
-                            {t ? `${t.minutes.toFixed(1)} min` : "–"}
-                            {t && (
-                              <span style={{ color: "var(--pa-text-faint)" }}> ({n(t.n)})</span>
-                            )}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {u.experiments.length === 0 ? nothing : <Steps u={u} />}
           </Panel>
         </div>
 
-        <div id="devices">
-          <Panel title="Devices and connections">
-            <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-              <span style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ color: "var(--pa-text-soft)" }}>
-                  Attempts continued on a second device
-                </span>
-                <span className="ad-mono">{n(multi)}</span>
-              </span>
-              <Empty title="Device types, connection speeds, offline and online use">
-                Not recorded. Attempts carry only a random device id, never the kind of device.
-                These need product analytics (PostHog in the plan), which is not set up yet.
-              </Empty>
-            </div>
-          </Panel>
+        <div className="ad-split">
+          <div className="ad-narrow" id="exports">
+            <Panel title="Exports by format" sub={`${n(exports)} report downloads`}>
+              <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                {Object.entries(FORMATS).map(([key, label]) => (
+                  <span key={key} style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ color: "var(--pa-text-soft)" }}>{label}</span>
+                    <span className="ad-mono">{n(countOf(u.exports, key))}</span>
+                  </span>
+                ))}
+              </div>
+            </Panel>
+          </div>
+          <div className="ad-narrow" id="devices">
+            <Panel title="Devices by class" sub="Visitors, by screen width">
+              <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                <SegBar
+                  parts={DEVICES.map((d) => ({
+                    label: d.label,
+                    value: countOf(u.devices, d.key),
+                    colour: d.colour,
+                  }))}
+                />
+              </div>
+            </Panel>
+          </div>
         </div>
         <p style={{ margin: 0, fontSize: 12, color: "var(--pa-text-faint)" }}>
-          {EXPERIMENTS.length} experiments in the lab. Students who work signed out are not counted:
-          the lab works without an account (ADR 0011).
+          {EXPERIMENTS.length} experiments in the lab. No names, readings, addresses or cookies:
+          each event carries the experiment, the step, mode or export format, a device class, the
+          app version and the day&apos;s id. Events are deleted after 13 months.
         </p>
       </div>
     </>

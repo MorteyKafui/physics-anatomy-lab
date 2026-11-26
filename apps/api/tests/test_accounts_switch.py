@@ -128,7 +128,7 @@ async def test_live_sockets_are_closed(accounts_off: None) -> None:
         assert sent == [{"type": "websocket.close", "code": 1000, "reason": ""}], route.path
 
 
-async def test_the_admin_api_health_and_approved_questions_stay_on(
+async def test_the_admin_api_health_usage_and_approved_questions_stay_on(
     accounts_off: None, client: AsyncClient
 ) -> None:
     app.dependency_overrides[get_access_verifier] = lambda: AccessVerifier(
@@ -141,3 +141,5 @@ async def test_the_admin_api_health_and_approved_questions_stay_on(
     assert (await client.get("/health")).status_code == 200
     r = await client.get("/questions/approved", params={"experiment_id": "pendulum.g"})
     assert (r.status_code, r.json()) == (200, [])
+    # The anonymous usage counts (ADR 0048) need no account: a bad batch is checked, not hidden.
+    assert (await client.post("/usage/events", json={})).status_code == 422

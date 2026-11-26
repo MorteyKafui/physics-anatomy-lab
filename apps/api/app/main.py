@@ -14,12 +14,24 @@ from pydantic import BaseModel
 
 from app.accounts import AccountsSwitch
 from app.auth.origin import OriginGuard
-from app.auth.policy import MAX_BODY_BYTES
+from app.auth.policy import MAX_BODY_BYTES, USAGE_MAX_BODY_BYTES
 from app.body_limit import BodyLimit
 from app.config import get_settings
 from app.db import get_engine
 from app.live.hub import Hub, listen_dsn
-from app.routes import admin, ai, auth, classes, live, load_test, privacy, questions, sync, teacher
+from app.routes import (
+    admin,
+    ai,
+    auth,
+    classes,
+    live,
+    load_test,
+    privacy,
+    questions,
+    sync,
+    teacher,
+    usage,
+)
 from app.security_headers import SecurityHeaders
 
 settings = get_settings()
@@ -90,7 +102,9 @@ app.add_middleware(
     ],
 )
 app.add_middleware(SecurityHeaders)
-app.add_middleware(BodyLimit, max_bytes=MAX_BODY_BYTES)
+app.add_middleware(
+    BodyLimit, max_bytes=MAX_BODY_BYTES, smaller={"/usage/events": USAGE_MAX_BODY_BYTES}
+)
 app.add_middleware(OriginGuard)
 app.add_middleware(
     CORSMiddleware,
@@ -101,6 +115,9 @@ app.add_middleware(
 )
 for router in ACCOUNT_ROUTERS:
     app.include_router(router)
+# Open without sign-in: anonymous counts from the lab (ADR 0048). Not an account route, so it
+# stays on when accounts are switched off.
+app.include_router(usage.router)
 # Staff only, behind Cloudflare Access; reached from the admin portal's server (ADR 0040).
 app.include_router(admin.router)
 app.include_router(questions.admin_router)

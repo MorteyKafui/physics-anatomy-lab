@@ -62,3 +62,10 @@ DELETE_ACCOUNT_RECENT_SIGN_IN = timedelta(hours=1)
 # data passes this many bytes. An attempt is never split, so one larger attempt is a page alone.
 EXPORT_PAGE_ATTEMPTS = 20
 EXPORT_PAGE_MAX_BYTES = 2 * 1024 * 1024
+
+# Anonymous usage counts (ADR 0048). No sign-in, so the limits are per network address.
+USAGE_MAX_BODY_BYTES = 32 * 1024
+USAGE_MAX_BATCH = 50
+USAGE_EVENTS_PER_ADDRESS = Limit("usage-events:ip", 600, timedelta(hours=1))
+# Rows are kept this many months, so a year can be compared with the one before.
+USAGE_KEEP_MONTHS = 13
