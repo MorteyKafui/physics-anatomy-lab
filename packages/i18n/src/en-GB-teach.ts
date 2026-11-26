@@ -144,6 +144,7 @@ export const enGBTeach = {
     "Students see the tutor, what if and report review. AI is sent the step and the bench, never a student's name.",
 
   // How the board names each mistake, for the teacher. Keyed by the coach rule's id.
+  "teach.mistake.other": "Another mistake the coach found",
   "teach.mistake.pendulum-count-from-one": "Counted the first pass as one",
   "teach.mistake.pendulum-count-from-one.chip": "Counts from one",
   "teach.mistake.pendulum-count-from-one.detail":
