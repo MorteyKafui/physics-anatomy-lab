@@ -79,19 +79,21 @@ const BASE_DISC = { z: STEM.bottom, h: 4 };
 const PAD = { x: -146, y: -16, w: 44, d: 30, r: 5 };
 
 const W = 760;
-const H = 400;
-const P = k.fitProjection(
-  [
-    ...k.boxCorners(BENCH, -BENCH_H - 4, 0),
-    [FORK_AT[0], FORK_AT[1], 166],
-    [DROP_X + MASS_R, 0, BASE_DISC.z - 2],
-    [DROP_X - MASS_R, 0, BASE_DISC.z - 2],
-    [PULLEY.x + 14, 0, WZ + 6],
-  ],
-  W,
-  H,
-  { pad: 22, azimuth: 80, elevation: 32 },
-);
+const FIT = [
+  ...k.boxCorners(BENCH, -BENCH_H - 4, 0),
+  [FORK_AT[0], FORK_AT[1], 166],
+  [DROP_X + MASS_R, 0, BASE_DISC.z - 2],
+  [DROP_X - MASS_R, 0, BASE_DISC.z - 2],
+  [PULLEY.x + 14, 0, WZ + 6],
+];
+const CAMERA = { pad: 14, azimuth: 80, elevation: 32 };
+// The sonometer is long and low, so the width sets the scale; size the card's height to the drawing.
+const H = (() => {
+  const trial = k.fitProjection(FIT, W, 1000, CAMERA);
+  const ys = FIT.map((point) => k.iso(point, trial)[1]);
+  return Math.ceil(Math.max(...ys) - Math.min(...ys) + 2 * CAMERA.pad);
+})();
+const P = k.fitProjection(FIT, W, H, CAMERA);
 const V = G.viewOf(P);
 const at = (p) => k.iso(p, P);
 const S = (paths, style) => k.solidSvg(paths, style);

@@ -102,3 +102,10 @@
 .sn-svg[data-pick] .iso-halo {
   opacity: 0.08;
 }
+
+/* the kit's title and hint corners are upper case; the site's rule is sentence case */
+.iso-plate-corner[data-corner="title"],
+.iso-plate-corner[data-corner="hint"] {
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
