@@ -51,3 +51,5 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0044](./0044-lab-javascript-budget-160.md)                | The lab's JavaScript budget is 160 KB on top of the shell            | 2026-11-19 |
 | [0045](./0045-landing-page-without-gsap.md)                | The landing page is built without GSAP                               | 2026-11-20 |
 | [0046](./0046-pages-render-per-request-for-a-nonce-csp.md) | Pages render on each request, for a nonce Content Security Policy    | 2026-11-25 |
+| [0047](./0047-open-lab-accounts-off.md)                    | An open lab: accounts are switched off                               | 2026-11-26 |
+| [0048](./0048-anonymous-usage-counts.md)                   | Anonymous usage counts, with an id that changes every day            | 2026-11-26 |

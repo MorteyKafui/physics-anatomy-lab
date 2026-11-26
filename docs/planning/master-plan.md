@@ -846,6 +846,19 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 - [ ] Usability tests with students; privacy documents reviewed by UEW
 - [ ] Pilot class behind feature flags, then the launch checklist
 
+### Phase 7: Open lab and redesign (before going live)
+
+Decided by Mortey on 26 November 2026, ahead of a local presentation. The lab is open to anyone, like PhET: accounts are switched off, not deleted (ADR 0047). Admin counts visitors anonymously, with an id that changes every day (ADR 0048). The public app gets a redesign that improves the existing design: its colours, live demos, Anatomy figures and large footer wordmark stay. The six practicals are the first six; more follow after launch. Brief, board and records: pull request 143.
+
+- [x] Brief, decision records and boards approved (landing, practicals page, lab)
+- [ ] Accounts off: one switch, links removed, old routes redirect home, Terms and Privacy updated
+- [ ] Anonymous usage counts: device queue, `POST /usage/events`, admin Usage area
+- [ ] Shared parts in `packages/ui` for the new boards
+- [x] Landing page from its board
+- [ ] Practicals page and experiment pages from their boards
+- [ ] Lab shell from its board; unbuilt steps hidden
+- [ ] Reading pages, 404 and offline
+
 ## Also needed: gaps found in the final review
 
 A last pass over the plan, reading it as a student, a school, a lawyer and an on-call engineer, found fourteen things a launch needs that no section owned yet. Each now has a home.
