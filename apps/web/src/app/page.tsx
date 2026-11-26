@@ -1,6 +1,7 @@
 import { t } from "@pa/i18n";
 import "@pa/i18n/landing";
 import { CircuitStage, LensStage, MixturesStage } from "@pa/ui/illustrations/landing-cards";
+import { HotSolidStage, PinsStage } from "@pa/ui/illustrations/practicals-figures";
 import Link from "next/link";
 
 import { Anatomy, StandFigure } from "./_landing/anatomy";
@@ -59,9 +60,9 @@ export default function Home() {
                   pendulum: <StandFigure />,
                   circuit: <CircuitStage />,
                   lens: <LensStage />,
-                  pins: <LensStage />,
+                  pins: <PinsStage />,
                   mixtures: <MixturesStage />,
-                  solid: <MixturesStage />,
+                  solid: <HotSolidStage />,
                 }}
               />
             }
