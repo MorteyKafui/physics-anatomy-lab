@@ -44,7 +44,6 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Lab overhaul: apparatus shelf      | `ApparatusShelf.dc.html` | draft for approval     | lab Build step, picking apparatus                          |
 | Lab overhaul: coach on the bench   | `LabCoach.dc.html`       | draft for approval     | lab coach (wiring, Show me, Fix it for me)                 |
 | Lab overhaul: skill drills         | `SkillDrill.dc.html`     | draft for approval     | lab, before an instrument is first used                    |
-| Lab overhaul: explore mode         | `Explore.dc.html`        | draft for approval     | lab explore mode (ungraded)                                |
 | Lab overhaul: precise control      | `PreciseControl.dc.html` | draft for approval     | lab position controls                                      |
 
 The lab overhaul boards have desktop and phone screenshots in `screens/lab-overhaul/`. Their
