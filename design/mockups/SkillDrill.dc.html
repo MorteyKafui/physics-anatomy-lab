@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab overhaul: skill drills</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+
+.iso{
+  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
+  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
+  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
+  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
+  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
+  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
+  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
+  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
+  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
+}
+.iso[data-theme="light"]{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#fbfbfa;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff,0 0 0 1px #0000000f,0 1px 1px -.5px #0000000a,0 3px 3px -1.5px #0000000a,0 6px 6px -3px #0000000a,0 12px 12px -6px #0000000a;
+}
+.iso-svg{display:block;width:100%;height:auto;overflow:visible}
+.iso-svg path,.iso-svg circle{vector-effect:non-scaling-stroke}
+.iso-fill{fill:var(--anatomy-paper);stroke:none}
+.iso-solid[data-lit]>.iso-fill{fill:var(--anatomy-face)}
+.iso-shade,.iso-top{stroke:none}
+.iso-shade[data-shade="0"]{fill:var(--anatomy-shade-0)}
+.iso-shade[data-shade="1"]{fill:var(--anatomy-shade-1)}
+.iso-shade[data-shade="2"]{fill:var(--anatomy-shade-2)}
+.iso-shade[data-shade="3"]{fill:var(--anatomy-shade-3)}
+.iso-top{fill:var(--anatomy-top)}
+.iso-solid[data-lit]>.iso-top{fill:var(--anatomy-lit-top)}
+.iso-solid[data-lit]>.iso-shade{fill:var(--anatomy-lit-shade)}
+.iso-solid[data-seamless]>.iso-shade,.iso-solid[data-seamless]>.iso-top{stroke-width:.4;stroke-linejoin:round}
+.iso-solid[data-seamless]>.iso-shade[data-shade="0"]{stroke:var(--anatomy-shade-0)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="1"]{stroke:var(--anatomy-shade-1)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="2"]{stroke:var(--anatomy-shade-2)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="3"]{stroke:var(--anatomy-shade-3)}
+.iso-solid[data-seamless]>.iso-top{stroke:var(--anatomy-top)}
+.iso-solid[data-seamless][data-lit]>.iso-top{stroke:var(--anatomy-lit-top)}
+.iso-solid[data-seamless][data-lit]>.iso-shade{stroke:var(--anatomy-lit-shade)}
+.iso-solid[data-lit]>.iso-edge{stroke:var(--anatomy-lit)}
+.iso-halo{fill:var(--anatomy-halo);stroke:none;filter:blur(9px);opacity:var(--anatomy-halo-opacity);transform:translateY(3px)}
+.iso-line{fill:none;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight);stroke-linecap:round;stroke-linejoin:round}
+.iso-line[data-tone="hi"]{stroke:var(--anatomy-hi)}
+.iso-line[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.iso-line[data-tone="lo"]{stroke:var(--anatomy-lo)}
+.iso-line[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.iso-line[data-tone="lit"]{stroke:var(--anatomy-lit)}
+.iso-line[data-tone="red"]{stroke:var(--anatomy-red)}
+.iso-line[data-tone="green"]{stroke:var(--anatomy-green)}
+.iso-line[data-tone="blue"]{stroke:var(--anatomy-blue)}
+.iso-line[data-dotted]{stroke-dasharray:.01 3.5;stroke-width:1}
+.iso-line[data-dashed]{stroke-dasharray:3 3}
+.iso-line[data-flow]{stroke-dasharray:2 6}
+.iso-wire-end{fill:var(--anatomy-paper);stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
+.iso-wire[data-tone="hi"] .iso-wire-end{stroke:var(--anatomy-hi)}
+.iso-wire[data-tone="mid"] .iso-wire-end{stroke:var(--anatomy-mid)}
+.iso-wire[data-tone="faint"] .iso-wire-end{stroke:var(--anatomy-faint)}
+.iso-wire[data-tone="lit"] .iso-wire-end{stroke:var(--anatomy-lit)}
+.iso-dots circle{fill:var(--anatomy-dot);stroke:none;opacity:.32}
+.iso-dots[data-tone="hi"] circle{opacity:.85}
+.iso-dots[data-tone="mid"] circle{opacity:.45}
+.iso-dots[data-tone="lo"] circle{opacity:.22}
+.iso-dots[data-tone="faint"] circle{opacity:.12}
+.iso-face-text{fill:var(--anatomy-mid);font-family:var(--anatomy-mono);letter-spacing:.04em}
+.iso-face-text[data-tone="hi"]{fill:var(--anatomy-hi)}
+.iso-face-text[data-tone="lo"]{fill:var(--anatomy-lo)}
+.iso-face-text[data-tone="faint"]{fill:var(--anatomy-faint)}
+.tb-body{fill:var(--anatomy-shade-2);stroke:none}
+.tb-shine{fill:var(--anatomy-top);stroke:none}
+.tb-shade{fill:var(--anatomy-shade-0);stroke:none}
+.tb-ring{fill:none;stroke:var(--anatomy-lo);stroke-width:.45;stroke-linecap:butt;stroke-linejoin:round}
+.tb-ring[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.tb-ring[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.tb-ring[data-tone="hi"]{stroke:var(--anatomy-hi)}
+@keyframes iso-flow{to{stroke-dashoffset:-32}}
+@keyframes iso-pulse{0%,100%{opacity:.18}12%{opacity:1}40%{opacity:.18}}
+.iso-line[data-flow]{animation:iso-flow 1600ms linear infinite}
+.iso-dots circle[data-pulse]{animation:iso-pulse 1600ms steps(1,end) infinite;animation-delay:var(--pulse-at,0ms)}
+.iso-figure{margin:32px 0 36px}
+.iso-plate{position:relative;padding:52px 24px;border-radius:0;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-mid);--anatomy-paper:var(--anatomy-card)}
+.iso-plate-corners{position:absolute;inset:18px 20px;pointer-events:none}
+.iso-plate-corner{position:absolute;color:var(--anatomy-muted);font-family:var(--anatomy-mono);font-size:10.5px;line-height:1;letter-spacing:.04em;white-space:nowrap}
+.iso-plate-corner[data-corner="fig"]{top:0;left:0;color:var(--anatomy-text)}
+.iso-plate-corner[data-corner="title"]{top:0;right:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="hint"]{bottom:0;left:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="readout"]{right:0;bottom:0;color:var(--anatomy-text);font-variant-numeric:tabular-nums}
+.iso-plate .iso-svg{margin:0 auto}
+.iso-legend{display:grid;gap:8px;margin-top:12px;color:var(--anatomy-muted);font-size:13px;line-height:1.55}
+.iso-keys{display:flex;flex-wrap:wrap;gap:6px 18px}
+.iso-key{display:inline-flex;align-items:center;gap:7px}
+.iso-swatch{width:16px;height:10px;flex:none;overflow:visible}
+.iso-swatch path{fill:none;stroke:var(--anatomy-hi);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.iso-swatch[data-mark="raised"] path,.iso-swatch[data-mark="flat"] path{stroke:var(--anatomy-mid)}
+.iso-swatch[data-mark="lit"] path{stroke:var(--anatomy-lit)}
+.iso-swatch[data-mark="dim"] path{stroke:var(--anatomy-lo)}
+.iso-swatch[data-mark="dotted"] path{stroke-dasharray:.01 3;stroke-width:1.4}
+.iso-swatch[data-mark="dashed"] path{stroke-dasharray:3 2.5}
+.iso-swatch[data-mark="red"] path{stroke:var(--anatomy-red)}
+.iso-swatch[data-mark="green"] path{stroke:var(--anatomy-green)}
+.iso-swatch[data-mark="blue"] path{stroke:var(--anatomy-blue)}
+.iso-swatch-crease{stroke:var(--anatomy-lo)!important}
+@media (max-width:560px){.iso-plate{padding:48px 12px 70px}.iso-plate-corner[data-corner="hint"]{bottom:18px}}
+@media (prefers-reduced-motion:reduce){.iso-line[data-flow],.iso-dots circle[data-pulse]{animation:none}}
+
+
+.iso{--anatomy-page:#0D0D0D;--anatomy-card:#161616;--anatomy-paper:#161616;--anatomy-face:#1E1D1D;--anatomy-top:#232221;--anatomy-shade-0:#121211;--anatomy-shade-1:#161615;--anatomy-shade-2:#1A1918;--anatomy-shade-3:#1E1D1C;--anatomy-lit-top:#2E2C2A;--anatomy-lit-shade:#242321;--anatomy-hi:#D9D5CC;--anatomy-mid:#77746E;--anatomy-lo:#45433F;--anatomy-faint:#2E2D2B;--anatomy-lit:#FFFFFF;--anatomy-dot:#E8E4DC;--anatomy-mono:'Geist Mono',ui-monospace,monospace}
+.m-wood .iso-top{fill:#5A3E26}.m-wood .iso-shade[data-shade="0"]{fill:#2E1F13}.m-wood .iso-shade[data-shade="1"]{fill:#3A2717}.m-wood .iso-shade[data-shade="2"]{fill:#45301C}.m-wood .iso-shade[data-shade="3"]{fill:#4F3821}
+.m-brass .iso-top{fill:#B8963E}.m-brass .iso-shade[data-shade="0"]{fill:#5E4A1C}.m-brass .iso-shade[data-shade="1"]{fill:#735B22}.m-brass .iso-shade[data-shade="2"]{fill:#8A6E2A}.m-brass .iso-shade[data-shade="3"]{fill:#A08032}
+.m-dark .iso-top{fill:#2A2928}.m-dark .iso-shade[data-shade="0"]{fill:#121211}.m-dark .iso-shade[data-shade="1"]{fill:#171615}.m-dark .iso-shade[data-shade="2"]{fill:#1C1B1A}.m-dark .iso-shade[data-shade="3"]{fill:#21201F}
+.m-red .iso-top{fill:#C9473A}.m-red .iso-shade{fill:#7A2219}
+.m-steel .iso-top{fill:#8F8C86}.m-steel .iso-shade[data-shade="0"]{fill:#3A3936}.m-steel .iso-shade[data-shade="1"]{fill:#4A4845}.m-steel .iso-shade[data-shade="2"]{fill:#5A5853}.m-steel .iso-shade[data-shade="3"]{fill:#6A6863}
+.m-paper .iso-top{fill:#E8E4DC}.m-paper .iso-shade{fill:#B5B1A9}
+.m-rule .iso-top{fill:#D9CFAE}.m-rule .iso-shade{fill:#8E866C}
+.m-rule~.iso-line,.m-rule~.iso-face-text{}
+.m-ink .iso-line{stroke:#141414}
+.m-needle .iso-line{stroke:#141414;stroke-width:1.1px}
+.m-mirror{fill:none;stroke:#9DB4C4;stroke-width:1.6px;opacity:.8}
+.m-jacket{fill:#1F5E8C}.m-jacket-top{fill:#3C86BA}.m-jacket-fill{fill:#1F5E8C}
+.m-ceramic{fill:#CFC7B6}
+.m-copper-line .iso-line{stroke:#D08A4E}
+.lead{fill:none;stroke-width:2.4px;stroke-linecap:round}
+.m-lead-red{stroke:#C23B2E}.m-lead-black{stroke:#5E5B56}.m-lead-grey{stroke:#8F8C86}
+.iso-face-text{fill:#2A2420}
+.m-paper~.iso-face-text{fill:#141414}
+
+
+body{margin:0;background:#0D0D0D}
+a{color:#FF8A6E}a:hover{color:#FFB3A1}
+.pa{width:100%;min-height:900px;background:#0D0D0D;color:#F2F0EA;font-family:Geist,system-ui,sans-serif;font-size:14px;line-height:1.5;display:flex}
+.pa *{box-sizing:border-box}
+.pa button,.pa input,.pa select{font-family:Geist,system-ui,sans-serif}
+.pa :focus-visible{outline:2px solid #FF8A6E;outline-offset:2px}
+.rail{flex:0 0 64px;background:#111110;border-right:1px solid #242322;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0}
+.rail a{width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#A3A19B}
+.rail a[aria-current]{color:#F2F0EA;background:#1E1D1D;border-left:2px solid #F0482A}
+.col{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;padding:12px 20px;border-bottom:1px solid #242322}
+.prac{display:flex;align-items:center;gap:12px;background:#161616;border:1px solid #2A2928;padding:8px 14px}
+.prac .dot{width:10px;height:10px;background:#3B82F6}
+.prac b{font-weight:600;display:block}
+.mono{font-family:'Geist Mono',ui-monospace,monospace}
+.muted{color:#A3A19B}.soft{color:#C9C6BF}
+.small{font-size:12px}
+.bar{width:120px;height:4px;background:#2A2928}.bar i{display:block;height:4px;background:#F0482A}
+.seg{display:flex;gap:2px;background:#161616;border:1px solid #2A2928;padding:3px}
+.seg button{height:32px;padding:0 12px;border:0;background:transparent;color:#C9C6BF;font-size:13px;font-weight:500;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#F2F0EA;color:#141414}
+.mock{border-style:dashed}
+.mock::before{content:'';}
+.btn{height:40px;padding:0 14px;border:1px solid #2A2928;background:#161616;color:#F2F0EA;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer}
+.btn.primary{background:#F0482A;border-color:#F0482A;color:#0D0D0D;font-weight:600}
+.btn.light{background:#F2F0EA;border-color:#F2F0EA;color:#141414;font-weight:600}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.sel{background:#161616;color:#F2F0EA;border:1px solid #2A2928;padding:8px 10px;font-size:13px;font-weight:500}
+.switch{display:inline-flex;align-items:center;gap:10px;background:#161616;border:1px solid #2A2928;height:40px;padding:0 12px;color:#F2F0EA;font-size:13px;font-weight:500;cursor:pointer}
+.switch .trk{width:34px;height:18px;background:#2A2928;position:relative;flex:none}
+.switch .trk i{position:absolute;top:3px;left:3px;width:12px;height:12px;background:#A3A19B}
+.switch[aria-checked="true"] .trk{background:#F0482A}
+.switch[aria-checked="true"] .trk i{left:19px;background:#0D0D0D}
+.main{flex:1;display:flex;flex-wrap:wrap;min-height:0}
+.stage{flex:999 1 560px;min-width:0;position:relative;background:#0D0D0D;display:flex;flex-direction:column;padding:20px 24px}
+.aside{flex:1 1 360px;min-width:0;background:#161616;border-left:1px solid #242322;display:flex;flex-direction:column}
+.h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:24px;line-height:1.15;margin:0}
+.h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;line-height:1.2;margin:0}
+.fig{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.card{background:#161616;border:1px solid #2A2928;padding:14px 16px}
+.note{background:#161616;border:1px solid #2A2928;padding:8px 12px;font-size:13px;display:flex;align-items:center;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:6px;border:1px solid #2A2928;background:#1E1D1D;padding:2px 8px;font-size:12px;color:#C9C6BF}
+.tag.ex{border-color:#F5A524;color:#F5C46B;background:#2B2112}
+.alert{background:#2A1914;border:1px solid #F0482A;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.warn{background:#2B2112;border:1px solid #F5A524;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.ok{background:#14210F;border:1px solid #6CC25A;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.stages{border-top:1px solid #242322;background:#111110;padding:10px 20px;display:flex;gap:8px;overflow-x:auto}
+.stages a{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:8px 14px;text-decoration:none;color:#8F8D88;border:1px solid #242322}
+.stages a[aria-current]{color:#F2F0EA;background:#1E1D1D;border-color:#F0482A}
+.stages a.done{color:#C9C6BF}
+.stages .m{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;border:1.5px solid #55534F}
+.stages a.done .m{color:#6CC25A;border-color:#6CC25A}
+.stages a[aria-current] .m{color:#F0482A;border-color:#F0482A}
+.stages .n{font-family:'Geist Mono',monospace;font-size:11px;color:#8F8D88;display:block}
+.fig-svg{width:100%;height:auto;display:block}
+@keyframes paPulse{0%,100%{opacity:.35}50%{opacity:1}}
+.pulse{animation:paPulse 1.2s ease-in-out infinite}
+@keyframes paDash{to{stroke-dashoffset:-28}}
+.flow{animation:paDash linear infinite}
+@keyframes paUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.rise{animation:paUp .25s ease}
+@media (prefers-reduced-motion:reduce){.pulse,.flow,.rise{animation:none}}
+@media (max-width:640px){
+  .pa{min-height:844px}
+  .rail{display:none}
+  .top{padding:10px 12px;gap:8px}
+  .top .hide-phone{display:none}
+  .bar{width:64px}
+  .stage{padding:14px 12px}
+  .aside{border-left:0;border-top:1px solid #242322}
+  .stages{padding:8px 12px}
+  .h1{font-size:21px}
+  .phone-only{display:flex!important}
+  .desk-only{display:none!important}
+}
+.phone-only{display:none}
+
+
+</style>
+</helmet>
+<div class="pa"><nav class="rail" aria-label="App"><svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true" style="margin-bottom: 14px"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F0F0F0" stroke-width="18"/><line x1="84" y1="26" x2="98" y2="60" stroke="#F0F0F0" stroke-width="5"/><circle cx="100" cy="68" r="12" fill="#F0482A"/></svg>
+    <a href="#home" aria-label="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="#experiments" aria-label="Experiments" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></a>
+    <a href="#notebook" aria-label="Notebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></a>
+    <a href="#reference" aria-label="Reference"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></a>
+    <span style="flex: 1"></span>
+    <a href="#help" aria-label="Help"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></a>
+    <a href="#settings" aria-label="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></a>
+  </nav><div class="col">
+    <div class="top"><div class="prac"><span class="dot" aria-hidden="true"></span><div><b>Ohm's law and the potentiometer</b><span class="mono small muted">Step 5 of 10 · Measure</span></div><div class="bar hide-phone" aria-label="40% complete"><i style="width: 40%"></i></div></div><span style="flex: 1"></span><label class="hide-phone" style="display: flex; align-items: center; gap: 8px; color: #A3A19B; font-size: 13px">Help level <select class="sel"><option selected="selected">Auto</option><option>Check my work</option><option>On my own</option></select></label></div>
+    <div class="main">
+      <div class="stage" style="gap: 14px">
+        <div style="display: flex; flex-direction: column; gap: 4px"><span class="small muted">Before your first reading</span><h1 class="h1">Practise the skill first</h1><span class="soft">A short drill, the first time you use each instrument. It takes about a minute and is not marked.</span></div>
+        <div role="tablist" aria-label="Drills" style="display: flex; gap: 22px; border-bottom: 1px solid #2A2928">
+          <button type="button" role="tab" aria-selected="{{isMeter}}" onClick="{{goMeter}}" style="{{tabMeter}}">Read a voltmeter</button>
+          <button type="button" role="tab" aria-selected="{{isRule}}" onClick="{{goRule}}" style="{{tabRule}}">Read a metre rule without parallax</button>
+        </div>
+        <sc-if value="{{isMeter}}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+          <div class="card" style="flex: 3 1 340px; padding: 10px; background: #1E1D1D">
+            <svg viewBox="0 0 440 250" role="img" aria-label="{{meterLabel}}" style="width: 100%; display: block">
+              <rect x="10" y="10" width="420" height="230" fill="#E8E4DC"/>
+              <path d="M129.6 144.2 L133 140.3 L136.6 136.6 L140.3 133 L144.2 129.6 L148.2 126.4 L152.3 123.3 L156.6 120.5 L161 117.8 L165.5 115.3 L170.1 113.1 L174.8 111 L179.6 109.1 L184.5 107.5 L189.5 106 L194.5 104.8 L199.5 103.8 L204.6 103 L209.7 102.4 L214.9 102.1 L220 102 L225.1 102.1 L230.3 102.4 L235.4 103 L240.5 103.8 L245.5 104.8 L250.5 106 L255.5 107.5 L260.4 109.1 L265.2 111 L269.9 113.1 L274.5 115.3 L279 117.8 L283.4 120.5 L287.7 123.3 L291.8 126.4 L295.8 129.6 L299.7 133 L303.4 136.6 L307 140.3 L310.4 144.2" fill="none" stroke="#9DB4C4" stroke-width="7" opacity=".85"/>
+              <path d="M89.8 110.7 L103.6 122.3" stroke="#141414" stroke-width="1.6"/><text x="115.8" y="137.6" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#141414">0.0</text><path d="M93 107 L98.2 111.6" stroke="#141414" stroke-width="1"/><path d="M96.3 103.3 L104.3 110.9" stroke="#141414" stroke-width="1"/><path d="M99.8 99.8 L104.7 104.7" stroke="#141414" stroke-width="1"/><path d="M103.3 96.3 L110.9 104.3" stroke="#141414" stroke-width="1"/><path d="M107 93 L111.6 98.2" stroke="#141414" stroke-width="1"/><path d="M110.7 89.8 L117.8 98.2" stroke="#141414" stroke-width="1"/><path d="M114.6 86.6 L118.9 92.1" stroke="#141414" stroke-width="1"/><path d="M118.5 83.6 L125.1 92.5" stroke="#141414" stroke-width="1"/><path d="M122.5 80.7 L126.5 86.5" stroke="#141414" stroke-width="1"/><path d="M126.6 78 L136.5 93" stroke="#141414" stroke-width="1.6"/><text x="145.3" y="111.4" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#141414">0.5</text><path d="M130.8 75.3 L134.4 81.3" stroke="#141414" stroke-width="1"/><path d="M135 72.8 L140.5 82.3" stroke="#141414" stroke-width="1"/><path d="M139.3 70.4 L142.6 76.5" stroke="#141414" stroke-width="1"/><path d="M143.7 68.1 L148.6 77.9" stroke="#141414" stroke-width="1"/><path d="M148.2 65.9 L151.1 72.3" stroke="#141414" stroke-width="1"/><path d="M152.7 63.9 L157 74" stroke="#141414" stroke-width="1"/><path d="M157.2 62 L159.8 68.5" stroke="#141414" stroke-width="1"/><path d="M161.9 60.3 L165.6 70.6" stroke="#141414" stroke-width="1"/><path d="M166.5 58.6 L168.7 65.3" stroke="#141414" stroke-width="1"/><path d="M171.2 57.1 L176.4 74.4" stroke="#141414" stroke-width="1.6"/><text x="181" y="94.7" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#141414">1.0</text><path d="M176 55.8 L177.8 62.6" stroke="#141414" stroke-width="1"/><path d="M180.8 54.6 L183.3 65.3" stroke="#141414" stroke-width="1"/><path d="M185.6 53.5 L187 60.4" stroke="#141414" stroke-width="1"/><path d="M190.5 52.6 L192.4 63.4" stroke="#141414" stroke-width="1"/><path d="M195.4 51.8 L196.4 58.7" stroke="#141414" stroke-width="1"/><path d="M200.3 51.1 L201.5 62.1" stroke="#141414" stroke-width="1"/><path d="M205.2 50.6 L205.8 57.6" stroke="#141414" stroke-width="1"/><path d="M210.1 50.3 L210.8 61.3" stroke="#141414" stroke-width="1"/><path d="M215.1 50.1 L215.3 57.1" stroke="#141414" stroke-width="1"/><path d="M220 50 L220 68" stroke="#141414" stroke-width="1.6"/><text x="220" y="89" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#141414">1.5</text><path d="M224.9 50.1 L224.7 57.1" stroke="#141414" stroke-width="1"/><path d="M229.9 50.3 L229.2 61.3" stroke="#141414" stroke-width="1"/><path d="M234.8 50.6 L234.2 57.6" stroke="#141414" stroke-width="1"/><path d="M239.7 51.1 L238.5 62.1" stroke="#141414" stroke-width="1"/><path d="M244.6 51.8 L243.6 58.7" stroke="#141414" stroke-width="1"/><path d="M249.5 52.6 L247.6 63.4" stroke="#141414" stroke-width="1"/><path d="M254.4 53.5 L253 60.4" stroke="#141414" stroke-width="1"/><path d="M259.2 54.6 L256.7 65.3" stroke="#141414" stroke-width="1"/><path d="M264 55.8 L262.2 62.6" stroke="#141414" stroke-width="1"/><path d="M268.8 57.1 L263.6 74.4" stroke="#141414" stroke-width="1.6"/><text x="259" y="94.7" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#141414">2.0</text><path d="M273.5 58.6 L271.3 65.3" stroke="#141414" stroke-width="1"/><path d="M278.1 60.3 L274.4 70.6" stroke="#141414" stroke-width="1"/><path d="M282.8 62 L280.2 68.5" stroke="#141414" stroke-width="1"/><path d="M287.3 63.9 L283 74" stroke="#141414" stroke-width="1"/><path d="M291.8 65.9 L288.9 72.3" stroke="#141414" stroke-width="1"/><path d="M296.3 68.1 L291.4 77.9" stroke="#141414" stroke-width="1"/><path d="M300.7 70.4 L297.4 76.5" stroke="#141414" stroke-width="1"/><path d="M305 72.8 L299.5 82.3" stroke="#141414" stroke-width="1"/><path d="M309.2 75.3 L305.6 81.3" stroke="#141414" stroke-width="1"/><path d="M313.4 78 L303.5 93" stroke="#141414" stroke-width="1.6"/><text x="294.7" y="111.4" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#141414">2.5</text><path d="M317.5 80.7 L313.5 86.5" stroke="#141414" stroke-width="1"/><path d="M321.5 83.6 L314.9 92.5" stroke="#141414" stroke-width="1"/><path d="M325.4 86.6 L321.1 92.1" stroke="#141414" stroke-width="1"/><path d="M329.3 89.8 L322.2 98.2" stroke="#141414" stroke-width="1"/><path d="M333 93 L328.4 98.2" stroke="#141414" stroke-width="1"/><path d="M336.7 96.3 L329.1 104.3" stroke="#141414" stroke-width="1"/><path d="M340.2 99.8 L335.3 104.7" stroke="#141414" stroke-width="1"/><path d="M343.7 103.3 L335.7 110.9" stroke="#141414" stroke-width="1"/><path d="M347 107 L341.8 111.6" stroke="#141414" stroke-width="1"/><path d="M350.2 110.7 L336.4 122.3" stroke="#141414" stroke-width="1.6"/><text x="324.2" y="137.6" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#141414">3.0</text>
+              <text x="220" y="150" text-anchor="middle" font-family="Geist, sans-serif" font-weight="600" font-size="26" fill="#141414">V</text>
+              <path d="{{needle}}" stroke="#141414" stroke-width="2"/>
+              <circle cx="220" cy="220" r="9" fill="#2A2928"/>
+            </svg>
+          </div>
+          <div style="flex: 2 1 260px; display: flex; flex-direction: column; gap: 12px">
+            <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px" class="soft">
+              <li>Find what one small division is worth. From 0 to 3 V there are 60 divisions, so each is <span class="mono">3 ÷ 60 = 0.05 V</span>.</li>
+              <li>Start at the last numbered mark before the needle and count the divisions after it.</li>
+              <li>Look square-on: the needle should hide its image in the mirror strip.</li>
+            </ol>
+            <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 600">What does the voltmeter read?</span>
+              <span style="display: flex; gap: 8px"><input type="text" inputmode="decimal" value="{{typed}}" onInput="{{onType}}" class="mono" style="width: 120px; height: 44px; background: #0D0D0D; border: 1px solid #66645E; color: #F2F0EA; padding: 0 12px; font-size: 18px"/><span style="align-self: center" class="muted">V</span><button type="button" class="btn light" onClick="{{check}}" style="height: 44px">Check</button></span></label>
+            <sc-if value="{{showFb}}" hint-placeholder-val="{{ true }}"><div style="{{fbStyle}}" role="status"><span style="font-weight: 600">{{fbHead}}</span><span>{{fbText}}</span></div></sc-if>
+            <div style="display: flex; gap: 8px; align-items: center"><button type="button" class="btn" onClick="{{another}}">Another needle</button><span class="small muted">{{progress}}</span></div>
+            <span class="small muted">Needle positions are the lab model's voltmeter readings with the jockey at PJ = 40, 50, 60, 70 and 80 cm.</span>
+          </div>
+        </div></sc-if>
+        <sc-if value="{{isRule}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+          <div class="card" style="flex: 3 1 340px; padding: 10px; background: #1E1D1D">
+            <svg viewBox="0 0 680 300" role="img" aria-label="{{ruleLabel}}" style="width: 100%; display: block">
+              <rect x="20" y="120" width="640" height="64" fill="#D9CFAE"/><rect x="20" y="184" width="640" height="8" fill="#8E866C"/>
+              <path d="M40 150 V128" stroke="#141414" stroke-width="1.4"/><text x="40" y="176" text-anchor="middle" font-family="Geist Mono, monospace" font-size="13" fill="#141414">59</text><path d="M60 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M80 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M100 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M120 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M140 150 V135" stroke="#141414" stroke-width="0.9"/><path d="M160 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M180 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M200 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M220 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M240 150 V128" stroke="#141414" stroke-width="1.4"/><text x="240" y="176" text-anchor="middle" font-family="Geist Mono, monospace" font-size="13" fill="#141414">60</text><path d="M260 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M280 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M300 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M320 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M340 150 V135" stroke="#141414" stroke-width="0.9"/><path d="M360 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M380 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M400 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M420 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M440 150 V128" stroke="#141414" stroke-width="1.4"/><text x="440" y="176" text-anchor="middle" font-family="Geist Mono, monospace" font-size="13" fill="#141414">61</text><path d="M460 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M480 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M500 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M520 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M540 150 V135" stroke="#141414" stroke-width="0.9"/><path d="M560 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M580 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M600 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M620 150 V141" stroke="#141414" stroke-width="0.9"/><path d="M640 150 V128" stroke="#141414" stroke-width="1.4"/><text x="640" y="176" text-anchor="middle" font-family="Geist Mono, monospace" font-size="13" fill="#141414">62</text>
+              <path d="M240 122 L240 104" stroke="#B8963E" stroke-width="3"/><path d="M234 104 L246 104 L240 122 Z" fill="#B8963E"/><rect x="232" y="56" width="16" height="48" fill="#2A2928"/>
+              <g transform="{{eyeAt}}"><path d="M-22 0 Q0 -16 22 0 Q0 16 -22 0 Z" fill="#F2F0EA"/><circle r="7" fill="#141414"/></g>
+              <path d="{{sight}}" stroke="#F0482A" stroke-width="1.5" stroke-dasharray="5 5"/>
+              <circle cx="{{seenX}}" cy="150" r="5" fill="#F0482A"/>
+            </svg>
+          </div>
+          <div style="flex: 2 1 260px; display: flex; flex-direction: column; gap: 12px">
+            <span class="soft">The knife edge sits a little above the scale. Look from one side and it seems to sit over a different mark. That error is parallax.</span>
+            <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 600">Move your eye</span><input type="range" min="-40" max="40" step="1" value="{{eye}}" onInput="{{onEye}}" aria-label="Eye position, from left to right" style="width: 100%; accent-color: #F0482A"/></label>
+            <div class="card" style="display: flex; justify-content: space-between; align-items: baseline"><span class="muted">You would read</span><span class="mono" style="font-size: 28px">{{seen}} <span class="muted" style="font-size: 15px">cm</span></span></div>
+            <div style="{{ruleFbStyle}}" role="status"><span style="font-weight: 600">{{ruleHead}}</span><span>{{ruleText}}</span></div>
+          </div>
+        </div></sc-if>
+      </div>
+    </div><nav class="stages" aria-label="Stages"><a href="#stage" class="done"><span class="m">✓</span><span><span class="n">01</span>Question</span></a><a href="#stage" class="done"><span class="m">✓</span><span><span class="n">02</span>Predict</span></a><a href="#stage" class="done"><span class="m">✓</span><span><span class="n">03</span>Build</span></a><a href="#stage" class="done"><span class="m">✓</span><span><span class="n">04</span>Check</span></a><a href="#stage" aria-current="step"><span class="m">●</span><span><span class="n">05</span>Measure</span></a><a href="#stage"><span class="m"></span><span><span class="n">06</span>Tabulate</span></a><a href="#stage"><span class="m"></span><span><span class="n">07</span>Plot</span></a><a href="#stage"><span class="m"></span><span><span class="n">08</span>Analyse</span></a><a href="#stage"><span class="m"></span><span><span class="n">09</span>Conclude</span></a><a href="#stage"><span class="m"></span><span><span class="n">10</span>Report</span></a></nav></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'meter', q: 2, typed: '1.9', checked: true, eye: 24 }; }
+  renderVals() {
+    const QS = [{"pj":40,"V":2.0904719922198085},{"pj":50,"V":2.010584684618368},{"pj":60,"V":1.9152957445501406},{"pj":70,"V":1.7996760583095042},{"pj":80,"V":1.6564419924460276}];
+    const tab = this.state.tab, q = QS[this.state.q];
+    const right = Math.round(q.V / 0.05) * 0.05;
+    const a = (-50 + 100 * (q.V / 3)) * Math.PI / 180;
+    const needle = 'M220 220 L' + (220 + Math.sin(a) * 160).toFixed(1) + ' ' + (220 - Math.cos(a) * 160).toFixed(1);
+    const t = parseFloat(this.state.typed);
+    let fbHead = '', fbText = '', good = false;
+    if (isNaN(t)) { fbHead = 'Type a number'; fbText = 'Write the reading in volts, for example 1.25.'; }
+    else if (Math.abs(t - right) < 1e-6 && /\.\d\d$/.test(this.state.typed)) { good = true; fbHead = 'Right: ' + right.toFixed(2) + ' V'; fbText = 'Written to the meter’s least count, 0.05 V.'; }
+    else if (Math.abs(t - right) < 1e-6) { fbHead = 'Right value, now write it to the least count'; fbText = 'The meter reads to 0.05 V, so write two decimal places: ' + right.toFixed(2) + ' V.'; }
+    else if (Math.abs(t - right) <= 0.1) { fbHead = 'Close: count the small divisions again'; fbText = 'Each small division is 0.05 V. Start from the last numbered mark before the needle.'; }
+    else { fbHead = 'Not yet'; fbText = 'Find the last numbered mark before the needle, then count small divisions of 0.05 V.'; }
+    const tab_ = (on) => 'background: transparent; border: 0; padding: 12px 0; font: 500 14px Geist, sans-serif; cursor: pointer; color: ' + (on ? '#F2F0EA' : '#A3A19B') + '; border-bottom: 2px solid ' + (on ? '#F0482A' : 'transparent');
+    const fb = (ok) => 'display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid ' + (ok ? '#6CC25A' : '#F5A524') + '; background: ' + (ok ? '#14210F' : '#2B2112');
+    // Parallax: the edge is h = 0.3 cm above the scale; an eye at angle θ sees it h·tanθ along.
+    const th = this.state.eye * Math.PI / 180, shiftCm = 0.3 * Math.tan(th);
+    const seenCm = 59.9 + shiftCm, ex = 240 - Math.sin(th) * 220, ey = 104 - Math.cos(th) * 80;
+    const seenX = 240 + shiftCm * 200;
+    const square = Math.abs(this.state.eye) <= 2;
+    return {
+      isMeter: tab === 'meter', isRule: tab === 'rule', tabMeter: tab_(tab === 'meter'), tabRule: tab_(tab === 'rule'),
+      goMeter: () => this.setState({ tab: 'meter' }), goRule: () => this.setState({ tab: 'rule' }),
+      needle, typed: this.state.typed, onType: (e) => this.setState({ typed: e.target.value, checked: false }), check: () => this.setState({ checked: true }),
+      showFb: this.state.checked, fbHead, fbText, fbStyle: fb(good),
+      another: () => this.setState({ q: (this.state.q + 1) % QS.length, typed: '', checked: false }),
+      progress: 'Needle ' + (this.state.q + 1) + ' of ' + QS.length,
+      meterLabel: 'An analogue voltmeter, 0 to 3 V in 60 small divisions, with a mirror strip. The needle points between the marks; read it to 0.05 V.',
+      eye: this.state.eye, onEye: (e) => this.setState({ eye: +e.target.value }),
+      eyeAt: 'translate(' + ex.toFixed(1) + ' ' + ey.toFixed(1) + ')',
+      sight: 'M' + ex.toFixed(1) + ' ' + ey.toFixed(1) + ' L' + seenX.toFixed(1) + ' 150',
+      seenX: seenX.toFixed(1), seen: (Math.round(seenCm * 10) / 10).toFixed(1),
+      ruleFbStyle: fb(square), ruleHead: square ? 'Square-on: 59.9 cm' : 'Your eye is to one side',
+      ruleText: square ? 'Your eye is straight above the knife edge, so you read the mark it really sits over.' : 'You would read ' + (Math.round(seenCm * 10) / 10).toFixed(1) + ' cm, not 59.9 cm. Move your eye until it is straight above the edge.',
+      ruleLabel: 'A metre rule from the side, 59 to 62 cm, with the jockey’s knife edge just above the 59.9 cm mark and an eye looking at it along a dashed line of sight'
+    };
+  }
+}
+</script>
+</body>
+</html>
