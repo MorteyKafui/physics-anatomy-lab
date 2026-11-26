@@ -148,6 +148,10 @@ class JoinPreview(BaseModel):
     ai_enabled: bool
 
 
+class JoinPreviewRequest(Body):
+    code: TypedCode
+
+
 class JoinRequest(Body):
     code: TypedCode
     display_name: DisplayName

@@ -74,7 +74,7 @@ test.describe("joining a class", () => {
   test("a code from the landing page opens the class, its notices and the join form", async ({
     page,
   }) => {
-    await page.route("**/api/join/ABC-123", (r) =>
+    await page.route("**/api/join/preview", (r) =>
       r.fulfill({
         json: { class_name: "Form 2 Science", teacher_name: "Mr Mensah", ai_enabled: false },
       }),
@@ -110,7 +110,7 @@ test.describe("joining a class", () => {
   });
 
   test("a wrong code is said plainly", async ({ page }) => {
-    await page.route("**/api/join/NOPE", (r) =>
+    await page.route("**/api/join/preview", (r) =>
       r.fulfill({
         status: 404,
         json: { detail: "No class has this code. Check it with your teacher." },

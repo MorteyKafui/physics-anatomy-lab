@@ -238,6 +238,7 @@ export type {
   JoinClassResponse,
   JoinClassResponses,
   JoinPreview,
+  JoinPreviewRequest,
   JoinRequest,
   JsonValue,
   Learning,

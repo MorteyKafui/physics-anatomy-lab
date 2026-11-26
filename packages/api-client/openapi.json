@@ -577,23 +577,22 @@
         }
       }
     },
-    "/join/{code}": {
-      "get": {
+    "/join/preview": {
+      "post": {
         "tags": ["join"],
         "summary": "Preview Class",
-        "description": "What a student sees before joining: the class, its teacher, and whether AI help is on.",
+        "description": "What a student sees before joining: the class, its teacher, and whether AI help is on.\nThe code goes in the body, never the address, so it stays out of logs and history.",
         "operationId": "previewClass",
-        "parameters": [
-          {
-            "name": "code",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Code"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinPreviewRequest"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2961,7 +2960,7 @@
       "post": {
         "tags": ["admin"],
         "summary": "Admin Export",
-        "description": "Download a table as CSV. Counts and class details only; never student names.",
+        "description": "Download a table as CSV. Counts and class details only: never student names, and never\na class's join code, which would let anyone holding the file join the class.",
         "operationId": "adminExport",
         "requestBody": {
           "content": {
@@ -3187,7 +3186,7 @@
       "get": {
         "tags": ["system"],
         "summary": "Health",
-        "description": "Liveness check used by the status page and the deploy step.",
+        "description": "Liveness check used by the status page and the deploy step. Says nothing about the\nserver (ASVS review, finding G).",
         "operationId": "health",
         "responses": {
           "200": {
@@ -5078,14 +5077,10 @@
           "status": {
             "type": "string",
             "title": "Status"
-          },
-          "environment": {
-            "type": "string",
-            "title": "Environment"
           }
         },
         "type": "object",
-        "required": ["status", "environment"],
+        "required": ["status"],
         "title": "Health"
       },
       "HintCount": {
@@ -5183,6 +5178,20 @@
         "type": "object",
         "required": ["class_name", "teacher_name", "ai_enabled"],
         "title": "JoinPreview"
+      },
+      "JoinPreviewRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["code"],
+        "title": "JoinPreviewRequest"
       },
       "JoinRequest": {
         "properties": {

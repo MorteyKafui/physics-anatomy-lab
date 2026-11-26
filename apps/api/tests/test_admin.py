@@ -315,6 +315,21 @@ async def test_people_lists_show_display_names_and_never_student_contacts(
     assert set(members[0]) == {"id", "display_name", "created_at", "attempts"}
 
 
+async def test_reading_names_and_emails_is_audited(
+    staff: AsyncClient, outbox: LogSender, db: AsyncSession
+) -> None:
+    made = await _a_class_with_work(outbox)
+    assert (await staff.get("/admin/people/teachers")).status_code == 200
+    assert (await staff.get("/admin/people/classes")).status_code == 200
+    assert (await staff.get(f"/admin/people/classes/{made['id']}/members")).status_code == 200
+    seen = [(e.action, e.target_id, e.detail["rows"]) for e in await _audit(db)]
+    assert seen == [
+        ("people.teachers.view", None, 1),
+        ("people.classes.view", None, 1),
+        ("people.members.view", uuid.UUID(made["id"]), 2),
+    ]
+
+
 # --- What staff change, and the audit ---------------------------------------------------------
 
 
@@ -388,6 +403,10 @@ async def test_an_export_is_a_csv_and_is_audited(
     assert lines[0] == "experiment,step,attempts,students" and len(lines) == 11
     classes = await staff.post("/admin/exports", json={"report": "classes"})
     assert "Kofi_A" not in classes.text
+    # A join code in a file lets anyone who has the file join the class.
+    assert classes.text.splitlines()[0] == "class,teacher,students,ai_on,joining_open,created"
+    code = (await db.scalars(select(SchoolClass.code))).one()
+    assert code not in classes.text.replace("-", "")
     assert [(e.action, e.detail["report"]) for e in await _audit(db)] == [
         ("export.create", "stages"),
         ("export.create", "classes"),

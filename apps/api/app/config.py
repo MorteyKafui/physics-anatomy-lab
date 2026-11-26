@@ -51,7 +51,8 @@ class Settings(BaseSettings):
     # never committed: the team domain ("<team>.cloudflareaccess.com") and its audience tag.
     cf_access_team_domain: str | None = None
     cf_access_audience: str | None = None
-    # Optional second check behind the Access policy: only these staff emails, if set.
+    # A second check behind the Access policy: only these staff emails. Required on a deployed
+    # server whose admin API is set up, so a too-wide Access policy cannot let others in.
     admin_staff_emails: list[str] = []
     # Local and test only: treat every admin call as this staff member, with no Access token.
     # Refused anywhere else, so it can never open the admin API on a deployed server.
@@ -111,6 +112,8 @@ class Settings(BaseSettings):
             raise ValueError("ADMIN_DEV_BYPASS_EMAIL works only in local and test.")
         if bool(self.cf_access_team_domain) != bool(self.cf_access_audience):
             raise ValueError("Set both CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUDIENCE, or neither.")
+        if deployed and self.admin_access_configured and not self.admin_staff_emails:
+            raise ValueError("Set ADMIN_STAFF_EMAILS (the staff who may use the admin portal).")
         if deployed and self.ai_enabled and not self.anthropic_api_key:
             raise ValueError("Set ANTHROPIC_API_KEY, or leave AI_ENABLED off.")
         if deployed and self.ai_enabled and not self.ai_log_key:

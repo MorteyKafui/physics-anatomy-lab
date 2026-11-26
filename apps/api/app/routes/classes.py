@@ -36,6 +36,7 @@ from app.schemas import (
     ClassOut,
     ClassUpdate,
     JoinPreview,
+    JoinPreviewRequest,
     JoinRequest,
     MemberOut,
     RejoinCodeOut,
@@ -245,10 +246,11 @@ CODE_ERRORS: Responses = {
 }
 
 
-@join_router.get("/{code}", responses=CODE_ERRORS)
-async def preview_class(code: str, request: Request, db: Db) -> JoinPreview:
-    """What a student sees before joining: the class, its teacher, and whether AI help is on."""
-    row = await _open_class(db, request, code)
+@join_router.post("/preview", responses=CODE_ERRORS)
+async def preview_class(body: JoinPreviewRequest, request: Request, db: Db) -> JoinPreview:
+    """What a student sees before joining: the class, its teacher, and whether AI help is on.
+    The code goes in the body, never the address, so it stays out of logs and history."""
+    row = await _open_class(db, request, body.code)
     teacher_name = await db.scalar(select(User.display_name).where(User.id == row.teacher_id))
     return JoinPreview(class_name=row.name, teacher_name=teacher_name, ai_enabled=row.ai_enabled)
 

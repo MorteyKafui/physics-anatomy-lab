@@ -55,8 +55,19 @@ describe("api client", () => {
 
   test("encodes path parts", async () => {
     const seen: Seen[] = [];
-    await createApi({ fetch: fakeFetch(200, {}, seen) }).join.preview("7KQ 42M/x");
-    expect(seen[0]?.url).toBe("/api/join/7KQ%2042M%2Fx");
+    await createApi({ fetch: fakeFetch(204, undefined, seen) }).privacy.removeMember(
+      "c 1/x",
+      "m?2",
+    );
+    expect(seen[0]?.url).toBe("/api/classes/c%201%2Fx/members/m%3F2");
+  });
+
+  test("a class code goes in the body, never the address", async () => {
+    const seen: Seen[] = [];
+    await createApi({ fetch: fakeFetch(200, {}, seen) }).join.preview("7KQ-42M");
+    expect(seen[0]?.url).toBe("/api/join/preview");
+    expect(seen[0]?.init?.method).toBe("POST");
+    expect(seen[0]?.init?.body).toBe(JSON.stringify({ code: "7KQ-42M" }));
   });
 
   test("an error page that is not JSON still gives a reason", async () => {

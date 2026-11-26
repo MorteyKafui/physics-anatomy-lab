@@ -231,7 +231,7 @@ export function createApi(options: ApiOptions = {}) {
         call<undefined>("DELETE", `/classes/${path(classId)}/members/${path(memberId)}`),
     },
     join: {
-      preview: (code: string) => call<JoinPreview>("GET", `/join/${path(code)}`),
+      preview: (code: string) => call<JoinPreview>("POST", "/join/preview", { code }),
       join: (body: JoinRequest) => call<StudentMe>("POST", "/join", body),
       rejoin: (code: string) => call<StudentMe>("POST", "/join/rejoin", { code }),
     },

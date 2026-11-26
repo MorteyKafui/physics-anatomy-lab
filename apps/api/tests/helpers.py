@@ -32,3 +32,8 @@ async def join(client: AsyncClient, code: str, name: str = "Kofi_A") -> dict[str
     )
     assert joined.status_code == 201, joined.text
     return joined.json()
+
+
+async def preview(client: AsyncClient, code: str) -> int:
+    """The status of a join preview for this code (the code goes in the body, never the path)."""
+    return (await client.post("/join/preview", json={"code": code})).status_code

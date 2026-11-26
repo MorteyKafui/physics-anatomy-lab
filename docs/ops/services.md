@@ -28,4 +28,6 @@ never in this repository.
 - **`CLIENT_IP_HEADER`** is set (`cf-connecting-ip` behind Cloudflare).
 - **`TURNSTILE_SECRET_KEY`** is set.
 - **`ADMIN_DEV_BYPASS_EMAIL`** is not set.
+- With the admin API set up (**`CF_ACCESS_TEAM_DOMAIN`** and **`CF_ACCESS_AUDIENCE`**):
+  **`ADMIN_STAFF_EMAILS`**, the staff who may use the portal.
 - With **`AI_ENABLED`**: `ANTHROPIC_API_KEY`, `AI_LOG_KEY` and `AI_DAILY_BUDGET_USD`.

@@ -154,19 +154,31 @@ async def admin_content(db: ReadDb) -> list[ExperimentTotal]:
     return [ExperimentTotal(**r) for r in await q.experiment_totals(db)]
 
 
+# Reading names and emails is logged as well as changing them (ASVS review, finding G): the
+# audit log shows who looked at people's details, and when.
+
+
 @router.get("/people/teachers")
-async def admin_teachers(db: ReadDb) -> list[TeacherRow]:
-    return [TeacherRow(**r) for r in await q.teachers(db, LIST_LIMIT)]
+async def admin_teachers(read: ReadDb, db: Db, staff: CurrentStaff) -> list[TeacherRow]:
+    rows = [TeacherRow(**r) for r in await q.teachers(read, LIST_LIMIT)]
+    await record(db, staff, "people.teachers.view", detail={"rows": len(rows)})
+    return rows
 
 
 @router.get("/people/classes")
-async def admin_classes(db: ReadDb) -> list[ClassRow]:
-    return [ClassRow(**r) for r in await q.class_list(db, LIST_LIMIT)]
+async def admin_classes(read: ReadDb, db: Db, staff: CurrentStaff) -> list[ClassRow]:
+    rows = [ClassRow(**r) for r in await q.class_list(read, LIST_LIMIT)]
+    await record(db, staff, "people.classes.view", detail={"rows": len(rows)})
+    return rows
 
 
 @router.get("/people/classes/{class_id}/members")
-async def admin_class_members(class_id: uuid.UUID, db: ReadDb) -> list[MemberRow]:
-    return [MemberRow(**r) for r in await q.members(db, class_id)]
+async def admin_class_members(
+    class_id: uuid.UUID, read: ReadDb, db: Db, staff: CurrentStaff
+) -> list[MemberRow]:
+    rows = [MemberRow(**r) for r in await q.members(read, class_id)]
+    await record(db, staff, "people.members.view", "class", class_id, {"rows": len(rows)})
+    return rows
 
 
 @router.get("/system")
@@ -474,7 +486,8 @@ def _csv(header: list[str], rows: list[list[Any]]) -> str:
 
 @router.post("/exports", response_class=Response)
 async def admin_export(body: ExportRequest, read: ReadDb, db: Db, staff: CurrentStaff) -> Response:
-    """Download a table as CSV. Counts and class details only; never student names."""
+    """Download a table as CSV. Counts and class details only: never student names, and never
+    a class's join code, which would let anyone holding the file join the class."""
     w = q.window(body.range)
     experiment = body.experiment_id or DEFAULT_EXPERIMENT
     if body.report == "mistakes":
@@ -499,11 +512,10 @@ async def admin_export(body: ExportRequest, read: ReadDb, db: Db, staff: Current
             for s in await q.stages(read, experiment, w)
         ]
     else:
-        header = ["class", "code", "teacher", "students", "ai_on", "joining_open", "created"]
+        header = ["class", "teacher", "students", "ai_on", "joining_open", "created"]
         rows = [
             [
                 c["name"],
-                c["code"],
                 c["teacher_name"],
                 c["members"],
                 c["ai_enabled"],
