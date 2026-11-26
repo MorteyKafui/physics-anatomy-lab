@@ -1,0 +1,227 @@
+/* Helmholtz resonator figure. Every colour is a token with a light value and a dark override. */
+.hz {
+  --hz-glass: #e9eef1;
+  --hz-glass-shade: #d3dce1;
+  --hz-water: #cfdde6;
+  --hz-water-shade: #b9cbd7;
+  --hz-water-top: #e1eaf0;
+  --hz-squeezed: #d9603b;
+  --hz-stretched: #3a78c9;
+  --hz-lcd: #c9d3c4;
+  --hz-lcd-ink: #1d2a1c;
+  --hz-bezel: #cfcfcc;
+  --hz-window: #f3f3ef;
+}
+.iso[data-theme="dark"] .hz,
+.iso:not([data-theme="light"]) .hz {
+  --hz-glass: #1a1f22;
+  --hz-glass-shade: #20282c;
+  --hz-water: #18252e;
+  --hz-water-shade: #142029;
+  --hz-water-top: #213340;
+  --hz-squeezed: #ff7b52;
+  --hz-stretched: #5b9bff;
+  --hz-lcd: #12201a;
+  --hz-lcd-ink: #8fe3a8;
+  --hz-bezel: #1d1d1d;
+  --hz-window: #181818;
+}
+.iso[data-theme="light"] .hz {
+  --hz-glass: #e9eef1;
+  --hz-glass-shade: #d3dce1;
+  --hz-water: #cfdde6;
+  --hz-water-shade: #b9cbd7;
+  --hz-water-top: #e1eaf0;
+  --hz-squeezed: #d9603b;
+  --hz-stretched: #3a78c9;
+  --hz-lcd: #c9d3c4;
+  --hz-lcd-ink: #1d2a1c;
+  --hz-bezel: #cfcfcc;
+  --hz-window: #f3f3ef;
+}
+
+/* the kit's title corner is upper case; the site's rule is sentence case */
+.hz .iso-plate-corner[data-corner="title"],
+.hz .iso-plate-corner[data-corner="hint"] {
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+/* glass: see-through, its outline and creases kept */
+.hz-glass > .iso-fill {
+  fill: var(--hz-glass);
+  fill-opacity: 0.32;
+}
+.hz-glass > .iso-shade,
+.hz-glass > .iso-top {
+  fill: var(--hz-glass-shade);
+  stroke: none;
+  opacity: 0.28;
+}
+.hz-glass > .iso-edge {
+  stroke: var(--anatomy-hi);
+  stroke-opacity: 0.85;
+}
+.hz-shine .iso-line,
+.iso-line.hz-shine {
+  stroke: var(--anatomy-lit);
+  stroke-width: 1.2;
+  stroke-opacity: 0.55;
+}
+
+/* water: a tint of the figure's ink, the same with and without motion */
+.hz-water > .iso-fill {
+  fill: var(--hz-water);
+}
+.hz-water > .iso-shade {
+  fill: var(--hz-water-shade);
+  stroke: var(--hz-water-shade);
+}
+.hz-water > .iso-top {
+  fill: var(--hz-water-top);
+  stroke: var(--hz-water-top);
+}
+
+/* the air as a spring: squeezed warm, stretched cool */
+.hz-tint {
+  fill: var(--hz-squeezed);
+  stroke: none;
+  opacity: 0;
+  mix-blend-mode: multiply;
+}
+.iso:not([data-theme="light"]) .hz-tint {
+  mix-blend-mode: screen;
+}
+.hz-tint[data-sign="stretched"] {
+  fill: var(--hz-stretched);
+}
+.hz-stage[data-layer-off] .hz-layer {
+  display: none;
+}
+
+/* the inside of the loudspeaker's can, behind its cone */
+.hz-cavity {
+  fill: var(--anatomy-shade-0);
+  stroke: none;
+}
+
+/* the generator's panel and the meter's face */
+.hz-panel-groove {
+  fill: none;
+  stroke: var(--anatomy-lo);
+  stroke-width: var(--anatomy-weight);
+}
+.hz-screw {
+  fill: var(--anatomy-paper);
+  stroke: var(--anatomy-lo);
+  stroke-width: var(--anatomy-weight);
+}
+.hz-screw-dot,
+.hz-hub {
+  fill: var(--anatomy-mid);
+  stroke: none;
+}
+.hz-bezel {
+  fill: var(--hz-bezel);
+  stroke: var(--anatomy-lo);
+  stroke-width: var(--anatomy-weight);
+}
+.hz-lcd {
+  fill: var(--hz-lcd);
+  stroke: var(--anatomy-mid);
+  stroke-width: var(--anatomy-weight);
+}
+.hz-digits {
+  fill: var(--hz-lcd-ink);
+  font-family: var(--anatomy-mono);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+}
+.hz-unit {
+  fill: var(--hz-lcd-ink);
+  font-family: var(--anatomy-mono);
+  font-size: 9px;
+}
+.hz-window {
+  fill: var(--hz-window);
+  stroke: var(--anatomy-lo);
+  stroke-width: var(--anatomy-weight);
+}
+.hz-svg text,
+.hz-svg rect {
+  vector-effect: non-scaling-stroke;
+}
+
+/* choosing a legend entry picks its part out */
+.hz-stage .it {
+  transition: opacity 0.25s var(--anatomy-ease);
+}
+.hz-stage[data-pick] .it:not([data-on]) {
+  opacity: 0.22;
+}
+.hz-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+.hz-part,
+.hz-controls button {
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--anatomy-text);
+  background: none;
+  border: 1px solid var(--anatomy-faint);
+  border-radius: 0;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.hz-part[data-on],
+.hz-part:hover,
+.hz-part:focus-visible,
+.hz-controls button:hover,
+.hz-controls button:focus-visible {
+  color: var(--anatomy-strong);
+  border-color: var(--anatomy-mid);
+  outline: none;
+}
+.hz-controls button[aria-pressed="true"] {
+  color: var(--anatomy-strong);
+  border-color: var(--anatomy-hi);
+}
+.hz-num {
+  font-family: var(--anatomy-mono);
+  color: var(--anatomy-muted);
+  margin-right: 6px;
+}
+.hz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-top: 14px;
+}
+.hz-live {
+  margin-left: auto;
+  font-family: var(--anatomy-mono);
+  font-size: 11px;
+  color: var(--anatomy-muted);
+  font-variant-numeric: tabular-nums;
+}
+.hz-stage:focus-visible {
+  outline: 1px solid var(--anatomy-mid);
+  outline-offset: 6px;
+}
+@media (max-width: 560px) {
+  .hz .iso-plate {
+    padding: 44px 10px 18px;
+  }
+  .hz .iso-plate-corner[data-corner="readout"] {
+    font-size: 9px;
+  }
+  .hz .iso-plate-corner[data-corner="hint"] {
+    display: none;
+  }
+  .hz-live {
+    margin-left: 0;
+  }
+}
