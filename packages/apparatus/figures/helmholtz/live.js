@@ -44,11 +44,24 @@ function drawWater(cm3) {
   if (depth === null || depth * 1000 < 0.4) {
     waterEl.innerHTML = "";
   } else {
-    const paths = G.solidOf(cap(D.zBottom + 0.02, D.zBottom + depth * 1000), FF, D.P, { smooth: { slope: sphereSlope, radius: sphereR } });
+    const paths = G.solidOf(cap(D.zBottom + 0.02, D.zBottom + depth * 1000), FF, D.P, {
+      smooth: { slope: sphereSlope, radius: sphereR },
+    });
     waterEl.innerHTML = solidSvg(paths, { tone: "mid", className: "hz-water" });
   }
   const left = Math.max(0, D.supply - cm3);
-  cylEl.innerHTML = solidSvg(cylinder(D.cyl.at[0], D.cyl.at[1], D.cyl.rIn - 0.2, D.cyl.floor, Math.max(0.2, left * D.cyl.ml), D.P, 72), { tone: "mid", className: "hz-water" });
+  cylEl.innerHTML = solidSvg(
+    cylinder(
+      D.cyl.at[0],
+      D.cyl.at[1],
+      D.cyl.rIn - 0.2,
+      D.cyl.floor,
+      Math.max(0.2, left * D.cyl.ml),
+      D.P,
+      72,
+    ),
+    { tone: "mid", className: "hz-water" },
+  );
 }
 
 let water = D.water0;
@@ -77,7 +90,10 @@ function say() {
   const line = `Generator ${f.toFixed(1)} Hz · loudness ${(loud * 100).toFixed(0)}% of the peak · ${water.toFixed(0)} cm³ of water`;
   if (live.textContent !== line) live.textContent = line;
   stage.setAttribute("aria-valuenow", String(Math.round(f)));
-  stage.setAttribute("aria-valuetext", `${f.toFixed(0)} hertz; the flask sings at ${f0.toFixed(0)} hertz`);
+  stage.setAttribute(
+    "aria-valuetext",
+    `${f.toFixed(0)} hertz; the flask sings at ${f0.toFixed(0)} hertz`,
+  );
 }
 
 function draw(dt) {
@@ -90,12 +106,18 @@ function draw(dt) {
   const peak = HZ.plugState(D.flask, st, { frequency: f0, drivePressure: D.drive, time: 0 });
   if (plug && peak) {
     const shift = -11 * (plug.displacement / peak.displacementAmplitude); // into the bulb is down
-    plugEl.setAttribute("transform", `translate(${(D.plugUp[0] * shift).toFixed(2)} ${(D.plugUp[1] * shift).toFixed(2)})`);
+    plugEl.setAttribute(
+      "transform",
+      `translate(${(D.plugUp[0] * shift).toFixed(2)} ${(D.plugUp[1] * shift).toFixed(2)})`,
+    );
     const p = plug.bulbPressure / peak.pressureAmplitude;
     tintEl.style.opacity = (0.62 * Math.abs(p)).toFixed(3);
     tintEl.dataset.sign = p >= 0 ? "squeezed" : "stretched";
     const cone = 1.4 * Math.cos(2 * Math.PI * VISUAL_HZ * clock) * Math.min(1, 0.25 + 0.75 * loud);
-    coneEl.setAttribute("transform", `translate(${(D.coneAxis[0] * cone).toFixed(2)} ${(D.coneAxis[1] * cone).toFixed(2)})`);
+    coneEl.setAttribute(
+      "transform",
+      `translate(${(D.coneAxis[0] * cone).toFixed(2)} ${(D.coneAxis[1] * cone).toFixed(2)})`,
+    );
   }
   // the meter needle follows the loudness in decibels, from −30 dB to the peak
   const db = clamp(20 * Math.log10(Math.max(loud, 1e-6)), -30, 0);
@@ -153,10 +175,13 @@ const steer = () => {
   run();
 };
 
-new IntersectionObserver((entries) => {
-  visible = entries[entries.length - 1].isIntersecting;
-  if (visible) run();
-}, { rootMargin: "120px 0px" }).observe(stage);
+new IntersectionObserver(
+  (entries) => {
+    visible = entries[entries.length - 1].isIntersecting;
+    if (visible) run();
+  },
+  { rootMargin: "120px 0px" },
+).observe(stage);
 
 stage.addEventListener("pointermove", (event) => {
   const box = svg.getBoundingClientRect();

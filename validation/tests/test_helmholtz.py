@@ -75,6 +75,17 @@ def test_frequency_rises_with_water_and_never_nan(water: float, temp: float) -> 
     assert lumped(FLASK, water, temp).volume > 0
 
 
+def _close(a: object, b: object) -> bool:
+    """Equal structure; floats equal to 1e-12, since libm differs in the last bits by platform."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_close(a[k], b[k]) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_close(x, y) for x, y in zip(a, b, strict=True))
+    if isinstance(a, float) or isinstance(b, float):
+        return math.isclose(a, b, rel_tol=1e-12, abs_tol=1e-15)
+    return a == b
+
+
 def test_fixture_is_current() -> None:
     current = json.loads(json.dumps(build_fixture()))
-    assert json.loads(FIXTURE.read_text(encoding="utf-8")) == current
+    assert _close(json.loads(FIXTURE.read_text(encoding="utf-8")), current)
