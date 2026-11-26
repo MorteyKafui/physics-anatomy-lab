@@ -5,11 +5,11 @@ import { expect, test, type Page } from "@playwright/test";
 import { ADMIN, WEB } from "../playwright.config";
 
 // docs/security/asvs-review-brief.md: every page carries a Content Security Policy with a nonce of
-// its own, and the fixed security headers; no page breaks the policy. The policy is Report-Only
-// in this release, so a break would not show on screen: the browser's violation events are
-// collected and must be none.
+// its own, and the fixed security headers; no page breaks the policy. The policy is enforced, so a
+// break also fails the tests of whatever it stopped; the browser's violation events are collected
+// here as well, because a blocked image or font may not show on screen.
 
-const CSP = "content-security-policy-report-only";
+const CSP = "content-security-policy";
 
 /** Every page the service worker keeps for offline use: the web app's own list of its pages. */
 async function webPages(): Promise<string[]> {

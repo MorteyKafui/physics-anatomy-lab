@@ -14,7 +14,8 @@ const WITH_TURNSTILE = /^\/(sign-in|join)(\/|$)/;
 /**
  * Every page gets a new nonce and a Content Security Policy that names it (ASVS brief, option A).
  * Next reads the policy from the request, adds the nonce to its own scripts, and the response
- * carries the same policy to the browser. `CSP_MODE=enforce` turns it from Report-Only to enforced.
+ * carries the same policy to the browser. It is enforced;
+ * `CSP_MODE=report` turns it back to Report-Only (ADR 0046).
  */
 export function proxy(request: NextRequest) {
   const nonce = newNonce();

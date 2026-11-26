@@ -69,10 +69,11 @@ describe("nonces", () => {
 });
 
 describe("the mode", () => {
-  test("reports unless told to enforce", () => {
-    expect(cspMode(undefined)).toBe("report");
-    expect(cspMode("yes")).toBe("report");
+  test("enforces unless told to report only", () => {
+    expect(cspMode(undefined)).toBe("enforce");
+    expect(cspMode("yes")).toBe("enforce");
     expect(cspMode("enforce")).toBe("enforce");
+    expect(cspMode("report")).toBe("report");
     expect(cspHeaderName("report")).toBe("Content-Security-Policy-Report-Only");
     expect(cspHeaderName("enforce")).toBe("Content-Security-Policy");
   });
