@@ -121,7 +121,9 @@ function draw(dt) {
   }
   // the meter needle follows the loudness in decibels, from −30 dB to the peak
   const db = clamp(20 * Math.log10(Math.max(loud, 1e-6)), -30, 0);
-  shownLoud += ((db + 30) / 30 - shownLoud) * (1 - Math.exp(-dt / 0.25));
+  const want = (db + 30) / 30;
+  shownLoud =
+    still.matches || dt === 0 ? want : shownLoud + (want - shownLoud) * (1 - Math.exp(-dt / 0.25));
   needleEl.setAttribute("transform", `rotate(${(-45 + 90 * shownLoud).toFixed(2)} 0 8)`);
   // the dial reads 0 to 10 over 270°, on the ×100 range
   pointerEl.setAttribute("transform", `rotate(${(-135 + 27 * (f / 100)).toFixed(2)})`);

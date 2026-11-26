@@ -515,24 +515,9 @@ function waterPaths(cm3) {
   const bulb = G.solidOf(bulbProfile, FF, P, {
     smooth: { slope: sphereSlope(RO), radius: sphereR(RO) },
   });
-  // a window reflection on the bulb's upper left, faded at both ends
-  const shine = [];
-  for (let i = 0; i <= 24; i++) {
-    const t = (-120 + i * 2.6) * DEG;
-    const p = [
-      FA[0] + RO * 0.78 * Math.cos(t - AZ * DEG - 80 * DEG) * 0.9,
-      FA[1] + RO * 0.78 * Math.sin(t - AZ * DEG - 80 * DEG) * 0.9,
-      ZC + RO * 0.55 + 10 * Math.sin((i / 24) * Math.PI),
-    ];
-    shine.push(at(p));
-  }
-  put(
-    "flask",
-    [FA[0], FA[1], ZC],
-    S(bulb, { tone: "hi", className: "hz-glass" }) +
-      k.fadeLineSvg(shine, { fade: [14, 14], tone: "hi", className: "hz-shine" }),
-    [A.solid(FF, bulbProfile, { name: "flask.bulb", owner: "flask", radius: sphereR(RO) })],
-  );
+  put("flask", [FA[0], FA[1], ZC], S(bulb, { tone: "hi", className: "hz-glass" }), [
+    A.solid(FF, bulbProfile, { name: "flask.bulb", owner: "flask", radius: sphereR(RO) }),
+  ]);
 
   const neckLow = G.ringBand(Z_JOIN - 0.6, CLAMP.z0, NR, NO, FF, P);
   put(
@@ -790,6 +775,22 @@ const METER_FACE = { x: METER.x + METER.w, yc: METER.y + METER.d / 2, zc: 66, r:
 // ---------------------------------------------------------------- the loudspeaker
 const SF = G.frameOf(CS, SA, SU, G.cross3(SA, SU));
 {
+  // the cone moves along the axis with the drive; it is drawn as its own group
+  // the cone is seen through the can's open front, so it is clipped to that opening
+  const opening = G.circleOf(SF, 2.4, SPK.r - 5, P);
+  const coneSvg = `<clipPath id="hz-cone-clip"><path d="${opening}"/></clipPath><g clip-path="url(#hz-cone-clip)"><path class="hz-cavity" d="${opening}"/><g data-cone>${Ln(
+    [
+      [-1, 24],
+      [-3.5, 21.4],
+      [-6.5, 18.4],
+      [-9.5, 15.2],
+      [-12.5, 11.6],
+      [-14.6, 8.2],
+    ]
+      .map(([s, r]) => G.circleOf(SF, s, r, P))
+      .join(""),
+    { tone: "lo" },
+  )}${S(G.sphereOf(G.add3(CS, G.mul3(SA, -16.5)), 7.5, P), { tone: "mid" })}</g>${Ln(G.circleOf(SF, 1.2, SPK.r - 6.2, P), { tone: "mid" })}</g>`;
   const can = G.solidOf(
     [
       [SPK.back, 20],
@@ -827,56 +828,14 @@ const SF = G.frameOf(CS, SA, SU, G.cross3(SA, SU));
     S(G.disc(SPK.back - 8, SPK.back, SPK.magnet, SF, P), { tone: "lo" }),
     [A.disc(SF, SPK.back - 8, SPK.back, SPK.magnet, own("speaker", { name: "speaker.magnet" }))],
   );
-  const baffle = G.ringBand(0, 2.4, SPK.r - 5, SPK.r + 1, SF, P);
+  const baffle = G.ringBand(0, 2.4, SPK.r - 5, SPK.r + 1, SF, P, { hole: [2.4, SPK.r - 5] });
   const bolts = Dots(G.dotsOf(SF, 2.4, SPK.r - 2, 8, P, { all: true, phase: 0.4 }), { size: 0.45 });
   put(
     "speaker",
     G.add3(CS, G.mul3(SA, 1.2)),
-    S(baffle, { tone: "mid" }) + bolts,
+    S(baffle, { tone: "mid" }) + bolts + coneSvg,
     [A.ring(SF, 0, 2.4, SPK.r - 5, SPK.r + 1, own("speaker", { name: "speaker.baffle" }))],
     { bias: 0.4 },
-  );
-  // the cone moves along the axis with the drive; it is drawn as its own group
-  // we look into the cone's hollow side, so its meridian runs outside-in to turn its normals to us
-  const cone = G.lathe(
-    [
-      [0.4, SPK.r - 5],
-      [-2, 23, 1],
-      [-8, 17, 1],
-      [-13, 11, 1],
-      [-15, 7],
-    ],
-    SF,
-    P,
-    { fill: "facets", rims: "none" },
-  );
-  const dust = G.solidOf(
-    [
-      [-15.5, 7],
-      [-13.6, 6, 1],
-      [-12.6, 3.6, 1],
-      [-12.2, 0, 1],
-    ],
-    SF,
-    P,
-  );
-  const surround = G.lathe(
-    [
-      [0, SPK.r - 7.5],
-      [1.3, SPK.r - 6.2, 1],
-      [0, SPK.r - 5],
-    ].reverse(),
-    SF,
-    P,
-    { fill: "facets", rims: "none" },
-  );
-  // the cone is seen through the can's open front, so it is clipped to that opening
-  const opening = G.circleOf(SF, 0, SPK.r - 1.4, P);
-  put(
-    "speaker",
-    G.add3(CS, G.mul3(SA, 0.2)),
-    `<clipPath id="hz-cone-clip"><path d="${opening}"/></clipPath><g clip-path="url(#hz-cone-clip)"><path class="hz-cavity" d="${opening}"/><g data-cone>${S(cone, { tone: "lo", crease: "none" })}${S(dust, { tone: "mid" })}</g>${S(surround, { tone: "lo", crease: "none" })}</g>`,
-    [A.disc(SF, -0.2, 0.4, SPK.r - 1.4, own("speaker", { name: "speaker.cone" }))],
   );
   // terminal posts on the underside, where the leads come in
   const down = G.unit3(G.sub3([0, 0, -1], G.mul3(SA, -SA[2])));
