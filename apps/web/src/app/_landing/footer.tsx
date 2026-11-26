@@ -5,7 +5,6 @@ import { Logo } from "@pa/ui";
 import Link from "next/link";
 
 import type { NavLink } from "./header";
-import { StatusLight } from "./status-light";
 
 /**
  * The large-type footer with a live status light (Main.dc.html, after efferd Footer 14). Only
@@ -25,7 +24,6 @@ export function LandingFooter({ product }: { product: NavLink[] }) {
               <span className="font-display text-lg font-bold">Physics Anatomy</span>
             </span>
             <span className="text-[15px]">{t("landing.footer.tagline")}</span>
-            <StatusLight />
           </div>
           <nav
             aria-label={t("landing.footer.product")}
