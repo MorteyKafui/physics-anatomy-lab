@@ -1,6 +1,7 @@
 "use client";
 
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
+import { labelledBy } from "@pa/ui/lib/label-id";
 import { cn } from "@pa/ui/lib/utils";
 import { CheckIcon } from "lucide-react";
 
@@ -13,6 +14,7 @@ function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
         className,
       )}
       {...props}
+      aria-labelledby={labelledBy(props)}
     >
       <CheckboxPrimitive.Indicator
         data-slot="checkbox-indicator"

@@ -7,6 +7,7 @@ import { t, type MessageKey } from "@pa/i18n";
 import "@pa/i18n/teach";
 import "@pa/i18n/privacy";
 import { Switch } from "@pa/ui/components/switch";
+import { labelIdFor } from "@pa/ui/lib/label-id";
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 
@@ -51,7 +52,7 @@ function AiSwitch({ value, onChange }: { value: ClassOut; onChange: (c: ClassOut
           disabled={saving}
           onCheckedChange={(on) => void set(on)}
         />
-        <label htmlFor={id} className="text-sm">
+        <label id={labelIdFor(id)} htmlFor={id} className="text-sm">
           {t(k("teach.ai.label"))}
         </label>
       </span>
