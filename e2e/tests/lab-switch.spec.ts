@@ -6,6 +6,9 @@ import { WEB } from "../playwright.config";
 
 import { LAB } from "./walk";
 
+// One test opens all six labs, so these get longer than the default 30 s.
+test.describe.configure({ timeout: 90_000 });
+
 const PRACTICALS = [
   ["simple-pendulum", "Simple pendulum"],
   ["ohms-law", "Ohm's law and the potentiometer"],
