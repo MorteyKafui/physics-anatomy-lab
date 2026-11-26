@@ -856,7 +856,7 @@ Decided by Mortey on 26 November 2026, ahead of a local presentation. The lab is
 - [ ] Shared parts in `packages/ui` for the new boards
 - [x] Landing page from its board
 - [ ] Practicals page and experiment pages from their boards
-- [ ] Lab shell from its board; unbuilt steps hidden
+- [x] Lab shell from its board; unbuilt steps hidden
 - [ ] Reading pages, 404 and offline
 
 ## Also needed: gaps found in the final review
