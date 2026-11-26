@@ -26,21 +26,21 @@ Bench reached ("I don't know what I was doing but the experiment was guiding me"
 
 ## The work, one pull request each
 
-| # | Item | Board needed |
-| --- | --- | --- |
-| 0 | Install the anatomy skill (wheresryan22/anatomy) for this project | No |
-| 1 | One shared lab shell: all six practicals plug into one screen with the same settings, voice, captions, snapshots, pause and speed | No |
-| 2 | Apparatus library redrawn with the Anatomy kit: every part looks like the real object, with a "Labels" switch for leader-line labels and a lettered key | Yes |
-| 3 | Part cards and "Meet the apparatus": tap any part for its real look, an exploded view, name, purpose, how to handle it, least count and diagram symbol. The diagram and bench highlight each other | Yes |
-| 4 | Pick your apparatus from a shelf that also holds things you don't need (from Physics Bench) | Yes (with 3) |
-| 5 | A coach that unsticks: next part lit, wrong action red at once with the reason beside the bench, "Show me" (an animated demonstration), "Fix it for me" after two tries; no dead ends; one-click Continue | Yes |
-| 6 | Guided measuring and the table: the coach names the next reading; the table opens from the first reading; one row per value; a warning for readings all at one setting | No |
-| 7 | Precise controls: typed value, ±0.1 and ±1 buttons, arrow keys, snapping to the least count | No |
-| 8 | Skill drills before first use: reading a meter, a metre rule without parallax, a thermometer, a stopwatch | Yes |
-| 9 | Explore mode, ungraded: live sliders; hidden physics made visible (current, rays, heat flow, energy); live graph; ideal versus real | Yes |
-| 10 | Real-lab feel across all six: lab sounds, needle jitter, a working stopwatch, safe failures (a short circuit sparks and the coach explains) | No |
-| 11 | Proof: an automated beginner run per practical, from Question to Report on Auto, as a CI gate; each procedure checked against the WASSCE guide and lab manual pages | No |
-| 12 | Five people who know no physics complete each practical unaided (the Phase 1 item, now for all six) | No |
+| #   | Item                                                                                                                                                                                                      | Board needed |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| 0   | Install the anatomy skill (wheresryan22/anatomy) for this project                                                                                                                                         | No           |
+| 1   | One shared lab shell: all six practicals plug into one screen with the same settings, voice, captions, snapshots, pause and speed                                                                         | No           |
+| 2   | Apparatus library redrawn with the Anatomy kit: every part looks like the real object, with a "Labels" switch for leader-line labels and a lettered key                                                   | Yes          |
+| 3   | Part cards and "Meet the apparatus": tap any part for its real look, an exploded view, name, purpose, how to handle it, least count and diagram symbol. The diagram and bench highlight each other        | Yes          |
+| 4   | Pick your apparatus from a shelf that also holds things you don't need (from Physics Bench)                                                                                                               | Yes (with 3) |
+| 5   | A coach that unsticks: next part lit, wrong action red at once with the reason beside the bench, "Show me" (an animated demonstration), "Fix it for me" after two tries; no dead ends; one-click Continue | Yes          |
+| 6   | Guided measuring and the table: the coach names the next reading; the table opens from the first reading; one row per value; a warning for readings all at one setting                                    | No           |
+| 7   | Precise controls: typed value, ±0.1 and ±1 buttons, arrow keys, snapping to the least count                                                                                                               | No           |
+| 8   | Skill drills before first use: reading a meter, a metre rule without parallax, a thermometer, a stopwatch                                                                                                 | Yes          |
+| 9   | Explore mode, ungraded: live sliders; hidden physics made visible (current, rays, heat flow, energy); live graph; ideal versus real                                                                       | Yes          |
+| 10  | Real-lab feel across all six: lab sounds, needle jitter, a working stopwatch, safe failures (a short circuit sparks and the coach explains)                                                               | No           |
+| 11  | Proof: an automated beginner run per practical, from Question to Report on Auto, as a CI gate; each procedure checked against the WASSCE guide and lab manual pages                                       | No           |
+| 12  | Five people who know no physics complete each practical unaided (the Phase 1 item, now for all six)                                                                                                       | No           |
 
 Items 2 to 5, 8 and 9 share one board pull request, approved before they are built. After item 1,
 the six practicals' apparatus (item 2) and items 6, 7 and 9 can run as parallel sessions.
