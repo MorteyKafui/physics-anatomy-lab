@@ -14,9 +14,10 @@ Pages are server components. They call the API's `/admin/*` routes from the port
 to every request. The API checks that token; the browser never calls the admin API. Changes go
 through server actions (`src/app/actions.ts`), and the API writes each one to the audit log.
 
-| Setting         | Where         | What                                                    |
-| --------------- | ------------- | ------------------------------------------------------- |
-| `ADMIN_API_URL` | portal server | The API's address. Defaults to `http://localhost:8000`. |
+| Setting            | Where         | What                                                             |
+| ------------------ | ------------- | ---------------------------------------------------------------- |
+| `ADMIN_API_URL`    | portal server | The API's address. Defaults to `http://localhost:8000`.          |
+| `ACCOUNTS_ENABLED` | portal server | ADR 0047. Off unless `true`: People and AI say accounts are off. |
 
 Locally there is no Access in front, so set `ADMIN_DEV_BYPASS_EMAIL` in `apps/api/.env` (see
 `.env.example`): the API then treats every admin call as that person, marked "Dev bypass" in the

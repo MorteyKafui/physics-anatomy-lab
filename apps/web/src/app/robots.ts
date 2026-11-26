@@ -4,7 +4,8 @@ import { absolute } from "./site";
 
 /**
  * Search engines may read the public pages; the lab's screens, the teacher's pages and accounts
- * are tools, not pages to find (experiment pages brief, decision 7).
+ * are tools, not pages to find (experiment pages brief, decision 7). With accounts switched off
+ * (ADR 0047) the account pages only redirect home; they stay disallowed either way.
  */
 export default function robots(): MetadataRoute.Robots {
   return {

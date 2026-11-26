@@ -5,17 +5,13 @@ import { emphasis, t, type MessageKey } from "@pa/i18n";
 import { cn, Logo } from "@pa/ui";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@pa/ui/components/tooltip";
 import {
-  BookIcon,
   BookOpenIcon,
   CheckIcon,
-  CircleHelpIcon,
   FlaskConicalIcon,
   HouseIcon,
   ListChecksIcon,
   LockIcon,
-  SettingsIcon,
   SlidersHorizontalIcon,
-  type LucideIcon,
 } from "@pa/ui/icons";
 import Link from "next/link";
 import { memo, type ReactNode } from "react";
@@ -33,28 +29,8 @@ export function Rich({ text }: { text: string }) {
 
 const railItem = "flex size-11 items-center justify-center text-muted-foreground";
 
-function NotBuilt({ icon: Icon, name }: { icon: LucideIcon; name: string }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        render={
-          <button
-            type="button"
-            aria-disabled="true"
-            aria-label={name}
-            className={cn(railItem, "cursor-not-allowed opacity-60")}
-          />
-        }
-      >
-        <Icon className="size-5" aria-hidden />
-      </TooltipTrigger>
-      <TooltipContent side="right">{t("lab.rail.notBuilt", { name })}</TooltipContent>
-    </Tooltip>
-  );
-}
-
 /**
- * The app rail (desktop): logo, sections, help and settings. Sections not built yet say so.
+ * The app rail (desktop): logo, sections and help. Sections not built yet are left out.
  * It is drawn again only when its section changes, not at every tap in the lab.
  */
 export const Rail = memo(function Rail({
@@ -63,7 +39,7 @@ export const Rail = memo(function Rail({
   onWhatIf,
 }: {
   current: "lab" | "notebook";
-  /** The lab's help menu, where a lab has one; otherwise Help says it is not built yet. */
+  /** The lab's help menu, where a lab has one. */
   help?: ReactNode;
   /** Opens the lab's What if panel, where a lab has one. On a phone it is in the header. */
   onWhatIf?: () => void;
@@ -95,7 +71,6 @@ export const Rail = memo(function Rail({
       >
         <BookOpenIcon className="size-5" aria-hidden />
       </Link>
-      <NotBuilt icon={BookIcon} name={t("lab.rail.reference")} />
       {onWhatIf && (
         <button
           type="button"
@@ -108,23 +83,26 @@ export const Rail = memo(function Rail({
         </button>
       )}
       <span className="flex-1" />
-      {help ?? <NotBuilt icon={CircleHelpIcon} name={t("lab.rail.help")} />}
-      <NotBuilt icon={SettingsIcon} name={t("lab.rail.settings")} />
+      {help}
     </nav>
   );
 });
 
 /**
- * The ten-step strip along the bottom: done, current, open or not yet open. Given the same
- * props, it is not drawn again, so a screen that keeps them steady keeps a tap cheap.
+ * The step strip along the bottom: done, current, open or not yet open. It shows the steps the
+ * practical's lab has built (lab-steps.ts), numbered in order. Given the same props, it is not
+ * drawn again, so a screen that keeps them steady keeps a tap cheap.
  */
 export const StepStrip = memo(function StepStrip({
+  steps = STEPS,
   current,
   completed,
   open,
   onGo,
   review,
 }: {
+  /** The steps to show: all ten unless the lab leaves some out. */
+  steps?: readonly Step[];
   current: Step;
   completed: readonly Step[];
   open: (step: Step) => boolean;
@@ -137,7 +115,7 @@ export const StepStrip = memo(function StepStrip({
       aria-label={t("lab.steps.label")}
       className="relative flex gap-2 overflow-x-auto border-t border-border bg-[var(--pa-ink-900)] px-5 py-2.5"
     >
-      {STEPS.map((step, i) => {
+      {steps.map((step, i) => {
         const done = completed.includes(step);
         const isCurrent = step === current;
         const reachable = open(step);

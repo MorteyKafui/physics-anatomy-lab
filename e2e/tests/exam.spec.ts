@@ -56,8 +56,6 @@ test("handing in early asks first, then marks the script and offers follow-up qu
   page,
 }) => {
   await startExam(page);
-  for (const next of ["Predict", "Build"])
-    await page.getByRole("button", { name: `Continue to ${next}` }).click();
   for (const [part, slot] of BUILD_ORDER) await put(page, part, slot);
 
   await page.getByRole("button", { name: "Hand in" }).click();

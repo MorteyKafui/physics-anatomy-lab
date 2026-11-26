@@ -28,12 +28,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { shownSteps, stepPlace } from "./lab-steps";
 import { Rich } from "./parts";
 import { redoableSteps, reviewRun, type ReviewMistake, type RunReview } from "./run-review";
 import { appendTo, currentRunId, listRuns, startRun } from "./use-attempt";
 import { WatchBoth } from "./watch-both";
 
 const E = simplePendulum;
+/** The steps the pendulum's lab shows (lab-steps.ts); the review leaves the others out too. */
+const SHOWN = shownSteps(E.id);
 const G = DEFAULT_ENVIRONMENT.g;
 const stepName = (s: Step) => t(`lab.steps.${s}` as MessageKey);
 const msg = (key: string, params?: Record<string, string | number>) => t(key as MessageKey, params);
@@ -133,7 +136,7 @@ export function ReviewScreen() {
   const other = runs[run.n - 2] ?? runs[run.n];
   const against = mode === "run" && other ? other : undefined;
   const firstToFix = r.mistakes.find((m) => m.stillIn)?.redoFrom;
-  const redoable = redoableSteps(run.events);
+  const redoable = redoableSteps(run.events).filter((s) => SHOWN.includes(s));
   const from =
     redoStep && redoable.includes(redoStep) ? redoStep : (firstToFix ?? redoable.at(-1)!);
   const nextN = runs.length + 1;
@@ -241,12 +244,12 @@ export function ReviewScreen() {
   };
 
   const kept =
-    STEPS.indexOf(from) > 0
-      ? STEPS.indexOf(from) === 1
-        ? stepName(STEPS[0]!)
+    SHOWN.indexOf(from) > 0
+      ? SHOWN.indexOf(from) === 1
+        ? stepName(SHOWN[0]!)
         : t("runs.keptRange", {
-            first: stepName(STEPS[0]!),
-            last: stepName(STEPS[STEPS.indexOf(from) - 1]!),
+            first: stepName(SHOWN[0]!),
+            last: stepName(SHOWN[SHOWN.indexOf(from) - 1]!),
           })
       : undefined;
 
@@ -372,7 +375,7 @@ export function ReviewScreen() {
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="border border-input px-[7px] py-px text-xs text-soft">
-                      {t("review.step", { n: STEPS.indexOf(m.step) + 1, step: stepName(m.step) })}
+                      {t("review.step", { n: stepPlace(E.id, m.step).n, step: stepName(m.step) })}
                     </span>
                     <span
                       className={cn(
@@ -575,7 +578,7 @@ export function ReviewScreen() {
                 <span className="flex flex-[0_0_64px] items-center text-[13px] font-semibold">
                   {t("review.run", { n: x.n })}
                 </span>
-                {STEPS.map((s) => {
+                {SHOWN.map((s) => {
                   const c = cell(x, s);
                   return (
                     <span
@@ -630,7 +633,7 @@ export function ReviewScreen() {
           <DialogDescription className="text-soft">
             {kept
               ? t("runs.confirmBody", { kept, from: run.n })
-              : t("runs.confirmBodyNone", { n: nextN, from: run.n })}
+              : t("runs.confirmBodyNone", { n: nextN, from: run.n, step: stepName(from) })}
           </DialogDescription>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirm(false)}>

@@ -28,6 +28,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 
+import { shownSteps, stepPlace } from "./lab-steps";
 import {
   figureDate,
   figureScene,
@@ -222,7 +223,7 @@ export function NotebookScreen() {
       s.auto ? "border-border bg-surface text-soft" : "border-topic-light text-topic-light",
     );
   const stepLine = (s: Snapshot) =>
-    t("notebook.stepValue", { n: STEPS.indexOf(s.step) + 1, step: stepName(s.step) });
+    t("notebook.stepValue", { n: stepPlace(E.id, s.step).n, step: stepName(s.step) });
 
   return (
     <main className="flex min-h-dvh flex-col gap-3.5 bg-[var(--pa-ink-1000)] p-3.5 text-foreground">
@@ -383,7 +384,7 @@ export function NotebookScreen() {
         >
           <div className="flex min-w-[980px] flex-col gap-2.5 px-4 pt-3.5 pb-4">
             <div aria-hidden className="flex gap-1">
-              {STEPS.map((s) => (
+              {shownSteps(E.id).map((s) => (
                 <span
                   key={s}
                   className={cn(

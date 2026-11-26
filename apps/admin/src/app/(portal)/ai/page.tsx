@@ -4,6 +4,7 @@
 import type { AiFeatureUse, AiOverview } from "@pa/api-client";
 import Link from "next/link";
 
+import { AccountsOff } from "@/components/accounts-off";
 import { Evaluations } from "@/components/ai-evals";
 import { AiFlags } from "@/components/ai-flags";
 import { AiSwitches } from "@/components/ai-switches";
@@ -138,6 +139,7 @@ export default async function AiPage({
     <>
       {top}
       <div className="ad-body">
+        <AccountsOff about="AI help is off for everyone, whatever the switches below say." />
         {reached && a.budget_reached_at !== null && (
           <div
             role="status"

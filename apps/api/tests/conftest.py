@@ -6,6 +6,9 @@ The schema is built by the migrations themselves: down to nothing, then up to he
 import os
 
 os.environ["ENVIRONMENT"] = "test"
+# The account flows are switched off by default (ADR 0047) but keep their tests, so the code does
+# not rot: the suite runs with the switch on, and test_accounts_switch.py turns it off.
+os.environ["ACCOUNTS_ENABLED"] = "true"
 
 from collections.abc import AsyncIterator, Iterator
 
