@@ -19,3 +19,5 @@ docs/planning/master-plan-gap-fixes.md
 # Third-party agent skills, installed from skills-lock.json and not committed
 .claude/skills/anatomy/
 .agents/
+# The Anatomy kit, vendored unchanged from the skill
+packages/apparatus/kit/

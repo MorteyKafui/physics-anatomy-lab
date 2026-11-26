@@ -33,6 +33,10 @@ request that introduces it.
 ## The lab
 
 - **Experiment.** One practical, such as the simple pendulum. Defined in `packages/experiments`.
+- **Simulation.** A free, unmarked exploration of one piece of physics on real apparatus, such as the
+  vibrating string on a sonometer: sliders, layers that show the hidden physics, live readouts and
+  sound, but no steps, coach or report. Simulations are the app's second area, beside the practicals
+  (ADR 0049). Not a scenario, which is a what-if variant of a practical.
 - **Attempt.** One student's run of one experiment, from Question to Report.
 - **Run.** What the student calls an attempt once they redo one: run 1, run 2. A redo is a new
   attempt with the same seed that keeps the earlier run's work before the step it was redone
