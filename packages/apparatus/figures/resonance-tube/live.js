@@ -5,6 +5,7 @@ const P = D.P;
 const k = { slabOf, cylinder, solidSvg, lineSvg, ring, segment, iso, pathOf };
 /*__FORK__*/
 /*__HOSE__*/
+/*__ROD__*/
 
 const root = document.querySelector(".rt");
 const stage = root.querySelector(".rt-stage");
@@ -18,6 +19,8 @@ const soundG = svg.querySelector('[data-live="sound"]');
 const forkG = svg.querySelector('[data-live="fork"]');
 const hoseG = svg.querySelector('[data-live="hose"]');
 const movers = [...svg.querySelectorAll('[data-move="reservoir"]')];
+const rodLo = svg.querySelector('[data-live="rod-lo"]');
+const rodHi = svg.querySelector('[data-live="rod-hi"]');
 const keys = [...root.querySelectorAll(".rt-key")];
 const still = matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -41,7 +44,8 @@ let L = D.L;
 let target = D.L;
 let clock = 0;
 let struck = 0;
-let touring = !still.matches;
+// The tour waits at the first resonance for a few seconds, so the first thing seen is the loud one.
+let touring = false;
 let tourClock = 0; // set from the water's level when the tour starts
 let idleTimer = 0;
 let last = 0;
@@ -66,6 +70,11 @@ function drawReservoir() {
   for (const node of movers) node.setAttribute("transform", t);
   if (Math.abs(tip - drawnTip) > 0.04) {
     hoseG.innerHTML = hoseSvg(tip);
+    // The second rod, in its pieces below and above the moving boss head.
+    const [x, y] = D.ROD2;
+    const boss = D.resBossZ + dz;
+    rodLo.innerHTML = rodSvg(x, y, 6, boss - 6, false);
+    rodHi.innerHTML = rodSvg(x, y, boss + 6, D.ROD2_TOP, true);
     drawnTip = tip;
   }
 }
@@ -75,7 +84,7 @@ function drawFork() {
   forkG.innerHTML = forkSvg(f(), 0);
   drawnFork = fi;
   // Group the two prongs so they can swing without a rebuild.
-  const prongs = [...forkG.querySelectorAll('.iso-solid[data-lit]')];
+  const prongs = [...forkG.querySelectorAll(".iso-solid[data-lit]")];
   prongs.forEach((node, index) => node.setAttribute("data-prong", index === 0 ? "1" : "-1"));
 }
 
@@ -102,7 +111,10 @@ function drawWave(phase, sound) {
     left.push(inPlane(-half * s * amp, z));
     right.push(inPlane(half * s * amp, z));
   }
-  const env = amp > 0.02 ? `<path class="iso-line rt-env" data-tone="lit" data-free="" d="${pathOf(left)}${pathOf(right)}"/>` : "";
+  const env =
+    amp > 0.02
+      ? `<path class="iso-line rt-env" data-tone="lit" data-free="" d="${pathOf(left)}${pathOf(right)}"/>`
+      : "";
   // Air particles: columns across the bore, each moved up and down by the standing wave.
   const dots = [];
   const swing = 2.6 * amp;
@@ -112,15 +124,18 @@ function drawWave(phase, sound) {
     const depth = (D.Z_MOUTH - z0) / (100 * D.U);
     const air = MODEL.airAt(TUBE_M, L, f(), depth, phase);
     if (!air) continue;
-    const z = z0 + air.displacement * swing / Math.max(amp, 1e-6) * amp;
-    for (const w of [-3.9, -1.95, 0, 1.95, 3.9]) dots.push(inPlane(w, clamp(z, zWater + 0.6, D.Z_MOUTH - 0.4)));
+    const z = z0 + ((air.displacement * swing) / Math.max(amp, 1e-6)) * amp;
+    for (const w of [-3.9, -1.95, 0, 1.95, 3.9])
+      dots.push(inPlane(w, clamp(z, zWater + 0.6, D.Z_MOUTH - 0.4)));
   }
   const nodes = wave.nodes.map((d) => inPlane(0, D.Z_MOUTH - d * 100 * D.U));
   const antinodes = wave.antinodes.map((d) => inPlane(0, D.Z_MOUTH - d * 100 * D.U));
   waveG.innerHTML =
     env +
     `<g class="rt-air">${dotsSvg(dots, { size: 0.55, tone: "hi" })}</g>` +
-    (amp > 0.02 ? `<g class="rt-marks">${dotsSvg(nodes, { size: 1.3, tone: "lit" })}${antinodes.map(([x, y]) => `<circle class="rt-antinode" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2"/>`).join("")}</g>` : "");
+    (amp > 0.02
+      ? `<g class="rt-marks">${dotsSvg(nodes, { size: 1.3, tone: "lit" })}${antinodes.map(([x, y]) => `<circle class="rt-antinode" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2"/>`).join("")}</g>`
+      : "");
 }
 
 // Sound leaving the mouth: rings that spread and fade, as bright as the column is loud.
@@ -140,7 +155,9 @@ function drawSound(time, sound) {
       const a = a0 + ((a1 - a0) * j) / 24;
       p.push([cx + r * Math.cos(a), cy + r * Math.sin(a) * 0.86]);
     }
-    out.push(`<path class="iso-line rt-ring" data-tone="hi" data-free="" style="opacity:${fade.toFixed(3)}" d="${pathOf(p)}"/>`);
+    out.push(
+      `<path class="iso-line rt-ring" data-tone="hi" data-free="" style="opacity:${fade.toFixed(3)}" d="${pathOf(p)}"/>`,
+    );
   }
   soundG.innerHTML = out.join("");
 }
@@ -153,7 +170,7 @@ function captionFor() {
 let lastText = "";
 function drawText() {
   const db = MODEL.loudnessDb(TUBE_M, L, f());
-  const text = `f ${f()} Hz · L ${cm(L)} cm · v ${v.toFixed(1)} m/s · e ${cm(e)} cm · ${db > -0.05 ? "0" : db.toFixed(0)} dB`;
+  const text = `f ${f()} Hz · L ${cm(L)} cm · v ${v.toFixed(1)} m/s · e ${cm(e)} cm · ${db > -0.5 ? "0" : db.toFixed(0)} dB`;
   if (text === lastText) return;
   lastText = text;
   readout.textContent = text;
@@ -168,19 +185,25 @@ function draw(phase, time) {
   const sound = still.matches ? MODEL.loudness(TUBE_M, L, f()) : level();
   drawWave(phase, sound);
   drawSound(time, still.matches ? 0 : sound);
-  const swing = still.matches ? 0 : 0.7 * (MODEL.forkAmplitude(clock - struck) ?? 0) * Math.sin(phase * 1.0);
-  for (const node of forkG.querySelectorAll("[data-prong]")) node.setAttribute("transform", translateAlong(P, [0, 0, Number(node.dataset.prong) * swing]));
+  const swing = still.matches
+    ? 0
+    : 0.7 * (MODEL.forkAmplitude(clock - struck) ?? 0) * Math.sin(phase * 1.0);
+  for (const node of forkG.querySelectorAll("[data-prong]"))
+    node.setAttribute("transform", translateAlong(P, [0, 0, Number(node.dataset.prong) * swing]));
   drawText();
 }
 
-const resonances = () => MODEL.resonanceLengths(TUBE_M, f()).filter((l) => l >= D.range[0] && l <= D.range[1]);
+const resonances = () =>
+  MODEL.resonanceLengths(TUBE_M, f()).filter((l) => l >= D.range[0] && l <= D.range[1]);
 
 // The idle tour: sweep the water slowly through every resonance, striking the fork as it goes.
 const TOUR = 26;
 const [TOUR_LO, TOUR_HI] = [D.range[0] + 0.04, D.range[1] - 0.04];
-const tourAt = (t) => TOUR_LO + (TOUR_HI - TOUR_LO) * (0.5 - 0.5 * Math.cos((t / TOUR) * Math.PI * 2));
+const tourAt = (t) =>
+  TOUR_LO + (TOUR_HI - TOUR_LO) * (0.5 - 0.5 * Math.cos((t / TOUR) * Math.PI * 2));
 // The tour starts from wherever the water is now.
-const tourFrom = (l) => (TOUR * Math.acos(clamp(1 - (2 * (l - TOUR_LO)) / (TOUR_HI - TOUR_LO), -1, 1))) / (Math.PI * 2);
+const tourFrom = (l) =>
+  (TOUR * Math.acos(clamp(1 - (2 * (l - TOUR_LO)) / (TOUR_HI - TOUR_LO), -1, 1))) / (Math.PI * 2);
 
 function tick(now) {
   const dt = last ? Math.min((now - last) / 1000, 1 / 30) : 1 / 60;
@@ -195,7 +218,8 @@ function tick(now) {
   if (Math.abs(target - L) < 1e-5) L = target;
   draw(clock * Math.PI * 2 * 0.9, clock);
   const sounding = (MODEL.forkAmplitude(clock - struck) ?? 0) > 0.004;
-  frame = visible && (touring || sounding || L !== target || dragging) ? requestAnimationFrame(tick) : 0;
+  frame =
+    visible && (touring || sounding || L !== target || dragging) ? requestAnimationFrame(tick) : 0;
 }
 
 const run = () => {
@@ -238,7 +262,9 @@ function setFork(next) {
   fi = (next + D.forks.length) % D.forks.length;
   caption.textContent = captionFor();
   struck = clock;
-  said.textContent = `${f()} Hz fork. It resonates at ${resonances().map((l) => cm(l) + " cm").join(" and ")}.`;
+  said.textContent = `${f()} Hz fork. It resonates at ${resonances()
+    .map((l) => cm(l) + " cm")
+    .join(" and ")}.`;
   if (still.matches) draw(0, 0);
   run();
 }
@@ -290,18 +316,28 @@ let picked = null;
 function pick(id) {
   picked = picked === id ? null : id;
   for (const node of svg.querySelectorAll("[data-on]")) node.removeAttribute("data-on");
-  if (picked) for (const node of svg.querySelectorAll(SELECT[picked])) node.setAttribute("data-on", "");
+  if (picked)
+    for (const node of svg.querySelectorAll(SELECT[picked])) node.setAttribute("data-on", "");
   stage.toggleAttribute("data-focus", Boolean(picked));
   for (const key of keys) key.setAttribute("aria-pressed", String(key.dataset.key === picked));
 }
 for (const key of keys) key.addEventListener("click", () => pick(key.dataset.key));
 
-new IntersectionObserver((entries) => {
-  visible = entries[entries.length - 1].isIntersecting;
-  if (visible) run();
-}, { rootMargin: "120px 0px" }).observe(stage);
+new IntersectionObserver(
+  (entries) => {
+    visible = entries[entries.length - 1].isIntersecting;
+    if (visible) run();
+  },
+  { rootMargin: "120px 0px" },
+).observe(stage);
 
 tourClock = tourFrom(L);
+if (!still.matches)
+  idleTimer = setTimeout(() => {
+    touring = true;
+    tourClock = tourFrom(L);
+    run();
+  }, 5000);
 drawFork();
 draw(0, 0);
 window.__rt = { steer, setFork, strike, pick, state: () => ({ L, target, f: f(), touring }) };

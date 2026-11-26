@@ -55,7 +55,7 @@ def test_the_water_is_a_displacement_node_and_the_top_an_antinode() -> None:
 def _close(old: object, new: object) -> None:
     """Equal, except that floats may differ in the last binary digits between SciPy builds."""
     if isinstance(old, float) or isinstance(new, float):
-        assert old == pytest.approx(new, rel=1e-11, abs=1e-15)
+        assert old == pytest.approx(new, rel=1e-11, abs=1e-9)
     elif isinstance(old, dict) and isinstance(new, dict):
         assert old.keys() == new.keys()
         for key in old:

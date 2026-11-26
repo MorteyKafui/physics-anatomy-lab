@@ -21,3 +21,6 @@ docs/planning/master-plan-gap-fixes.md
 .agents/
 # The Anatomy kit, vendored unchanged from the skill
 packages/apparatus/kit/
+
+# Standalone figure pages written by packages/apparatus/figures/*/build.mjs; rebuild rather than reformat.
+packages/apparatus/figures/*/*.html
