@@ -53,3 +53,8 @@ apps/web/public/sw.js
 apps/web/pwa/.sw.bundled.js
 # k6 summaries from local runs
 loadtest/results/
+
+# Third-party agent skills: reinstall from skills-lock.json with `bunx skills experimental_install`, or see AGENTS.md
+.claude/skills/anatomy/
+.agents/
+
