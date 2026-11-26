@@ -10,6 +10,8 @@ export default defineConfig([
     "**/dist/**",
     "**/.turbo/**",
     "research/**",
+    // The Anatomy kit, vendored unchanged from the skill.
+    "**/apparatus/kit/**",
   ]),
   {
     files: ["**/*.{ts,tsx}"],
