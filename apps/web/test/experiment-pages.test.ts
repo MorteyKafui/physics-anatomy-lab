@@ -2,6 +2,16 @@ import { describe, expect, test } from "bun:test";
 
 import {
   ASSEMBLY_RULES,
+  benchPeriod,
+  convergingLens,
+  correctMixturesBench,
+  correctSolidBench,
+  lensWorld,
+  methodOfMixtures,
+  mixturesPeak,
+  ohmsLawWorld,
+  solidPeak,
+  solidWorld,
   LENS_PROCEDURE_RULES,
   MIXTURES_PROCEDURE_RULES,
   PINS_PROCEDURE_RULES,
@@ -10,7 +20,10 @@ import {
   TIMING_RULES,
 } from "@pa/experiments";
 
-import { CATALOGUE } from "../src/app/experiments/catalogue";
+import { imageDistance } from "@pa/physics";
+
+import { CARD_SEED } from "../src/app/_landing/cards-data";
+import { CATALOGUE, entry } from "../src/app/experiments/catalogue";
 import { citation, learningResource } from "../src/app/experiments/seo";
 import { absolute } from "../src/app/site";
 
@@ -72,5 +85,26 @@ describe("the experiment pages", () => {
     expect(citation(e, 2026)).toBe(
       `Physics Anatomy (2026). ${e.title}, version ${e.version}. ${absolute(`/experiments/${e.id}`)}`,
     );
+  });
+
+  test("each practical's badge is the reading its lab's model gives (Practicals.dc.html)", () => {
+    const value = (id: string) => Number(entry(id)!.card.badge.split(" ")[2]);
+    const f = lensWorld(CARD_SEED).focalLength;
+    expect(value("simple-pendulum")).toBeCloseTo(benchPeriod(9.81), 3);
+    expect(value("ohms-law")).toBeCloseTo(ohmsLawWorld(CARD_SEED).emf, 2);
+    expect(value("converging-lens")).toBeCloseTo(
+      imageDistance(convergingLens.objectDistances[0]!, f) * 100,
+      1,
+    );
+    expect(value("converging-lens-pins")).toBeCloseTo(f * 100, 1);
+    expect(value("method-of-mixtures")).toBeCloseTo(
+      mixturesPeak(correctMixturesBench(methodOfMixtures.volumes[0]!)).temperature,
+      1,
+    );
+    expect(value("method-of-mixtures-solid")).toBeCloseTo(
+      solidPeak(correctSolidBench(solidWorld(CARD_SEED))).temperature,
+      1,
+    );
+    for (const e of CATALOGUE) expect(e.card.badge).not.toMatch(/\{|practicals\./);
   });
 });

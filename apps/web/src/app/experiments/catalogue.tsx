@@ -1,11 +1,16 @@
 import {
   ASSEMBLY_RULES,
+  benchPeriod,
   convergingLens,
+  correctMixturesBench,
+  correctSolidBench,
   hotSolid,
   lensPins,
+  lensWorld,
   LENS_PROCEDURE_RULES,
   methodOfMixtures,
   MIXTURES_PROCEDURE_RULES,
+  mixturesPeak,
   ohmsLaw,
   ohmsLawWorld,
   PENDULUM_PARTS,
@@ -13,6 +18,8 @@ import {
   PROCEDURE_RULES,
   simplePendulum,
   SOLID_PROCEDURE_RULES,
+  solidPeak,
+  solidWorld,
   TIMING_RULES,
 } from "@pa/experiments";
 import { t, type MessageKey } from "@pa/i18n";
@@ -20,7 +27,7 @@ import "@pa/i18n/catalogue";
 import "@pa/i18n/converging-lens";
 import "@pa/i18n/method-of-mixtures";
 import "@pa/i18n/ohms-law";
-import { periodExact, periodSmallAngle } from "@pa/physics";
+import { imageDistance, periodExact, periodSmallAngle } from "@pa/physics";
 import type { Topic } from "@pa/ui";
 import {
   CircuitStage,
@@ -28,11 +35,12 @@ import {
   MixturesStage,
   PendulumStage,
 } from "@pa/ui/illustrations/landing-cards";
+import { PENDULUM_STAND_VIEWBOX, PendulumStandStage } from "@pa/ui/illustrations/pendulum-stand";
+import { HotSolidStage, PinsStage } from "@pa/ui/illustrations/practicals-figures";
 import type { ReactNode } from "react";
 
-import { cardsData } from "../_landing/cards-data";
+import { CARD_SEED, cardsData } from "../_landing/cards-data";
 import { barShape } from "../_landing/pendulum-bars";
-import { CARD_SEED } from "../_landing/cards-data";
 import { lensApparatus } from "../lab/converging-lens/apparatus";
 import { pinsApparatus } from "../lab/converging-lens-pins/apparatus";
 import { hotSolidApparatus } from "../lab/method-of-mixtures-solid/apparatus";
@@ -62,7 +70,18 @@ export interface Entry {
   /** The other lab that finds the same thing another way. */
   sibling?: string;
   drawing: () => ReactNode;
+  /** The practicals page's card: its figure (the board's drawing) and its reading badge. */
+  card: { figure: Figure; badge: string };
 }
+
+/** A card's drawing, in its own units; `width` is how much of the card it fills. */
+export interface Figure {
+  viewBox: string;
+  width: string;
+  draw: () => ReactNode;
+}
+
+const stage = (draw: () => ReactNode): Figure => ({ viewBox: "0 0 300 228", width: "100%", draw });
 
 const ids = (rules: readonly { id: string }[]) => rules.map((r) => r.id);
 const phrase = (id: string) => t(`catalogue.rule.${id}` as MessageKey);
@@ -101,6 +120,10 @@ function entries(): Entry[] {
     100;
   const world = ohmsLawWorld(CARD_SEED);
   const metres = (m: number) => cm(m);
+  // The badges' readings, each from the lab's own model on the landing cards' bench (CARD_SEED).
+  const f = lensWorld(CARD_SEED).focalLength;
+  const u = convergingLens.objectDistances[0]!;
+  const badge = (id: string, value: string) => t(`practicals.badge.${id}` as MessageKey, { value });
   return [
     {
       id: simplePendulum.id,
@@ -122,6 +145,14 @@ function entries(): Entry[] {
         percent: longer.toFixed(2),
       }),
       drawing: pendulumDrawing,
+      card: {
+        figure: {
+          viewBox: PENDULUM_STAND_VIEWBOX,
+          width: "78%",
+          draw: () => <PendulumStandStage />,
+        },
+        badge: badge(simplePendulum.id, benchPeriod(9.81).toFixed(3)),
+      },
     },
     {
       id: ohmsLaw.id,
@@ -136,6 +167,10 @@ function entries(): Entry[] {
       rules: ids(PROCEDURE_RULES),
       model: card("ohms-law"),
       drawing: () => <CircuitStage />,
+      card: {
+        figure: stage(() => <CircuitStage />),
+        badge: badge(ohmsLaw.id, world.emf.toFixed(2)),
+      },
     },
     {
       id: convergingLens.id,
@@ -155,6 +190,10 @@ function entries(): Entry[] {
       }),
       sibling: lensPins.id,
       drawing: () => <LensStage />,
+      card: {
+        figure: stage(() => <LensStage />),
+        badge: badge(convergingLens.id, (imageDistance(u, f) * 100).toFixed(1)),
+      },
     },
     {
       id: lensPins.id,
@@ -173,7 +212,11 @@ function entries(): Entry[] {
         arcmin: Math.round((lensPins.view.acuity * 180 * 60) / Math.PI),
       }),
       sibling: convergingLens.id,
-      drawing: () => <LensStage />,
+      drawing: () => <PinsStage />,
+      card: {
+        figure: stage(() => <PinsStage />),
+        badge: badge(lensPins.id, (f * 100).toFixed(1)),
+      },
     },
     {
       id: methodOfMixtures.id,
@@ -192,6 +235,13 @@ function entries(): Entry[] {
       }),
       sibling: hotSolid.id,
       drawing: () => <MixturesStage />,
+      card: {
+        figure: stage(() => <MixturesStage />),
+        badge: badge(
+          methodOfMixtures.id,
+          mixturesPeak(correctMixturesBench(methodOfMixtures.volumes[0]!)).temperature.toFixed(1),
+        ),
+      },
     },
     {
       id: hotSolid.id,
@@ -206,7 +256,14 @@ function entries(): Entry[] {
       rules: ids(SOLID_PROCEDURE_RULES),
       model: card("method-of-mixtures-solid", { metals: hotSolid.metals.length }),
       sibling: methodOfMixtures.id,
-      drawing: () => <MixturesStage />,
+      drawing: () => <HotSolidStage />,
+      card: {
+        figure: stage(() => <HotSolidStage />),
+        badge: badge(
+          hotSolid.id,
+          solidPeak(correctSolidBench(solidWorld(CARD_SEED))).temperature.toFixed(1),
+        ),
+      },
     },
   ];
 }

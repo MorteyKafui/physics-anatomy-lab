@@ -6,7 +6,7 @@
  * rule 1). Copy follows AGENTS.md rule 6.
  */
 export const enGBCatalogue = {
-  "catalogue.title": "Experiments",
+  "catalogue.title": "Practicals",
   "catalogue.lede":
     "Six labs from the WASSCE and university practical lists, each running the real equations. Open one and start: no sign-up.",
   "catalogue.label": "Every experiment",
@@ -130,4 +130,40 @@ export const enGBCatalogue = {
     "How fast heat is lost, how fast the water mixes and how slowly the thermometer follows are assumed values until reference measurements from a UEW laboratory replace them.",
   "catalogue.model.method-of-mixtures-solid.validated":
     "On every change, against an independent Python model that integrates the same heat flows with SciPy.",
+
+  // The practicals page (/experiments; design/mockups/Practicals.dc.html). Each badge is filled
+  // with a reading the lab's own model gives (AGENTS.md rule 1).
+  "practicals.lede":
+    "The first six practicals from the WASSCE and university lists. Each one is the real apparatus, running the real equations. Open one and start: no sign-up.",
+  "practicals.filter": "Filter by topic",
+  "practicals.all": "All",
+  "practicals.label": "Every practical",
+  "practicals.apparatus": "Apparatus:",
+  "practicals.open": "Open the lab",
+  "practicals.about": "About this practical",
+  "practicals.teachers":
+    "Teachers: every practical has its own link. Send it to your class or put it on the projector.",
+  "practicals.badge.simple-pendulum": "T = {value} s",
+  "practicals.badge.ohms-law": "E = {value} V",
+  "practicals.badge.converging-lens": "v = {value} cm",
+  "practicals.badge.converging-lens-pins": "f = {value} cm",
+  "practicals.badge.method-of-mixtures": "θ = {value} °C",
+  "practicals.badge.method-of-mixtures-solid": "θ = {value} °C",
+  "practicals.figure.simple-pendulum":
+    "A pendulum on its retort stand: base plate, rod, boss and clamp, split cork, thread, bob and stopwatch.",
+  "practicals.figure.ohms-law":
+    "A circuit board with a cell, key, rheostat, ammeter, voltmeter and a resistor, with current flowing along the wires.",
+  "practicals.figure.converging-lens":
+    "An optical bench with an illuminated object, a converging lens and a screen, with rays forming an inverted image.",
+  "practicals.figure.converging-lens-pins":
+    "An object pin, a converging lens and a search pin on a metre rule, the search pin's tip at the tip of the inverted image.",
+  "practicals.figure.method-of-mixtures":
+    "A calorimeter taken apart: outer can, lagging, copper calorimeter, hot water, and a lid with stirrer and thermometer.",
+  "practicals.figure.method-of-mixtures-solid":
+    "A solid on a thread lifted from a beaker of boiling water on a tripod, on its way to a lagged calorimeter with a thermometer and stirrer.",
+  "practicals.nav.main": "Main",
+  "practicals.nav.practicals": "Practicals",
+  "practicals.nav.howItWorks": "How it works",
+  "practicals.nav.about": "About",
+  "practicals.footer.made": "© {year} Physics Anatomy. Made in Winneba, Ghana.",
 } as const;
