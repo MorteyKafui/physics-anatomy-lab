@@ -2,6 +2,8 @@ import { colour } from "@pa/ui";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { connection } from "next/server";
+import { accountsEnabled } from "./accounts";
+import { AccountsSwitch } from "./accounts-switch";
 import "./globals.css";
 import { Offline } from "./offline";
 import { SITE_URL } from "./site";
@@ -40,7 +42,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en-GB" className={`${geist.variable} ${geistMono.variable} ${bricolage.variable}`}>
       <body className="font-sans antialiased">
-        {children}
+        <AccountsSwitch on={accountsEnabled()}>{children}</AccountsSwitch>
         <Offline />
       </body>
     </html>

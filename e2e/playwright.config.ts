@@ -3,6 +3,10 @@ import { defineConfig, devices } from "@playwright/test";
 // Production builds on their own ports, so the gates never hit a running dev server.
 export const WEB = "http://localhost:3100";
 export const ADMIN = "http://localhost:3101";
+// The same build with accounts switched off, as they are by default (ADR 0047). The two servers
+// above run with them on, so the account flows keep their tests.
+export const OPEN = "http://localhost:3102";
+const ACCOUNTS_ON = { ACCOUNTS_ENABLED: "true" };
 
 const ci = Boolean(process.env.CI);
 
@@ -31,12 +35,21 @@ export default defineConfig({
       command: "bunx next start --port 3100",
       cwd: "../apps/web",
       url: WEB,
+      env: ACCOUNTS_ON,
       reuseExistingServer: !ci,
     },
     {
       command: "bunx next start --port 3101",
       cwd: "../apps/admin",
       url: ADMIN,
+      env: ACCOUNTS_ON,
+      reuseExistingServer: !ci,
+    },
+    {
+      command: "bunx next start --port 3102",
+      cwd: "../apps/web",
+      url: OPEN,
+      env: { ACCOUNTS_ENABLED: "false" },
       reuseExistingServer: !ci,
     },
   ],

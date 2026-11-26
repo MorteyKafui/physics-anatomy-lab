@@ -2,6 +2,7 @@
 // only, and only inside a class (rule 4).
 import type { ClassRow, TeacherRow } from "@pa/api-client";
 
+import { AccountsOff } from "@/components/accounts-off";
 import { ApiProblem, Empty, Panel } from "@/components/bits";
 import { ClassesPanel } from "@/components/classes";
 import { ExportButton } from "@/components/export-button";
@@ -41,6 +42,7 @@ export default async function PeoplePage({
     <>
       {top}
       <div className="ad-body">
+        <AccountsOff about="Nobody signs in, so no teachers, classes or students join while the switch is off." />
         <Panel
           title="Classes"
           sub={`${n(classes.data.length)} classes. Open one for its students.`}
