@@ -2437,7 +2437,8 @@ export type Unavailable =
   | "not-for-students"
   | "quota-used"
   | "budget-reached"
-  | "address-busy";
+  | "address-busy"
+  | "still-answering";
 
 /**
  * Usage

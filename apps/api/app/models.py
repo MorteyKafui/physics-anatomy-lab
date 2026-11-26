@@ -502,7 +502,9 @@ class AiRequest(Base):
 
     The person is a pseudonym, a keyed hash of their id, so the log cannot be read back to a
     person without the key, and no foreign key ties it to them. Rows are kept for
-    AI_LOG_RETENTION (app/ai/log.py), then deleted.
+    AI_LOG_RETENTION (app/ai/log.py), then deleted. A row is written as `pending` when the request
+    starts, with the most its reply can cost, and filled in when the reply ends
+    (app/ai/quotas.py).
     """
 
     __tablename__ = "ai_requests"
@@ -515,7 +517,8 @@ class AiRequest(Base):
         CheckConstraint("principal_kind IN ('teacher', 'student')", name="principal_kind_known"),
         CheckConstraint("octet_length(pseudonym) = 32", name="pseudonym_length"),
         CheckConstraint(
-            "outcome IN ('done', 'cut-short', 'refused', 'held', 'error', 'cancelled', 'cached')",
+            "outcome IN ('done', 'cut-short', 'refused', 'held', 'error', 'cancelled', 'cached',"
+            " 'pending')",
             name="outcome_known",
         ),
         CheckConstraint(

@@ -1,16 +1,18 @@
 """A fake Claude and a fake AI log, so no test calls the SDK, needs a key or costs anything."""
 
 import json
+import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 
 from httpx import AsyncClient
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.answers import Answer
 from app.ai.claude import ClaudeError, Finished, Piece, TextPiece
 from app.ai.context import ModelRequest
-from app.ai.log import LogEntry
+from app.ai.log import LogEntry, Reserve
 from app.models import AiRequest
 
 TEST_KEY = "test-key-not-a-real-one"
@@ -47,17 +49,32 @@ class FakeClaude:
 
 @dataclass
 class FakeLog:
-    """Keeps every entry, and writes it to the test's database too, so quotas count it."""
+    """Keeps every entry, and writes it to the test's database too, so quotas count it. Reserves
+    as the real log does, in the test's database; one fake serves a whole test, so it keeps the
+    reservations in order and fills in the oldest first."""
 
     entries: list[LogEntry] = field(default_factory=list[LogEntry])
     db: AsyncSession | None = None
+    reserved: list[uuid.UUID] = field(default_factory=list[uuid.UUID])
+
+    async def reserve(self, take: Reserve) -> None:
+        if self.db is not None:
+            self.reserved.append(await take(self.db))
+            await self.db.commit()
 
     async def record(self, entry: LogEntry) -> None:
         self.entries.append(entry)
         if self.db is not None:
             # Committed, as the real log's own session does, so a later refused request's
             # rollback does not take it back.
-            self.db.add(AiRequest(**entry.__dict__))
+            if entry.outcome != "cached" and self.reserved:
+                await self.db.execute(
+                    update(AiRequest)
+                    .where(AiRequest.id == self.reserved.pop(0))
+                    .values(**entry.__dict__)
+                )
+            else:
+                self.db.add(AiRequest(**entry.__dict__))
             await self.db.commit()
 
 

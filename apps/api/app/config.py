@@ -82,6 +82,8 @@ class Settings(BaseSettings):
     }
     # AI requests a day from one network address (decision 2).
     ai_requests_per_address: int = 1500
+    # AI replies one person may have under way at once (ASVS review, finding C).
+    ai_requests_at_once: int = 2
     # The day's spend at which AI switches itself off until midnight, in US dollars: the monthly
     # ceiling divided by 30. Required when deployed with AI on.
     ai_daily_budget_usd: float | None = None

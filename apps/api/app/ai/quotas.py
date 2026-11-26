@@ -3,9 +3,17 @@
 Counted from the AI request log (`ai_requests`), since midnight UTC (Ghana keeps UTC all year).
 Every check runs before anything reaches Claude: a request over a limit is refused with a plain
 line and costs nothing. Replies served from the answer cache are logged as `cached` and do not
-count (item 4, the next pull request).
+count.
+
+The route's gate checks the limits first. A request that will then reach Claude is reserved
+(`reserve_in`): under one lock, the limits are checked again and a `pending` row is written with
+the most the reply's output can cost, so requests sent at the same time are counted one after
+another and none slips past a quota or the budget (ASVS review, finding C). One person may have
+`ai_requests_at_once` replies under way; a pending row stops counting as under way once no reply
+could still be running, and still counts towards the quota.
 """
 
+import uuid
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 
@@ -13,9 +21,11 @@ from fastapi import Request
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.features import FEATURES, FeatureName
+from app.ai.features import FEATURES, Feature, FeatureName
 from app.ai.log import pseudonym
 from app.ai.policy import Unavailable, refuse, why_unavailable
+from app.ai.prices import cost_microdollars
+from app.ai.stream import STREAM_LIMIT
 from app.ai.switches import switched_off
 from app.auth import rate_limit
 from app.auth.policy import Limit
@@ -25,6 +35,10 @@ from app.db import Db
 from app.models import AiRequest
 
 FREE_OUTCOMES = ("cached",)
+# Taken by every reservation, for a few queries: the budget is everyone's, so one lock for all.
+RESERVATION_LOCK = 0x4149_5245
+# After this, a pending row's reply cannot still be running (the stream's own limit, and margin).
+UNDER_WAY = timedelta(seconds=STREAM_LIMIT + 30)
 
 
 def midnight(now: datetime | None = None) -> datetime:
@@ -65,6 +79,56 @@ async def spent_today(db: AsyncSession) -> int:
         )
     )
     return int(total or 0)
+
+
+async def under_way(db: AsyncSession, principal: Principal) -> int:
+    """This person's replies that may still be running, in every feature."""
+    count = await db.scalar(
+        select(func.count())
+        .select_from(AiRequest)
+        .where(
+            AiRequest.pseudonym == pseudonym(principal),
+            AiRequest.outcome == "pending",
+            AiRequest.at >= datetime.now(UTC) - UNDER_WAY,
+        )
+    )
+    return count or 0
+
+
+def most_it_can_cost(feature: Feature, model: str) -> int:
+    """The reply's output at its longest; the input is added when the reply ends."""
+    cost = cost_microdollars(
+        model, input_tokens=0, output_tokens=feature.max_tokens, cache_read=0, cache_write=0
+    )
+    return cost or 0
+
+
+async def reserve_in(
+    db: AsyncSession, principal: Principal, feature: Feature, model: str, settings: Settings
+) -> uuid.UUID:
+    """Checks the limits again under the lock and writes the pending row, or refuses."""
+    await db.execute(select(func.pg_advisory_xact_lock(RESERVATION_LOCK)))
+    limited = await why_limited(db, principal, feature.name, settings)
+    if limited is None and await under_way(db, principal) >= settings.ai_requests_at_once:
+        limited = Unavailable.still_answering
+    if limited is not None:
+        raise refuse(limited)
+    row = AiRequest(
+        feature=feature.name.value,
+        model=model,
+        principal_kind="teacher" if isinstance(principal, Teacher) else "student",
+        pseudonym=pseudonym(principal),
+        input_tokens=0,
+        output_tokens=0,
+        cache_read_tokens=0,
+        cache_write_tokens=0,
+        cost_microdollars=most_it_can_cost(feature, model),
+        duration_ms=0,
+        outcome="pending",
+    )
+    db.add(row)
+    await db.flush()
+    return row.id
 
 
 async def budget_reached(db: AsyncSession, settings: Settings) -> bool:
