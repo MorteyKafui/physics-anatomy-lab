@@ -2,6 +2,7 @@
 
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
+import { labelledBy } from "@pa/ui/lib/label-id";
 import { cn } from "@pa/ui/lib/utils";
 
 function RadioGroup({ className, ...props }: RadioGroupPrimitive.Props) {
@@ -23,6 +24,7 @@ function RadioGroupItem({ className, ...props }: RadioPrimitive.Root.Props) {
         className,
       )}
       {...props}
+      aria-labelledby={labelledBy(props)}
     >
       <RadioPrimitive.Indicator
         data-slot="radio-group-indicator"
