@@ -21,12 +21,11 @@ const focus =
  */
 export function LandingHeader({
   links,
-  signUp,
-  logIn,
+  action,
 }: {
   links: NavLink[];
-  signUp: NavLink;
-  logIn?: NavLink;
+  /** The one action in the bar: open the lab (no accounts, ADR 0047). */
+  action: NavLink;
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -79,21 +78,12 @@ export function LandingHeader({
             </nav>
           )}
           <div className="flex items-center gap-1.5">
-            {logIn && (
-              <Link
-                prefetch={false}
-                href={logIn.href}
-                className={`hidden px-3.5 py-[9px] text-[15px] text-[var(--pa-text)] no-underline min-[821px]:inline ${focus}`}
-              >
-                {logIn.label}
-              </Link>
-            )}
             <Link
               prefetch={false}
-              href={signUp.href}
-              className={`whitespace-nowrap bg-[var(--pa-text)] px-3.5 py-[9px] text-[15px] max-[400px]:px-2.5 font-semibold text-[var(--pa-ink-950)] no-underline ${focus}`}
+              href={action.href}
+              className={`whitespace-nowrap bg-[var(--pa-accent)] px-3.5 py-[9px] text-[15px] max-[400px]:px-2.5 font-semibold text-[var(--pa-ink-950)] no-underline ${focus}`}
             >
-              {signUp.label}
+              {action.label}
             </Link>
             {links.length > 0 && (
               <button
@@ -136,15 +126,6 @@ export function LandingHeader({
                 {l.label}
               </a>
             ))}
-            {logIn && (
-              <a
-                href={logIn.href}
-                onClick={() => setOpen(false)}
-                className={`p-3 text-[var(--pa-text)] no-underline ${focus}`}
-              >
-                {logIn.label}
-              </a>
-            )}
           </nav>
         )}
       </div>

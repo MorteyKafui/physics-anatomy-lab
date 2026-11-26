@@ -52,7 +52,10 @@ The constraints:
   sent: attempt id, step, completed steps, current mistakes (rule, message key, skill; at most
   10), the number of readings, and the times they joined, were last updated, were last seen and
   finished measuring. It is a view of the attempt, never the record; the attempt itself syncs as
-  before.
+  before. Added 2026-11-26 (ASVS review, finding H): a mistake's rule is a plain slug, and its
+  message key must be one the lab words. `packages/i18n` exports the keys to
+  `apps/api/app/live/finding_keys.json`. Any other mistake is left out of the bench, and a hint
+  push must name a known key.
 - `live_messages`: what the teacher sent (`hint`, `broadcast` or `note`), as an append-only list.
   Each message has its recipients, fixed when it was sent (NULL for everyone), its data (at most
   2 KB) and an undo time. Its identity id is the catch-up cursor.

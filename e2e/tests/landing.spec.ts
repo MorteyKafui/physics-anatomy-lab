@@ -25,16 +25,16 @@ const litPixels = (page: Page) =>
     return lit;
   });
 
-test("the hero: the headline, its two actions, and the live slits behind it", async ({ page }) => {
+test("the hero: the headline, its action, and the live slits behind it", async ({ page }) => {
   await page.goto(WEB);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Physics fromfirst principles.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Physics from first principles");
   const canvas = page.locator("#top canvas");
   await expect(canvas).toHaveAttribute("aria-label", /^Particles landing/);
   await expect(canvas).toHaveAttribute("data-scene", /^(twoSlits|detector|oneSlit|fourSlits)$/);
 
   // Where it goes; the link test below checks that every page linked from here answers.
   await expect(
-    page.locator("#top").getByRole("link", { name: "Start an experiment" }),
+    page.locator("#top").getByRole("link", { name: "Open the pendulum lab" }),
   ).toHaveAttribute("href", "/lab/simple-pendulum");
 });
 
@@ -61,22 +61,18 @@ test.describe("with reduced motion", () => {
   });
 });
 
-test("the status light asks the API and says what it found (brief, decision 7)", async ({
-  page,
-}) => {
-  await page.route("**/api/health", (r) => r.fulfill({ status: 200, json: { status: "ok" } }));
+test("no account links: the lab is open to anyone (ADR 0047)", async ({ page }) => {
   await page.goto(WEB);
-  await expect(page.locator("[data-status]")).toHaveText("All systems normal");
-
-  await page.unroute("**/api/health");
-  await page.route("**/api/health", (r) => r.abort());
-  await page.reload();
-  await expect(page.locator("[data-status]")).toHaveText(
-    "Can't reach the server: the lab still works offline",
-  );
+  const hrefs = await page
+    .locator("a[href]")
+    .evaluateAll((as) => as.map((a) => a.getAttribute("href")!));
+  for (const href of hrefs) expect(href).not.toMatch(/^\/(sign-in|join|account|teach)/);
+  await expect(page.getByText(/sign up|log in|class code/i)).toHaveCount(0);
 });
 
 test("every link goes somewhere real (brief, decision 7)", async ({ page, request }) => {
+  // Every practical's lab is linked now (hero, band, footer), and each is a large page to render.
+  test.setTimeout(120_000);
   await page.goto(WEB);
   const hrefs = await page
     .locator("a[href]")
@@ -167,36 +163,62 @@ test.describe("with reduced motion, the demos hold still", () => {
   });
 });
 
-test.describe("the experiment cards", () => {
-  test("the pendulum's bars follow the T and T² switch, and a bar shows its values", async ({
+test.describe("the hero's bench", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("each tab shows its practical's set-up, readings and link, and the main action follows", async ({
     page,
   }) => {
     await page.goto(WEB);
-    const card = page.locator('[data-card="pendulum"]');
-    const top = () => card.locator('[data-bar="5"] polygon').nth(2).getAttribute("points");
-    const squared = await top();
-    await card.getByRole("button", { name: "T", exact: true }).click();
-    await expect.poll(top).not.toBe(squared);
-    await card.locator('[data-bar="0"]').hover();
-    const T = benchPeriod(9.81, 0.5);
-    await expect(card.getByRole("tooltip")).toHaveText(
-      `l = 0.500 mT = ${T.toFixed(3)} s,  T² = ${(T * T).toFixed(3)} s²`,
+    const bench = page.locator("[data-practical]");
+    await expect(bench).toHaveAttribute("data-practical", "pendulum");
+    await expect(bench).toContainText(`T ${benchPeriod(9.81, 0.5).toFixed(3)} s`);
+    await page.getByRole("tab", { name: "Converging lens" }).click();
+    await expect(bench).toHaveAttribute("data-practical", "lens");
+    await expect(bench).toContainText("u 20.0 cm");
+    await expect(
+      page.locator("#top").getByRole("link", { name: "Open the lens lab" }),
+    ).toHaveAttribute("href", "/lab/converging-lens");
+    await page.getByRole("tab", { name: "Mixtures: hot solid" }).click();
+    await expect(bench.getByRole("link", { name: /Open this lab/ })).toHaveAttribute(
+      "href",
+      "/lab/method-of-mixtures-solid",
+    );
+  });
+
+  test("the arrow keys move between practicals", async ({ page }) => {
+    await page.goto(WEB);
+    await page.getByRole("tab", { name: "Simple pendulum" }).focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.getByRole("tab", { name: "Ohm's law" })).toBeFocused();
+    await expect(page.getByRole("tab", { name: "Ohm's law" })).toHaveAttribute(
+      "aria-selected",
+      "true",
     );
   });
 
   test("pointing at a part of the circuit says what it does", async ({ page }) => {
     await page.goto(WEB);
-    const card = page.locator('[data-card="circuit"]');
-    await card.locator('[data-tip="key"]').hover();
-    await expect(card.getByRole("tooltip")).toContainText("Open it as soon as each reading");
+    await page.getByRole("tab", { name: "Ohm's law" }).click();
+    const bench = page.locator("[data-practical]");
+    await bench.locator('[data-tip="key"]').hover();
+    await expect(bench.getByRole("tooltip")).toContainText("Open it as soon as each reading");
   });
 
-  test("each feed shows the lab's readings", async ({ page }) => {
+  test("the share link follows the chosen practical", async ({ page }) => {
     await page.goto(WEB);
-    const T = benchPeriod(9.81, 0.5);
-    await expect(page.locator('[data-card="pendulum"]')).toContainText(`T ${T.toFixed(3)} s`);
-    await expect(page.locator('[data-card="lens"]')).toContainText("u 20.0 cm");
+    await page.getByRole("tab", { name: "Lens: two pins" }).click();
+    await expect(page.getByLabel("Link to the two pins lab")).toHaveValue(
+      /\/lab\/converging-lens-pins$/,
+    );
   });
+});
+
+test("the tour moves on to the next practical by itself", async ({ page }) => {
+  await page.goto(WEB);
+  const bench = page.locator("[data-practical]");
+  await expect(bench).toHaveAttribute("data-practical", "pendulum");
+  await expect(bench).toHaveAttribute("data-practical", "circuit", { timeout: 10_000 });
 });
 
 test.describe("the feature bento", () => {
@@ -211,9 +233,9 @@ test.describe("the feature bento", () => {
   test("the connection tile shows the real connection", async ({ page, context }) => {
     await page.goto(WEB);
     const tile = page.locator("[data-online]");
-    await expect(tile).toHaveText("Online: your work syncs");
+    await expect(tile).toHaveText("Online: your work is kept on this device");
     await context.setOffline(true);
-    await expect(tile).toHaveText("Offline: your work is kept on this device");
+    await expect(tile).toHaveText("Offline: the lab keeps working");
     await context.setOffline(false);
   });
 

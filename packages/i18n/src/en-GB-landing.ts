@@ -10,14 +10,13 @@ export const enGBLanding = {
   "landing.menu": "Menu",
   "landing.nav.main": "Main",
   "landing.nav.small": "Main, small screens",
-  "landing.signUp": "Sign up free",
 
   "landing.hero.label": "Introduction",
-  "landing.hero.title1": "Physics from",
-  "landing.hero.title2": "first principles.",
+  "landing.hero.title": "Physics from first principles",
   "landing.hero.lede":
-    "Build real experiments piece by piece, take your own readings, and get coached the moment something goes wrong. A full physics lab in your browser, even offline.",
-  "landing.hero.start": "Start an experiment",
+    "Build real experiments piece by piece, take your own readings, and get coached the moment something goes wrong. A full physics lab in your browser, open to anyone.",
+  "landing.hero.open": "Open the {name} lab",
+  "landing.hero.how": "See how it works",
   "landing.scene.twoSlits.aria":
     "Particles landing one at a time behind two slits, building interference stripes.",
   "landing.scene.detector.aria":
@@ -28,6 +27,10 @@ export const enGBLanding = {
     "Particles landing behind four slits: narrow, sharp bright stripes.",
 
   "landing.nav.howItWorks": "How it works",
+  "landing.nav.practicals": "Practicals",
+  "landing.nav.coach": "The coach",
+  "landing.nav.about": "About",
+  "landing.nav.open": "Open the lab",
 
   "landing.timeIt.label": "Time a pendulum",
   "landing.timeIt.title": "Time it yourself.",
@@ -93,24 +96,31 @@ export const enGBLanding = {
   "landing.coach.figure":
     "A results table being filled in. The student writes a mean time of {slip} s; the coach points out that a mean takes one more decimal place than its readings, and it becomes {fixed} s.",
 
-  "landing.nav.experiments": "Experiments",
-  "landing.nav.research": "For researchers",
-  "landing.cards.label": "Experiments",
-  "landing.cards.title": "Four experiments, built deep.",
-  "landing.cards.lede":
-    "Each one runs the real equations. Point at any part to see what it does. The readings on each card come straight from the simulation.",
-  "landing.cards.open": "Open the lab",
-  "landing.cards.all": "See every experiment",
-  "landing.cards.more":
-    "More experiments from the WASSCE and university practical lists are on the way.",
-  "landing.cards.live": "Live from the simulation",
-  "landing.cards.plot": "Plot",
+  "landing.cards.live": "Readings, live from the simulation",
+
+  "landing.bench.label": "Practicals",
+  "landing.bench.fig": "Fig. {n}, live",
+  "landing.bench.openThis": "Open this lab",
+  "landing.bench.pause": "Pause the tour of practicals",
+  "landing.bench.play": "Play the tour of practicals",
+  "landing.bench.pendulum.figure":
+    "The simple pendulum set up on the bench: retort stand, boss and clamp, split cork, thread, bob and stopwatch. The bob swings.",
+  "landing.bench.pendulum.tab": "Simple pendulum",
+  "landing.bench.pendulum.short": "pendulum",
+  "landing.bench.circuit.tab": "Ohm's law",
+  "landing.bench.circuit.short": "Ohm's law",
+  "landing.bench.lens.tab": "Converging lens",
+  "landing.bench.lens.short": "lens",
+  "landing.bench.pins.tab": "Lens: two pins",
+  "landing.bench.pins.short": "two pins",
+  "landing.bench.mixtures.tab": "Method of mixtures",
+  "landing.bench.mixtures.short": "mixtures",
+  "landing.bench.solid.tab": "Mixtures: hot solid",
+  "landing.bench.solid.short": "hot solid",
   "landing.cards.pendulum.topic": "Mechanics",
   "landing.cards.pendulum.title": "Simple pendulum",
   "landing.cards.pendulum.about":
     "Time 20 swings at six lengths, plot T² against l, and find g from the slope.",
-  "landing.cards.pendulum.figure":
-    "A 3D bar chart of the pendulum's {what} at six lengths, standing on stacked plates. Point at a bar for its values.",
   "landing.cards.circuit.topic": "Electricity",
   "landing.cards.circuit.title": "Ohm's law and the potentiometer",
   "landing.cards.circuit.about":
@@ -133,8 +143,7 @@ export const enGBLanding = {
   "landing.cards.circuit.tip.volt.note": "Across the cells, so it reads their terminal p.d. V.",
   "landing.cards.lens.topic": "Light",
   "landing.cards.lens.title": "Converging lens",
-  "landing.cards.lens.about":
-    "Move the screen until the image is sharp, or line up two pins with no parallax, then find f from u and v.",
+  "landing.cards.lens.about": "Move the screen until the image is sharp, then find f from u and v.",
   "landing.cards.lens.figure":
     "An isometric optical bench: an illuminated object, a converging lens, a screen and a metre rule, with rays through the lens. Point at a part to learn what it does.",
   "landing.cards.lens.tip.obj": "Illuminated object",
@@ -150,7 +159,7 @@ export const enGBLanding = {
   "landing.cards.mixtures.topic": "Heat",
   "landing.cards.mixtures.title": "Method of mixtures",
   "landing.cards.mixtures.about":
-    "Mix hot water into cold and find the calorimeter's water equivalent, or drop in a hot solid and find its specific heat capacity.",
+    "Mix hot water into cold, stir, and find the calorimeter's water equivalent.",
   "landing.cards.mixtures.figure":
     "An exploded calorimeter: outer can, lagging, copper calorimeter, hot and cold water, and the lid with its stirrer and thermometer. Point at a part to learn what it does.",
   "landing.cards.mixtures.tip.can": "Outer can",
@@ -165,17 +174,29 @@ export const enGBLanding = {
     "Heat lost by the hot water = heat gained by the cold water and the calorimeter.",
   "landing.cards.mixtures.tip.lid": "Lid, stirrer, thermometer",
   "landing.cards.mixtures.tip.lid.note": "Stir, then read the highest steady temperature.",
+  "landing.cards.pins.topic": "Light",
+  "landing.cards.pins.title": "The converging lens: two pins",
+  "landing.cards.pins.about":
+    "Line up a search pin with the image of the object pin until there is no parallax, then find f.",
+  "landing.cards.pins.figure":
+    "An isometric optical bench with a converging lens, an object pin and a search pin, and a metre rule. Point at a part to learn what it does.",
+  "landing.cards.solid.topic": "Heat",
+  "landing.cards.solid.title": "Mixtures: a hot solid",
+  "landing.cards.solid.about":
+    "Drop a solid from boiling water into a lagged calorimeter and find its specific heat capacity.",
+  "landing.cards.solid.figure":
+    "An exploded calorimeter: outer can, lagging, copper calorimeter, water, and the lid with its stirrer and thermometer. Point at a part to learn what it does.",
 
   "landing.bento.label": "Features",
-  "landing.bento.title": "Everything a real lab gives you. Plus a teacher who never gets tired.",
+  "landing.bento.title": "Everything you need for the practical, in one tab.",
   "landing.bento.voice": "Hear the coach",
   "landing.bento.voice.about":
     "Every step and every correction read aloud, with the words on screen. Count along while you time 20 swings.",
   "landing.bento.offline": "Works offline",
   "landing.bento.offline.about":
     "Install it once. The lab, sounds and print sheets keep working when the network doesn't.",
-  "landing.bento.online": "Online: your work syncs",
-  "landing.bento.offlineNow": "Offline: your work is kept on this device",
+  "landing.bento.online": "Online: your work is kept on this device",
+  "landing.bento.offlineNow": "Offline: the lab keeps working",
   "landing.bento.snapshots": "Snapshots, labelled",
   "landing.bento.snapshots.about":
     "Capture any moment. Every image you export carries its figure number, caption and our mark.",
@@ -198,31 +219,26 @@ export const enGBLanding = {
     "Draft for review by the University of Education, Winneba's legal office. It is not in force yet. Highlighted parts are still to be filled in.",
   "legal.blank": "Still to be filled in",
 
-  "landing.signUp.label": "Sign up",
-  "landing.signUp.title": "Free for every student and every school.",
-  "landing.signUp.lede":
-    "Students can start without an account. Teachers sign up to run classes and see every bench, live.",
-  "landing.signUp.teachers": "Teachers and lecturers",
-  "landing.signUp.email": "School email",
-  "landing.signUp.withEmail": "Sign up with email",
-  "landing.signUp.agree":
-    "By signing up you agree to the [Terms](/terms) and [Privacy Policy](/privacy).",
-  "landing.signUp.students": "Students",
-  "landing.signUp.join": "Join a class",
-  "landing.logIn": "Log in",
-  "landing.nav.teachers": "For teachers",
+  "landing.open.label": "Open the lab",
+  "landing.open.title": "Free and open. No account, no sign-up.",
+  "landing.open.lede":
+    "Open a practical and start. Your work stays on your device, and your report downloads as a PDF.",
+  "landing.open.students": "Students",
+  "landing.open.teachers": "Teachers and lecturers",
+  "landing.open.share":
+    "Send a practical to your class, or put it on the projector. Students open the link, do the practical and hand in the PDF report.",
+  "landing.open.link": "Link to the {name} lab",
+  "landing.open.copy": "Copy link",
+  "landing.open.copied": "Copied",
+  "landing.open.hint": "Pick another practical in the bench above to change the link.",
+
   "landing.footer.legal": "Legal",
   "landing.footer.terms": "Terms of Use",
   "landing.footer.privacy": "Privacy",
 
   "landing.footer.label": "Site",
   "landing.footer.tagline": "Physics from first principles.",
-  "landing.footer.product": "Product",
-  "landing.footer.experiments": "Start an experiment",
-  "landing.footer.teachers": "For teachers",
-  "landing.footer.account": "Your account",
+  "landing.footer.product": "Practicals",
+  "landing.footer.all": "All practicals",
   "landing.footer.copyright": "© {year} Physics Anatomy.",
-  "landing.status.checking": "Checking the server",
-  "landing.status.ok": "All systems normal",
-  "landing.status.down": "Can't reach the server: the lab still works offline",
 } as const;

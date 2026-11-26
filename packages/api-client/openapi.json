@@ -5178,14 +5178,12 @@
         "properties": {
           "rule": {
             "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9-]{1,63}$",
             "title": "Rule"
           },
           "key": {
             "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
+            "maxLength": 128,
             "title": "Key"
           }
         },
@@ -5564,14 +5562,12 @@
         "properties": {
           "rule": {
             "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9-]{1,63}$",
             "title": "Rule"
           },
           "key": {
             "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
+            "maxLength": 128,
             "title": "Key"
           },
           "skill": {
