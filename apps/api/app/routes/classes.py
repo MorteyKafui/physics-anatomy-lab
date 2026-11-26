@@ -6,7 +6,7 @@ from typing import Any
 
 import structlog
 from fastapi import APIRouter, HTTPException, Request, Response, status
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,6 +22,7 @@ from app.auth.codes import (
 )
 from app.auth.policy import (
     CLASS_CODE_LENGTH,
+    CLASS_MEMBER_LIMIT,
     REJOIN_CODE_LENGTH,
     REJOIN_CODE_LIFETIME,
     WRONG_CODES_PER_ADDRESS,
@@ -239,9 +240,21 @@ async def _open_class(db: AsyncSession, request: Request, typed: str) -> SchoolC
     return row
 
 
+CLASS_FULL = "This class is full. Ask your teacher."
+
+
+async def _refuse_if_full(db: AsyncSession, row: SchoolClass) -> None:
+    """A class has at most CLASS_MEMBER_LIMIT students (ASVS review, finding D)."""
+    members = await db.scalar(
+        select(func.count()).select_from(ClassMember).where(ClassMember.class_id == row.id)
+    )
+    if (members or 0) >= CLASS_MEMBER_LIMIT:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=CLASS_FULL)
+
+
 CODE_ERRORS: Responses = {
     404: {"description": "No class has this code"},
-    409: {"description": "Joining is closed, or the name is taken"},
+    409: {"description": "Joining is closed, the class is full, or the name is taken"},
     429: {"description": "Too many wrong codes"},
 }
 
@@ -251,6 +264,7 @@ async def preview_class(body: JoinPreviewRequest, request: Request, db: Db) -> J
     """What a student sees before joining: the class, its teacher, and whether AI help is on.
     The code goes in the body, never the address, so it stays out of logs and history."""
     row = await _open_class(db, request, body.code)
+    await _refuse_if_full(db, row)
     teacher_name = await db.scalar(select(User.display_name).where(User.id == row.teacher_id))
     return JoinPreview(class_name=row.name, teacher_name=teacher_name, ai_enabled=row.ai_enabled)
 
@@ -262,6 +276,9 @@ async def join_class(
     """Join with a class code and a display name. No email, age or phone number (ADR 0011)."""
     await require_human(human, body.turnstile_token, request)
     row = await _open_class(db, request, body.code)
+    # Joins to one class take turns here, so two at once cannot both take the last place.
+    await db.execute(select(SchoolClass.id).where(SchoolClass.id == row.id).with_for_update())
+    await _refuse_if_full(db, row)
     member = ClassMember(class_id=row.id, display_name=body.display_name)
     try:
         async with db.begin_nested():

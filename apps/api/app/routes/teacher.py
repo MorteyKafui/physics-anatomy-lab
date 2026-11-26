@@ -6,12 +6,14 @@ work (ADR 0041). A teacher's own attempts are not in a class and never appear he
 """
 
 import uuid
+from collections.abc import AsyncIterator
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
 
-from app.auth.policy import SYNC_PULL_PAGE
+from app.auth.policy import SYNC_PULL_PAGE, TEACHER_STATEMENT_TIMEOUT_MS
 from app.auth.sessions import CurrentTeacher
 from app.db import Db
 from app.live.schemas import (
@@ -24,7 +26,28 @@ from app.routes.classes import NOT_FOUND, owned_class
 from app.routes.sync import parse_cursor
 from app.sync_schemas import SyncEvent
 
-router = APIRouter(prefix="/classes", tags=["teacher"])
+TOO_SLOW = "That took too long to work out. Try again in a moment."
+# PostgreSQL's code for a statement stopped by statement_timeout.
+QUERY_CANCELED = "57014"
+
+
+async def time_limited(db: Db) -> AsyncIterator[None]:
+    """A time limit on every statement of a dashboard read, so one slow query cannot hold a
+    connection the lab needs (ASVS review, finding D). Stopped, it is a plain 503."""
+    await db.execute(text(f"SET LOCAL statement_timeout = {int(TEACHER_STATEMENT_TIMEOUT_MS)}"))
+    try:
+        yield
+    except DBAPIError as error:
+        if getattr(error.orig, "sqlstate", None) == QUERY_CANCELED:
+            raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, detail=TOO_SLOW) from error
+        raise
+
+
+router = APIRouter(
+    prefix="/classes",
+    tags=["teacher"],
+    dependencies=[Depends(time_limited, scope="function")],
+)
 
 ATTEMPTS_LIMIT = 500
 MISTAKES_LIMIT = 50

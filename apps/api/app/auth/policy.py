@@ -44,6 +44,15 @@ SYNC_MAX_EVENT_DATA_BYTES = 16 * 1024
 SYNC_PULL_PAGE = 500
 # A pull page stops early once its events' data reaches this many bytes.
 SYNC_PULL_MAX_BYTES = 2 * 1024 * 1024
+# What one owner (a student, or a teacher's own work) may add in a UTC day, counting new events
+# only, so a retried push costs nothing twice (ASVS review, finding D). A lesson's worth of
+# experiments is a small part of either.
+SYNC_EVENTS_PER_DAY = Limit("sync-events:owner", 5000, timedelta(days=1))
+SYNC_BYTES_PER_DAY = Limit("sync-bytes:owner", 20 * 1024 * 1024, timedelta(days=1))
+# A class is closed to new students at this size (finding D).
+CLASS_MEMBER_LIMIT = 200
+# The longest one statement of a teacher's dashboard may run (finding D).
+TEACHER_STATEMENT_TIMEOUT_MS = 5000
 # No request body may be larger (sync pushes are the only big ones).
 MAX_BODY_BYTES = 2 * 1024 * 1024
 

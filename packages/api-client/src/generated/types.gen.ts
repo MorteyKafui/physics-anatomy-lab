@@ -2903,7 +2903,7 @@ export type PreviewClassErrors = {
    */
   404: unknown;
   /**
-   * Joining is closed, or the name is taken
+   * Joining is closed, the class is full, or the name is taken
    */
   409: unknown;
   /**
@@ -2940,7 +2940,7 @@ export type JoinClassErrors = {
    */
   404: unknown;
   /**
-   * Joining is closed, or the name is taken
+   * Joining is closed, the class is full, or the name is taken
    */
   409: unknown;
   /**
@@ -2977,7 +2977,7 @@ export type RejoinErrors = {
    */
   404: unknown;
   /**
-   * Joining is closed, or the name is taken
+   * Joining is closed, the class is full, or the name is taken
    */
   409: unknown;
   /**
@@ -3017,6 +3017,10 @@ export type PushErrors = {
    * Validation Error
    */
   422: HttpValidationError;
+  /**
+   * This owner has synced all they may today; nothing was stored
+   */
+  429: unknown;
 };
 
 export type PushError = PushErrors[keyof PushErrors];
