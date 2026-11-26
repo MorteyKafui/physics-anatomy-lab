@@ -17,6 +17,13 @@
   overflow: hidden;
 }
 
+/* Sentence case (design/README.md): the kit sets the title and hint in capitals. */
+.rt .iso-plate-corner[data-corner="title"],
+.rt .iso-plate-corner[data-corner="hint"] {
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
 .rt-stage {
   position: relative;
   touch-action: none;
