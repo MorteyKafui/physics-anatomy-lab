@@ -1,6 +1,7 @@
 "use client";
 
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
+import { labelledBy } from "@pa/ui/lib/label-id";
 import { cn } from "@pa/ui/lib/utils";
 
 function Switch({
@@ -19,6 +20,7 @@ function Switch({
         className,
       )}
       {...props}
+      aria-labelledby={labelledBy(props)}
     >
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
