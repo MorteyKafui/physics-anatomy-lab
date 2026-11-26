@@ -2827,7 +2827,7 @@ function drawReservoir() {
   const dz = tip - D.resTip0;
   const t = translateAlong(P, [0, 0, dz]);
   for (const node of movers) node.setAttribute("transform", t);
-  if (Math.abs(tip - drawnTip) > 0.04) {
+  if (!(Math.abs(tip - drawnTip) <= 0.04)) {
     hoseG.innerHTML = hoseSvg(tip);
     // The second rod, in its pieces below and above the moving boss head.
     const [x, y] = D.ROD2;
