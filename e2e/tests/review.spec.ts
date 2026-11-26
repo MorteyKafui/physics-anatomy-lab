@@ -11,7 +11,7 @@ import {
   toMeasure,
 } from "./walk";
 
-// A whole run, Question to Conclude, then a redo: longer than the default 30 s.
+// A whole run, Build to Conclude, then a redo: longer than the default 30 s.
 test.describe.configure({ timeout: 120_000 });
 
 const REVIEW = `${LAB}/review`;
@@ -25,7 +25,7 @@ async function runWithCountFromOne(page: Page) {
   await timeFor(page, 2.2);
   await timeFor(page, 2.2);
   await page.getByRole("button", { name: "Finish measuring" }).click();
-  await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
+  await expect(page.getByText("Step 3 of 7 · Tabulate")).toBeVisible();
   await tabulateToPlot(page);
   await plotToConclude(page);
 }
@@ -45,7 +45,7 @@ test("the review lists the mistake with what it did to g, and Compare opens once
     .locator("div")
     .filter({ hasText: 'You said "one" on the first pass' })
     .last();
-  await expect(card).toContainText("Step 5 · Measure");
+  await expect(card).toContainText("Step 2 · Measure");
   await expect(card).toContainText("Still in your result");
   // Rule 1: the size comes from packages/experiments and packages/physics.
   const percent = Math.round(readingErrorPercent({ count: 20, countedFromOne: true }, 9.81)!);
@@ -88,11 +88,11 @@ test("redoing from Measure starts run 2 with the work before it, and keeps run 1
   // Counting from one and stopping early are both Measure mistakes: either redo will do.
   await review(page).getByRole("button", { name: "Redo from Measure" }).first().click();
   const confirm = page.getByRole("dialog", { name: "Start run 2 from Measure?" });
-  await expect(confirm).toContainText("Question to Check comes with you from run 1");
+  await expect(confirm).toContainText("Build comes with you from run 1");
   await confirm.getByRole("button", { name: "Start run 2 from Measure" }).click();
 
   await expect(page).toHaveURL(LAB);
-  await expect(page.getByText("Step 5 of 10 · Measure")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
   await expect(page.getByRole("button", { name: "Start", exact: true })).toBeVisible();
   // Build was kept: the bench is set up, nothing to place.
   await expect(page.getByRole("region", { name: "Parts tray" })).toHaveCount(0);
@@ -104,7 +104,7 @@ test("redoing from Measure starts run 2 with the work before it, and keeps run 1
     .locator("div")
     .filter({ hasText: /^Run 2/ })
     .last();
-  await expect(run2.getByText("from run 1")).toHaveCount(4);
+  await expect(run2.getByText("from run 1")).toHaveCount(1);
   await page.getByRole("button", { name: "Run 1", exact: true }).click();
   await expect(review(page).getByText('You said "one" on the first pass')).toBeVisible();
 });

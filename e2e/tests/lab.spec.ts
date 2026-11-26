@@ -6,7 +6,7 @@ import { finishPlotting } from "./walk";
 
 const LAB = `${WEB}/lab/simple-pendulum`;
 
-// These walk the lab from Question to Plot, so they get longer than the default 30 s.
+// These walk the lab from Build to Plot, so they get longer than the default 30 s.
 test.describe.configure({ timeout: 60_000 });
 
 const BUILD_ORDER = [
@@ -19,14 +19,11 @@ const BUILD_ORDER = [
   ["Stopwatch", "Put the stopwatch on the bench beside the stand"],
 ] as const;
 
-/** Walk through Question and Predict (their activities are built next) to the parts tray. */
+/** Open a fresh attempt on Build, the pendulum lab's first step, at the parts tray. */
 async function toBuild(page: Page) {
   // A fake clock: the bench only moves when the test says, so "the same pass" is exact.
   await page.clock.install();
   await page.goto(LAB);
-  for (const next of ["Predict", "Build"]) {
-    await page.getByRole("button", { name: `Continue to ${next}` }).click();
-  }
   await expect(page.getByRole("heading", { name: "Set up the pendulum" })).toBeVisible();
 }
 
@@ -52,7 +49,6 @@ async function toMeasure(page: Page) {
   await toBuild(page);
   for (const [part, slot] of BUILD_ORDER) await put(page, part, slot);
   await page.getByRole("button", { name: "Finish building" }).click();
-  await page.getByRole("button", { name: "Continue to Measure" }).click();
   await expect(page.getByRole("heading", { name: "Time 20 oscillations" })).toBeVisible();
 }
 
@@ -78,9 +74,9 @@ async function seriousViolations(page: Page) {
 test("opens a fresh attempt on step 1 and walks to Measure", async ({ page }) => {
   await page.goto(LAB);
   await expect(page.getByRole("heading", { level: 1, name: "Simple pendulum" })).toBeVisible();
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await toMeasure(page);
-  await expect(page.getByText("Step 5 of 10 · Measure")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
 });
 
 test("the bench is built part by part, each resting on the one before", async ({ page }) => {
@@ -173,7 +169,7 @@ test("a thread tied round the clamp is caught when building ends, and can be let
 
   // Findings never block a step (allowed mistakes): the student may carry on as it is.
   await page.getByRole("button", { name: "Carry on as it is" }).click();
-  await expect(page.getByText("Step 4 of 10 · Check")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
 });
 
 test("taking the thread off clears the coach's card", async ({ page }) => {
@@ -205,7 +201,7 @@ test("a reading survives a reload, and Reset and try again removes it", async ({
   await expect(page.getByText(/^Readings: 0\.800 m: \d+\.\d{2} s$/)).toBeVisible();
 
   await page.reload();
-  await expect(page.getByText("Step 5 of 10 · Measure")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
   await expect(page.getByText(/^Readings: 0\.800 m: \d+\.\d{2} s$/)).toBeVisible();
 
   await timeCountingFromOne(page);
@@ -222,7 +218,7 @@ test("the step strip opens only steps the student has reached", async ({ page })
     "true",
   );
   await strip.getByRole("button", { name: /Measure/ }).click({ force: true });
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
 });
 
 test("the stopwatch works from the keyboard", async ({ page }, info) => {
@@ -270,7 +266,6 @@ test("no sideways scrolling at phone width, building or measuring", async ({ pag
   await page.getByRole("button", { name: "Put the base plate on the bench" }).click();
   for (const [part, slot] of BUILD_ORDER.slice(1)) await put(page, part, slot);
   await page.getByRole("button", { name: "Finish building" }).click();
-  await page.getByRole("button", { name: "Continue to Measure" }).click();
   expect(await sideways()).toBe(0);
 });
 
@@ -291,7 +286,7 @@ async function toTabulate(page: Page) {
   await timeFor(page, 2.2);
   await timeFor(page, 2.2);
   await page.getByRole("button", { name: "Finish measuring" }).click();
-  await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
+  await expect(page.getByText("Step 3 of 7 · Tabulate")).toBeVisible();
 }
 
 const results = (page: Page) => page.getByRole("region", { name: "Results table" });
@@ -378,7 +373,7 @@ test("at Check my work each worked-out cell is ticked or flagged with its reason
   const card = page.getByRole("status").filter({ hasText: "1 of 5 sets of readings so far" });
   await expect(card).toBeVisible();
   await card.getByRole("button", { name: "Back to Measure" }).click();
-  await expect(page.getByText("Step 5 of 10 · Measure")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
 });
 
 test("a table of the student's own design is checked for what it means", async ({ page }) => {
@@ -490,7 +485,7 @@ async function toPlot(page: Page) {
   await expect(cell(page, 2, "l/m")).toHaveValue("0.850");
   await page.getByRole("button", { name: "Finish tabulating" }).click();
   await page.getByRole("button", { name: "Carry on as it is" }).click();
-  await expect(page.getByText("Step 7 of 10 · Plot")).toBeVisible();
+  await expect(page.getByText("Step 4 of 7 · Plot")).toBeVisible();
 }
 
 const graph = (page: Page) => page.getByRole("region", { name: "Graph sheet" });
@@ -848,14 +843,10 @@ test("sound is off until turned on; then every line is captioned, and the choice
   page,
 }) => {
   await page.goto(LAB);
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await expect(caption(page)).toHaveCount(0);
   await turnSoundOn(page);
-  await expect(caption(page)).toHaveText(
-    "Question. This step's activity is built next in Phase 1.",
-  );
-  await page.getByRole("button", { name: "Continue to Predict" }).click();
-  await expect(caption(page)).toHaveText("Predict. This step's activity is built next in Phase 1.");
+  await expect(caption(page)).toContainText("Set up the pendulum.");
   await page.reload();
   await expect(caption(page)).toBeVisible();
 });
@@ -892,7 +883,7 @@ test("the sound settings, open over the lab, have no serious accessibility issue
   page,
 }) => {
   await page.goto(LAB);
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await page.getByRole("button", { name: "Sound", exact: true }).click();
   await expect(page.getByRole("checkbox", { name: "Sound on" })).toBeVisible();
   expect(await seriousViolations(page)).toEqual([]);

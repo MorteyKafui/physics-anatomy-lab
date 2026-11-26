@@ -128,7 +128,8 @@ const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
 /**
  * The bench with what the student has built, the slots the held part can go to (as buttons, so
- * a keyboard or a tap can place it), and the magnifier.
+ * a keyboard or a tap can place it), and the magnifier. While it is built, the finished stand
+ * shows faintly over it, so the bench is never empty and the student sees what they are making.
  */
 export function BenchStage({
   box,
@@ -138,6 +139,7 @@ export function BenchStage({
   onPlace,
   magnifier,
   onMagnifier,
+  target = false,
   className,
 }: {
   box: RefObject<HTMLDivElement | null>;
@@ -148,6 +150,8 @@ export function BenchStage({
   onPlace: (slot: PendulumSlot) => void;
   magnifier: { x: number; y: number } | undefined;
   onMagnifier: (at: { x: number; y: number }) => void;
+  /** Show the finished stand faintly, as the target, while the bench is built. */
+  target?: boolean;
   className?: string;
 }) {
   const firstSlot = useRef<HTMLButtonElement>(null);
@@ -185,6 +189,20 @@ export function BenchStage({
       }}
     >
       <PendulumBench {...bench} className="block h-auto w-full" />
+      {target && (
+        <div
+          aria-hidden
+          data-bench-target
+          className="pointer-events-none absolute inset-0 opacity-20"
+        >
+          <PendulumBench
+            angle={0}
+            stopwatchSeconds={0}
+            {...(bench.length === undefined ? {} : { length: bench.length })}
+            className="block h-auto w-full"
+          />
+        </div>
+      )}
       {held &&
         slots.map((s, i) => {
           const p = slotPoint(s, bench.assembly);

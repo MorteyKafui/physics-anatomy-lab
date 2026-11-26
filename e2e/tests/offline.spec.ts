@@ -10,7 +10,7 @@ test.describe.configure({ timeout: 90_000 });
 /** Open the app once online and wait until the service worker controls the page. */
 async function installed(page: Page) {
   await page.goto(LAB);
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -27,17 +27,15 @@ test("after one visit, the lab, the notebook, the report and the sheets open wit
   await context.setOffline(true);
 
   await page.reload();
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await expect(
     page.getByRole("status").filter({ hasText: "Offline. Your work is saved on this device." }),
   ).toBeVisible();
 
   // The lab works: build the bench, and the work is kept.
-  for (const next of ["Predict", "Build"])
-    await page.getByRole("button", { name: `Continue to ${next}` }).click();
   for (const [part, slot] of BUILD_ORDER) await put(page, part, slot);
   await page.getByRole("button", { name: "Finish building" }).click();
-  await expect(page.getByText("Step 4 of 10 · Check")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
 
   for (const [path, heading] of [
     ["notebook", "Notebook"],
@@ -63,8 +61,30 @@ test("after one visit, the lab, the notebook, the report and the sheets open wit
   // Back online, the work is still there.
   await context.setOffline(false);
   await page.goto(LAB);
-  await expect(page.getByText("Step 4 of 10 · Check")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
   await expect(page.getByRole("status").filter({ hasText: "Offline." })).toHaveCount(0);
+});
+
+test("with no connection, Switch practical opens another lab from this device", async ({
+  page,
+  context,
+}) => {
+  await installed(page);
+  await context.setOffline(true);
+  await page.reload();
+  await page
+    .getByRole("heading", { level: 1 })
+    .getByRole("button", { name: "Simple pendulum" })
+    .click();
+  await page
+    .getByRole("menu", { name: "Switch practical" })
+    .getByRole("menuitem", { name: /The method of mixtures/ })
+    .click();
+  await expect(page).toHaveURL(`${WEB}/lab/method-of-mixtures`);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "The method of mixtures" }),
+  ).toBeVisible();
+  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
 });
 
 test("the app installs: a manifest that opens on the lab, and PNG icons at 192 and 512 px", async ({

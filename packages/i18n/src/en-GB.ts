@@ -11,14 +11,24 @@ export const enGB = {
   "lab.rail.home": "Home",
   "lab.rail.experiments": "Experiments",
   "lab.rail.notebook": "Notebook",
-  "lab.rail.reference": "Reference",
-  "lab.rail.help": "Help",
-  "lab.rail.settings": "Settings",
-  "lab.rail.notBuilt": "{name} is built later in Phase 1",
 
   "lab.header.stepOf": "Step {n} of {total} · {step}",
   "lab.header.progress": "{percent}% complete",
   "lab.header.back": "Back to experiments",
+
+  // Switch practical and Share link, in the lab's top bar (design/mockups/LabOpen.dc.html).
+  "lab.switch.label": "Switch practical",
+  "lab.switch.step": "Step {n} of {total}",
+  "lab.switch.device": "Your work on each practical stays on this device.",
+  "lab.switch.name.simple-pendulum": "Simple pendulum",
+  "lab.switch.name.ohms-law": "Ohm's law and the potentiometer",
+  "lab.switch.name.converging-lens": "The converging lens",
+  "lab.switch.name.converging-lens-pins": "The converging lens: two pins",
+  "lab.switch.name.method-of-mixtures": "The method of mixtures",
+  "lab.switch.name.method-of-mixtures-solid": "Mixtures: a hot solid",
+  "lab.share.label": "Share link",
+  "lab.share.copied": "Link copied",
+  "lab.share.field": "Link to this practical",
 
   "lab.playback.label": "Playback",
   "lab.playback.reset": "Reset the step",
@@ -439,7 +449,7 @@ export const enGB = {
   "runs.confirmBody":
     "{kept} comes with you from run {from}. Run {from} stays as it is, so you can compare them.",
   "runs.confirmBodyNone":
-    "Nothing comes with you: run {n} starts from the question. Run {from} stays as it is.",
+    "Nothing comes with you: run {n} starts from {step}. Run {from} stays as it is.",
   "runs.keptRange": "{first} to {last}",
   "runs.cancel": "Cancel",
   "runs.started": "Run {n} started at {step}. Run {from} is kept.",
@@ -503,7 +513,6 @@ export const enGB = {
   "lab.steps.analyse": "Analyse",
   "lab.steps.conclude": "Conclude",
   "lab.steps.report": "Report",
-  "lab.steps.notBuilt": "This step's activity is built next in Phase 1.",
   "lab.steps.continue": "Continue to {step}",
   "lab.steps.finishMeasuring": "Finish measuring",
   "lab.steps.finishBuilding": "Finish building",
