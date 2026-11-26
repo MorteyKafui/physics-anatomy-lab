@@ -174,6 +174,33 @@
       "title": "Uncertainties: the advanced layer, with the pendulum (Phase 2, approved)",
       "expand": "fill",
       "is_interactive": true
+    },
+    "Landing.dc.html": {
+      "x": 9360,
+      "y": 0,
+      "w": 1440,
+      "h": 4800,
+      "title": "Landing page, revised: open to anyone, six practicals in the hero, topic menus in the header (approved, 26 Nov)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Practicals.dc.html": {
+      "x": 10880,
+      "y": 0,
+      "w": 1440,
+      "h": 1900,
+      "title": "Practicals page /experiments: topic menus, a chip for every topic (approved, 26 Nov)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "LabOpen.dc.html": {
+      "x": 10880,
+      "y": 2020,
+      "w": 1440,
+      "h": 900,
+      "title": "Lab, revised: switch practical and share link (draft, 26 Nov)",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -186,7 +213,8 @@
   },
   "noteOrder": [
     "title",
-    "read"
+    "read",
+    "openlab"
   ],
   "notes": {
     "read": {
@@ -203,6 +231,13 @@
       "w": 240,
       "x": 0,
       "y": -320
+    },
+    "openlab": {
+      "kind": "title1",
+      "text": "Open lab redesign · drafts for approval",
+      "x": 9360,
+      "y": -320,
+      "maxW": 2960
     }
   },
   "order": [
@@ -225,7 +260,10 @@
     "Mixtures.dc.html",
     "MixturesSolid.dc.html",
     "ModelCheck.dc.html",
-    "Uncertainty.dc.html"
+    "Uncertainty.dc.html",
+    "Landing.dc.html",
+    "Practicals.dc.html",
+    "LabOpen.dc.html"
   ],
   "pages": [],
   "title": "Physics Anatomy Mockups"

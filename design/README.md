@@ -36,8 +36,8 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Logo set                           | `LogoSet.dc.html`        | approved 2026-11-19    | `packages/ui/brand`, app icons                             |
 | Experiment page                    | `ExperimentPage.dc.html` | approved 2026-11-25    | `apps/web` `/experiments/<id>`                             |
 | Team, partners, contribute, donate | `People.dc.html`         | draft for approval     | `apps/web` `/about`, `/partners`, `/contribute`, `/donate` |
-| Landing page, revised              | `Landing.dc.html`        | draft for approval     | `apps/web` `/`                                             |
-| Practicals page                    | `Practicals.dc.html`     | draft for approval     | `apps/web` `/experiments`                                  |
+| Landing page, revised              | `Landing.dc.html`        | approved 2026-11-26    | `apps/web` `/`                                             |
+| Practicals page                    | `Practicals.dc.html`     | approved 2026-11-26    | `apps/web` `/experiments`                                  |
 | Lab, revised                       | `LabOpen.dc.html`        | draft for approval     | `apps/web` lab                                             |
 
 The `.dc.html` files are the source: open them on the canvas to see every state and interaction.
