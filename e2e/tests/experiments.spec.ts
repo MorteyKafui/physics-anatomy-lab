@@ -14,12 +14,57 @@ const IDS = [
 
 const pngSize = (body: Buffer) => [body.readUInt32BE(16), body.readUInt32BE(20)];
 
-test("the index lists every lab, and each opens its page", async ({ page }) => {
+test("the practicals page lists every lab, and each opens its lab and its page", async ({
+  page,
+}) => {
   await page.goto(`${WEB}/experiments`);
-  const links = page.getByRole("list", { name: "Every experiment" }).getByRole("link");
-  await expect(links).toHaveCount(IDS.length);
-  await links.first().click();
+  const cards = page.getByRole("list", { name: "Every practical" }).getByRole("listitem");
+  await expect(cards).toHaveCount(IDS.length);
+  for (const [i, id] of IDS.entries()) {
+    const card = cards.nth(i);
+    await expect(card.getByRole("link", { name: "Open the lab" })).toHaveAttribute(
+      "href",
+      `/lab/${id}`,
+    );
+    await expect(card.getByRole("link", { name: "About this practical" })).toHaveAttribute(
+      "href",
+      `/experiments/${id}`,
+    );
+    await expect(card.locator("[data-badge]")).toHaveText(/^\S+ = \d+\.\d+ \S+$/);
+  }
+  await cards.first().getByRole("link", { name: "About this practical" }).click();
   await expect(page).toHaveURL(`${WEB}/experiments/${IDS[0]}`);
+});
+
+test("the topic chips show only that topic's practicals", async ({ page }) => {
+  await page.goto(`${WEB}/experiments`);
+  const filter = page.getByRole("group", { name: "Filter by topic" });
+  const shown = page.getByRole("list", { name: "Every practical" }).locator("li:visible");
+  await expect(filter.getByRole("button", { name: "All 6" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await filter.getByRole("button", { name: "Light 2" }).click();
+  await expect(shown).toHaveCount(2);
+  await expect(shown.first()).toHaveAttribute("data-practical", "converging-lens");
+  await expect(filter.getByRole("button", { name: "Light 2" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await filter.getByRole("button", { name: "Mechanics 1" }).click();
+  await expect(shown).toHaveCount(1);
+  await filter.getByRole("button", { name: "All 6" }).click();
+  await expect(shown).toHaveCount(IDS.length);
+});
+
+test("the header has no account links, and Practicals is the current page", async ({ page }) => {
+  await page.goto(`${WEB}/experiments`);
+  const nav = page.getByRole("navigation", { name: "Main", exact: true });
+  await expect(nav.getByRole("link", { name: "Practicals" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(page.getByRole("link", { name: /log in|sign up/i })).toHaveCount(0);
 });
 
 for (const id of IDS) {
@@ -40,10 +85,9 @@ for (const id of IDS) {
       "href",
       new RegExp(`/experiments/${id}$`),
     );
-    await expect(page.getByRole("link", { name: "Open the lab" })).toHaveAttribute(
-      "href",
-      `/lab/${id}`,
-    );
+    await expect(
+      page.getByRole("main").getByRole("link", { name: "Open the lab" }),
+    ).toHaveAttribute("href", `/lab/${id}`);
     await expect(page.locator("[data-model-card]")).toContainText("How it is checked:");
 
     const card = await request.get(`${WEB}/experiments/${id}/opengraph-image`);
