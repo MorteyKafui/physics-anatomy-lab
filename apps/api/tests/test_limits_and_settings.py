@@ -12,11 +12,11 @@ from starlette.requests import Request
 from app.auth.email import LogSender
 from app.auth.rate_limit import client_address
 from app.config import Settings, get_settings
-from app.main import app
+from app.main import app, shows_docs
 from app.models import RejoinCode
 from app.routes.auth import _google_or_404  # pyright: ignore[reportPrivateUsage]
 from tests.conftest import browser
-from tests.helpers import create_class, join, sign_in_teacher
+from tests.helpers import create_class, join, preview, sign_in_teacher
 
 
 async def test_right_codes_do_not_count_against_a_shared_address(
@@ -26,10 +26,12 @@ async def test_right_codes_do_not_count_against_a_shared_address(
     code = (await create_class(client))["code"]
     async with browser() as school_wifi:
         for _ in range(30):  # a whole class behind one address
-            assert (await school_wifi.get(f"/join/{code}")).status_code == 200
+            assert (await preview(school_wifi, code)) == 200
         for _ in range(20):
-            assert (await school_wifi.get("/join/AAA-AAA")).status_code == 404
-        assert (await school_wifi.get(f"/join/{code}")).status_code == 429
+            assert (
+                await school_wifi.post("/join/preview", json={"code": "AAA-AAA"})
+            ).status_code == 404
+        assert (await preview(school_wifi, code)) == 429
 
 
 def _request(host: str, headers: dict[str, str] | None = None) -> Request:
@@ -127,3 +129,36 @@ def test_deployed_servers_need_https_and_real_email() -> None:
     with pytest.raises(ValidationError, match="EMAIL_DELIVERY=log"):
         Settings.model_validate({**deployed, "web_origin": https, "email_delivery": "log"})
     assert Settings.model_validate({**deployed, "web_origin": https, "email_delivery": "none"})
+
+
+# ASVS review, finding G
+
+
+def test_a_deployed_admin_api_needs_its_staff_list() -> None:
+    deployed: dict[str, Any] = {
+        "environment": "production",
+        "client_ip_header": "cf-connecting-ip",
+        "turnstile_secret_key": "0x-test",
+        "web_origin": "https://physicsanatomy.example",
+        "email_delivery": "none",
+        "cf_access_team_domain": "team.cloudflareaccess.com",
+        "cf_access_audience": "aud-test",
+    }
+    with pytest.raises(ValidationError, match="ADMIN_STAFF_EMAILS"):
+        Settings.model_validate(deployed)
+    assert Settings.model_validate({**deployed, "admin_staff_emails": ["staff@example.org"]})
+    # A deployed server without the admin API set up needs no list.
+    no_admin = {k: v for k, v in deployed.items() if not k.startswith("cf_access")}
+    assert Settings.model_validate(no_admin)
+
+
+def test_only_this_machine_publishes_the_api_docs() -> None:
+    assert shows_docs("local") and shows_docs("test")
+    for environment in ("preview", "staging", "production"):
+        assert not shows_docs(environment)
+
+
+async def test_health_says_it_is_up_and_nothing_else(client: AsyncClient) -> None:
+    got = await client.get("/health")
+    assert got.status_code == 200
+    assert got.json() == {"status": "ok"}

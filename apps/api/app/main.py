@@ -39,8 +39,19 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         await get_engine().dispose()
 
 
+# The interactive docs and the OpenAPI file only on this machine (ASVS review, finding G): a
+# deployed API does not publish a map of itself. The committed file is packages/api-client's.
+def shows_docs(environment: str) -> bool:
+    return environment in ("local", "test")
+
+
+ON_THIS_MACHINE = shows_docs(settings.environment)
+
 app = FastAPI(
     lifespan=lifespan,
+    docs_url="/docs" if ON_THIS_MACHINE else None,
+    redoc_url="/redoc" if ON_THIS_MACHINE else None,
+    openapi_url="/openapi.json" if ON_THIS_MACHINE else None,
     title="Physics Anatomy API",
     version="0.0.0",
     summary="Accounts, sync, live classes, AI and exports for the Physics Anatomy lab.",
@@ -77,10 +88,10 @@ if settings.environment in load_test.TEST_ENVIRONMENTS:
 
 class Health(BaseModel):
     status: str
-    environment: str
 
 
 @app.get("/health", tags=["system"])
 def health() -> Health:
-    """Liveness check used by the status page and the deploy step."""
-    return Health(status="ok", environment=settings.environment)
+    """Liveness check used by the status page and the deploy step. Says nothing about the
+    server (ASVS review, finding G)."""
+    return Health(status="ok")

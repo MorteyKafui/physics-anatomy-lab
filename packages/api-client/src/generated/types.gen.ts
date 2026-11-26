@@ -1295,10 +1295,6 @@ export type Health = {
    * Status
    */
   status: string;
-  /**
-   * Environment
-   */
-  environment: string;
 };
 
 /**
@@ -1367,6 +1363,16 @@ export type JoinPreview = {
    * Ai Enabled
    */
   ai_enabled: boolean;
+};
+
+/**
+ * JoinPreviewRequest
+ */
+export type JoinPreviewRequest = {
+  /**
+   * Code
+   */
+  code: string;
 };
 
 /**
@@ -2885,15 +2891,10 @@ export type IssueRejoinCodeResponses = {
 export type IssueRejoinCodeResponse = IssueRejoinCodeResponses[keyof IssueRejoinCodeResponses];
 
 export type PreviewClassData = {
-  body?: never;
-  path: {
-    /**
-     * Code
-     */
-    code: string;
-  };
+  body: JoinPreviewRequest;
+  path?: never;
   query?: never;
-  url: "/join/{code}";
+  url: "/join/preview";
 };
 
 export type PreviewClassErrors = {
