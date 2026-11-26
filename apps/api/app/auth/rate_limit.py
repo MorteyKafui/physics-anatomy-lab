@@ -39,15 +39,16 @@ def _key(limit: Limit, subject: str) -> str:
     return f"{limit.name}:{subject.lower()}"
 
 
-async def record(db: AsyncSession, limit: Limit, subject: str) -> int:
-    """Count one hit and return the count in this window."""
+async def record(db: AsyncSession, limit: Limit, subject: str, by: int = 1) -> int:
+    """Count `by` hits (one, unless the limit counts something larger, such as bytes) and return
+    the count in this window."""
     now = datetime.now(UTC)
     statement = (
         insert(RateLimit)
-        .values(key=_key(limit, subject), window_start=_window_start(limit, now), hits=1)
+        .values(key=_key(limit, subject), window_start=_window_start(limit, now), hits=by)
         .on_conflict_do_update(
             index_elements=[RateLimit.key, RateLimit.window_start],
-            set_={"hits": RateLimit.hits + 1},
+            set_={"hits": RateLimit.hits + by},
         )
         .returning(RateLimit.hits)
     )

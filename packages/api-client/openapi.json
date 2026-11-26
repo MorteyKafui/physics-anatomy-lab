@@ -608,7 +608,7 @@
             "description": "No class has this code"
           },
           "409": {
-            "description": "Joining is closed, or the name is taken"
+            "description": "Joining is closed, the class is full, or the name is taken"
           },
           "429": {
             "description": "Too many wrong codes"
@@ -657,7 +657,7 @@
             "description": "No class has this code"
           },
           "409": {
-            "description": "Joining is closed, or the name is taken"
+            "description": "Joining is closed, the class is full, or the name is taken"
           },
           "429": {
             "description": "Too many wrong codes"
@@ -706,7 +706,7 @@
             "description": "No class has this code"
           },
           "409": {
-            "description": "Joining is closed, or the name is taken"
+            "description": "Joining is closed, the class is full, or the name is taken"
           },
           "429": {
             "description": "Too many wrong codes"
@@ -728,7 +728,7 @@
       "post": {
         "tags": ["sync"],
         "summary": "Push",
-        "description": "Store attempts and events from this device. Known events are skipped, so retrying is safe.",
+        "description": "Store attempts and events from this device. Known events are skipped, so retrying is safe.\nA push that would take the owner past the day's events or bytes stores nothing.",
         "operationId": "push",
         "requestBody": {
           "content": {
@@ -753,6 +753,9 @@
           },
           "413": {
             "description": "The body is too large"
+          },
+          "429": {
+            "description": "This owner has synced all they may today; nothing was stored"
           },
           "422": {
             "description": "Validation Error",

@@ -11,7 +11,13 @@ from sqlalchemy import ColumnElement, func, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.policy import SYNC_PULL_MAX_BYTES, SYNC_PULL_PAGE
+from app.auth import rate_limit
+from app.auth.policy import (
+    SYNC_BYTES_PER_DAY,
+    SYNC_EVENTS_PER_DAY,
+    SYNC_PULL_MAX_BYTES,
+    SYNC_PULL_PAGE,
+)
 from app.auth.sessions import CurrentPrincipal, Principal, Teacher
 from app.db import Db
 from app.models import Attempt, AttemptEvent
@@ -27,6 +33,15 @@ from app.sync_schemas import (
 
 router = APIRouter(prefix="/sync", tags=["sync"])
 log = structlog.get_logger()
+
+FULL_TODAY = (
+    "Your work is saved on this device. The server has taken all it can from you today, "
+    "so it will sync tomorrow."
+)
+
+
+def _data_bytes(data: Any) -> int:
+    return len(json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode("utf-8"))
 
 
 def _owner(principal: Principal) -> tuple[str, uuid.UUID]:
@@ -80,12 +95,14 @@ async def _attempt_row(
 
 async def _push_one(
     db: AsyncSession, column: str, owner: uuid.UUID, batch: AttemptBatch
-) -> PushedAttempt:
+) -> tuple[PushedAttempt, int]:
+    """The attempt's result, and the bytes of the events it stored that were new."""
     row = await _attempt_row(db, column, owner, batch.attempt)
     if row is None:
         log.info("sync.conflict", owner_id=str(owner))
-        return PushedAttempt(id=batch.attempt.id, new_events=0, status="conflict")
+        return PushedAttempt(id=batch.attempt.id, new_events=0, status="conflict"), 0
     new = 0
+    new_bytes = 0
     if batch.events:
         inserted = await db.scalars(
             insert(AttemptEvent)
@@ -107,18 +124,38 @@ async def _push_one(
             .on_conflict_do_nothing(index_elements=["attempt_id", "event_id"])
             .returning(AttemptEvent.event_id)
         )
-        new = len(inserted.all())
-    return PushedAttempt(id=batch.attempt.id, new_events=new, status="ok")
+        stored = set(inserted.all())
+        new = len(stored)
+        new_bytes = sum(_data_bytes(e.data) for e in batch.events if e.id in stored)
+    return PushedAttempt(id=batch.attempt.id, new_events=new, status="ok"), new_bytes
 
 
-@router.post("/push", responses={413: {"description": "The body is too large"}})
+@router.post(
+    "/push",
+    responses={
+        413: {"description": "The body is too large"},
+        429: {"description": "This owner has synced all they may today; nothing was stored"},
+    },
+)
 async def push(body: PushRequest, principal: CurrentPrincipal, db: Db) -> PushResult:
-    """Store attempts and events from this device. Known events are skipped, so retrying is safe."""
+    """Store attempts and events from this device. Known events are skipped, so retrying is safe.
+    A push that would take the owner past the day's events or bytes stores nothing."""
     column, owner = _owner(principal)
     # One owner's pushes take turns, so each owner's cursor positions follow commit order and a
     # pull never skips an event that commits late (ADR 0039).
     await db.execute(select(func.pg_advisory_xact_lock(func.hashtextextended(str(owner), 0))))
-    results = [await _push_one(db, column, owner, batch) for batch in body.attempts]
+    pushed = [await _push_one(db, column, owner, batch) for batch in body.attempts]
+    results = [r for r, _ in pushed]
+    new_events = sum(r.new_events for r in results)
+    if new_events:
+        # Counted in this transaction, after the owner's lock: a refusal rolls back the events
+        # and the counts together, so the device can send the same push tomorrow.
+        new_bytes = sum(b for _, b in pushed)
+        events = await rate_limit.record(db, SYNC_EVENTS_PER_DAY, str(owner), new_events)
+        size = await rate_limit.record(db, SYNC_BYTES_PER_DAY, str(owner), new_bytes)
+        if events > SYNC_EVENTS_PER_DAY.hits or size > SYNC_BYTES_PER_DAY.hits:
+            log.info("sync.full_today", owner_id=str(owner))
+            raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, detail=FULL_TODAY)
     log.info(
         "sync.pushed",
         owner_id=str(owner),
