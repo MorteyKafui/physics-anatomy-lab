@@ -851,13 +851,13 @@ Phase 5 runs alongside Phases 3 and 4. Everything else runs in order, because ea
 Decided by Mortey on 26 November 2026, ahead of a local presentation. The lab is open to anyone, like PhET: accounts are switched off, not deleted (ADR 0047). Admin counts visitors anonymously, with an id that changes every day (ADR 0048). The public app gets a redesign that improves the existing design: its colours, live demos, Anatomy figures and large footer wordmark stay. The six practicals are the first six; more follow after launch. Brief, board and records: pull request 143.
 
 - [x] Brief, decision records and boards approved (landing, practicals page, lab)
-- [ ] Accounts off: one switch, links removed, old routes redirect home, Terms and Privacy updated
+- [x] Accounts off: one switch, links removed, old routes redirect home, Terms and Privacy updated
 - [x] Anonymous usage counts: device queue, `POST /usage/events`, admin Usage area
-- [ ] Shared parts in `packages/ui` for the new boards
+- [x] Shared parts in `packages/ui` for the new boards
 - [x] Landing page from its board
 - [x] Practicals page and experiment pages from their boards
 - [x] Lab shell from its board; unbuilt steps hidden
-- [ ] Reading pages, 404 and offline
+- [x] Reading pages, 404 and offline
 
 ## Also needed: gaps found in the final review
 
