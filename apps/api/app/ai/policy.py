@@ -25,6 +25,7 @@ class Unavailable(StrEnum):
     quota_used = "quota-used"
     budget_reached = "budget-reached"
     address_busy = "address-busy"
+    still_answering = "still-answering"
 
 
 MESSAGES: dict[Unavailable, str] = {
@@ -41,6 +42,9 @@ MESSAGES: dict[Unavailable, str] = {
     ),
     Unavailable.address_busy: (
         "AI help is busy on this network today. The coach still works. Try again tomorrow."
+    ),
+    Unavailable.still_answering: (
+        "AI help is still answering your last questions. Wait for them, then ask again."
     ),
 }
 
@@ -89,5 +93,6 @@ def refuse(reason: Unavailable) -> HTTPException:
         Unavailable.quota_used: status.HTTP_429_TOO_MANY_REQUESTS,
         Unavailable.budget_reached: status.HTTP_429_TOO_MANY_REQUESTS,
         Unavailable.address_busy: status.HTTP_429_TOO_MANY_REQUESTS,
+        Unavailable.still_answering: status.HTTP_429_TOO_MANY_REQUESTS,
     }[reason]
     return HTTPException(code, detail=MESSAGES[reason])

@@ -34,7 +34,7 @@ from app.ai.policy import MESSAGES, Unavailable, available_features, refuse, why
 from app.ai.prepare import Prepared
 from app.ai.questions import NOT_READY as DRAFT_NOT_READY
 from app.ai.questions import DraftRequest
-from app.ai.quotas import budget_reached, enforce, quota, used_today, within_limits
+from app.ai.quotas import budget_reached, enforce, quota, reserve_in, used_today, within_limits
 from app.ai.review import ReviewRequest
 from app.ai.scenarios import NOT_READY
 from app.ai.stream import ReplyCheck, ReplyItem, cached_stream, reply_stream
@@ -102,7 +102,7 @@ async def ai_status(principal: MaybePrincipal, db: Db) -> AiStatus:
     )
 
 
-def ai_reply(
+async def ai_reply(
     name: FeatureName,
     principal: MaybePrincipal,
     context: AiContext,
@@ -116,7 +116,7 @@ def ai_reply(
     store: AnswerStore | None = None,
 ) -> EventSourceResponse:
     """The one way a feature calls Claude with an AiContext."""
-    return ai_reply_with(
+    return await ai_reply_with(
         name,
         principal,
         lambda feature, model: build_request(feature, model, instructions, context, output_schema),
@@ -129,7 +129,7 @@ def ai_reply(
     )
 
 
-def reply_to(
+async def reply_to(
     name: FeatureName,
     principal: MaybePrincipal,
     prepared: Prepared,
@@ -140,7 +140,7 @@ def reply_to(
 ) -> EventSourceResponse:
     """Streams the reply to a request built in app/ai/prepare.py, the same one the evaluation
     suite grades."""
-    return ai_reply_with(
+    return await ai_reply_with(
         name,
         principal,
         lambda _feature, _model: prepared.request,
@@ -153,7 +153,7 @@ def reply_to(
     )
 
 
-def ai_reply_with(
+async def ai_reply_with(
     name: FeatureName,
     principal: MaybePrincipal,
     build: Callable[[Feature, str], ModelRequest],
@@ -164,7 +164,8 @@ def ai_reply_with(
     caching: Caching | None = None,
     store: AnswerStore | None = None,
 ) -> EventSourceResponse:
-    """Refuses with a plain HTTP error before streaming, or streams the reply to `build`."""
+    """Refuses with a plain HTTP error before streaming, or reserves the request (app/ai/quotas.py)
+    and streams the reply to `build`."""
     settings = get_settings()
     feature = FEATURES[name]
     reason = why_unavailable(principal, feature, settings)
@@ -173,7 +174,9 @@ def ai_reply_with(
     if reason is not None:
         raise refuse(reason)
     assert principal is not None and claude is not None  # checked by why_unavailable
-    request = build(feature, feature.model(settings))
+    model = feature.model(settings)
+    request = build(feature, model)
+    await ai_log.reserve(lambda db: reserve_in(db, principal, feature, model, settings))
     return reply_stream(feature, principal, request, claude, ai_log, check, to_item, caching, store)
 
 
@@ -219,7 +222,7 @@ async def tutor(
     cached = await from_cache(db, answers, FeatureName.tutor, principal, key, ai_log)
     if cached is not None:
         return cached
-    return reply_to(
+    return await reply_to(
         FeatureName.tutor,
         principal,
         prepare.tutor(context, get_settings()),
@@ -261,7 +264,7 @@ async def what_if(
     cached = await from_cache(db, answers, FeatureName.what_if, principal, key, ai_log)
     if cached is not None:
         return cached
-    return reply_to(
+    return await reply_to(
         FeatureName.what_if,
         principal,
         prepared,
@@ -291,7 +294,7 @@ async def report_review(
     ids = [s.id for s in body.sections]
     if len(set(ids)) != len(ids):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail="One of each section.")
-    return reply_to(
+    return await reply_to(
         FeatureName.report_review,
         principal,
         prepare.report_review(body, get_settings()),
@@ -323,7 +326,7 @@ async def question_drafting(
         prepared = prepare.question_drafting(body, get_settings())
     except prepare.NotReadyError:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=DRAFT_NOT_READY) from None
-    return reply_to(FeatureName.question_drafting, principal, prepared, claude, ai_log)
+    return await reply_to(FeatureName.question_drafting, principal, prepared, claude, ai_log)
 
 
 @router.post(
@@ -361,4 +364,4 @@ async def test_reply(
     if get_settings().environment not in TEST_ENVIRONMENTS:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
     await enforce(db, request, principal, feature)
-    return ai_reply(feature, principal, context, TEST_INSTRUCTIONS, claude, ai_log)
+    return await ai_reply(feature, principal, context, TEST_INSTRUCTIONS, claude, ai_log)
