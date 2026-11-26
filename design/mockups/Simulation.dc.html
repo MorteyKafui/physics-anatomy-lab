@@ -47,7 +47,7 @@ input[type=range]{flex:1;accent-color:#2EC4B6}
     <div style="border: 1px solid #262624; background: #131313">
       <div style="display: flex; justify-content: space-between; padding: 10px 14px; font-size: 13px; color: #8C8A84"><span>Fig. 1</span><span style="color: #F2F0EA">Sonometer: the wire at 256 Hz</span></div>
       <div class="slot">Anatomy figure (Hero) from the sonometer pull request: sounding box, scale, fixed and movable bridges, wire, pulley, hanger with slotted masses, paper rider, tuning fork on its rubber pad.<br><br>Drag the movable bridge along the scale or the masses on and off the hanger; strike the fork by clicking it. The wire is the one lit part.</div>
-      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; font-size: 13px; border-top: 1px solid #262624"><span style="color: #8C8A84">Drag the bridge · click the fork to strike it</span><span style="font-family: 'Geist Mono', monospace">l = 34.9 cm · f₁ = 256.0 Hz · resonance</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; font-size: 13px; border-top: 1px solid #262624"><span style="color: #8C8A84">Drag the bridge · click the fork to strike it</span><span style="font-family: 'Geist Mono', monospace">l = 39.0 cm · f₁ = 256.1 Hz · resonance</span></div>
     </div>
 
     <!-- Legend key: names every part; choosing one picks it out in the drawing. -->
@@ -76,14 +76,14 @@ input[type=range]{flex:1;accent-color:#2EC4B6}
     <!-- Live graph: changes as any control moves. -->
     <div style="border: 1px solid #262624; background: #131313; padding: 14px; display: flex; flex-direction: column; gap: 6px">
       <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #8C8A84">Graph</span><span>f₁ against 1/l, for this wire and load</span></div>
-      <svg viewBox="0 0 520 220" role="img" aria-label="A straight line through the origin: f against 1 over l, slope 89.4 metres per second; the current point is at 1 over l = 2.87 per metre, f = 256 hertz" style="width: 100%; height: auto">
+      <svg viewBox="0 0 520 220" role="img" aria-label="A straight line through the origin: f against 1 over l, slope 99.8 metres per second; the current point is at 1 over l = 2.56 per metre, f = 256 hertz" style="width: 100%; height: auto">
         <g stroke="#262624"><path d="M50 20V190M110 20V190M170 20V190M230 20V190M290 20V190M350 20V190M410 20V190M470 20V190"></path><path d="M50 190H490M50 150H490M50 110H490M50 70H490M50 30H490"></path></g>
         <path d="M50 190H495M50 190V15" stroke="#8C8A84"></path>
-        <line x1="50" y1="190" x2="402" y2="32.6" stroke="#2EC4B6" stroke-width="2"></line>
-        <circle cx="279.2" cy="87.6" r="5" fill="#F0482A"></circle>
+        <line x1="50" y1="190" x2="362" y2="34.2" stroke="#2EC4B6" stroke-width="2"></line>
+        <circle cx="255.1" cy="87.6" r="5" fill="#F0482A"></circle>
         <g fill="#8C8A84" font-family="Geist Mono, monospace" font-size="11"><text x="50" y="206" text-anchor="middle">0</text><text x="170" y="206" text-anchor="middle">1.5</text><text x="290" y="206" text-anchor="middle">3.0</text><text x="410" y="206" text-anchor="middle">4.5</text><text x="44" y="194" text-anchor="end">0</text><text x="44" y="114" text-anchor="end">200</text><text x="44" y="34" text-anchor="end">400</text><text x="495" y="206" text-anchor="end">1/l / m⁻¹</text><text x="56" y="16">f / Hz</text></g>
       </svg>
-      <span style="font-size: 13px; color: #8C8A84">Slope = v/2 = 89.4 m/s. Add load and the line turns steeper.</span>
+      <span style="font-size: 13px; color: #8C8A84">Slope = v/2 = 99.8 m/s. Add load and the line turns steeper.</span>
     </div>
   </section>
 
@@ -91,17 +91,17 @@ input[type=range]{flex:1;accent-color:#2EC4B6}
   <aside aria-label="Controls" style="border-left: 1px solid #262624; background: #121212; padding: 4px 20px 24px; overflow-y: auto">
     <h2 style="margin: 16px 0 0; font: 600 15px Geist, sans-serif; color: #8C8A84">Change</h2>
     <div class="ctl">
-      <div class="lab"><span>Load on the hanger, M</span><span style="font-family: 'Geist Mono', monospace; color: #F2F0EA">2.00 kg</span></div>
-      <div class="row"><button class="step pa-focus" aria-label="Less by 0.1 kg">−</button><input type="range" min="0.5" max="5" step="0.1" value="2" aria-label="Load on the hanger"><button class="step pa-focus" aria-label="More by 0.1 kg">+</button><input class="num" value="2.00" aria-label="Load in kilograms"></div>
+      <div class="lab"><span>Load on the hanger, M</span><span style="font-family: 'Geist Mono', monospace; color: #F2F0EA">2.50 kg</span></div>
+      <div class="row"><button class="step pa-focus" aria-label="Less by 0.1 kg">−</button><input type="range" min="0.5" max="5" step="0.1" value="2.5" aria-label="Load on the hanger"><button class="step pa-focus" aria-label="More by 0.1 kg">+</button><input class="num" value="2.50" aria-label="Load in kilograms"></div>
     </div>
     <div class="ctl">
-      <div class="lab"><span>Length between the bridges, l</span><span style="font-family: 'Geist Mono', monospace; color: #F2F0EA">34.9 cm</span></div>
-      <div class="row"><button class="step pa-focus" aria-label="Shorter by 0.1 cm">−</button><input type="range" min="10" max="90" step="0.1" value="34.9" aria-label="Length between the bridges"><button class="step pa-focus" aria-label="Longer by 0.1 cm">+</button><input class="num" value="34.9" aria-label="Length in centimetres"></div>
+      <div class="lab"><span>Length between the bridges, l</span><span style="font-family: 'Geist Mono', monospace; color: #F2F0EA">39.0 cm</span></div>
+      <div class="row"><button class="step pa-focus" aria-label="Shorter by 0.1 cm">−</button><input type="range" min="10" max="90" step="0.1" value="39.0" aria-label="Length between the bridges"><button class="step pa-focus" aria-label="Longer by 0.1 cm">+</button><input class="num" value="39.0" aria-label="Length in centimetres"></div>
     </div>
     <div class="ctl">
       <div class="lab"><span>Wire</span></div>
       <div class="row" role="group" aria-label="Wire"><button class="btn pa-focus">28 SWG</button><button class="btn pa-focus" aria-pressed="true">30 SWG</button><button class="btn pa-focus">32 SWG</button></div>
-      <span style="font-size: 13px; color: #8C8A84">Steel, 0.315 mm across: μ = 6.12 × 10⁻⁴ kg/m</span>
+      <span style="font-size: 13px; color: #8C8A84">Steel, 30 SWG: μ = 0.612 g/m</span>
     </div>
     <div class="ctl">
       <div class="lab"><span>Tuning fork</span></div>
@@ -119,10 +119,10 @@ input[type=range]{flex:1;accent-color:#2EC4B6}
 
     <h2 style="margin: 18px 0 0; font: 600 15px Geist, sans-serif; color: #8C8A84">Readings, from the model</h2>
     <dl style="margin: 10px 0 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: 14px">
-      <dt style="color: #C9C6BF">Tension, T = Mg</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">19.56 N</dd>
-      <dt style="color: #C9C6BF">Wave speed, v = √(T/μ)</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">178.8 m/s</dd>
-      <dt style="color: #C9C6BF">Lowest note, f₁ = v/2l</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">256.0 Hz</dd>
-      <dt style="color: #C9C6BF">Wavelength, λ = 2l</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">0.698 m</dd>
+      <dt style="color: #C9C6BF">Tension, T = Mg, less 0.5% at the pulley</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">24.4 N</dd>
+      <dt style="color: #C9C6BF">Wave speed, v = √(T/μ)</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">199.7 m/s</dd>
+      <dt style="color: #C9C6BF">Lowest note, f₁ = v/2l</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">256.1 Hz</dd>
+      <dt style="color: #C9C6BF">Wavelength, λ = 2l</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">0.780 m</dd>
       <dt style="color: #C9C6BF">The fork and the wire</dt><dd style="margin: 0; color: #2EC4B6">In resonance: the rider jumps</dd>
     </dl>
 
