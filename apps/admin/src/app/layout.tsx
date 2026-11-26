@@ -20,6 +20,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html
       lang="en-GB"
       data-theme="lab"
+      data-scroll-behavior="smooth"
       className={`${geist.variable} ${geistMono.variable} ${bricolage.variable}`}
     >
       <body className="font-sans antialiased">{children}</body>

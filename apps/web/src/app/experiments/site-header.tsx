@@ -7,6 +7,8 @@ import { Logo } from "@pa/ui";
 import Link from "next/link";
 import { useId, useState } from "react";
 
+import { type MenuTopic, TopicBar, TopicList } from "../_landing/topic-menu";
+
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[var(--pa-accent)]";
 
@@ -14,16 +16,15 @@ const focus =
 export const FIRST_LAB = "/lab/simple-pendulum";
 
 /**
- * The public pages' dark header (Practicals.dc.html): the practicals, how it works and about,
- * and "Open the lab". No account links (ADR 0047). `current` is "page" on /experiments itself and
+ * The public pages' dark header (Practicals.dc.html): the practicals, about and "Open the lab",
+ * with a second row of topic menus (after oPhysics). Below 1024px all of it is in the menu. No account links (ADR 0047). `current` is "page" on /experiments itself and
  * "true" on an experiment's page, which is inside the practicals.
  */
-export function SiteHeader({ current }: { current: "page" | "true" }) {
+export function SiteHeader({ current, topics }: { current: "page" | "true"; topics: MenuTopic[] }) {
   const [open, setOpen] = useState(false);
   const menu = useId();
   const links = [
     { href: "/experiments", label: t("practicals.nav.practicals"), current },
-    { href: "/#anatomy", label: t("practicals.nav.howItWorks") },
     { href: "/about", label: t("practicals.nav.about") },
   ];
   const link = (l: (typeof links)[number], small = false) => (
@@ -50,14 +51,16 @@ export function SiteHeader({ current }: { current: "page" | "true" }) {
           prefetch={false}
           href="/"
           aria-label={t("landing.home")}
-          className={`flex min-w-0 items-center gap-2.5 text-[var(--pa-text)] no-underline ${focus}`}
+          className={`flex min-w-0 items-center gap-2.5 text-[var(--pa-text)] no-underline max-[400px]:gap-2 [&>svg]:shrink-0 ${focus}`}
         >
           <Logo size={28} />
-          <span className="whitespace-nowrap font-display text-lg font-bold">Physics Anatomy</span>
+          <span className="whitespace-nowrap font-display text-lg font-bold max-[400px]:text-[15px] max-[359px]:hidden">
+            Physics Anatomy
+          </span>
         </Link>
         <nav
           aria-label={t("practicals.nav.main")}
-          className="hidden gap-1 text-[15px] min-[821px]:flex"
+          className="hidden items-center gap-1 text-[15px] min-[1024px]:flex"
         >
           {links.map((l) => link(l))}
         </nav>
@@ -65,7 +68,7 @@ export function SiteHeader({ current }: { current: "page" | "true" }) {
           <Link
             prefetch={false}
             href={FIRST_LAB}
-            className={`whitespace-nowrap bg-[var(--pa-accent)] px-3.5 py-[9px] text-[15px] font-semibold text-[var(--pa-ink-950)] no-underline ${focus}`}
+            className={`whitespace-nowrap bg-[var(--pa-accent)] px-3.5 py-[9px] text-[15px] font-semibold max-[400px]:px-2.5 text-[var(--pa-ink-950)] no-underline ${focus}`}
           >
             {t("practicals.open")}
           </Link>
@@ -75,7 +78,7 @@ export function SiteHeader({ current }: { current: "page" | "true" }) {
             aria-controls={menu}
             aria-label={t("landing.menu")}
             onClick={() => setOpen((o) => !o)}
-            className={`inline-flex size-10 items-center justify-center border border-[var(--pa-line-strong)] bg-transparent text-[var(--pa-text)] min-[821px]:hidden ${focus}`}
+            className={`inline-flex size-10 items-center justify-center border border-[var(--pa-line-strong)] bg-transparent text-[var(--pa-text)] min-[1024px]:hidden ${focus}`}
           >
             <svg
               width="18"
@@ -92,13 +95,18 @@ export function SiteHeader({ current }: { current: "page" | "true" }) {
           </button>
         </div>
       </div>
+      <div className="mx-auto hidden max-w-[1280px] border-t border-[var(--pa-line)] px-[22px] py-1 min-[1024px]:block">
+        <TopicBar topics={topics} label={t("landing.nav.topics")} />
+      </div>
       {open && (
         <nav
           id={menu}
           aria-label={t("landing.nav.small")}
-          className="flex flex-col border-t border-[var(--pa-line)] px-4 pb-3 text-[15px] min-[821px]:hidden"
+          className="flex flex-col border-t border-[var(--pa-line)] px-4 pb-3 text-[15px] min-[1024px]:hidden"
         >
-          {links.map((l) => link(l, true))}
+          {link(links[0]!, true)}
+          <TopicList topics={topics} onPick={() => setOpen(false)} />
+          {links.slice(1).map((l) => link(l, true))}
         </nav>
       )}
     </header>

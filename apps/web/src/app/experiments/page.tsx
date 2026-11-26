@@ -11,7 +11,7 @@ import { SiteFrame } from "./site-frame";
 
 export const metadata: Metadata = {
   title: `${t("catalogue.title")} · Physics Anatomy`,
-  description: t("practicals.lede"),
+  description: t("catalogue.lede"),
   alternates: { canonical: absolute("/experiments") },
 };
 
@@ -91,14 +91,9 @@ export default function ExperimentsPage() {
       <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-8 pb-[104px] pt-[72px] max-[520px]:px-4 max-[520px]:pt-12">
         <PracticalsGrid
           intro={
-            <div className="flex max-w-[40em] flex-col gap-3.5">
-              <h1 className="m-0 font-display text-[clamp(44px,6vw,80px)] font-extrabold leading-[0.92] tracking-[-0.035em]">
-                {t("catalogue.title")}
-              </h1>
-              <p className="m-0 text-[19px] text-[var(--pa-on-paper-muted)]">
-                {t("practicals.lede")}
-              </p>
-            </div>
+            <h1 className="m-0 font-display text-[clamp(44px,6vw,80px)] font-extrabold leading-[0.92] tracking-[-0.035em]">
+              {t("catalogue.title")}
+            </h1>
           }
           cards={CATALOGUE.map((e) => ({
             id: e.id,
@@ -106,9 +101,6 @@ export default function ExperimentsPage() {
             node: <PracticalCard e={e} />,
           }))}
         />
-        <p className="m-0 text-[15px] text-[var(--pa-on-paper-muted)]">
-          {t("practicals.teachers")}
-        </p>
       </div>
     </SiteFrame>
   );

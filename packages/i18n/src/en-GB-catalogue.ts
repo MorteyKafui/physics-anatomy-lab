@@ -133,16 +133,13 @@ export const enGBCatalogue = {
 
   // The practicals page (/experiments; design/mockups/Practicals.dc.html). Each badge is filled
   // with a reading the lab's own model gives (AGENTS.md rule 1).
-  "practicals.lede":
-    "The first six practicals from the WASSCE and university lists. Each one is the real apparatus, running the real equations. Open one and start: no sign-up.",
   "practicals.filter": "Filter by topic",
   "practicals.all": "All",
   "practicals.label": "Every practical",
+  "practicals.soon": "Practicals for {topic} are coming soon.",
   "practicals.apparatus": "Apparatus:",
   "practicals.open": "Open the lab",
   "practicals.about": "About this practical",
-  "practicals.teachers":
-    "Teachers: every practical has its own link. Send it to your class or put it on the projector.",
   "practicals.badge.simple-pendulum": "T = {value} s",
   "practicals.badge.ohms-law": "E = {value} V",
   "practicals.badge.converging-lens": "v = {value} cm",
@@ -163,7 +160,6 @@ export const enGBCatalogue = {
     "A solid on a thread lifted from a beaker of boiling water on a tripod, on its way to a lagged calorimeter with a thermometer and stirrer.",
   "practicals.nav.main": "Main",
   "practicals.nav.practicals": "Practicals",
-  "practicals.nav.howItWorks": "How it works",
   "practicals.nav.about": "About",
   "practicals.footer.made": "© {year} Physics Anatomy. Made in Winneba, Ghana.",
 } as const;

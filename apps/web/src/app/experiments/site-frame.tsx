@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import "../_landing/landing.css";
+import { topicMenu } from "./catalogue";
 import { SiteHeader } from "./site-header";
 
 /**
@@ -27,7 +28,7 @@ export function SiteFrame({
       >
         {t("landing.skip")}
       </a>
-      <SiteHeader current={current} />
+      <SiteHeader current={current} topics={topicMenu()} />
       <main id="content">{children}</main>
       <footer
         aria-label={t("landing.footer.label")}

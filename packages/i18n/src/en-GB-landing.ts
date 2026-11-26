@@ -26,10 +26,11 @@ export const enGBLanding = {
   "landing.scene.fourSlits.aria":
     "Particles landing behind four slits: narrow, sharp bright stripes.",
 
-  "landing.nav.howItWorks": "How it works",
   "landing.nav.practicals": "Practicals",
-  "landing.nav.coach": "The coach",
   "landing.nav.about": "About",
+  "landing.nav.topics": "Practicals by topic",
+  "landing.nav.allTopic": "All {topic} practicals",
+  "landing.nav.comingSoon": "Coming soon",
   "landing.nav.open": "Open the lab",
 
   "landing.timeIt.label": "Time a pendulum",
