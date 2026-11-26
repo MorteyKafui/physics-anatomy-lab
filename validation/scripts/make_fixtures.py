@@ -11,6 +11,7 @@ student_t.json Student's t CDF and quantiles (SciPy)      read by packages/analy
 outliers.json  Bonferroni outlier test (hat matrix)       read by packages/analysis
 review.json    the review's effects and the right way     read by packages/experiments
 diffraction.json  N-slit far field (SciPy quad over openings)  read by packages/physics
+sonometer.json  vibrating string (SciPy eigenvalues, brentq)  read by packages/physics
 """
 
 import itertools
@@ -20,6 +21,7 @@ from pathlib import Path
 
 import numpy as np
 
+from pa_validation import sonometer as sono
 from pa_validation.calorimetry import Setup, air_cooled, peak, states
 from pa_validation.circuits import (
     balance_length,
@@ -798,6 +800,141 @@ def build_diffraction() -> dict[str, object]:
     }
 
 
+def build_sonometer() -> dict[str, object]:
+    """Steel wires of 28 to 32 SWG on a school sonometer: loads of 0.5 to 4 kg over a pulley that
+    loses 0.5 % of the load, vibrating lengths of 0.15 to 0.9 m, harmonics 1 to 4. Mode
+    frequencies come from the string's eigenvalues, not from n v / 2l."""
+    loss = 0.005
+    wires = [
+        {
+            "swg": swg,
+            "diameter": inches * sono.INCH,
+            "density": sono.STEEL_DENSITY,
+            "mu": sono.linear_density(inches * sono.INCH, sono.STEEL_DENSITY),
+        }
+        for swg, inches in sono.SWG_INCHES.items()
+    ]
+    setups = []
+    for wire in wires[::2]:
+        for load in (0.5, 1.0, 2.5, 4.0):
+            for length in (0.15, 0.4, 0.9):
+                t = sono.tension(load, sono.STANDARD_GRAVITY, loss)
+                v = sono.wave_speed(t, wire["mu"])
+                freqs = sono.string_eigenfrequencies(length, t, wire["mu"], 4)
+                setups.append(
+                    {
+                        "swg": wire["swg"],
+                        "mu": wire["mu"],
+                        "load": load,
+                        "g": sono.STANDARD_GRAVITY,
+                        "pulleyLoss": loss,
+                        "length": length,
+                        "tension": t,
+                        "speed": v,
+                        "harmonics": [
+                            {"n": n, "frequency": f, "wavelength": 2 * length / n}
+                            for n, f in enumerate(freqs, start=1)
+                        ],
+                    }
+                )
+    responses = [
+        {
+            "drive": drive,
+            "natural": 256.0,
+            "q": q,
+            "response": sono.driven_response(drive, 256.0, q),
+            "phase": sono.driven_phase(drive, 256.0, q),
+        }
+        for q in (20.0, 170.0)
+        for drive in (64.0, 200.0, 250.0, 255.0, 256.0, 257.0, 262.0, 320.0, 1024.0)
+    ]
+    # One driven wire: 30 SWG, 2.5 kg, 0.4 m, Q = 170, driven near its fundamental and second.
+    v = sono.wave_speed(sono.tension(2.5, sono.STANDARD_GRAVITY, loss), wires[2]["mu"])
+    driven = []
+    for frequency in (sono.harmonic_frequency(1, 0.4, v) * 1.002, 400.0, 2 * v / 0.8):
+        for x in (0.05, 0.1, 0.2, 0.31):
+            for t in (0.0, 0.00073, 0.0021):
+                driven.append(
+                    {
+                        "length": 0.4,
+                        "speed": v,
+                        "frequency": frequency,
+                        "q": 170.0,
+                        "x": x,
+                        "t": t,
+                        "drive": 1e-5,
+                        "displacement": sono.driven_displacement(
+                            0.4, v, frequency, 170.0, x, t, 1e-5
+                        ),
+                    }
+                )
+    modes = [
+        {
+            "n": n,
+            "x": x,
+            "t": t,
+            "length": 0.6,
+            "speed": 200.0,
+            "amplitude": 0.002,
+            "displacement": sono.mode_displacement(n, x, t, 0.6, 200.0, 0.002),
+        }
+        for n in (1, 2, 3)
+        for x in (0.07, 0.15, 0.3, 0.52)
+        for t in (0.0, 0.0004, 0.00125)
+    ]
+    riders = [
+        {
+            "length": length,
+            "speed": v,
+            "frequency": 256.0,
+            "q": 170.0,
+            "riderAt": s,
+            "strength": a,
+            "excitation": sono.rider_excitation(length, v, 256.0, 170.0, s, a),
+        }
+        for length in (v / 512 * 0.99, v / 512, v / 512 * 1.004, v / 256)
+        for s in (0.5, 0.25, 0.1)
+        for a in (1.0, 0.6)
+    ]
+    bands = []
+    for frequency in (256.0, 384.0, 512.0):
+        for q in (140.0, 200.0):
+            for a in (1.0, 0.7, 0.4):
+                for n in (1, 2):
+                    band = sono.resonance_band(frequency, v, q, a, n)
+                    bands.append(
+                        {
+                            "frequency": frequency,
+                            "speed": v,
+                            "q": q,
+                            "strength": a,
+                            "n": n,
+                            "band": list(band) if band else None,
+                        }
+                    )
+    return {
+        "model": "sonometer: string eigenvalues (SciPy), complex driven response, brentq bands",
+        "units": {
+            "diameter": "m",
+            "density": "kg m^-3",
+            "mu": "kg m^-1",
+            "load": "kg",
+            "length": "m",
+            "tension": "N",
+            "speed": "m s^-1",
+            "frequency": "Hz",
+            "phase": "rad",
+        },
+        "wires": wires,
+        "setups": setups,
+        "responses": responses,
+        "driven": driven,
+        "modes": modes,
+        "riders": riders,
+        "bands": bands,
+    }
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -824,3 +961,4 @@ if __name__ == "__main__":
     write("model-check.json", build_model_check())
     write("uncertainty.json", build_uncertainty())
     write("diffraction.json", build_diffraction())
+    write("sonometer.json", build_sonometer())

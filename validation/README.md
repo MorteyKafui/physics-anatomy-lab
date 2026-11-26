@@ -20,6 +20,11 @@ validation", levels 1 and 2).
   SciPy's `quad` and adds the openings as phasors (or, with a which-slit detector, as
   intensities). `diffraction.json` is its fixture; `slitsIntensity` in `packages/physics` must
   match it to 10⁻¹⁰.
+- `pa_validation/sonometer.py` finds the stretched string's natural frequencies as eigenvalues of
+  the discretised wave equation (SciPy, Richardson-extrapolated), drives each mode as a complex
+  amplitude, and finds the paper rider's resonance band by root-finding with `brentq`.
+  `sonometer.json` is its fixture; `packages/physics` must match fₙ to 10⁻⁸ and the rest to 10⁻¹⁰
+  or better.
 - `pa_validation/fit.py` fits straight lines with SciPy's `linregress` and NumPy's least squares.
 - `pa_validation/outliers.py` computes deleted residuals from the hat matrix and the Bonferroni
   critical value from `scipy.stats.t`.
