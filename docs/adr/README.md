@@ -53,3 +53,4 @@ One record per lasting decision. They mirror the decision log kept during planni
 | [0046](./0046-pages-render-per-request-for-a-nonce-csp.md) | Pages render on each request, for a nonce Content Security Policy    | 2026-11-25 |
 | [0047](./0047-open-lab-accounts-off.md)                    | An open lab: accounts are switched off                               | 2026-11-26 |
 | [0048](./0048-anonymous-usage-counts.md)                   | Anonymous usage counts, with an id that changes every day            | 2026-11-26 |
+| [0049](./0049-simulations-beside-practicals.md)            | Simulations: a second area beside the practicals                     | 2026-11-26 |
