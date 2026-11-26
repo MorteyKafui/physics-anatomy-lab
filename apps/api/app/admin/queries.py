@@ -208,38 +208,6 @@ async def stages(db: AsyncSession, experiment_id: str, w: Window) -> list[dict[s
     return out
 
 
-async def step_minutes(db: AsyncSession, w: Window) -> list[dict[str, Any]]:
-    """The median time spent on each step, per experiment: from the end of the step before."""
-    rows = (
-        await db.execute(
-            text(
-                """
-                WITH done AS (
-                  SELECT a.experiment_id, e.data->>'step' AS step,
-                         e.at_ms - coalesce(
-                           lag(e.at_ms) OVER (PARTITION BY a.id ORDER BY e.at_ms, e.seq),
-                           a.created_at_ms) AS spent_ms
-                  FROM attempts a
-                  JOIN attempt_events e ON e.attempt_id = a.id AND e.owner_id = a.owner_id
-                  WHERE a.created_at_ms >= :since AND a.created_at_ms < :until
-                    AND e.kind = 'step.complete'
-                )
-                SELECT experiment_id, step, count(*) AS n,
-                       percentile_cont(0.5) WITHIN GROUP (ORDER BY spent_ms) / 60000.0 AS minutes
-                FROM done WHERE spent_ms >= 0
-                GROUP BY 1, 2
-                """
-            ),
-            {"since": w.since_ms, "until": w.until_ms},
-        )
-    ).all()
-    return [
-        {"experiment_id": r.experiment_id, "step": r.step, "n": r.n, "minutes": float(r.minutes)}
-        for r in rows
-        if r.step in STEPS
-    ]
-
-
 async def mistakes(
     db: AsyncSession, w: Window, experiment_id: str | None = None, limit: int = 50
 ) -> list[dict[str, Any]]:
@@ -494,3 +462,128 @@ async def ai_budget_reached_at(db: AsyncSession, since_ms: int, budget: int) -> 
 async def ai_switches(db: AsyncSession) -> dict[str, dict[str, Any]]:
     rows = (await db.execute(text("SELECT name, enabled, changed_at FROM ai_switches"))).all()
     return {r.name: {"enabled": r.enabled, "changed_at": r.changed_at} for r in rows}
+
+
+# Anonymous usage counts (ADR 0048). `received_at` is the server's clock. A visitor is a distinct
+# day id: devices make a new one every local day, so a visitor who returns is counted again.
+
+_USAGE_RANGE = """
+    received_at >= to_timestamp(:since / 1000.0) AND received_at < to_timestamp(:until / 1000.0)
+"""
+
+
+def _usage_params(w: Window) -> dict[str, int]:
+    return {"since": w.since_ms, "until": w.until_ms, "bucket": w.bucket_ms}
+
+
+async def usage_totals(db: AsyncSession, w: Window) -> dict[str, Any]:
+    """Visitors and experiments opened, in all and per bar of the range."""
+    params = _usage_params(w)
+    rows = (
+        await db.execute(
+            text(
+                f"""
+                SELECT floor((extract(epoch FROM received_at) * 1000 - :since) / :bucket) AS bucket,
+                       count(DISTINCT day_id) AS visitors,
+                       count(*) FILTER (WHERE name = 'experiment_viewed') AS opens
+                FROM usage_events
+                WHERE {_USAGE_RANGE}
+                GROUP BY 1
+                """
+            ),
+            params,
+        )
+    ).all()
+    total = (
+        await db.execute(
+            text(
+                f"""
+                SELECT count(DISTINCT day_id) AS visitors,
+                       count(*) FILTER (WHERE name = 'experiment_viewed') AS opens
+                FROM usage_events
+                WHERE {_USAGE_RANGE}
+                """
+            ),
+            params,
+        )
+    ).one()
+    visitors = [0] * w.buckets
+    opens = [0] * w.buckets
+    for row in rows:
+        i = int(row.bucket)
+        if 0 <= i < w.buckets:
+            visitors[i] = int(row.visitors)
+            opens[i] = int(row.opens)
+    return {
+        "visitors": int(total.visitors),
+        "opens": int(total.opens),
+        "visitors_series": visitors,
+        "opens_series": opens,
+    }
+
+
+async def usage_experiments(db: AsyncSession, w: Window) -> list[dict[str, Any]]:
+    """Per experiment, most opened first: opens, and visitors who opened it, reached its report
+    (finished Conclude) and completed it."""
+    rows = (
+        await db.execute(
+            text(
+                f"""
+                SELECT experiment_id,
+                  count(*) FILTER (WHERE name = 'experiment_viewed') AS opens,
+                  count(DISTINCT day_id) FILTER (WHERE name = 'experiment_viewed') AS visitors,
+                  count(*) FILTER (WHERE name = 'attempt_started') AS started,
+                  count(DISTINCT day_id) FILTER (
+                    WHERE name = 'stage_completed' AND step = 'conclude') AS reached_report,
+                  count(DISTINCT day_id) FILTER (WHERE name = 'attempt_completed') AS completed
+                FROM usage_events
+                WHERE {_USAGE_RANGE}
+                GROUP BY experiment_id
+                ORDER BY opens DESC, experiment_id
+                """
+            ),
+            _usage_params(w),
+        )
+    ).all()
+    return [dict(r._mapping) for r in rows]  # pyright: ignore[reportPrivateUsage]
+
+
+async def usage_steps(db: AsyncSession, w: Window) -> list[dict[str, Any]]:
+    """Per experiment and step, the visitors who finished that step."""
+    rows = (
+        await db.execute(
+            text(
+                f"""
+                SELECT experiment_id, step, count(DISTINCT day_id) AS visitors
+                FROM usage_events
+                WHERE name = 'stage_completed' AND {_USAGE_RANGE}
+                GROUP BY experiment_id, step
+                """
+            ),
+            _usage_params(w),
+        )
+    ).all()
+    order = {s: i for i, s in enumerate(STEPS)}
+    out = [dict(r._mapping) for r in rows]  # pyright: ignore[reportPrivateUsage]
+    return sorted(out, key=lambda r: (r["experiment_id"], order.get(r["step"], len(STEPS))))
+
+
+async def usage_by(db: AsyncSession, w: Window, column: Literal["format", "device"]) -> list[Any]:
+    """Exports by format (events), or visitors by device class (distinct day ids)."""
+    measure = "count(*)" if column == "format" else "count(DISTINCT day_id)"
+    only = "name = 'report_exported' AND" if column == "format" else ""
+    rows = (
+        await db.execute(
+            text(
+                f"""
+                SELECT {column} AS key, {measure} AS n
+                FROM usage_events
+                WHERE {only} {_USAGE_RANGE}
+                GROUP BY 1
+                ORDER BY 2 DESC, 1
+                """
+            ),
+            _usage_params(w),
+        )
+    ).all()
+    return [{"key": r.key, "n": int(r.n)} for r in rows]

@@ -2069,28 +2069,6 @@ export type StepCount = {
 };
 
 /**
- * StepTime
- */
-export type StepTime = {
-  /**
-   * Experiment Id
-   */
-  experiment_id: string;
-  /**
-   * Step
-   */
-  step: string;
-  /**
-   * N
-   */
-  n: number;
-  /**
-   * Minutes
-   */
-  minutes: number;
-};
-
-/**
  * StudentCounts
  *
  * Class members only: the lab works signed out, and signed-out students are not counted.
@@ -2448,17 +2426,172 @@ export type Unavailable =
 
 /**
  * Usage
+ *
+ * The Usage area, from anonymous usage counts (ADR 0048), not from synced attempts.
  */
 export type Usage = {
   window: RangeInfo;
   /**
+   * Visitors
+   */
+  visitors: number;
+  /**
+   * Opens
+   */
+  opens: number;
+  /**
+   * Visitors Series
+   */
+  visitors_series: Array<number>;
+  /**
+   * Opens Series
+   */
+  opens_series: Array<number>;
+  /**
    * Experiments
    */
-  experiments: Array<ExperimentUse>;
+  experiments: Array<UsageExperiment>;
   /**
-   * Step Minutes
+   * Steps
    */
-  step_minutes: Array<StepTime>;
+  steps: Array<UsageStep>;
+  /**
+   * Exports
+   */
+  exports: Array<UsageCount>;
+  /**
+   * Devices
+   */
+  devices: Array<UsageCount>;
+};
+
+/**
+ * UsageBatch
+ */
+export type UsageBatch = {
+  /**
+   * Events
+   */
+  events: Array<UsageEventIn>;
+};
+
+/**
+ * UsageCount
+ */
+export type UsageCount = {
+  /**
+   * Key
+   */
+  key: string;
+  /**
+   * N
+   */
+  n: number;
+};
+
+/**
+ * UsageEventIn
+ */
+export type UsageEventIn = {
+  /**
+   * Name
+   */
+  name:
+    | "experiment_viewed"
+    | "attempt_started"
+    | "stage_completed"
+    | "hint_shown"
+    | "report_exported"
+    | "attempt_completed";
+  /**
+   * Experimentid
+   */
+  experimentId: string;
+  /**
+   * Step
+   */
+  step?:
+    | "question"
+    | "predict"
+    | "build"
+    | "check"
+    | "measure"
+    | "tabulate"
+    | "plot"
+    | "analyse"
+    | "conclude"
+    | "report"
+    | null;
+  /**
+   * Mode
+   */
+  mode?: "guided" | "exam" | "own-data" | null;
+  /**
+   * Format
+   */
+  format?: "pdf" | "docx" | "figures" | "data" | null;
+  /**
+   * Device
+   */
+  device: "phone" | "tablet" | "desktop";
+  /**
+   * Appversion
+   */
+  appVersion: string;
+  /**
+   * Dayid
+   */
+  dayId: string;
+};
+
+/**
+ * UsageExperiment
+ *
+ * Anonymous counts for one experiment (ADR 0048). Visitors are distinct day ids.
+ */
+export type UsageExperiment = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Opens
+   */
+  opens: number;
+  /**
+   * Visitors
+   */
+  visitors: number;
+  /**
+   * Started
+   */
+  started: number;
+  /**
+   * Reached Report
+   */
+  reached_report: number;
+  /**
+   * Completed
+   */
+  completed: number;
+};
+
+/**
+ * UsageStep
+ */
+export type UsageStep = {
+  /**
+   * Experiment Id
+   */
+  experiment_id: string;
+  /**
+   * Step
+   */
+  step: string;
+  /**
+   * Visitors
+   */
+  visitors: number;
 };
 
 /**
@@ -4129,6 +4262,39 @@ export type ApprovedQuestionsResponses = {
 
 export type ApprovedQuestionsResponse =
   ApprovedQuestionsResponses[keyof ApprovedQuestionsResponses];
+
+export type UsageEventsData = {
+  body: UsageBatch;
+  path?: never;
+  query?: never;
+  url: "/usage/events";
+};
+
+export type UsageEventsErrors = {
+  /**
+   * The body is over 32 KB.
+   */
+  413: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * More than 600 events from this address in the hour.
+   */
+  429: unknown;
+};
+
+export type UsageEventsError = UsageEventsErrors[keyof UsageEventsErrors];
+
+export type UsageEventsResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type UsageEventsResponse = UsageEventsResponses[keyof UsageEventsResponses];
 
 export type StaffMeData = {
   body?: never;
