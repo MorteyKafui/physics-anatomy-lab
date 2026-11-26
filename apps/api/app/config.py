@@ -2,11 +2,16 @@
 
 from functools import lru_cache
 from typing import Literal, Self
+from urllib.parse import urlsplit
 
 from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Environment = Literal["local", "test", "preview", "staging", "production"]
+
+# Where "local" and "test" may run: this machine only. A server whose ENVIRONMENT was left unset
+# would otherwise start as "local", with the test-only sign-in route and every deployed check off.
+ON_THIS_MACHINE = frozenset({"localhost", "127.0.0.1", "::1"})
 
 
 class Settings(BaseSettings):
@@ -84,6 +89,16 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def _deployed_settings(self) -> Self:
         deployed = self.environment in ("preview", "staging", "production")
+        host = urlsplit(self.web_origin).hostname or ""
+        if not deployed and not (host in ON_THIS_MACHINE or host.endswith(".localhost")):
+            raise ValueError(
+                f"ENVIRONMENT is {self.environment}, but WEB_ORIGIN is not on this machine. "
+                "Set ENVIRONMENT to preview, staging or production."
+            )
+        if deployed and not self.web_origin.startswith("https://"):
+            raise ValueError("WEB_ORIGIN must be https:// when deployed (cookies need Secure).")
+        if deployed and self.email_delivery == "log":
+            raise ValueError("EMAIL_DELIVERY=log is for this machine only; choose resend or none.")
         if deployed and not self.client_ip_header:
             raise ValueError("Set CLIENT_IP_HEADER (cf-connecting-ip behind Cloudflare).")
         if self.email_delivery == "resend" and not self.resend_api_key:
