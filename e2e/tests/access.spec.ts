@@ -6,7 +6,7 @@ import { WEB } from "../playwright.config";
 // page brief, decision 6). The API is answered here, so these run without it.
 
 test.describe("teacher sign-in", () => {
-  test("the landing page hands the email to /sign-in without putting it in the address", async ({
+  test("/sign-in sends an email link without putting the email in the address", async ({
     page,
   }) => {
     await page.route("**/api/auth/methods", (r) =>
@@ -17,11 +17,9 @@ test.describe("teacher sign-in", () => {
       sent = r.request().postDataJSON();
       await r.fulfill({ status: 202, json: { detail: "Check your email." } });
     });
-    await page.goto(`${WEB}/#signup`);
-    await page.getByLabel("School email").fill("teacher@example.test");
-    await page.getByRole("button", { name: "Sign up with email" }).click();
-    await expect(page).toHaveURL(`${WEB}/sign-in`);
-    await expect(page.getByLabel("Your email")).toHaveValue("teacher@example.test");
+    // The landing page has no sign-up any more (ADR 0047); teachers start at /sign-in.
+    await page.goto(`${WEB}/sign-in`);
+    await page.getByLabel("Your email").fill("teacher@example.test");
     await expect(page.getByRole("link", { name: "Continue with Google" })).toBeVisible();
 
     await page.getByRole("button", { name: "Email me a sign-in link" }).click();
@@ -71,9 +69,7 @@ test.describe("teacher sign-in", () => {
 });
 
 test.describe("joining a class", () => {
-  test("a code from the landing page opens the class, its notices and the join form", async ({
-    page,
-  }) => {
+  test("a code on /join opens the class, its notices and the join form", async ({ page }) => {
     await page.route("**/api/join/preview", (r) =>
       r.fulfill({
         json: { class_name: "Form 2 Science", teacher_name: "Mr Mensah", ai_enabled: false },
@@ -87,10 +83,10 @@ test.describe("joining a class", () => {
         json: { kind: "student", member_id: "m1", display_name: "Kofi_A" },
       });
     });
-    await page.goto(`${WEB}/#signup`);
+    // The landing page has no class-code form any more (ADR 0047); students start at /join.
+    await page.goto(`${WEB}/join`);
     await page.getByLabel("Class code from your teacher").fill("ABC-123");
-    await page.getByRole("button", { name: "Join the class" }).click();
-    await expect(page).toHaveURL(`${WEB}/join`);
+    await page.getByRole("button", { name: "Find my class" }).click();
     await expect(
       page.getByRole("heading", { name: "You're joining Form 2 Science" }),
     ).toBeVisible();
