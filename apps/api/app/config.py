@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     environment: Environment = "local"
+    # Accounts (ADR 0047): sign-in, classes, live classes, sync, the privacy exports and AI. Off
+    # by default everywhere, local included; with it off those routes answer 404 (app/accounts.py)
+    # and only the admin API and the exam's approved questions answer. The web app and the admin
+    # portal read the same setting.
+    accounts_enabled: bool = False
     database_url: str = "postgresql+asyncpg://pa_app:change-me@localhost:5432/physics_anatomy_dev"
     # The web app's origin. Sign-in links point here, and only this origin may make changes.
     web_origin: str = "http://localhost:3000"
@@ -42,7 +47,7 @@ class Settings(BaseSettings):
     resend_api_key: SecretStr | None = None
 
     # Cloudflare Turnstile on the sign-in and join forms. Off unless the secret is set; required
-    # in preview, staging and production.
+    # in preview, staging and production while accounts are on (there are no forms otherwise).
     turnstile_secret_key: SecretStr | None = None
     email_from: str = "Physics Anatomy <sign-in@localhost>"
 
@@ -106,7 +111,7 @@ class Settings(BaseSettings):
             raise ValueError("Set CLIENT_IP_HEADER (cf-connecting-ip behind Cloudflare).")
         if self.email_delivery == "resend" and not self.resend_api_key:
             raise ValueError("Set RESEND_API_KEY, or choose another EMAIL_DELIVERY.")
-        if deployed and not self.turnstile_secret_key:
+        if deployed and self.accounts_enabled and not self.turnstile_secret_key:
             raise ValueError("Set TURNSTILE_SECRET_KEY (the sign-in and join forms need it).")
         if self.admin_dev_bypass_email and self.environment not in ("local", "test"):
             raise ValueError("ADMIN_DEV_BYPASS_EMAIL works only in local and test.")

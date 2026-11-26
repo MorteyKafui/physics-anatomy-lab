@@ -1,12 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // Production builds on their own ports, so the gates never hit a running dev server. Set
-// E2E_WEB_PORT and E2E_ADMIN_PORT to run beside another checkout's servers on the same machine:
-// locally an existing server is reused, so a shared port would test the other checkout's code.
+// E2E_WEB_PORT, E2E_ADMIN_PORT and E2E_OPEN_PORT to run beside another checkout's servers on the
+// same machine: locally an existing server is reused, so a shared port would test the other
+// checkout's code.
 const WEB_PORT = process.env.E2E_WEB_PORT ?? "3100";
 const ADMIN_PORT = process.env.E2E_ADMIN_PORT ?? "3101";
+const OPEN_PORT = process.env.E2E_OPEN_PORT ?? "3102";
 export const WEB = `http://localhost:${WEB_PORT}`;
 export const ADMIN = `http://localhost:${ADMIN_PORT}`;
+// The same build with accounts switched off, as they are by default (ADR 0047). The two servers
+// above run with them on, so the account flows keep their tests.
+export const OPEN = `http://localhost:${OPEN_PORT}`;
+const ACCOUNTS_ON = { ACCOUNTS_ENABLED: "true" };
 
 const ci = Boolean(process.env.CI);
 
@@ -35,12 +41,21 @@ export default defineConfig({
       command: `bunx next start --port ${WEB_PORT}`,
       cwd: "../apps/web",
       url: WEB,
+      env: ACCOUNTS_ON,
       reuseExistingServer: !ci,
     },
     {
       command: `bunx next start --port ${ADMIN_PORT}`,
       cwd: "../apps/admin",
       url: ADMIN,
+      env: ACCOUNTS_ON,
+      reuseExistingServer: !ci,
+    },
+    {
+      command: `bunx next start --port ${OPEN_PORT}`,
+      cwd: "../apps/web",
+      url: OPEN,
+      env: { ACCOUNTS_ENABLED: "false" },
       reuseExistingServer: !ci,
     },
   ],

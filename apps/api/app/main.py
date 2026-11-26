@@ -1,4 +1,8 @@
-"""The Physics Anatomy API: accounts, classes, sync, live classes and AI."""
+"""The Physics Anatomy API: accounts, classes, sync, live classes and AI.
+
+With ACCOUNTS_ENABLED off (the default, ADR 0047) only the admin API, the exam's approved
+questions and the health check answer; the rest is switched off by app/accounts.py.
+"""
 
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -8,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 from pydantic import BaseModel
 
+from app.accounts import AccountsSwitch
 from app.auth.origin import OriginGuard
 from app.auth.policy import MAX_BODY_BYTES, USAGE_MAX_BODY_BYTES
 from app.body_limit import BodyLimit
@@ -69,7 +74,33 @@ app = FastAPI(
     summary="Accounts, sync, live classes, AI and exports for the Physics Anatomy lab.",
     generate_unique_id_function=operation_id,
 )
+# The routes the accounts switch turns off (ADR 0047): sign-in, classes, joining, sync, the
+# teacher's reads, privacy and exports, live classes and AI. Everything but the exam's approved
+# questions, which need no account.
+ACCOUNT_ROUTERS = (
+    auth.router,
+    classes.teacher_router,
+    classes.join_router,
+    sync.router,
+    teacher.router,
+    privacy.router,
+    live.router,
+    live.socket_router,
+    ai.router,
+    questions.router,
+)
+OPEN_WITHOUT_ACCOUNTS = frozenset({"approved_questions"})
+
 # Added last, runs first: CORS answers preflights before the origin guard sees the request.
+app.add_middleware(
+    AccountsSwitch,
+    routes=[
+        route
+        for router in ACCOUNT_ROUTERS
+        for route in router.routes
+        if getattr(route, "name", None) not in OPEN_WITHOUT_ACCOUNTS
+    ],
+)
 app.add_middleware(SecurityHeaders)
 app.add_middleware(
     BodyLimit, max_bytes=MAX_BODY_BYTES, smaller={"/usage/events": USAGE_MAX_BODY_BYTES}
@@ -82,17 +113,10 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["Content-Type"],
 )
-app.include_router(auth.router)
-app.include_router(classes.teacher_router)
-app.include_router(classes.join_router)
-app.include_router(sync.router)
-app.include_router(teacher.router)
-app.include_router(privacy.router)
-app.include_router(live.router)
-app.include_router(live.socket_router)
-app.include_router(ai.router)
-app.include_router(questions.router)
-# Open without sign-in: anonymous counts from the lab (ADR 0048).
+for router in ACCOUNT_ROUTERS:
+    app.include_router(router)
+# Open without sign-in: anonymous counts from the lab (ADR 0048). Not an account route, so it
+# stays on when accounts are switched off.
 app.include_router(usage.router)
 # Staff only, behind Cloudflare Access; reached from the admin portal's server (ADR 0040).
 app.include_router(admin.router)

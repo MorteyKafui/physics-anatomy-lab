@@ -8,6 +8,8 @@ import {
   TURNSTILE_ORIGIN,
 } from "@pa/security";
 
+import { ACCOUNT_PAGES, accountsEnabled } from "./app/accounts";
+
 /** Turnstile is drawn only on the screens that ask for it (src/app/_access/turnstile.tsx). */
 const WITH_TURNSTILE = /^\/(sign-in|join)(\/|$)/;
 
@@ -18,6 +20,10 @@ const WITH_TURNSTILE = /^\/(sign-in|join)(\/|$)/;
  * `CSP_MODE=report` turns it back to Report-Only (ADR 0046).
  */
 export function proxy(request: NextRequest) {
+  // Accounts switched off (ADR 0047): old links and bookmarks to the account pages land home.
+  if (!accountsEnabled() && ACCOUNT_PAGES.test(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/", request.url), 307);
+  }
   const nonce = newNonce();
   const policy = contentSecurityPolicy({
     nonce,

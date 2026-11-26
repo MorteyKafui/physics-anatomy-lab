@@ -1,13 +1,16 @@
 "use client";
 // Whether this person may use AI now (ADR 0043, GET /ai/status). Asked once when the lab opens,
 // off the lab's critical path: until the answer comes, and whenever the API cannot be reached,
-// AI is simply not offered and the lab works as it always does.
+// AI is simply not offered and the lab works as it always does. With accounts switched off
+// (ADR 0047) AI is off for everyone, so the lab does not ask at all.
 //
 // A plain fetch, not the API client: the client would add to the lab's first download, and the
 // lab is at its JavaScript budget (e2e performance.spec.ts). The tutor panel, loaded only when
 // its tab opens, uses the client.
 import type { AiStatus, FeatureName } from "@pa/api-client";
 import { useEffect, useState } from "react";
+
+import { useAccountsEnabled } from "../../accounts-switch";
 
 function isStatus(value: unknown): value is AiStatus {
   if (typeof value !== "object" || value === null) return false;
@@ -17,7 +20,9 @@ function isStatus(value: unknown): value is AiStatus {
 
 export function useAiStatus(): AiStatus | undefined {
   const [status, setStatus] = useState<AiStatus>();
+  const accounts = useAccountsEnabled();
   useEffect(() => {
+    if (!accounts) return;
     const stop = new AbortController();
     fetch("/api/ai/status", { credentials: "include", signal: stop.signal })
       .then((r) => (r.ok ? r.json() : undefined))
@@ -26,7 +31,7 @@ export function useAiStatus(): AiStatus | undefined {
       })
       .catch(() => undefined); // offline, or no API to ask: no AI, nothing to show
     return () => stop.abort();
-  }, []);
+  }, [accounts]);
   return status;
 }
 
