@@ -2,12 +2,13 @@ import { expect, test } from "@playwright/test";
 
 import { WEB } from "../playwright.config";
 
-// Teacher sign-in and joining a class (design/mockups/SignIn.dc.html and Join.dc.html). The API is
-// answered here, so these run without it. They run with accounts switched on (ADR 0047); the
-// landing page no longer has a sign-up band, so they start on /sign-in and /join.
+// Teacher sign-in and joining a class (design/mockups/SignIn.dc.html and Join.dc.html; landing
+// page brief, decision 6). The API is answered here, so these run without it.
 
 test.describe("teacher sign-in", () => {
-  test("an email link is sent from /sign-in", async ({ page }) => {
+  test("/sign-in sends an email link without putting the email in the address", async ({
+    page,
+  }) => {
     await page.route("**/api/auth/methods", (r) =>
       r.fulfill({ json: { email_link: true, google: true } }),
     );
@@ -16,6 +17,7 @@ test.describe("teacher sign-in", () => {
       sent = r.request().postDataJSON();
       await r.fulfill({ status: 202, json: { detail: "Check your email." } });
     });
+    // The landing page has no sign-up any more (ADR 0047); teachers start at /sign-in.
     await page.goto(`${WEB}/sign-in`);
     await page.getByLabel("Your email").fill("teacher@example.test");
     await expect(page.getByRole("link", { name: "Continue with Google" })).toBeVisible();
@@ -67,7 +69,7 @@ test.describe("teacher sign-in", () => {
 });
 
 test.describe("joining a class", () => {
-  test("a class code opens the class, its notices and the join form", async ({ page }) => {
+  test("a code on /join opens the class, its notices and the join form", async ({ page }) => {
     await page.route("**/api/join/preview", (r) =>
       r.fulfill({
         json: { class_name: "Form 2 Science", teacher_name: "Mr Mensah", ai_enabled: false },
@@ -81,6 +83,7 @@ test.describe("joining a class", () => {
         json: { kind: "student", member_id: "m1", display_name: "Kofi_A" },
       });
     });
+    // The landing page has no class-code form any more (ADR 0047); students start at /join.
     await page.goto(`${WEB}/join`);
     await page.getByLabel("Class code from your teacher").fill("ABC-123");
     await page.getByRole("button", { name: "Find my class" }).click();

@@ -1,5 +1,4 @@
 import { t } from "@pa/i18n";
-import "@pa/i18n/catalogue";
 import "@pa/i18n/landing";
 import type { ReactNode } from "react";
 
@@ -7,11 +6,7 @@ import { LandingFooter } from "../_landing/footer";
 import { LandingHeader } from "../_landing/header";
 import "../_landing/landing.css";
 
-/**
- * The public site's header and footer around a page that is not the landing page itself. Like the
- * landing page (redesign brief, section 2), it has no sign-in, sign-up, teacher or account link,
- * and the header's button opens the practicals (ADR 0047).
- */
+/** The public site's header and footer around a page that is not the landing page itself. */
 export function SiteFrame({ children }: { children: ReactNode }) {
   return (
     <div className="bg-[var(--pa-paper)] text-[var(--pa-on-paper)]">
@@ -24,15 +19,23 @@ export function SiteFrame({ children }: { children: ReactNode }) {
       <div className="bg-[var(--pa-ink-950)] pb-[76px] text-[var(--pa-text)]">
         <LandingHeader
           links={[
+            { href: "/experiments", label: t("landing.nav.practicals") },
             { href: "/#anatomy", label: t("landing.nav.howItWorks") },
-            { href: "/experiments", label: t("landing.nav.experiments") },
-            { href: "/#research", label: t("landing.nav.research") },
+            { href: "/#coach", label: t("landing.nav.coach") },
+            { href: "/about", label: t("landing.nav.about") },
           ]}
-          signUp={{ href: "/experiments", label: t("catalogue.open") }}
+          action={{ href: "/lab/simple-pendulum", label: t("landing.nav.open") }}
         />
       </div>
       <main id="content">{children}</main>
-      <LandingFooter product={[{ href: "/experiments", label: t("landing.nav.experiments") }]} />
+      <LandingFooter
+        product={[
+          { href: "/experiments", label: t("landing.footer.all") },
+          { href: "/lab/simple-pendulum", label: t("landing.cards.pendulum.title") },
+          { href: "/lab/ohms-law", label: t("landing.cards.circuit.title") },
+          { href: "/lab/converging-lens", label: t("landing.cards.lens.title") },
+        ]}
+      />
     </div>
   );
 }

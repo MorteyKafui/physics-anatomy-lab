@@ -57,12 +57,10 @@ for (const path of PAGES) {
 }
 
 test("the landing page has no account link", async ({ page }) => {
-  test.fixme(
-    true,
-    "The landing page pull request (build order 3) removes its sign-up band and links",
-  );
   await page.goto(OPEN);
   expect(await accountLinks(page)).toEqual([]);
+  const text = await page.locator("body").innerText();
+  expect(text.split("\n").filter((line) => ACCOUNT_WORDS.test(line))).toEqual([]);
 });
 
 test("the account pages redirect home", async ({ request }) => {

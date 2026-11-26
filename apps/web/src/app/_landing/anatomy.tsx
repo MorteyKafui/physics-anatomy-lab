@@ -136,6 +136,32 @@ const PARTS: readonly Part[] = [
   },
 ];
 
+/**
+ * The same stand, put together, with the thread and bob swinging (Landing.dc.html, the hero's
+ * bench). The swing is a CSS animation that reduced motion and Lite mode stop.
+ */
+export function StandFigure() {
+  const part = (id: PartId) => (
+    <g key={id} data-part={id} stroke={INK} strokeWidth="1" strokeLinejoin="round">
+      {PARTS.find((p) => p.id === id)!.drawing}
+    </g>
+  );
+  return (
+    <svg
+      viewBox="90 -10 400 350"
+      width={400}
+      height={350}
+      className="mx-auto block h-auto w-[86%]"
+      role="img"
+      aria-label={t("landing.bench.pendulum.figure")}
+    >
+      {(["base", "rod", "clamp", "cork"] as const).map(part)}
+      <g className="pa-swing">{(["thread", "bob"] as const).map(part)}</g>
+      {part("watch")}
+    </svg>
+  );
+}
+
 const name = (id: PartId) => t(`landing.anatomy.${id}` as MessageKey);
 /** Each part's note; the stopwatch's numbers come from the lab's stopwatch and timing model. */
 const note = (id: PartId) =>

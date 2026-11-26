@@ -5,11 +5,16 @@ import {
   convergingLens,
   correctBench,
   correctMixturesBench,
+  correctSolidBench,
+  hotSolid,
+  lensPins,
   lensWorld,
   methodOfMixtures,
   mixturesPeak,
   ohmsLaw,
   ohmsLawWorld,
+  solidPeak,
+  solidWorld,
   trueReadings,
 } from "@pa/experiments";
 import { imageDistance } from "@pa/physics";
@@ -31,6 +36,10 @@ export interface CardsData {
   circuit: { rows: FeedRow[]; badge: string; resistor: number; positions: number };
   lens: { rows: FeedRow[]; badge: string; focalLengthCm: number };
   mixtures: { rows: FeedRow[]; badges: string[]; calorimeterKg: number };
+  /** The two pins: the image found with a search pin, at the question's object distances. */
+  pins: { rows: FeedRow[]; badge: string };
+  /** A hot solid: the highest temperature for each metal the solid may be. */
+  solid: { rows: FeedRow[]; badge: string };
 }
 
 /** The pendulum card's six lengths, m: the ones its bars stand for. */
@@ -64,6 +73,21 @@ export function cardsData(): CardsData {
     ];
   });
 
+  const pinsRows = lensPins.objectDistances.map((u): FeedRow => {
+    const v = imageDistance(u, f);
+    return [
+      `u ${(u * 100).toFixed(1)} cm`,
+      `v ${(v * 100).toFixed(1)} cm`,
+      `f ${(((u * v) / (u + v)) * 100).toFixed(1)} cm`,
+    ];
+  });
+
+  const solidRows = hotSolid.metals.map((metal): FeedRow => {
+    const peak = solidPeak(correctSolidBench({ metal })).temperature;
+    return [`${metal.id}`, `θ ${peak.toFixed(1)} °C`, `c ${metal.c} J/(kg K)`];
+  });
+  const cardMetal = solidWorld(CARD_SEED).metal;
+
   const hot = methodOfMixtures.hot;
   const peaks = methodOfMixtures.volumes.map(
     (cold) => mixturesPeak(correctMixturesBench(cold)).temperature,
@@ -94,6 +118,11 @@ export function cardsData(): CardsData {
       ]),
       badges: peaks.map((p) => `θ = ${p.toFixed(1)} °C`),
       calorimeterKg: methodOfMixtures.calorimeter.mass,
+    },
+    pins: { rows: pinsRows, badge: `f = ${(f * 100).toFixed(1)} cm` },
+    solid: {
+      rows: solidRows,
+      badge: `θ = ${solidPeak(correctSolidBench({ metal: cardMetal })).temperature.toFixed(1)} °C`,
     },
   };
 }

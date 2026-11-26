@@ -40,7 +40,6 @@ for (const id of IDS) {
       "href",
       new RegExp(`/experiments/${id}$`),
     );
-    // Scoped to the page: the header's button opens the practicals and has the same name.
     await expect(
       page.locator("#content").getByRole("link", { name: "Open the lab" }),
     ).toHaveAttribute("href", `/lab/${id}`);
