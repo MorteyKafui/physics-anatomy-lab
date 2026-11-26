@@ -508,6 +508,7 @@ One token set serves two surfaces: a dark, instrument-like lab and a warm, light
 - **Labels in sentence case.** No all-caps labels or monospace eyebrow text; monospace is kept for numbers, units and codes.
 - **Graphs download in colour or black and white.** See Colour graphs below.
 - **Public site layout.** A sticky header that becomes a floating bar on scroll, a centred hero with an outlined second line, live experiment cards in the isometric style, teacher sign-up beside the student class-code join, and a large-type footer with a live status light.
+- **Real apparatus, real look.** Every apparatus, instrument and material in every practical is drawn with the Anatomy kit to look like the real object in a school lab: a retort stand with its base, rod, boss head and clamp; a potentiometer wire on its board with brass strips and a metre scale; a dry cell, plug key, rheostat, and meters with real scales. A Labels switch names every part with a leader line and the lettered key. Every part opens a card with its real look, an exploded view, what it does, how to handle it, its least count and its diagram symbol. No practical ships with flat boxes or letters standing in for apparatus.
 
 **Tokens (starting values, tuned in Phase 0).**
 
@@ -858,6 +859,26 @@ Decided by Mortey on 26 November 2026, ahead of a local presentation. The lab is
 - [x] Practicals page and experiment pages from their boards
 - [x] Lab shell from its board; unbuilt steps hidden
 - [x] Reading pages, 404 and offline
+
+### Phase 8: A real lab for the first six practicals (before going live)
+
+Decided by Mortey on 26 November 2026, after he could not finish any of the six. The bar: someone who knows no physics finishes each practical from Question to Report on the Auto help level, guided all the way, and feels they worked with real apparatus in a real lab. Plan: `docs/planning/lab-overhaul-plan.md`; boards: pull request 155.
+
+- [x] Install the anatomy skill for the project, pinned in `skills-lock.json`
+- [x] One lab frame for all six practicals: the same settings, spoken coach, captions and Read aloud in each (pull request 154)
+- [ ] Snapshots, reset, step back, pause and speed in every practical, not only the pendulum
+- [ ] Boards approved: labelled bench, part card, apparatus shelf, coach on the bench, skill drill, explore mode, precise controls
+- [ ] Every apparatus redrawn with the Anatomy kit to look like the real object, with a Labels switch and the lettered key, for all six practicals
+- [ ] Part cards and Meet the apparatus: real look, exploded view, purpose, handling, least count and diagram symbol; the diagram and the bench highlight each other
+- [ ] Pick the apparatus from a shelf that also holds things the practical does not need
+- [ ] A coach that unsticks: the next part lit, a wrong action marked at once with the reason beside the bench, Show me, and Fix it for me after two tries; no dead ends
+- [ ] Guided measuring: the coach names the next reading; the table opens from the first reading and fills one row per value
+- [ ] Precise controls: a typed value, ±0.1 and ±1 buttons, arrow keys, snapping to the least count
+- [ ] Skill drills before first use: reading a meter, a metre rule without parallax, a thermometer, a stopwatch
+- [ ] Explore mode, ungraded, in the style of PhET and oPhysics: live sliders, the hidden physics made visible, a live graph, ideal against real
+- [ ] Real-lab feel in all six: lab sounds, needle jitter, a working stopwatch, safe failures the coach explains
+- [ ] Proof: an automated beginner run per practical from Question to Report on Auto, as a CI gate; each procedure checked against the WASSCE guide and lab manual
+- [ ] Five people who know no physics complete each practical unaided
 
 ## Also needed: gaps found in the final review
 
