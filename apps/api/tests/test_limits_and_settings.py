@@ -1,5 +1,7 @@
 """Rate limits count the right things, and deployed settings fail closed (ADR 0038)."""
 
+from typing import Any
+
 import pytest
 from httpx import AsyncClient
 from pydantic import SecretStr, ValidationError
@@ -52,9 +54,17 @@ def test_the_proxy_header_is_read_only_when_configured(monkeypatch: pytest.Monke
 
 def test_deployed_environments_need_the_client_address_header() -> None:
     with pytest.raises(ValidationError, match="CLIENT_IP_HEADER"):
-        Settings(environment="production", client_ip_header=None, admin_dev_bypass_email=None)
+        Settings(
+            environment="production",
+            web_origin="https://physicsanatomy.example",
+            email_delivery="none",
+            client_ip_header=None,
+            admin_dev_bypass_email=None,
+        )
     assert Settings(
         environment="production",
+        web_origin="https://physicsanatomy.example",
+        email_delivery="none",
         client_ip_header="cf-connecting-ip",
         admin_dev_bypass_email=None,
         turnstile_secret_key=SecretStr("0x-test"),
@@ -88,3 +98,32 @@ async def test_google_starts_are_limited_per_address(client: AsyncClient) -> Non
         assert (await client.get("/auth/google/start")).status_code == 429
     finally:
         app.dependency_overrides.pop(_google_or_404, None)
+
+
+def test_an_unset_environment_is_refused_away_from_this_machine() -> None:
+    # ENVIRONMENT left unset on a server would start it as "local": the test-only sign-in route,
+    # logged emails and no deployed checks. Away from localhost it does not start at all.
+    for environment in ("local", "test"):
+        with pytest.raises(ValidationError, match="WEB_ORIGIN is not on this machine"):
+            Settings(
+                environment=environment,  # pyright: ignore[reportArgumentType]
+                web_origin="https://physicsanatomy.example",
+            )
+    for origin in ("http://localhost:3000", "http://127.0.0.1:3100", "http://app.localhost"):
+        assert Settings(environment="local", web_origin=origin)
+
+
+def test_deployed_servers_need_https_and_real_email() -> None:
+    deployed: dict[str, Any] = {
+        "environment": "production",
+        "client_ip_header": "cf-connecting-ip",
+        "turnstile_secret_key": "0x-test",
+    }
+    https = "https://physicsanatomy.example"
+    with pytest.raises(ValidationError, match="must be https"):
+        Settings.model_validate(
+            {**deployed, "web_origin": "http://physicsanatomy.example", "email_delivery": "none"}
+        )
+    with pytest.raises(ValidationError, match="EMAIL_DELIVERY=log"):
+        Settings.model_validate({**deployed, "web_origin": https, "email_delivery": "log"})
+    assert Settings.model_validate({**deployed, "web_origin": https, "email_delivery": "none"})

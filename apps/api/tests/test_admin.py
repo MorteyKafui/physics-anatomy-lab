@@ -182,6 +182,8 @@ def test_the_dev_bypass_is_refused_on_deployed_servers() -> None:
         with pytest.raises(ValidationError, match="ADMIN_DEV_BYPASS_EMAIL"):
             Settings(
                 environment=environment,  # pyright: ignore[reportArgumentType]
+                web_origin="https://physicsanatomy.example",
+                email_delivery="none",
                 client_ip_header="cf-connecting-ip",
                 admin_dev_bypass_email=STAFF,
                 turnstile_secret_key=SecretStr("0x-test"),

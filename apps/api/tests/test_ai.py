@@ -126,6 +126,8 @@ async def test_a_class_is_off_by_default_and_its_teacher_turns_it_on(
 def test_deployed_servers_refuse_ai_without_the_key_the_log_key_or_a_budget() -> None:
     deployed: dict[str, Any] = {
         "environment": "production",
+        "web_origin": "https://physicsanatomy.example",
+        "email_delivery": "none",
         "client_ip_header": "cf-connecting-ip",
         "turnstile_secret_key": "x",
         "ai_enabled": True,

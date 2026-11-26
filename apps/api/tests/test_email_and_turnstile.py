@@ -51,10 +51,16 @@ def test_resend_needs_its_key() -> None:
 def test_deployed_environments_need_turnstile() -> None:
     with pytest.raises(ValidationError, match="TURNSTILE_SECRET_KEY"):
         Settings(
-            environment="staging", client_ip_header="cf-connecting-ip", turnstile_secret_key=None
+            environment="staging",
+            web_origin="https://physicsanatomy.example",
+            email_delivery="none",
+            client_ip_header="cf-connecting-ip",
+            turnstile_secret_key=None,
         )
     assert Settings(
         environment="staging",
+        web_origin="https://physicsanatomy.example",
+        email_delivery="none",
         client_ip_header="cf-connecting-ip",
         turnstile_secret_key=SecretStr("0x-test"),
     )

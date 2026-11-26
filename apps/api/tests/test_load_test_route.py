@@ -37,6 +37,8 @@ async def test_it_says_404_outside_local_and_test(
     await client.post("/auth/email-link", json={"email": "ama@school.example"})
     staging = Settings(
         environment="staging",
+        web_origin="https://physicsanatomy.example",
+        email_delivery="none",
         client_ip_header="cf-connecting-ip",
         turnstile_secret_key=SecretStr("0x-test"),
     )
