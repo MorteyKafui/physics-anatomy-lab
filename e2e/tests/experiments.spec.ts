@@ -33,7 +33,8 @@ test("the practicals page lists every lab, and each opens its lab and its page",
     await expect(card.locator("[data-badge]")).toHaveText(/^\S+ = \d+\.\d+ \S+$/);
   }
   await cards.first().getByRole("link", { name: "About this practical" }).click();
-  await expect(page).toHaveURL(`${WEB}/experiments/${IDS[0]}`);
+  // The page is rendered on its request (ADR 0046), which can be slow with the whole suite running.
+  await expect(page).toHaveURL(`${WEB}/experiments/${IDS[0]}`, { timeout: 20_000 });
 });
 
 test("the topic chips show only that topic's practicals", async ({ page }) => {
@@ -59,10 +60,11 @@ test("the topic chips show only that topic's practicals", async ({ page }) => {
 
 test("the header has no account links, and Practicals is the current page", async ({ page }) => {
   await page.goto(`${WEB}/experiments`);
-  const nav = page.getByRole("navigation", { name: "Main", exact: true });
-  await expect(nav.getByRole("link", { name: "Practicals" })).toHaveAttribute(
-    "aria-current",
-    "page",
+  // On a phone the main nav is behind the menu button, so this reads the header's markup.
+  await expect(page.locator('header a[aria-current="page"]')).toHaveText("Practicals");
+  await expect(page.locator('header a[aria-current="page"]')).toHaveAttribute(
+    "href",
+    "/experiments",
   );
   await expect(page.getByRole("link", { name: /log in|sign up/i })).toHaveCount(0);
 });
