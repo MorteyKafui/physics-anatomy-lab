@@ -20,6 +20,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { csvText, pngBytes, save, svgText, zipBytes } from "../snapshot-export";
 import { sheetSize, SnapshotSheet } from "../snapshot-figure";
 import { useAttempt } from "../use-attempt";
+import { countUsage } from "../usage";
 import {
   PRECAUTIONS_NEEDED,
   type ReportContent,
@@ -163,6 +164,12 @@ export function ReportScreen({
   const colours = t(mono ? "report.colours.mono" : "report.colours.colour");
   const download = async () => {
     setBusy(true);
+    countUsage({
+      name: "report_exported",
+      experimentId: E.id,
+      mode: handle?.attempt.mode,
+      format: kind,
+    });
     try {
       if (kind === "pdf") {
         const pdf = await makeReportPdf(

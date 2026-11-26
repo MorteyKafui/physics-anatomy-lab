@@ -291,9 +291,9 @@ async def test_usage_learning_content_and_system_answer(
     staff: AsyncClient, outbox: LogSender
 ) -> None:
     await _a_class_with_work(outbox)
+    # Usage counts come from anonymous usage events (ADR 0048), not from synced attempts.
     usage = (await staff.get("/admin/usage", params={"range": "7d"})).json()
-    question = next(t for t in usage["step_minutes"] if t["step"] == "question")
-    assert question["minutes"] == pytest.approx(1.0)
+    assert usage["visitors"] == 0 and usage["experiments"] == []
     learning = (await staff.get("/admin/learning", params={"experiment": "simple-pendulum"})).json()
     measurement = next(s for s in learning["skills"] if s["skill"] == "measurement")
     assert sum(measurement["hints"]) == 3

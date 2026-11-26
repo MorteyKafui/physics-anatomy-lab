@@ -658,3 +658,55 @@ class Question(Base):
     reviewed_by: Mapped[str | None] = mapped_column(CITEXT)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     reason: Mapped[str | None] = mapped_column(Text)
+
+
+USAGE_EVENT_NAMES = (
+    "experiment_viewed",
+    "attempt_started",
+    "stage_completed",
+    "hint_shown",
+    "report_exported",
+    "attempt_completed",
+)
+
+
+def _one_of(column: str, values: tuple[str, ...]) -> str:
+    return f"{column} IN ({', '.join(repr(v) for v in values)})"
+
+
+class UsageEvent(Base):
+    """One anonymous product event from a device (ADR 0048).
+
+    Nothing here identifies anyone: no address, no user agent, no readings or text. `day_id` is a
+    random id the device replaces every local day, so visitors can be counted per day but not
+    followed from one day to the next. Rows are deleted after 13 months (`app.usage_prune`).
+    """
+
+    __tablename__ = "usage_events"
+    __table_args__ = (
+        CheckConstraint(_one_of("name", USAGE_EVENT_NAMES), name="name_known"),
+        CheckConstraint("experiment_id ~ '^[a-z0-9][a-z0-9-]{0,63}$'", name="experiment_id_format"),
+        CheckConstraint(
+            "(name = 'stage_completed') = (step IS NOT NULL)", name="step_only_for_stages"
+        ),
+        CheckConstraint(
+            "(name = 'report_exported') = (format IS NOT NULL)", name="format_only_for_exports"
+        ),
+        CheckConstraint(
+            "mode IS NULL OR mode IN ('guided', 'exam', 'own-data')", name="mode_known"
+        ),
+        CheckConstraint("device IN ('phone', 'tablet', 'desktop')", name="device_known"),
+        CheckConstraint("app_version ~ '^[A-Za-z0-9.+-]{1,40}$'", name="app_version_format"),
+        Index("ix_usage_events_received_at", "received_at"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    received_at: Mapped[datetime] = _now()
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    experiment_id: Mapped[str] = mapped_column(Text, nullable=False)
+    step: Mapped[str | None] = mapped_column(Text)
+    mode: Mapped[str | None] = mapped_column(Text)
+    format: Mapped[str | None] = mapped_column(Text)
+    device: Mapped[str] = mapped_column(Text, nullable=False)
+    app_version: Mapped[str] = mapped_column(Text, nullable=False)
+    day_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)

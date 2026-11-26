@@ -21,6 +21,8 @@ import {
 import { newSeed } from "@pa/instruments";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { countLabEvents, countUsage, countView } from "./usage";
+
 /** Per-device conveniences only (AGENTS.md): which attempt to reopen, and this device's id. */
 function remembered(key: string, make?: () => string): string | undefined {
   try {
@@ -65,6 +67,13 @@ function store(): EventStore {
   return sharedStore;
 }
 
+/** A new attempt, counted as started (ADR 0048). */
+async function newAttempt(spec: Parameters<EventStore["createAttempt"]>[0]) {
+  const attempt = await store().createAttempt(spec);
+  countUsage({ name: "attempt_started", experimentId: attempt.experimentId, mode: attempt.mode });
+  return attempt;
+}
+
 async function openAttempt(experimentId: string) {
   let opening = openings.get(experimentId);
   if (!opening) {
@@ -73,7 +82,7 @@ async function openAttempt(experimentId: string) {
       const previous = remembered(key);
       let attempt = previous ? await store().getAttempt(previous) : undefined;
       if (!attempt) {
-        attempt = await store().createAttempt({ experimentId, mode: "guided", seed: newSeed() });
+        attempt = await newAttempt({ experimentId, mode: "guided", seed: newSeed() });
         remember(key, attempt.id);
       }
       return attempt;
@@ -109,7 +118,7 @@ export const appendTo = (attemptId: string, events: readonly NewEvent[]) =>
 export async function startRun(source: Attempt, events: readonly LabEvent[], from: Step) {
   const news = redoEvents(events, from, source.id);
   if (!news) return undefined;
-  const attempt = await store().createAttempt({
+  const attempt = await newAttempt({
     experimentId: source.experimentId,
     mode: source.mode,
     seed: source.seed,
@@ -125,7 +134,7 @@ export async function startRun(source: Attempt, events: readonly LabEvent[], fro
  * the clock started. The lab opens it from now on; earlier runs are kept.
  */
 export async function startExam(experimentId: string) {
-  const attempt = await store().createAttempt({ experimentId, mode: "exam", seed: newSeed() });
+  const attempt = await newAttempt({ experimentId, mode: "exam", seed: newSeed() });
   const d = decideExam(attempt.mode, EMPTY_EXAM, { type: "start" });
   if (d.ok) await store().append(attempt.id, d.events);
   remember(`pa:attempt:${experimentId}`, attempt.id);
@@ -139,7 +148,7 @@ export async function startExam(experimentId: string) {
  * opens it from now on; earlier runs are kept. It is not marked and has no report.
  */
 export async function startWhatIf(experimentId: string, first: readonly NewEvent[]) {
-  const attempt = await store().createAttempt({ experimentId, mode: "what-if", seed: newSeed() });
+  const attempt = await newAttempt({ experimentId, mode: "what-if", seed: newSeed() });
   await store().append(attempt.id, first);
   remember(`pa:attempt:${experimentId}`, attempt.id);
   openings.delete(experimentId);
@@ -190,6 +199,7 @@ export function useAttempt(experimentId: string): AttemptHandle | undefined {
       if (cancelled) return;
       latest.current = opened.events;
       setLoaded(opened);
+      countView(opened.attempt);
     });
     return () => {
       cancelled = true;
@@ -200,6 +210,7 @@ export function useAttempt(experimentId: string): AttemptHandle | undefined {
     async (news: readonly NewEvent[]) => {
       if (!loaded || news.length === 0) return;
       const stored = await store().append(loaded.attempt.id, news);
+      countLabEvents(loaded.attempt, stored);
       latest.current = [...latest.current, ...stored];
       setLoaded((l) => l && { ...l, events: latest.current });
     },

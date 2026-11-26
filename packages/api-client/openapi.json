@@ -2283,6 +2283,45 @@
         }
       }
     },
+    "/usage/events": {
+      "post": {
+        "tags": ["usage"],
+        "summary": "Usage Events",
+        "description": "Count a batch of 1 to 50 events. No sign-in; at most 600 events per address an hour.",
+        "operationId": "usageEvents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsageBatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "413": {
+            "description": "The body is over 32 KB."
+          },
+          "429": {
+            "description": "More than 600 events from this address in the hour."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/me": {
       "get": {
         "tags": ["admin"],
@@ -6183,29 +6222,6 @@
         "required": ["step", "students"],
         "title": "StepCount"
       },
-      "StepTime": {
-        "properties": {
-          "experiment_id": {
-            "type": "string",
-            "title": "Experiment Id"
-          },
-          "step": {
-            "type": "string",
-            "title": "Step"
-          },
-          "n": {
-            "type": "integer",
-            "title": "N"
-          },
-          "minutes": {
-            "type": "number",
-            "title": "Minutes"
-          }
-        },
-        "type": "object",
-        "required": ["experiment_id", "step", "n", "minutes"],
-        "title": "StepTime"
-      },
       "StudentCounts": {
         "properties": {
           "members": {
@@ -6726,24 +6742,248 @@
           "window": {
             "$ref": "#/components/schemas/RangeInfo"
           },
+          "visitors": {
+            "type": "integer",
+            "title": "Visitors"
+          },
+          "opens": {
+            "type": "integer",
+            "title": "Opens"
+          },
+          "visitors_series": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Visitors Series"
+          },
+          "opens_series": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Opens Series"
+          },
           "experiments": {
             "items": {
-              "$ref": "#/components/schemas/ExperimentUse"
+              "$ref": "#/components/schemas/UsageExperiment"
             },
             "type": "array",
             "title": "Experiments"
           },
-          "step_minutes": {
+          "steps": {
             "items": {
-              "$ref": "#/components/schemas/StepTime"
+              "$ref": "#/components/schemas/UsageStep"
             },
             "type": "array",
-            "title": "Step Minutes"
+            "title": "Steps"
+          },
+          "exports": {
+            "items": {
+              "$ref": "#/components/schemas/UsageCount"
+            },
+            "type": "array",
+            "title": "Exports"
+          },
+          "devices": {
+            "items": {
+              "$ref": "#/components/schemas/UsageCount"
+            },
+            "type": "array",
+            "title": "Devices"
           }
         },
         "type": "object",
-        "required": ["window", "experiments", "step_minutes"],
-        "title": "Usage"
+        "required": [
+          "window",
+          "visitors",
+          "opens",
+          "visitors_series",
+          "opens_series",
+          "experiments",
+          "steps",
+          "exports",
+          "devices"
+        ],
+        "title": "Usage",
+        "description": "The Usage area, from anonymous usage counts (ADR 0048), not from synced attempts."
+      },
+      "UsageBatch": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/UsageEventIn"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Events"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["events"],
+        "title": "UsageBatch"
+      },
+      "UsageCount": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N"
+          }
+        },
+        "type": "object",
+        "required": ["key", "n"],
+        "title": "UsageCount"
+      },
+      "UsageEventIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "experiment_viewed",
+              "attempt_started",
+              "stage_completed",
+              "hint_shown",
+              "report_exported",
+              "attempt_completed"
+            ],
+            "title": "Name"
+          },
+          "experimentId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Experimentid"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "question",
+                  "predict",
+                  "build",
+                  "check",
+                  "measure",
+                  "tabulate",
+                  "plot",
+                  "analyse",
+                  "conclude",
+                  "report"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["guided", "exam", "own-data"]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "format": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["pdf", "docx", "figures", "data"]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Format"
+          },
+          "device": {
+            "type": "string",
+            "enum": ["phone", "tablet", "desktop"],
+            "title": "Device"
+          },
+          "appVersion": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9.+-]{1,40}$",
+            "title": "Appversion"
+          },
+          "dayId": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$",
+            "title": "Dayid"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "experimentId", "device", "appVersion", "dayId"],
+        "title": "UsageEventIn"
+      },
+      "UsageExperiment": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "opens": {
+            "type": "integer",
+            "title": "Opens"
+          },
+          "visitors": {
+            "type": "integer",
+            "title": "Visitors"
+          },
+          "started": {
+            "type": "integer",
+            "title": "Started"
+          },
+          "reached_report": {
+            "type": "integer",
+            "title": "Reached Report"
+          },
+          "completed": {
+            "type": "integer",
+            "title": "Completed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "experiment_id",
+          "opens",
+          "visitors",
+          "started",
+          "reached_report",
+          "completed"
+        ],
+        "title": "UsageExperiment",
+        "description": "Anonymous counts for one experiment (ADR 0048). Visitors are distinct day ids."
+      },
+      "UsageStep": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "step": {
+            "type": "string",
+            "title": "Step"
+          },
+          "visitors": {
+            "type": "integer",
+            "title": "Visitors"
+          }
+        },
+        "type": "object",
+        "required": ["experiment_id", "step", "visitors"],
+        "title": "UsageStep"
       },
       "ValidationError": {
         "properties": {
