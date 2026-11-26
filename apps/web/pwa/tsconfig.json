@@ -5,5 +5,5 @@
     "types": [],
     "noEmit": true
   },
-  "include": ["sw.ts"]
+  "include": ["sw.ts", "rules.ts"]
 }

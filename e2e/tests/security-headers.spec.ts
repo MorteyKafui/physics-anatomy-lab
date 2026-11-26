@@ -98,3 +98,11 @@ test("no admin page breaks the policy as it loads", async ({ page }) => {
     expect(await violations(), path).toEqual([]);
   }
 });
+
+test("the public site does not pass staff routes on to the API", async ({ request }) => {
+  // Only the admin portal's server calls /admin (ADR 0040). Through the public site they are not
+  // found; they never reach the API, which in this run is not even started.
+  for (const path of ["/api/admin/me", "/api/admin/summary", "/api/admin/questions"]) {
+    expect((await request.get(WEB + path)).status(), path).toBe(404);
+  }
+});
