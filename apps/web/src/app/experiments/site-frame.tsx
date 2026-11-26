@@ -3,18 +3,16 @@ import "@pa/i18n/catalogue";
 import "@pa/i18n/landing";
 import type { ReactNode } from "react";
 
-import { accountsEnabled } from "../accounts";
 import { LandingFooter } from "../_landing/footer";
 import { LandingHeader } from "../_landing/header";
 import "../_landing/landing.css";
 
 /**
- * The public site's header and footer around a page that is not the landing page itself. With
- * accounts switched off (ADR 0047) it has no sign-in, sign-up, teacher or account link, and the
- * header's button opens the practicals instead.
+ * The public site's header and footer around a page that is not the landing page itself. Like the
+ * landing page (redesign brief, section 2), it has no sign-in, sign-up, teacher or account link,
+ * and the header's button opens the practicals (ADR 0047).
  */
 export function SiteFrame({ children }: { children: ReactNode }) {
-  const accounts = accountsEnabled();
   return (
     <div className="bg-[var(--pa-paper)] text-[var(--pa-on-paper)]">
       <a
@@ -29,28 +27,12 @@ export function SiteFrame({ children }: { children: ReactNode }) {
             { href: "/#anatomy", label: t("landing.nav.howItWorks") },
             { href: "/experiments", label: t("landing.nav.experiments") },
             { href: "/#research", label: t("landing.nav.research") },
-            ...(accounts ? [{ href: "/#signup", label: t("landing.nav.teachers") }] : []),
           ]}
-          signUp={
-            accounts
-              ? { href: "/#signup", label: t("landing.signUp") }
-              : { href: "/experiments", label: t("catalogue.open") }
-          }
-          {...(accounts ? { logIn: { href: "/sign-in", label: t("landing.logIn") } } : {})}
+          signUp={{ href: "/experiments", label: t("catalogue.open") }}
         />
       </div>
       <main id="content">{children}</main>
-      <LandingFooter
-        product={[
-          { href: "/experiments", label: t("landing.nav.experiments") },
-          ...(accounts
-            ? [
-                { href: "/teach", label: t("landing.footer.teachers") },
-                { href: "/account", label: t("landing.footer.account") },
-              ]
-            : []),
-        ]}
-      />
+      <LandingFooter product={[{ href: "/experiments", label: t("landing.nav.experiments") }]} />
     </div>
   );
 }
