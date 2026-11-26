@@ -53,13 +53,15 @@ Anatomy makes you do the practical.
 
 - Name: Physics Anatomy. The pendulum P logo; its bob is the only red-orange (#F0482A) part.
 - One hue per physics topic (mechanics, electricity, light, heat).
-- Visual world for the 2026-11 redesign, chosen by Mortey on 2026-11-26: **the anatomy
-  plate**. Each experiment is shown as a plate from a scientific atlas: the real apparatus drawn
-  in fine line, numbered leader lines to its parts, and a specimen label carrying live readings.
+- The approved design stays the visual world (`design/mockups/Main.dc.html` and the other
+  approved boards): dark hero and lab, light warm site, topic colours with pastel grounds, the
+  Anatomy isometric figures, the large footer wordmark. Redesign work improves it, never replaces
+  it (Mortey, 2026-11-26).
 
 ## Evidence on Hand
 
-- Six working experiments with live simulations and computed readings.
+- Six working experiments with live simulations and computed readings: the first six, more
+  after launch.
 - No users, testimonials, partner logos, school names or usage numbers yet. Never invent them
   (ADR 0029).
 

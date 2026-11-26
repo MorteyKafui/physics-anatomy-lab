@@ -1,136 +1,99 @@
-# The open lab and the anatomy-plate redesign: brief
+# The open lab and the landing, practicals and lab redesign: brief
 
-Written for review before anything is built. Mortey asked on 2026-11-26, ahead of a local
-presentation, for two things:
+Written for review before anything is built. On 2026-11-26, ahead of a local presentation,
+Mortey asked for two things:
 
-1. **Open the lab to anyone**, like PhET and oPhysics: no sign-in or sign-up, while the admin
-   portal still shows how many people use it and which experiments they use most.
-2. **A redesign** of the whole public app, starting with the landing page: take out what reads
-   as template "slop", make it feel made by people, keep Lyra (square corners) from shadcn.
+1. **Open the lab to anyone**, like PhET and oPhysics: no sign-in or sign-up. The admin portal
+   still shows how many people use the lab and which experiments they use most.
+2. **A better design** for the public app, starting with the landing page. This improves the
+   approved design; it does not rebuild it. Its colours, live demos, Anatomy figures and large
+   footer wordmark stay, and so do Lyra's square corners.
 
-- **Status:** decisions taken in chat on 2026-11-26 (accounts hidden behind a switch; a daily
-  anonymous id; the anatomy-plate direction; the whole public app). The landing board
-  `design/mockups/Plate.dc.html` is a **draft for approval**.
+- **Status:** decisions taken in chat on 2026-11-26. A first "anatomy plate" draft was set
+  aside the same day: Mortey found it a step down from the approved design, because it dropped
+  the colours. The three boards below replace it, as **drafts for approval**. They are also on
+  the design canvas (canvas.json `Landing`, `Practicals`, `LabOpen`).
 - **Decision records:** [0047](../adr/0047-open-lab-accounts-off.md) (accounts off) and
   [0048](../adr/0048-anonymous-usage-counts.md) (anonymous usage counts).
+- **The six practicals are the first six.** More follow after launch, so no page says how many
+  there will be or that more are being made.
 
-## 1. What's wrong with the current design
+## 1. The boards
 
-Reviewed in the browser on 2026-11-26 with the impeccable critique method. The physics is the
-best thing on the page; the wrapping around it is the part that reads as generated.
+| Board                | Builds into               | Built from                |
+| -------------------- | ------------------------- | ------------------------- |
+| `Landing.dc.html`    | `apps/web` `/`            | `Main.dc.html` (approved) |
+| `Practicals.dc.html` | `apps/web` `/experiments` | the landing board's cards |
+| `LabOpen.dc.html`    | `apps/web` lab            | `Lab.dc.html` (approved)  |
 
-| Where            | What reads as template                                                                                             | Why it hurts                                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| Hero             | Centred headline with an outlined second line, on a dark starfield                                                 | The most common AI landing hero there is; the double slit reads as stars, not physics |
-| Header           | A bar that turns into a floating pill on scroll                                                                    | A UI-kit trope; it adds nothing a student needs                                       |
-| Section rhythm   | Dark, light, dark, orange, dark bands, each a "section"                                                            | Every section shouts; nothing leads                                                   |
-| Experiment cards | Equal cards on a peach-to-lavender gradient                                                                        | Gradient wash and equal cards are the two loudest generated tells                     |
-| Features         | A bento grid of icon-free dark boxes with a title and a line each                                                  | The "feature bento" is the template; the real features are hidden in it               |
-| Copy             | "Everything a real lab gives you. Plus a teacher who never gets tired." "Free for every student and every school." | Punchline copy; promises instead of showing                                           |
-| Sign-up band     | Orange band with two forms                                                                                         | Goes away with accounts (ADR 0047)                                                    |
-| Footer           | A giant cropped "Physics Anatomy" wordmark                                                                         | Another trope; it says nothing                                                        |
-| Lab              | "This step's activity is built next in Phase 1." shown to visitors; an empty grid on the first step                | A visitor at the presentation sees an unfinished product                              |
+The Anatomy figures on every board are the approved ones, drawn with the Anatomy kit (ADR 0036,
+the `anatomy` skill). Built, they come from `packages/apparatus`, and every reading from
+`packages/physics`. The two-pins and hot-solid figures reuse the lens and calorimeter figures on
+the board; their own figures are drawn with the kit when the page is built.
 
-What's already good and stays: the live pendulum with the count-from-zero-or-one demo, the
-exploded stand with what each part does, the live table that fills as readings come in, the
-coach's voice, snapshots with figure numbers, exam mode and the black-and-white graph download.
-The redesign moves these to the front instead of wrapping them in sections.
+## 2. The landing page: what changes and what stays
 
-## 2. The direction: the anatomy plate
+**Stays:** the dark hero with the live double slit; the draggable pendulum ("Time it
+yourself"); the exploded stand ("Every part has a job"); the coach's cursor demo ("Caught the
+moment it happens"); the dark feature grid with its live parts (voice, offline switch, exam
+clock, colour or black-and-white graph); the orange band; the large footer wordmark; the topic
+colours and the pastel grounds behind each apparatus.
 
-The product is called Physics Anatomy and its demos already dissect apparatus. The redesign
-takes that literally and stops decorating around it.
+**Changes:**
 
-- **The world.** Each experiment is a plate from a scientific atlas: the real apparatus drawn
-  in fine ink line on warm paper, numbered leader lines to its parts, and a specimen label in
-  the corner carrying the live readings. Plates have a plate number and a caption, and the
-  site's figures carry figure numbers, exactly as the lab's snapshots already do.
-- **Ground and colour.** Warm paper (`--pa-bg` light site) and near-black ink. Hairline rules
-  (1 px) and a double rule around each plate. Red-orange only on the bob and the one main
-  action on a screen. Each topic keeps its hue, used only on its plate's marker and leader-line
-  numbers.
-- **Type.** Bricolage Grotesque for plate titles and the headline; Geist for reading; Geist Mono
-  only for readings, units and codes, never as decoration.
-- **First viewport.** One plate fills the screen: the pendulum, drawn large and swinging, its
-  parts numbered 1 to 6 with leader lines. The plate's caption is the headline, "Physics from
-  first principles.", with one sentence under it. The specimen label shows length, period and
-  the value of g from the live simulation. The main action, **Open the pendulum lab**, sits on
-  the plate where a reader's eye lands after the caption. Beside the drawing, a **list of
-  plates** (the six practicals, each with its topic marker) is the working way to pick any
-  experiment from the first screen.
-- **Signature interaction.** Drag the bob: the pendulum swings, the readings in the specimen
-  label change, and the coach writes a note in the plate's margin. Switch "start the count at
-  zero / one" and the note explains the mistake. Point at a numbered part to read what it does.
-  Reduced motion and Lite mode show the plate still, with the same numbers.
-- **Visitor path.** Plate I (pendulum, the hero) → "How a practical runs": the lab's ten steps
-  set as a practical book's method, with the live table filling beside it → Plates II to IV
-  (Ohm's law, the lens, the method of mixtures) as an atlas spread, each with its drawing,
-  specimen label and an "Open" action → "What you take away": a real exported figure with its
-  caption, and the file formats → a colophon footer.
-- **Cross-surface reach.** The experiments index becomes the atlas's list of plates. Each
-  experiment page opens on its plate. The lab stays dark (a darkened practical room) but takes
-  the plate's figure caption, leader-line labels for parts and the specimen label for readings.
-  Reports already print as figures; they keep that. The people and legal pages are set as plain
-  reading pages on the same paper.
-- **Honest risk.** An atlas can feel old or academic to a 16-year-old. The live, draggable
-  drawing and the coach's plain voice are what keep it alive; if the board feels dry, the fix is
-  more movement in the drawing, not decoration around it.
+- **The hero shows every practical's setup.** Beside the headline, a bench panel with six tabs,
+  one per practical, in its topic colour. Choosing one shows its apparatus on its pastel ground,
+  its live readings and its aim, with "Open this lab". The bob swings; part notes open on hover.
+  The tabs move on by themselves every 7 seconds until the visitor picks one, with a pause
+  button. The main button follows the choice: "Open the lens lab".
+- **The headline** loses the outlined second line. Its full stop is the logo's red-orange bob.
+- **The experiment cards section goes.** Its figures and colours now live in the hero, and the
+  practicals page has the full list.
+- **The orange band** no longer signs anyone up. Students get the six practicals as links;
+  teachers get the selected practical's link to copy, for a class or a projector.
+- **Header:** Practicals, How it works, The coach, About, and "Open the lab". No log in, sign up
+  or "works offline" label.
+- **Footer:** the wordmark stays. Links that led to pages that don't exist go (help centre,
+  status, cookie settings); About links to the team, partners, contribute and donate pages.
+- **Copy:** "Everything a real lab gives you. Plus a teacher who never gets tired." becomes
+  "Everything you need for the practical, in one tab." The exam clock's caption no longer
+  mentions a teacher.
 
-### Removed from the site
+## 3. The practicals page
 
-The starfield hero and outlined text; the floating pill header (a plain bar with a hairline
-rule instead); the pastel gradient; equal cards as page structure; the feature bento; the
-orange sign-up band; the giant footer wordmark; "Log in" and "Sign up free" everywhere; and any
-label stacked above a heading.
+The six practicals as cards in the landing page's colours: each apparatus on its pastel ground,
+its topic, a live reading badge, the aim and the apparatus list, with "Open the lab" and "About
+this practical". Topic filters (All, Mechanics, Electricity, Light, Heat) work. Cards lift on
+hover. The page ends with a line for teachers and the same footer wordmark.
 
-### Copy, rewritten to show instead of promise
+## 4. The lab
 
-| Now                                                                   | Proposed                                                                                      |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Everything a real lab gives you. Plus a teacher who never gets tired. | How a practical runs                                                                          |
-| Free for every student and every school.                              | (removed; the footer says "Free and open. No account, no sign-in.")                           |
-| Students can start without an account. Teachers sign up to …          | Send a student a link to any plate. Their work stays on their device.                         |
-| Start an experiment / Sign up free                                    | Open the pendulum lab, and the list of plates                                                 |
-| (footer wordmark)                                                     | "Every number on this site comes from the same equations as the lab." with the typefaces used |
+The approved lab stays as it is, with two additions:
 
-## 3. Every surface, and what changes
+- **Switch practical:** the practical's name in the top bar opens a menu of all six, in their
+  topic colours. Work on each stays on the device.
+- **Share link:** copies the practical's link, for a teacher to send.
 
-| Surface                                             | Change                                                                                              | Board                   |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------- |
-| Landing `/`                                         | Rebuilt as above                                                                                    | `Plate.dc.html` (draft) |
-| Header and footer                                   | Plain bar: logo, Experiments, About; colophon footer; no account links                              | in `Plate.dc.html`      |
-| Experiments index                                   | The list of plates: one row per practical with its small drawing, topic, aim and "Open"             | next board              |
-| Experiment pages                                    | Open on the plate; aim, apparatus list keyed to the drawing's numbers, method, model card below     | next board              |
-| Lab shell                                           | Dark; figure caption, specimen label for readings, leader-line part labels; no unfinished-step text | next board              |
-| Steps not built yet                                 | Hidden from the step rail and never mentioned; the rail shows the steps that work                   | no board needed         |
-| Report                                              | Unchanged layout; header and colours follow the new tokens                                          | none                    |
-| About, partners, contribute, donate, Terms, Privacy | Reading pages on paper; Terms and Privacy lose the account sections (ADR 0047)                      | none                    |
-| 404 and offline                                     | A blank plate: "Plate not found" and a link to the list of plates                                   | in a later board        |
-| Admin                                               | No visual change (ADR 0030 stays). The Usage area reads the anonymous counts (ADR 0048)             | none                    |
+Steps not built yet stay out of the step rail, and no screen mentions them.
 
-The new parts go into `packages/ui` so every surface draws them the same way: `Plate` (frame,
-double rule, plate number, caption), `LeaderLabel` (numbered call-out with its line),
-`SpecimenLabel` (live readings in a ruled box) and `PlateIndex` (the list of plates). All square,
-all on existing tokens; two tokens are added: `--pa-rule` (hairline ink) and `--pa-paper-deep`
-(the plate's mat).
+## 5. Admin
 
-## 4. Build order
+No visual change (ADR 0030). The Usage area reads the anonymous counts (ADR 0048).
 
-Each is one pull request. 1 and 2 don't depend on the boards and can start now, in parallel.
+## 6. Build order
 
-1. **Accounts off** (ADR 0047): the switch, redirects, links removed, Terms and Privacy updated.
-2. **Anonymous usage counts** (ADR 0048): the device queue, `POST /usage/events`, the table and
-   migration, the admin Usage area.
-3. **Plate parts** in `packages/ui`, shown in the admin design-system catalogue.
-4. **Landing page** from `Plate.dc.html`, once approved.
-5. **Experiments index and experiment pages**, from their board.
-6. **Lab shell**, from its board, and hiding unbuilt steps.
-7. **Reading pages, 404 and offline.**
+Each is one pull request. 1 and 2 don't depend on the boards.
 
-3 to 7 run in parallel once the boards are approved, except that 4 to 7 need 3 merged first.
+1. **Accounts off** (ADR 0047).
+2. **Anonymous usage counts** (ADR 0048).
+3. **Landing page** from `Landing.dc.html`.
+4. **Practicals page** from `Practicals.dc.html`, and the experiment pages' links to it.
+5. **Lab additions** from `LabOpen.dc.html`, and hiding unbuilt steps.
+6. **Reading pages, 404 and offline:** account wording removed.
 
-## 5. Before the presentation
+## 7. Tools
 
-- Run the presentation from a production build (`bun run build`, then the `web-build` preview),
-  not the dev server: it's faster and has no Next.js dev badge in the corner.
-- Pick the experiment to demo now, so its every step is checked end to end before the day.
+Used here: the impeccable skill (critique, and `impeccable shot` renders), the Anatomy kit's
+approved figures, and the design canvas. Stageshow, named in the master plan for the landing's
+product shots, and the UI SDK aren't installed on this machine or in the repository; they'll be
+used for the build once their source is known.
