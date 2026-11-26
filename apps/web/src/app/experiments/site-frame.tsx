@@ -19,21 +19,21 @@ export function SiteFrame({ children }: { children: ReactNode }) {
       <div className="bg-[var(--pa-ink-950)] pb-[76px] text-[var(--pa-text)]">
         <LandingHeader
           links={[
+            { href: "/experiments", label: t("landing.nav.practicals") },
             { href: "/#anatomy", label: t("landing.nav.howItWorks") },
-            { href: "/experiments", label: t("landing.nav.experiments") },
-            { href: "/#research", label: t("landing.nav.research") },
-            { href: "/#signup", label: t("landing.nav.teachers") },
+            { href: "/#coach", label: t("landing.nav.coach") },
+            { href: "/about", label: t("landing.nav.about") },
           ]}
-          signUp={{ href: "/#signup", label: t("landing.signUp") }}
-          logIn={{ href: "/sign-in", label: t("landing.logIn") }}
+          action={{ href: "/lab/simple-pendulum", label: t("landing.nav.open") }}
         />
       </div>
       <main id="content">{children}</main>
       <LandingFooter
         product={[
-          { href: "/experiments", label: t("landing.nav.experiments") },
-          { href: "/teach", label: t("landing.footer.teachers") },
-          { href: "/account", label: t("landing.footer.account") },
+          { href: "/experiments", label: t("landing.footer.all") },
+          { href: "/lab/simple-pendulum", label: t("landing.cards.pendulum.title") },
+          { href: "/lab/ohms-law", label: t("landing.cards.circuit.title") },
+          { href: "/lab/converging-lens", label: t("landing.cards.lens.title") },
         ]}
       />
     </div>

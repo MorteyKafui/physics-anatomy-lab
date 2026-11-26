@@ -5,11 +5,16 @@ import {
   convergingLens,
   correctBench,
   correctMixturesBench,
+  correctSolidBench,
+  hotSolid,
+  lensPins,
   lensWorld,
   methodOfMixtures,
   mixturesPeak,
   ohmsLaw,
   ohmsLawWorld,
+  solidPeak,
+  solidWorld,
   trueReadings,
 } from "@pa/experiments";
 import { imageDistance } from "@pa/physics";
@@ -63,5 +68,30 @@ describe("the experiment cards' readings come from the lab's models (brief, deci
     expect(graph.g).toBeGreaterThan(9.7);
     expect(graph.g).toBeLessThan(9.81);
     expect(graph.points).toHaveLength(PENDULUM_LENGTHS.length);
+  });
+});
+
+describe("the hero bench's two pins and hot solid readings come from the lab's models", () => {
+  test("two pins: the image of each object distance the question sets, and f from u and v", () => {
+    const f = lensWorld(CARD_SEED).focalLength;
+    expect(data.pins.rows).toHaveLength(lensPins.objectDistances.length);
+    lensPins.objectDistances.forEach((u, i) => {
+      const v = imageDistance(u, f);
+      expect(data.pins.rows[i]).toEqual([
+        `u ${(u * 100).toFixed(1)} cm`,
+        `v ${(v * 100).toFixed(1)} cm`,
+        `f ${(((u * v) / (u + v)) * 100).toFixed(1)} cm`,
+      ]);
+    });
+  });
+
+  test("a hot solid: the highest temperature for each metal, and the seeded bench's badge", () => {
+    expect(data.solid.rows).toHaveLength(hotSolid.metals.length);
+    hotSolid.metals.forEach((metal, i) => {
+      const peak = solidPeak(correctSolidBench({ metal })).temperature;
+      expect(data.solid.rows[i]![1]).toBe(`θ ${peak.toFixed(1)} °C`);
+    });
+    const seeded = solidPeak(correctSolidBench(solidWorld(CARD_SEED))).temperature;
+    expect(data.solid.badge).toBe(`θ = ${seeded.toFixed(1)} °C`);
   });
 });

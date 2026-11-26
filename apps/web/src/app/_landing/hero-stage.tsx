@@ -32,7 +32,7 @@ const rgba = (hex: string, a: number) =>
  * page has loaded and the browser is idle, pauses off screen and in a hidden tab, and in Lite mode
  * or with reduced motion draws one finished pattern and stops.
  */
-export function HeroStage({ children }: { children: ReactNode }) {
+export function HeroStage({ children, bench }: { children: ReactNode; bench?: ReactNode }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [scene, setScene] = useState(0);
   const sceneRef = useRef(0);
@@ -153,7 +153,7 @@ export function HeroStage({ children }: { children: ReactNode }) {
     <section
       id="top"
       aria-label={t("landing.hero.label")}
-      className="relative flex min-h-[640px] items-center overflow-hidden bg-[var(--pa-ink-950)] md:min-h-[840px]"
+      className="relative flex items-center overflow-hidden bg-[var(--pa-ink-950)]"
     >
       <canvas
         ref={canvas}
@@ -162,14 +162,15 @@ export function HeroStage({ children }: { children: ReactNode }) {
         data-scene={s.id}
         width={1}
         height={1}
-        className="absolute inset-0 block size-full [mask-image:linear-gradient(90deg,#000_0%,#000_20%,transparent_33%,transparent_67%,#000_80%,#000_100%)]"
+        className="absolute inset-0 block size-full [mask-image:linear-gradient(90deg,#000_0%,#000_34%,transparent_58%)]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,color-mix(in_srgb,var(--pa-ink-950)_0%,transparent)_0%,color-mix(in_srgb,var(--pa-ink-950)_60.0%,transparent)_22%,color-mix(in_srgb,var(--pa-ink-950)_97.0%,transparent)_34%,color-mix(in_srgb,var(--pa-ink-950)_97.0%,transparent)_66%,color-mix(in_srgb,var(--pa-ink-950)_60.0%,transparent)_78%,color-mix(in_srgb,var(--pa-ink-950)_0%,transparent)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,color-mix(in_srgb,var(--pa-ink-950)_55%,transparent)_0%,color-mix(in_srgb,var(--pa-ink-950)_90%,transparent)_30%,var(--pa-ink-950)_52%)]"
       />
-      <div className="relative mx-auto box-border flex w-full max-w-[1080px] flex-col items-center gap-[26px] px-4 pb-[120px] pt-[140px] text-center sm:px-8">
-        {children}
+      <div className="relative mx-auto box-border grid w-full max-w-[1280px] items-center gap-14 px-4 pb-24 pt-[112px] sm:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:pt-[132px]">
+        <div className="flex min-w-0 flex-col items-start gap-[26px]">{children}</div>
+        {bench}
       </div>
     </section>
   );
