@@ -6,7 +6,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { LAB, plotToConclude, tabulateToPlot, timeFor, toMeasure } from "./walk";
 
-// A whole run, Question to Report: longer than the default 30 s.
+// A whole run, Build to Report: longer than the default 30 s.
 test.describe.configure({ timeout: 120_000 });
 
 const REPORT = `${LAB}/report`;

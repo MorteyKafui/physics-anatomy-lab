@@ -136,6 +136,8 @@ import {
   useDragPart,
 } from "./build";
 import { CheckItem, Rail, Rich, StepStrip } from "./parts";
+import { percentDone, shownNeighbour, shownSteps } from "./lab-steps";
+import { PracticalSwitch, ShareLink } from "./lab-switch";
 import { FormulaBox, Sym } from "./formula";
 import { graphColumnsFor, graphView, headingFor, useGraph } from "./graph-sheet";
 import { AnalysePanel, GraphPanel, PendulumWhatIf, TableBuilder, TutorPanel } from "./lazy-panels";
@@ -152,6 +154,8 @@ import { UncertaintySwitch } from "./uncertainty-switch";
 import { useUncertainties } from "./use-uncertainties";
 
 const E = simplePendulum;
+/** The steps the pendulum's lab shows: Question, Predict and Check are not built for it. */
+const PENDULUM_STEPS = shownSteps(E.id);
 const msg = (key: string, params?: Record<string, string | number>) =>
   hasMessage(key) ? t(key, params) : key;
 const stepName = (s: Step) => t(`lab.steps.${s}` as MessageKey);
@@ -603,10 +607,13 @@ export function LabScreen() {
         `experiments.simple-pendulum.${key}.why` as MessageKey,
       )}`;
     const known = ["build", "measure", "tabulate", "plot", "analyse"];
-    speak(
-      known.includes(step) ? line(step) : `${stepName(step)}. ${t("lab.steps.notBuilt")}`,
-      "step",
-    );
+    const said =
+      step === "conclude"
+        ? `${stepName(step)}. ${t("report.concludeHint")}`
+        : step === "report"
+          ? `${stepName(step)}. ${t("report.openHint")}`
+          : stepName(step);
+    speak(known.includes(step) ? line(step) : said, "step");
   }, [step, soundOn, speak]);
 
   // Every correction the coach raises, said once at each level it reaches.
@@ -751,7 +758,6 @@ export function LabScreen() {
   };
 
   const stepIndex = STEPS.indexOf(state.step);
-  const percent = Math.round((state.completed.length / STEPS.length) * 100);
   // What the stopwatch shows at a bench time: the recorded reading once stopped.
   const shownTimeAt = (time: number) =>
     timing?.stoppedAt !== undefined
@@ -774,7 +780,10 @@ export function LabScreen() {
     return readings > 1 ? "done" : readings === 1 && !running ? "current" : "todo";
   };
 
-  const after = STEPS[stepIndex + 1];
+  // The next step the lab shows. Going on asks for the very next step: the attempt is carried on
+  // past any step the lab leaves out (use-attempt.ts).
+  const after = shownNeighbour(E.id, state.step, 1);
+  const goOn = () => handle.dispatch({ type: "go-to-step", step: STEPS[stepIndex + 1]! });
   // A what-if stops after Analyse: there is no conclusion or report to write.
   const next = whatIfRun && (after === "conclude" || after === "report") ? undefined : after;
   const finishStep = async () => {
@@ -782,7 +791,7 @@ export function LabScreen() {
     const auto = autoCaption(state.step);
     if (auto && !state.completed.includes(state.step)) await takeSnapshot(auto);
     await handle.dispatch({ type: "complete-step" });
-    if (next) await handle.dispatch({ type: "go-to-step", step: next });
+    if (next) await goOn();
     setAdvice([]);
     setHeld(undefined);
     setBuildStatus(undefined);
@@ -1170,7 +1179,10 @@ export function LabScreen() {
             </div>
           )}
           <div className="h-[3px] bg-border md:hidden" aria-hidden>
-            <div className="h-[3px] bg-primary" style={{ width: `${percent}%` }} />
+            <div
+              className="h-[3px] bg-primary"
+              style={{ width: `${percentDone(E.id, state.completed)}%` }}
+            />
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col md:flex-row">
@@ -1295,6 +1307,7 @@ export function LabScreen() {
                       onPlace={(slot) => held && void place(held, slot)}
                       magnifier={lens}
                       onMagnifier={setLens}
+                      target={building && !builtYet && coachIsOn(state)}
                       className={
                         building ? "max-w-[min(600px,calc((100dvh-470px)*0.913))]" : undefined
                       }
@@ -1493,10 +1506,7 @@ export function LabScreen() {
                         </Button>
                       )}
                       {!building && next && (
-                        <Button
-                          className="self-start"
-                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
-                        >
+                        <Button className="self-start" onClick={() => void goOn()}>
                           {t("lab.steps.continue", { step: stepName(next) })}
                         </Button>
                       )}
@@ -1545,10 +1555,7 @@ export function LabScreen() {
                         </Button>
                       )}
                       {state.completed.includes("analyse") && next && (
-                        <Button
-                          className="self-start"
-                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
-                        >
+                        <Button className="self-start" onClick={() => void goOn()}>
                           {t("lab.steps.continue", { step: stepName(next) })}
                         </Button>
                       )}
@@ -1616,10 +1623,7 @@ export function LabScreen() {
                         </Button>
                       )}
                       {state.completed.includes("plot") && next && (
-                        <Button
-                          className="self-start"
-                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
-                        >
+                        <Button className="self-start" onClick={() => void goOn()}>
                           {t("lab.steps.continue", { step: stepName(next) })}
                         </Button>
                       )}
@@ -1697,10 +1701,7 @@ export function LabScreen() {
                         </Button>
                       )}
                       {state.completed.includes("tabulate") && next && (
-                        <Button
-                          className="self-start"
-                          onClick={() => void handle.dispatch({ type: "go-to-step", step: next })}
-                        >
+                        <Button className="self-start" onClick={() => void goOn()}>
                           {t("lab.steps.continue", { step: stepName(next) })}
                         </Button>
                       )}
@@ -1760,9 +1761,7 @@ export function LabScreen() {
                       <p className="text-soft">
                         {state.step === "conclude"
                           ? t("report.concludeHint")
-                          : state.step === "report"
-                            ? t("report.openHint")
-                            : t("lab.steps.notBuilt")}
+                          : t("report.openHint")}
                       </p>
                       {state.step === "report" && (
                         <Link
@@ -1864,6 +1863,7 @@ export function LabScreen() {
             </p>
           )}
           <StepStrip
+            steps={PENDULUM_STEPS}
             current={state.step}
             completed={state.completed}
             open={stepOpen}
@@ -1929,8 +1929,7 @@ const LabHeader = memo(function LabHeader({
   onWhatIf: () => void;
 }) {
   const state = handle.state;
-  const stepIndex = STEPS.indexOf(state.step);
-  const percent = Math.round((state.completed.length / STEPS.length) * 100);
+  const back = shownNeighbour(E.id, state.step, -1);
   return (
     <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
       <Link
@@ -1941,26 +1940,7 @@ const LabHeader = memo(function LabHeader({
       >
         <ChevronLeftIcon className="size-5" aria-hidden />
       </Link>
-      <div className="flex items-center gap-3 md:border md:border-border md:bg-surface md:px-3.5 md:py-2">
-        <span aria-hidden className="hidden size-2.5 bg-topic-mechanics md:block" />
-        <div className="flex flex-col">
-          <h1 className="font-semibold">{t("experiments.simple-pendulum.title")}</h1>
-          <span className="font-mono text-xs text-muted-foreground">
-            {t("lab.header.stepOf", {
-              n: stepIndex + 1,
-              total: STEPS.length,
-              step: stepName(state.step),
-            })}
-          </span>
-        </div>
-        <div
-          className="hidden h-1 w-30 bg-border md:block"
-          role="img"
-          aria-label={t("lab.header.progress", { percent })}
-        >
-          <div className="h-1 bg-primary" style={{ width: `${percent}%` }} />
-        </div>
-      </div>
+      <PracticalSwitch current={E.id} step={state.step} completed={state.completed} />
       <div
         role="toolbar"
         aria-label={t("lab.playback.label")}
@@ -1992,8 +1972,8 @@ const LabHeader = memo(function LabHeader({
           variant="ghost"
           size="icon"
           aria-label={t("lab.playback.stepBack")}
-          disabled={stepIndex === 0}
-          onClick={() => void handle.dispatch({ type: "go-to-step", step: STEPS[stepIndex - 1]! })}
+          disabled={!back}
+          onClick={() => back && void handle.dispatch({ type: "go-to-step", step: back })}
         >
           <SkipBackIcon />
         </Button>
@@ -2206,6 +2186,7 @@ const LabHeader = memo(function LabHeader({
           {t("lab.whatIf.open")}
         </Button>
       )}
+      <ShareLink experimentId={E.id} />
       <Button
         aria-label={t("lab.snapshot.label")}
         aria-keyshortcuts="C"

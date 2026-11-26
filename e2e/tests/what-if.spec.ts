@@ -129,7 +129,7 @@ test("a scenario opens on the bench, not marked, and the practice run comes back
   page,
 }) => {
   await page.goto(LAB);
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await page.getByRole("button", { name: "What if" }).filter({ visible: true }).click();
   const panel = page.getByRole("dialog", { name: "What if" });
   await panel.getByRole("radio", { name: "The Moon" }).click();
@@ -138,7 +138,7 @@ test("a scenario opens on the bench, not marked, and the practice run comes back
   // The lab reopens on the scenario: at Measure, the bench built, the bar saying so.
   const bar = page.getByRole("status").filter({ hasText: "not marked" });
   await expect(bar).toContainText("What if: The Moon, 0.80 m, 8° · not marked");
-  await expect(page.getByText("Step 5 of 10 · Measure")).toBeVisible();
+  await expect(page.getByText("Step 2 of 7 · Measure")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Time 20 oscillations" })).toBeVisible();
   // Conclude and Report stay closed.
   await expect(
@@ -146,6 +146,6 @@ test("a scenario opens on the bench, not marked, and the practice run comes back
   ).toHaveAttribute("aria-disabled", "true");
 
   await bar.getByRole("button", { name: "Back to my practice" }).click();
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await expect(page.getByRole("status").filter({ hasText: "not marked" })).toHaveCount(0);
 });

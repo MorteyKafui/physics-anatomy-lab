@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { WEB } from "../playwright.config";
 
 /**
- * Walking the lab from Question onwards, shared by the specs that need a run in a given state.
+ * Walking the lab from Build, its first step, onwards, shared by the specs that need a run in a given state.
  * Each step is taken the way a student takes it, with the fake clock so passes are exact.
  */
 
@@ -18,14 +18,11 @@ export const BUILD_ORDER = [
   ["Stopwatch", "Put the stopwatch on the bench beside the stand"],
 ] as const;
 
-/** Walk through Question and Predict (their activities are built next) to the parts tray. */
+/** Open a fresh attempt on Build, the pendulum lab's first step, at the parts tray. */
 export async function toBuild(page: Page) {
   // A fake clock: the bench only moves when the test says, so "the same pass" is exact.
   await page.clock.install();
   await page.goto(LAB);
-  for (const next of ["Predict", "Build"]) {
-    await page.getByRole("button", { name: `Continue to ${next}` }).click();
-  }
   await expect(page.getByRole("heading", { name: "Set up the pendulum" })).toBeVisible();
 }
 
@@ -44,7 +41,6 @@ export async function toMeasure(page: Page) {
   await toBuild(page);
   for (const [part, slot] of BUILD_ORDER) await put(page, part, slot);
   await page.getByRole("button", { name: "Finish building" }).click();
-  await page.getByRole("button", { name: "Continue to Measure" }).click();
   await expect(page.getByRole("heading", { name: "Time 20 oscillations" })).toBeVisible();
 }
 
@@ -75,7 +71,7 @@ export async function toTabulate(page: Page) {
   await timeFor(page, 2.2);
   await timeFor(page, 2.2);
   await page.getByRole("button", { name: "Finish measuring" }).click();
-  await expect(page.getByText("Step 6 of 10 · Tabulate")).toBeVisible();
+  await expect(page.getByText("Step 3 of 7 · Tabulate")).toBeVisible();
 }
 
 export const results = (page: Page) => page.getByRole("region", { name: "Results table" });
@@ -96,7 +92,7 @@ export async function tabulateToPlot(page: Page) {
   await expect(cell(page, 1, "t₁/s")).toHaveValue(/^\d+\.\d{2}$/);
   await page.getByRole("button", { name: "Finish tabulating" }).click();
   await page.getByRole("button", { name: "Carry on as it is" }).click();
-  await expect(page.getByText("Step 7 of 10 · Plot")).toBeVisible();
+  await expect(page.getByText("Step 4 of 7 · Plot")).toBeVisible();
 }
 
 /**
@@ -106,7 +102,7 @@ export async function tabulateToPlot(page: Page) {
 export async function finishPlotting(page: Page) {
   await page.getByRole("button", { name: "Finish plotting" }).click();
   const carryOn = page.getByRole("button", { name: "Carry on as it is" });
-  const analyse = page.getByText("Step 8 of 10 · Analyse");
+  const analyse = page.getByText("Step 5 of 7 · Analyse");
   await expect(carryOn.or(analyse)).toBeVisible();
   if (await carryOn.isVisible()) await carryOn.click();
   await expect(analyse).toBeVisible();
@@ -116,5 +112,5 @@ export async function finishPlotting(page: Page) {
 export async function plotToConclude(page: Page) {
   await finishPlotting(page);
   await page.getByRole("button", { name: "Finish analysing" }).click();
-  await expect(page.getByText("Step 9 of 10 · Conclude")).toBeVisible();
+  await expect(page.getByText("Step 6 of 7 · Conclude")).toBeVisible();
 }

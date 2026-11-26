@@ -83,6 +83,7 @@ import { HelpMenu } from "../tutor/help-menu";
 import { canUse, useAiStatus } from "../tutor/use-ai-status";
 import { UncertaintySwitch } from "../uncertainty-switch";
 import { useUncertainties } from "../use-uncertainties";
+import { PracticalSwitch, ShareLink } from "../lab-switch";
 import { CheckItem, Rail, StepStrip } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
 import { ExamBar } from "../exam/bar";
@@ -722,26 +723,7 @@ export function MethodOfMixturesSolidScreen() {
           >
             <ChevronLeftIcon className="size-5" aria-hidden />
           </Link>
-          <div className="flex items-center gap-3 md:border md:border-border md:bg-surface md:px-3.5 md:py-2">
-            <span aria-hidden className="hidden size-2.5 bg-topic-heat md:block" />
-            <div className="flex flex-col">
-              <h1 className="font-semibold">{t(`${P}.title`)}</h1>
-              <span className="font-mono text-xs text-muted-foreground">
-                {t("lab.header.stepOf", {
-                  n: stepIndex + 1,
-                  total: STEPS.length,
-                  step: stepName(state.step),
-                })}
-              </span>
-            </div>
-            <div
-              className="hidden h-1 w-30 bg-border md:block"
-              role="img"
-              aria-label={t("lab.header.progress", { percent })}
-            >
-              <div className="h-1 bg-primary" style={{ width: `${percent}%` }} />
-            </div>
-          </div>
+          <PracticalSwitch current={H.id} step={state.step} completed={state.completed} />
           <span className="hidden flex-1 md:block" />
           {/* In an exam the coach is off: no help level to choose. */}
           {state.mode !== "exam" && (
@@ -773,6 +755,7 @@ export function MethodOfMixturesSolidScreen() {
             coachOn={coachIsOn(state)}
             place="header"
           />
+          <ShareLink experimentId={H.id} />
         </header>
         {handle.attempt.mode === "exam" &&
           exam.startedAt !== undefined &&

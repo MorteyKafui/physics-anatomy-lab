@@ -9,6 +9,7 @@ import {
   newDeviceId,
   redoEvents,
   replay,
+  STEPS,
   type Attempt,
   type CoachState,
   type Command,
@@ -20,6 +21,8 @@ import {
 } from "@pa/engine";
 import { newSeed } from "@pa/instruments";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import { pastHidden } from "./lab-steps";
 
 /** Per-device conveniences only (AGENTS.md): which attempt to reopen, and this device's id. */
 function remembered(key: string, make?: () => string): string | undefined {
@@ -65,6 +68,26 @@ function store(): EventStore {
   return sharedStore;
 }
 
+/** The events that carry an attempt one move on past a step its lab leaves out (lab-steps.ts). */
+function pastHiddenEvents(attempt: Attempt, events: readonly LabEvent[]) {
+  const state = replay(coachProjection, attempt, events);
+  const command = pastHidden(attempt.experimentId, state);
+  if (!command) return undefined;
+  const decision = decide(state, command);
+  return decision.ok ? decision.events : undefined;
+}
+
+/** Save the events that carry an attempt past the steps its lab leaves out; all its events after. */
+async function carryPastHidden(attempt: Attempt, events: readonly LabEvent[]) {
+  let all = [...events];
+  for (let guard = 0; guard < 2 * STEPS.length; guard++) {
+    const news = pastHiddenEvents(attempt, all);
+    if (!news) break;
+    all = [...all, ...(await store().append(attempt.id, news))];
+  }
+  return all;
+}
+
 async function openAttempt(experimentId: string) {
   let opening = openings.get(experimentId);
   if (!opening) {
@@ -76,6 +99,9 @@ async function openAttempt(experimentId: string) {
         attempt = await store().createAttempt({ experimentId, mode: "guided", seed: newSeed() });
         remember(key, attempt.id);
       }
+      // A new attempt starts on Question: where a lab leaves steps out, it opens on its first
+      // step instead. Done once per opening, so a second mount does not record it twice.
+      await carryPastHidden(attempt, await store().events(attempt.id));
       return attempt;
     })();
     openings.set(experimentId, opening);
@@ -218,6 +244,12 @@ export function useAttempt(experimentId: string): AttemptHandle | undefined {
         const decision = decide(replay(coachProjection, loaded.attempt, latest.current), command);
         if (!decision.ok) return decision.reason;
         await save(decision.events);
+        // Finishing the step before one the lab leaves out goes on past it.
+        for (let guard = 0; guard < 2 * STEPS.length; guard++) {
+          const news = pastHiddenEvents(loaded.attempt, latest.current);
+          if (!news) break;
+          await save(news);
+        }
         return undefined;
       },
       record: save,

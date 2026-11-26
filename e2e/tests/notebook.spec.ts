@@ -21,8 +21,6 @@ const BUILD_ORDER = [
 
 async function toBuild(page: Page) {
   await page.goto(LAB);
-  for (const next of ["Predict", "Build"])
-    await page.getByRole("button", { name: `Continue to ${next}` }).click();
   await expect(page.getByRole("heading", { name: "Set up the pendulum" })).toBeVisible();
 }
 
@@ -44,10 +42,9 @@ const details = (page: Page) => page.getByRole("complementary", { name: "Snapsho
 /** Take two snapshots of your own at the start of the lab, then open the notebook. */
 async function twoOfMine(page: Page) {
   await page.goto(LAB);
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await snapshotButton(page).click();
   await expect(page.getByRole("status").filter({ hasText: "Fig. 1 taken" })).toBeVisible();
-  await page.getByRole("button", { name: "Continue to Predict" }).click();
   await snapshotButton(page).click();
   await expect(page.getByRole("status").filter({ hasText: "Fig. 2 taken" })).toBeVisible();
   await page.goto(NOTEBOOK);
@@ -76,7 +73,7 @@ test("finishing building puts a labelled figure of the bench in the notebook", a
 test("C takes a snapshot anywhere in the lab", async ({ page }, info) => {
   test.skip(info.project.name === "phone", "Keyboard shortcuts are for desktop");
   await page.goto(LAB);
-  await expect(page.getByText("Step 1 of 10 · Question")).toBeVisible();
+  await expect(page.getByText("Step 1 of 7 · Build")).toBeVisible();
   await page.keyboard.press("c");
   await expect(page.getByRole("status").filter({ hasText: "Fig. 1 taken" })).toBeVisible();
   await page.goto(NOTEBOOK);
