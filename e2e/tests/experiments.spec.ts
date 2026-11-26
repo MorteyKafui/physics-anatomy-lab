@@ -40,10 +40,9 @@ for (const id of IDS) {
       "href",
       new RegExp(`/experiments/${id}$`),
     );
-    await expect(page.getByRole("link", { name: "Open the lab" })).toHaveAttribute(
-      "href",
-      `/lab/${id}`,
-    );
+    await expect(
+      page.locator("#content").getByRole("link", { name: "Open the lab" }),
+    ).toHaveAttribute("href", `/lab/${id}`);
     await expect(page.locator("[data-model-card]")).toContainText("How it is checked:");
 
     const card = await request.get(`${WEB}/experiments/${id}/opengraph-image`);
