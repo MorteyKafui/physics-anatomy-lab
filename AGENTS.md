@@ -39,7 +39,13 @@ bun run build; bun run e2e       # end to end, accessibility and performance (Pl
 cd apps/api; uv sync; uv run fastapi dev app/main.py   # API on :8000
 cd validation; uv sync; uv run pytest                   # independent physics models
 cd apps/api; uv run python -m evals check                # AI evaluation cases (no key)
+bunx skills experimental_install --agent claude-code     # agent skills in skills-lock.json (anatomy)
 ```
+
+**Skills.** Every apparatus figure is drawn with the anatomy skill (the Anatomy kit): real-looking
+isometric parts, labels and motion. It is not committed; install it with the command above before
+drawing apparatus. Lab work is done when someone who knows no physics can finish the practical on
+the Auto help level (`docs/planning/lab-overhaul-plan.md`).
 
 ## Git
 

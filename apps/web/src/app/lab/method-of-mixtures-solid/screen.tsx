@@ -18,11 +18,6 @@ import {
   answersProjection,
   coach,
   coachIsOn,
-  decideExam,
-  EMPTY_EXAM,
-  examProjection,
-  frontier,
-  HELP_LEVELS,
   helpLevelFor,
   replay,
   STEPS,
@@ -64,30 +59,18 @@ import { hasMessage, t, type MessageKey } from "@pa/i18n";
 import "@pa/i18n/method-of-mixtures";
 import { parallaxShift, quantise } from "@pa/instruments";
 import { Button } from "@pa/ui/components/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
-import { ChevronLeftIcon, TriangleAlertIcon } from "@pa/ui/icons";
+import { TriangleAlertIcon } from "@pa/ui/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
-import {
-  AnswerLine,
-  Calculator,
-  GraphPanel,
-  QuoteLine,
-  TableBuilder,
-  TutorPanel,
-} from "../lazy-panels";
-import { HelpMenu } from "../tutor/help-menu";
-import { canUse, useAiStatus } from "../tutor/use-ai-status";
-import { UncertaintySwitch } from "../uncertainty-switch";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
 import { useUncertainties } from "../use-uncertainties";
-import { PracticalSwitch, ShareLink } from "../lab-switch";
-import { CheckItem, Rail, StepStrip } from "../parts";
+import { LabFrame, spokenStepFor } from "../lab-frame";
+import { CheckItem } from "../parts";
 import { flagsFor, useTable } from "../table-builder";
-import { ExamBar } from "../exam/bar";
-import { backToPractice, useAttempt } from "../use-attempt";
+import { useAttempt } from "../use-attempt";
+import { useAudio } from "../use-audio";
 
 const H = hotSolid;
 const P = "experiments.method-of-mixtures-solid";
@@ -120,11 +103,7 @@ const pressed = (on: boolean) =>
 export function MethodOfMixturesSolidScreen() {
   const handle = useAttempt(H.id);
   const [uncertain, setUncertain] = useUncertainties();
-  const [tab, setTab] = useState("instructions");
-  // AI (ADR 0043): asked once, off the critical path; the lab never waits for it.
-  const aiStatus = useAiStatus();
-  const showHint = useCallback(() => setTab("tips"), []);
-  const showAsk = useCallback(() => setTab("ask"), []);
+  const audio = useAudio();
   const [refusal, setRefusal] = useState<string>();
   const [advice, setAdvice] = useState<Advice[]>([]);
   const [checked, setChecked] = useState<string>();
@@ -146,22 +125,6 @@ export function MethodOfMixturesSolidScreen() {
   // Since the calorimeter was last emptied: when the solid was lifted out, when it went in, and
   // the readings taken since, from the events.
   const results = useTable(handle);
-  const router = useRouter();
-  // Exam mode: the clock, from the attempt's own events.
-  const exam = useMemo(
-    () => (handle ? replay(examProjection, handle.attempt, handle.events) : EMPTY_EXAM),
-    [handle],
-  );
-  const handIn = useCallback(
-    async (auto: boolean) => {
-      if (!handle) return;
-      const now = replay(examProjection, handle.attempt, handle.events);
-      const d = decideExam(handle.attempt.mode, now, { type: "hand-in", auto });
-      if (d.ok) await handle.record(d.events);
-      router.push(`/lab/${H.id}/exam`);
-    },
-    [handle, router],
-  );
   const plot = useGraph(handle);
   const answers = useMemo(
     () => (handle ? replay(answersProjection, handle.attempt, handle.events) : {}),
@@ -202,19 +165,7 @@ export function MethodOfMixturesSolidScreen() {
   }
 
   const state = handle.state;
-  // The tutor (docs/content/ai-tutor-brief.md): online, never in an exam. It is sent the step
-  // and the attempt's events as the tutor's context allows (tutor/context.ts), nothing hidden.
-  const tutorOn = coachIsOn(state) && canUse(aiStatus, "tutor");
-  const tutorInput = {
-    experimentId: H.id,
-    experimentVersion: H.version,
-    step: state.step,
-    helpLevel: state.helpLevel,
-    events: handle.events,
-    quantities: [],
-  };
   const stepIndex = STEPS.indexOf(state.step);
-  const percent = Math.round((state.completed.length / STEPS.length) * 100);
   const next = STEPS[stepIndex + 1];
 
   const act = async (command: SolidCommand) => {
@@ -699,609 +650,470 @@ export function MethodOfMixturesSolidScreen() {
     </div>
   );
 
-  return (
-    <div className="flex min-h-dvh bg-background text-foreground md:h-dvh">
-      <Rail
-        current="lab"
-        help={
-          <HelpMenu
-            status={aiStatus}
-            onHint={showHint}
-            onAsk={showAsk}
-            coachOn={coachIsOn(state)}
-            place="rail"
-          />
-        }
-      />
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
-          <Link
-            prefetch={false}
-            href="/"
-            aria-label={t("lab.header.back")}
-            className="flex size-11 items-center justify-center md:hidden"
-          >
-            <ChevronLeftIcon className="size-5" aria-hidden />
-          </Link>
-          <PracticalSwitch current={H.id} step={state.step} completed={state.completed} />
-          <span className="hidden flex-1 md:block" />
-          {/* In an exam the coach is off: no help level to choose. */}
-          {state.mode !== "exam" && (
-            <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-              <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
-              <select
-                className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
-                value={state.helpLevel}
-                onChange={(e) =>
-                  void handle.dispatch({
-                    type: "set-help-level",
-                    level: e.target.value as HelpLevel,
-                  })
-                }
-              >
-                {HELP_LEVELS.map((lvl) => (
-                  <option key={lvl} value={lvl}>
-                    {t(`lab.helpLevel.${lvl}` as MessageKey)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
-          <HelpMenu
-            status={aiStatus}
-            onHint={showHint}
-            onAsk={showAsk}
-            coachOn={coachIsOn(state)}
-            place="header"
-          />
-          <ShareLink experimentId={H.id} />
-        </header>
-        {handle.attempt.mode === "exam" &&
-          exam.startedAt !== undefined &&
-          exam.handedInAt === undefined && (
-            <ExamBar startedAt={exam.startedAt} onHandIn={(auto) => void handIn(auto)} />
-          )}
-        {handle.attempt.mode === "exam" && exam.handedInAt !== undefined && (
-          <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border bg-surface px-5 py-3 text-sm">
-            <span>{exam.auto ? t("exam.timeUp") : t("exam.handedIn")}</span>
-            <Link href={`/lab/${H.id}/exam`} className="font-semibold underline underline-offset-2">
-              {t("exam.seeScript")}
-            </Link>
-            <button
-              type="button"
-              className="underline underline-offset-2"
-              onClick={() => void backToPractice(H.id).then(() => window.location.reload())}
-            >
-              {t("exam.backToPractice")}
-            </button>
-          </div>
-        )}
-
-        <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          {panel ? (
-            <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
-              {state.step === "tabulate" && (
-                <TableBuilder
-                  table={table}
-                  shown={shownTable}
-                  assist={tableAssist}
-                  marks={tableMarks}
-                  flags={tableFlags}
-                  spec={{
-                    standard: SOLID_STANDARD_TABLE,
-                    templates: SOLID_TEMPLATES,
-                    defaultTemplate: "single",
-                    instruments: SOLID_INSTRUMENTS,
-                    defaultKind: "temperature",
-                    rowsNeeded: Math.max(4, tabulated?.series.length ?? 0),
-                    readingsSummary: tabulated
-                      ? tabulated.series
-                          .map((p) => `${(p.t / 60).toFixed(1)} min: ${deg(p.reading)} °C`)
-                          .join(" · ")
-                      : undefined,
-                  }}
-                  onRun={results.run}
-                  onFillReadings={tableAssist ? fillReadings : undefined}
-                  onCommit={() => undefined}
-                  uncertainties={uncertainties}
-                  below={
-                    advice.length > 0 ? (
-                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
-                    ) : null
-                  }
-                />
-              )}
-              {state.step === "plot" && (
-                <GraphPanel
-                  state={plot.graph}
-                  view={graphShown}
-                  data={graphData}
-                  headings={{
-                    x: headingFor(table.columns, graphColumns.x),
-                    y: headingFor(table.columns, graphColumns.y),
-                  }}
-                  numericColumns={numericColumns}
-                  flaggedRows={graphFlagged}
-                  partFindings={partFindings}
-                  showChecks={graphMarks && !graphAssist}
-                  onRun={plot.run}
-                  latest={plot.now}
-                  bars={bars}
-                  worstLinesOffered={false}
-                  below={
-                    advice.length > 0 || (graphMarks && solidGraphFindings.length > 0) ? (
-                      <div className="flex flex-col gap-3">
-                        {advice.length > 0
-                          ? adviceCards
-                          : solidGraphFindings.map((f) => findingCard(f))}
-                      </div>
-                    ) : null
-                  }
-                />
-              )}
-              {state.step === "analyse" && (
-                <section
-                  aria-label={t("lab.analyse.label")}
-                  className="flex w-full min-w-0 flex-col gap-4"
+  const main = panel ? (
+    <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+      {state.step === "tabulate" && (
+        <TableBuilder
+          table={table}
+          shown={shownTable}
+          assist={tableAssist}
+          marks={tableMarks}
+          flags={tableFlags}
+          spec={{
+            standard: SOLID_STANDARD_TABLE,
+            templates: SOLID_TEMPLATES,
+            defaultTemplate: "single",
+            instruments: SOLID_INSTRUMENTS,
+            defaultKind: "temperature",
+            rowsNeeded: Math.max(4, tabulated?.series.length ?? 0),
+            readingsSummary: tabulated
+              ? tabulated.series
+                  .map((p) => `${(p.t / 60).toFixed(1)} min: ${deg(p.reading)} °C`)
+                  .join(" · ")
+              : undefined,
+          }}
+          onRun={results.run}
+          onFillReadings={tableAssist ? fillReadings : undefined}
+          onCommit={() => undefined}
+          uncertainties={uncertainties}
+          below={
+            advice.length > 0 ? (
+              <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+            ) : null
+          }
+        />
+      )}
+      {state.step === "plot" && (
+        <GraphPanel
+          state={plot.graph}
+          view={graphShown}
+          data={graphData}
+          headings={{
+            x: headingFor(table.columns, graphColumns.x),
+            y: headingFor(table.columns, graphColumns.y),
+          }}
+          numericColumns={numericColumns}
+          flaggedRows={graphFlagged}
+          partFindings={partFindings}
+          showChecks={graphMarks && !graphAssist}
+          onRun={plot.run}
+          latest={plot.now}
+          bars={bars}
+          worstLinesOffered={false}
+          below={
+            advice.length > 0 || (graphMarks && solidGraphFindings.length > 0) ? (
+              <div className="flex flex-col gap-3">
+                {advice.length > 0 ? adviceCards : solidGraphFindings.map((f) => findingCard(f))}
+              </div>
+            ) : null
+          }
+        />
+      )}
+      {state.step === "analyse" && (
+        <section aria-label={t("lab.analyse.label")} className="flex w-full min-w-0 flex-col gap-4">
+          <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+            <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+            {!rightGraph ? (
+              <div className="flex flex-col items-start gap-3">
+                <p className="text-soft">{t(`${P}.analyse.otherGraph`, symbols)}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
                 >
-                  <div className="flex flex-col gap-3 border border-border bg-surface p-4">
-                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
-                    {!rightGraph ? (
-                      <div className="flex flex-col items-start gap-3">
-                        <p className="text-soft">{t(`${P}.analyse.otherGraph`, symbols)}</p>
-                        <Button
-                          variant="outline"
-                          onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
-                        >
-                          {t("lab.analyse.backToPlot")}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-2.5 font-mono text-[15px]">
-                        <AnswerLine
-                          id="T"
-                          unit="°C"
-                          lead={t(`${P}.analyse.tLead`)}
-                          written={answers.T}
-                          expected={expected.T}
-                          assist={analysisAssist}
-                          marks={analysisMarks && !analysisAssist}
-                          flagged={analysisFlags("T")}
-                          onWrite={write("T")}
-                        />
-                        {tabulated && (
-                          <AnswerLine
-                            id="c"
-                            unit="J kg⁻¹ K⁻¹"
-                            lead={t(`${P}.analyse.cLead`, {
-                              cc: H.given.calorimeter,
-                              cw: H.given.water,
-                              ms: (tabulated.solid / 1000).toFixed(4),
-                              mc: (tabulated.empty / 1000).toFixed(4),
-                              mw: ((tabulated.filled - tabulated.empty) / 1000).toFixed(4),
-                              t0: deg(tabulated.start),
-                              t: answerText("T", "°C").replace(" °C", ""),
-                            })}
-                            written={answers.c}
-                            expected={expected.c}
-                            assist={analysisAssist}
-                            marks={analysisMarks && !analysisAssist}
-                            flagged={analysisFlags("c")}
-                            onWrite={write("c")}
-                          />
-                        )}
-                        {uncertain &&
-                          tabulated &&
-                          expected.T &&
-                          (() => {
-                            const T = expected.T.value;
-                            if (!(T > tabulated.start && T < H.boiling)) return null;
-                            const c = cWithUncertainty(tabulated, T);
-                            return (
-                              <QuoteLine
-                                symbol="c"
-                                unit="J kg⁻¹ K⁻¹"
-                                worked={c.uncertainty}
-                                percent={(100 * c.uncertainty) / c.value}
-                              />
-                            );
-                          })()}
-                        {analysisAssist && (
-                          <span className="font-sans text-xs text-muted-foreground">
-                            {t("lab.analyse.workedOut")}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-2 border border-border bg-surface p-4">
-                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
-                    <Calculator />
-                  </div>
-                  {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
-                </section>
-              )}
-            </section>
-          ) : (
-            <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
-              <div className="flex w-full max-w-[760px] flex-col">
-                <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
-                <span className="font-semibold">{t(`${P}.fig.${where}`)}</span>
+                  {t("lab.analyse.backToPlot")}
+                </Button>
               </div>
-              <div className="w-full max-w-[760px]">
-                <HotSolidBench
-                  className="block h-auto w-full"
-                  label={description}
-                  balance={balance}
-                  solid={where}
-                  wet={
-                    bench.transfer ? !bench.transfer.shaken : !shaken && run.lifted !== undefined
-                  }
-                  water={bench.water ?? 0}
-                  covered={bench.covered}
-                  stirring={bench.stirring}
-                  thermometer={solidThermometer(bench, t0)}
+            ) : (
+              <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+                <AnswerLine
+                  id="T"
+                  unit="°C"
+                  lead={t(`${P}.analyse.tLead`)}
+                  written={answers.T}
+                  expected={expected.T}
+                  assist={analysisAssist}
+                  marks={analysisMarks && !analysisAssist}
+                  flagged={analysisFlags("T")}
+                  onWrite={write("T")}
                 />
-              </div>
-              <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
-                {building && balanceCard}
-                {measuring && !inside && transferCard}
-                {measuring && inside && minutesCard}
-                {(building || measuring) && thermometerCard}
-              </div>
-              {refusal && (
-                <p
-                  role="alert"
-                  className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
-                >
-                  {refusal}
-                </p>
-              )}
-            </section>
-          )}
-
-          <aside
-            aria-label={t("lab.coach.label")}
-            className="flex min-w-0 flex-col border-border bg-surface md:w-[380px] md:overflow-y-auto md:border-l"
-          >
-            <Tabs value={tab} onValueChange={(v) => setTab(String(v))}>
-              <TabsList
-                variant="line"
-                className="h-auto! w-full justify-start gap-5 border-b border-border px-5 py-0"
-              >
-                {(["instructions", "explanation", "tips"] as const).map((v) => (
-                  <TabsTrigger
-                    key={v}
-                    value={v}
-                    className="flex-none px-0 py-3.5 text-sm after:bg-primary"
-                  >
-                    {t(`lab.coach.${v}`)}
-                  </TabsTrigger>
-                ))}
-                {tutorOn && (
-                  <TabsTrigger
-                    value="ask"
-                    className="flex-none px-0 py-3.5 text-sm after:bg-primary"
-                  >
-                    {t("lab.coach.askTab")}
-                  </TabsTrigger>
+                {tabulated && (
+                  <AnswerLine
+                    id="c"
+                    unit="J kg⁻¹ K⁻¹"
+                    lead={t(`${P}.analyse.cLead`, {
+                      cc: H.given.calorimeter,
+                      cw: H.given.water,
+                      ms: (tabulated.solid / 1000).toFixed(4),
+                      mc: (tabulated.empty / 1000).toFixed(4),
+                      mw: ((tabulated.filled - tabulated.empty) / 1000).toFixed(4),
+                      t0: deg(tabulated.start),
+                      t: answerText("T", "°C").replace(" °C", ""),
+                    })}
+                    written={answers.c}
+                    expected={expected.c}
+                    assist={analysisAssist}
+                    marks={analysisMarks && !analysisAssist}
+                    flagged={analysisFlags("c")}
+                    onWrite={write("c")}
+                  />
                 )}
-              </TabsList>
-
-              <TabsContent value="instructions" className="flex flex-col gap-3.5 p-5">
-                {state.step === "question" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.question.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.question.text`)}</p>
-                  </>
-                )}
-                {state.step === "predict" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.predict.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.predict.text`)}</p>
-                    <div
-                      className="flex flex-col gap-2"
-                      role="group"
-                      aria-label={t(`${P}.predict.title`)}
-                    >
-                      {(["solid", "water", "same"] as const).map((c) => (
-                        <Button
-                          key={c}
-                          variant={prediction === c ? "default" : "outline"}
-                          aria-pressed={prediction === c}
-                          onClick={() =>
-                            void handle.record([{ kind: PREDICT, data: { choice: c } }])
-                          }
-                        >
-                          {t(`${P}.predict.${c}`)}
-                        </Button>
-                      ))}
-                    </div>
-                    {prediction && (
-                      <p className="text-muted-foreground">
-                        {t(`${P}.predict.saved`, { choice: t(`${P}.predict.${prediction}`) })}
-                      </p>
-                    )}
-                  </>
-                )}
-                {building && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.build.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.build.why`)}</p>
-                    <div className="flex flex-col gap-1.5">
-                      <CheckItem n={1} state={w.solid !== undefined ? "done" : "current"}>
-                        {t(`${P}.build.solid`)}
-                      </CheckItem>
-                      <CheckItem
-                        n={2}
-                        state={
-                          w.empty !== undefined
-                            ? "done"
-                            : w.solid !== undefined
-                              ? "current"
-                              : "todo"
-                        }
-                      >
-                        {t(`${P}.build.empty`)}
-                      </CheckItem>
-                      <CheckItem
-                        n={3}
-                        state={
-                          w.filled !== undefined
-                            ? "done"
-                            : w.empty !== undefined
-                              ? "current"
-                              : "todo"
-                        }
-                      >
-                        {t(`${P}.build.filled`)}
-                      </CheckItem>
-                      <CheckItem
-                        n={4}
-                        state={bench.covered ? "done" : allWeighed ? "current" : "todo"}
-                      >
-                        {t(`${P}.build.lid`)}
-                      </CheckItem>
-                    </div>
-                    {masses}
-                    {adviceCards}
-                    <Button onClick={() => void finishStep()}>
-                      {t("lab.steps.finishBuilding")}
-                    </Button>
-                  </>
-                )}
-                {state.step === "check" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.check.title`)}
-                    </h2>
-                    {masses}
-                    {!allWeighed && <p className="text-soft">{t(`${P}.check.weigh`)}</p>}
-                    {allWeighed && !bench.covered && (
-                      <p className="text-soft">{t(`${P}.build.lid`)}</p>
-                    )}
-                    {setUpRight && (
-                      <p className="text-soft">
-                        {t(`${P}.check.right`, { water: deg((w.filled ?? 0) - (w.empty ?? 0)) })}
-                      </p>
-                    )}
-                    {!setUpRight && (
-                      <Button
-                        variant="outline"
-                        onClick={() => void handle.dispatch({ type: "go-to-step", step: "build" })}
-                      >
-                        {t(`${P}.check.fix`)}
-                      </Button>
-                    )}
-                  </>
-                )}
-                {measuring && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(
-                        inside
-                          ? wet && measureMarks
-                            ? `${P}.measure.wetTitle`
-                            : `${P}.measure.readTitle`
-                          : `${P}.measure.moveTitle`,
-                      )}
-                    </h2>
-                    <p className="text-soft">
-                      {t(inside ? `${P}.measure.readText` : `${P}.measure.moveText`)}
-                    </p>
-                    <div className="flex flex-col gap-1.5">
-                      <CheckItem n={1} state="done">
-                        {t(`${P}.measure.step1`)}
-                      </CheckItem>
-                      <CheckItem n={2} state={inside ? "done" : "current"}>
-                        {t(`${P}.measure.step2`)}
-                      </CheckItem>
-                      <CheckItem n={3} state={inside ? "current" : "todo"}>
-                        {t(`${P}.measure.step3`)}
-                      </CheckItem>
-                    </div>
-                    {masses}
-                    {inside && measureMarks && fallen && highestRead && (
-                      <div
-                        role="status"
-                        className="flex flex-col gap-2.5 border border-border bg-background p-3.5"
-                      >
-                        <span className="font-semibold">{t(`${P}.measure.fallen.title`)}</span>
-                        <span className="text-soft">
-                          {t(`${P}.measure.fallen.detail`, { highest: deg(highestRead.reading) })}
-                        </span>
-                      </div>
-                    )}
-                    {inside &&
-                      measureMarks &&
-                      wet &&
-                      findingCard({ key: `${P}.measure.wet`, params: wet.params ?? {} })}
-                    {inside && (
-                      <Button className="self-start" onClick={() => void takeReading()}>
-                        {t(`${P}.measure.take`)}
-                      </Button>
-                    )}
-                    {measureMarks && procedure.map((f) => findingCard(f))}
-                    {adviceCards}
-                    {inside && (
-                      <Button variant="outline" onClick={() => void act({ type: "empty" })}>
-                        {t(`${P}.measure.again`)}
-                      </Button>
-                    )}
-                    <div className="flex flex-col gap-1">
-                      <span className="text-sm text-muted-foreground">
-                        {t(`${P}.measure.runs`)}
-                      </span>
-                      {readings.length ? (
-                        <ol className="flex flex-col gap-0.5 font-mono text-sm">
-                          {readings.map((r, i) => (
-                            <li key={r.id}>
-                              {t(`${P}.measure.run`, {
-                                n: i + 1,
-                                start: deg(r.start),
-                                highest: deg(r.highest),
-                              })}
-                            </li>
-                          ))}
-                        </ol>
-                      ) : (
-                        <span className="text-sm text-soft">{t(`${P}.measure.none`)}</span>
-                      )}
-                    </div>
-                    <Button
-                      disabled={!readings.length}
-                      onClick={() => void finishChecked(procedure, `measure:${readings.length}`)}
-                    >
-                      {t("lab.steps.finishMeasuring")}
-                    </Button>
-                  </>
-                )}
-                {panel && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.${state.step}.title` as MessageKey)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
-                    <Button onClick={() => void finishPanelStep()}>
-                      {state.step === "tabulate"
-                        ? t("lab.steps.finishTabulating")
-                        : state.step === "plot"
-                          ? t("lab.steps.finishPlotting")
-                          : t("lab.steps.finishAnalysing")}
-                    </Button>
-                  </>
-                )}
-                {(state.step === "conclude" || state.step === "report") && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {stepName(state.step)}
-                    </h2>
-                    <p className="text-soft">
-                      {state.step === "conclude"
-                        ? t(`${P}.conclude.text`, {
-                            c: answerText("c", "J kg⁻¹ K⁻¹"),
-                            metal: t(`${P}.metal.${metal?.id ?? "copper"}` as MessageKey),
-                            true: metal?.c ?? 0,
-                          })
-                        : t("report.openHint")}
-                    </p>
-                    {state.step === "report" && (
-                      <Link
-                        href={`/lab/${H.id}/report`}
-                        className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
-                      >
-                        {t("report.open")}
-                      </Link>
-                    )}
-                    {state.step === "conclude" && next && (
-                      <Button className="self-start" onClick={() => void finishStep()}>
-                        {t("lab.steps.continue", { step: stepName(next) })}
-                      </Button>
-                    )}
-                  </>
-                )}
-                {(state.step === "question" ||
-                  state.step === "predict" ||
-                  state.step === "check") &&
-                  next && (
-                    <Button
-                      disabled={
-                        (state.step === "predict" && !prediction) ||
-                        (state.step === "check" && !setUpRight)
-                      }
-                      onClick={() => void finishStep()}
-                    >
-                      {t("lab.steps.continue", { step: stepName(next) })}
-                    </Button>
-                  )}
-              </TabsContent>
-
-              <TabsContent value="explanation" className="flex flex-col gap-3.5 p-5">
-                <h2 className="font-display text-2xl leading-tight font-bold">
-                  {t(`${P}.explain.title`)}
-                </h2>
-                <p className="text-soft">{t(`${P}.explain.text`)}</p>
-                <div className="flex flex-col gap-2.5 border border-border bg-background p-4">
-                  <span className="text-center font-mono text-[18px]">
-                    m_s c_s (T_s − T) = (m_c c_c + m_w c_w)(T − T₀)
+                {uncertain &&
+                  tabulated &&
+                  expected.T &&
+                  (() => {
+                    const T = expected.T.value;
+                    if (!(T > tabulated.start && T < H.boiling)) return null;
+                    const c = cWithUncertainty(tabulated, T);
+                    return (
+                      <QuoteLine
+                        symbol="c"
+                        unit="J kg⁻¹ K⁻¹"
+                        worked={c.uncertainty}
+                        percent={(100 * c.uncertainty) / c.value}
+                      />
+                    );
+                  })()}
+                {analysisAssist && (
+                  <span className="font-sans text-xs text-muted-foreground">
+                    {t("lab.analyse.workedOut")}
                   </span>
-                </div>
-                <p className="text-soft">{t(`${P}.explain.given`)}</p>
-                <Link
-                  href={`/lab/${H.id}/sheets`}
-                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                >
-                  {t("sheets.link")}
-                </Link>
-                <Link
-                  href={`/lab/${H.id}/check`}
-                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                >
-                  {t("labData.check.link")}
-                </Link>
-                {handle.attempt.mode !== "exam" && (
-                  <Link
-                    href={`/lab/${H.id}/exam`}
-                    className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                  >
-                    {t("exam.try")}
-                  </Link>
                 )}
-              </TabsContent>
-
-              <TabsContent value="tips" className="flex flex-col gap-3 p-5">
-                <h2 className="font-display text-2xl leading-tight font-bold">
-                  {t(`${P}.tips.title`)}
-                </h2>
-                <ul className="flex list-disc flex-col gap-2 pl-4.5">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <li key={n}>{t(`${P}.tips.${n}` as MessageKey)}</li>
-                  ))}
-                </ul>
-              </TabsContent>
-              {tutorOn && (
-                <TabsContent value="ask" className="flex min-h-[420px] flex-col">
-                  <TutorPanel key={state.step} stepName={stepName(state.step)} input={tutorInput} />
-                </TabsContent>
-              )}
-            </Tabs>
-          </aside>
-        </div>
-
-        <StepStrip
-          current={state.step}
-          completed={state.completed}
-          open={(s) => STEPS.indexOf(s) <= STEPS.indexOf(frontier(state))}
-          onGo={(s) => void handle.dispatch({ type: "go-to-step", step: s })}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+            <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+            <Calculator />
+          </div>
+          {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
+        </section>
+      )}
+    </section>
+  ) : (
+    <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
+      <div className="flex w-full max-w-[760px] flex-col">
+        <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
+        <span className="font-semibold">{t(`${P}.fig.${where}`)}</span>
+      </div>
+      <div className="w-full max-w-[760px]">
+        <HotSolidBench
+          className="block h-auto w-full"
+          label={description}
+          balance={balance}
+          solid={where}
+          wet={bench.transfer ? !bench.transfer.shaken : !shaken && run.lifted !== undefined}
+          water={bench.water ?? 0}
+          covered={bench.covered}
+          stirring={bench.stirring}
+          thermometer={solidThermometer(bench, t0)}
         />
       </div>
-    </div>
+      <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
+        {building && balanceCard}
+        {measuring && !inside && transferCard}
+        {measuring && inside && minutesCard}
+        {(building || measuring) && thermometerCard}
+      </div>
+      {refusal && (
+        <p
+          role="alert"
+          className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
+        >
+          {refusal}
+        </p>
+      )}
+    </section>
+  );
+
+  return (
+    <LabFrame
+      experimentId={H.id}
+      experimentVersion={H.version}
+      handle={handle}
+      audio={audio}
+      uncertain={uncertain}
+      setUncertain={setUncertain}
+      advice={advice}
+      spokenStep={spokenStepFor(P)}
+      main={main}
+      instructions={
+        <>
+          {state.step === "question" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.question.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.question.text`)}</p>
+            </>
+          )}
+          {state.step === "predict" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.predict.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.predict.text`)}</p>
+              <div
+                className="flex flex-col gap-2"
+                role="group"
+                aria-label={t(`${P}.predict.title`)}
+              >
+                {(["solid", "water", "same"] as const).map((c) => (
+                  <Button
+                    key={c}
+                    variant={prediction === c ? "default" : "outline"}
+                    aria-pressed={prediction === c}
+                    onClick={() => void handle.record([{ kind: PREDICT, data: { choice: c } }])}
+                  >
+                    {t(`${P}.predict.${c}`)}
+                  </Button>
+                ))}
+              </div>
+              {prediction && (
+                <p className="text-muted-foreground">
+                  {t(`${P}.predict.saved`, { choice: t(`${P}.predict.${prediction}`) })}
+                </p>
+              )}
+            </>
+          )}
+          {building && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.build.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.build.why`)}</p>
+              <div className="flex flex-col gap-1.5">
+                <CheckItem n={1} state={w.solid !== undefined ? "done" : "current"}>
+                  {t(`${P}.build.solid`)}
+                </CheckItem>
+                <CheckItem
+                  n={2}
+                  state={
+                    w.empty !== undefined ? "done" : w.solid !== undefined ? "current" : "todo"
+                  }
+                >
+                  {t(`${P}.build.empty`)}
+                </CheckItem>
+                <CheckItem
+                  n={3}
+                  state={
+                    w.filled !== undefined ? "done" : w.empty !== undefined ? "current" : "todo"
+                  }
+                >
+                  {t(`${P}.build.filled`)}
+                </CheckItem>
+                <CheckItem n={4} state={bench.covered ? "done" : allWeighed ? "current" : "todo"}>
+                  {t(`${P}.build.lid`)}
+                </CheckItem>
+              </div>
+              {masses}
+              {adviceCards}
+              <Button onClick={() => void finishStep()}>{t("lab.steps.finishBuilding")}</Button>
+            </>
+          )}
+          {state.step === "check" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.check.title`)}
+              </h2>
+              {masses}
+              {!allWeighed && <p className="text-soft">{t(`${P}.check.weigh`)}</p>}
+              {allWeighed && !bench.covered && <p className="text-soft">{t(`${P}.build.lid`)}</p>}
+              {setUpRight && (
+                <p className="text-soft">
+                  {t(`${P}.check.right`, { water: deg((w.filled ?? 0) - (w.empty ?? 0)) })}
+                </p>
+              )}
+              {!setUpRight && (
+                <Button
+                  variant="outline"
+                  onClick={() => void handle.dispatch({ type: "go-to-step", step: "build" })}
+                >
+                  {t(`${P}.check.fix`)}
+                </Button>
+              )}
+            </>
+          )}
+          {measuring && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(
+                  inside
+                    ? wet && measureMarks
+                      ? `${P}.measure.wetTitle`
+                      : `${P}.measure.readTitle`
+                    : `${P}.measure.moveTitle`,
+                )}
+              </h2>
+              <p className="text-soft">
+                {t(inside ? `${P}.measure.readText` : `${P}.measure.moveText`)}
+              </p>
+              <div className="flex flex-col gap-1.5">
+                <CheckItem n={1} state="done">
+                  {t(`${P}.measure.step1`)}
+                </CheckItem>
+                <CheckItem n={2} state={inside ? "done" : "current"}>
+                  {t(`${P}.measure.step2`)}
+                </CheckItem>
+                <CheckItem n={3} state={inside ? "current" : "todo"}>
+                  {t(`${P}.measure.step3`)}
+                </CheckItem>
+              </div>
+              {masses}
+              {inside && measureMarks && fallen && highestRead && (
+                <div
+                  role="status"
+                  className="flex flex-col gap-2.5 border border-border bg-background p-3.5"
+                >
+                  <span className="font-semibold">{t(`${P}.measure.fallen.title`)}</span>
+                  <span className="text-soft">
+                    {t(`${P}.measure.fallen.detail`, { highest: deg(highestRead.reading) })}
+                  </span>
+                </div>
+              )}
+              {inside &&
+                measureMarks &&
+                wet &&
+                findingCard({ key: `${P}.measure.wet`, params: wet.params ?? {} })}
+              {inside && (
+                <Button className="self-start" onClick={() => void takeReading()}>
+                  {t(`${P}.measure.take`)}
+                </Button>
+              )}
+              {measureMarks && procedure.map((f) => findingCard(f))}
+              {adviceCards}
+              {inside && (
+                <Button variant="outline" onClick={() => void act({ type: "empty" })}>
+                  {t(`${P}.measure.again`)}
+                </Button>
+              )}
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-muted-foreground">{t(`${P}.measure.runs`)}</span>
+                {readings.length ? (
+                  <ol className="flex flex-col gap-0.5 font-mono text-sm">
+                    {readings.map((r, i) => (
+                      <li key={r.id}>
+                        {t(`${P}.measure.run`, {
+                          n: i + 1,
+                          start: deg(r.start),
+                          highest: deg(r.highest),
+                        })}
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <span className="text-sm text-soft">{t(`${P}.measure.none`)}</span>
+                )}
+              </div>
+              <Button
+                disabled={!readings.length}
+                onClick={() => void finishChecked(procedure, `measure:${readings.length}`)}
+              >
+                {t("lab.steps.finishMeasuring")}
+              </Button>
+            </>
+          )}
+          {panel && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.${state.step}.title` as MessageKey)}
+              </h2>
+              <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
+              <Button onClick={() => void finishPanelStep()}>
+                {state.step === "tabulate"
+                  ? t("lab.steps.finishTabulating")
+                  : state.step === "plot"
+                    ? t("lab.steps.finishPlotting")
+                    : t("lab.steps.finishAnalysing")}
+              </Button>
+            </>
+          )}
+          {(state.step === "conclude" || state.step === "report") && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {stepName(state.step)}
+              </h2>
+              <p className="text-soft">
+                {state.step === "conclude"
+                  ? t(`${P}.conclude.text`, {
+                      c: answerText("c", "J kg⁻¹ K⁻¹"),
+                      metal: t(`${P}.metal.${metal?.id ?? "copper"}` as MessageKey),
+                      true: metal?.c ?? 0,
+                    })
+                  : t("report.openHint")}
+              </p>
+              {state.step === "report" && (
+                <Link
+                  href={`/lab/${H.id}/report`}
+                  className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("report.open")}
+                </Link>
+              )}
+              {state.step === "conclude" && next && (
+                <Button className="self-start" onClick={() => void finishStep()}>
+                  {t("lab.steps.continue", { step: stepName(next) })}
+                </Button>
+              )}
+            </>
+          )}
+          {(state.step === "question" || state.step === "predict" || state.step === "check") &&
+            next && (
+              <Button
+                disabled={
+                  (state.step === "predict" && !prediction) ||
+                  (state.step === "check" && !setUpRight)
+                }
+                onClick={() => void finishStep()}
+              >
+                {t("lab.steps.continue", { step: stepName(next) })}
+              </Button>
+            )}
+        </>
+      }
+      explanation={
+        <>
+          <h2 className="font-display text-2xl leading-tight font-bold">
+            {t(`${P}.explain.title`)}
+          </h2>
+          <p className="text-soft">{t(`${P}.explain.text`)}</p>
+          <div className="flex flex-col gap-2.5 border border-border bg-background p-4">
+            <span className="text-center font-mono text-[18px]">
+              m_s c_s (T_s − T) = (m_c c_c + m_w c_w)(T − T₀)
+            </span>
+          </div>
+          <p className="text-soft">{t(`${P}.explain.given`)}</p>
+          <Link
+            href={`/lab/${H.id}/sheets`}
+            className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("sheets.link")}
+          </Link>
+          <Link
+            href={`/lab/${H.id}/check`}
+            className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("labData.check.link")}
+          </Link>
+          {handle.attempt.mode !== "exam" && (
+            <Link
+              href={`/lab/${H.id}/exam`}
+              className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {t("exam.try")}
+            </Link>
+          )}
+        </>
+      }
+      tips={
+        <>
+          <h2 className="font-display text-2xl leading-tight font-bold">{t(`${P}.tips.title`)}</h2>
+          <ul className="flex list-disc flex-col gap-2 pl-4.5">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <li key={n}>{t(`${P}.tips.${n}` as MessageKey)}</li>
+            ))}
+          </ul>
+        </>
+      }
+    />
   );
 }

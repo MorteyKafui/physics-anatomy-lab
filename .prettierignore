@@ -15,3 +15,7 @@ apps/admin/src/spikes/anatomy-kit/
 # Exported from the master plan Claude Doc; re-export rather than reformat.
 docs/planning/master-plan.md
 docs/planning/master-plan-gap-fixes.md
+
+# Third-party agent skills, installed from skills-lock.json and not committed
+.claude/skills/anatomy/
+.agents/
