@@ -201,9 +201,7 @@ export function LabFrame({
             <button
               type="button"
               className="underline underline-offset-2"
-              onClick={() =>
-                void backToPractice(experimentId).then(() => window.location.reload())
-              }
+              onClick={() => void backToPractice(experimentId).then(() => window.location.reload())}
             >
               {t("exam.backToPractice")}
             </button>

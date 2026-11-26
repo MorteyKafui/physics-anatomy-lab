@@ -14,15 +14,12 @@ import {
   type Finding,
 } from "@pa/analysis";
 import { snapSlot } from "@pa/apparatus";
-import { RATES, VERBOSITY } from "@pa/audio";
 import {
   answersProjection,
   coach,
   coachIsOn,
   helpLevelFor,
-  setSkillLevel,
   frontier,
-  HELP_LEVELS,
   replay,
   writeAnswer,
   STEPS,
@@ -84,13 +81,6 @@ import { ANTICIPATED_EVENT, DEFAULT_ENVIRONMENT } from "@pa/instruments";
 import { placeById } from "@pa/physics";
 import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverDescription,
-  PopoverTitle,
-  PopoverTrigger,
-} from "@pa/ui/components/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@pa/ui/components/tabs";
 import { TooltipProvider } from "@pa/ui/components/tooltip";
 import {
@@ -102,8 +92,6 @@ import {
   PauseIcon,
   PlayIcon,
   PlusIcon,
-  Volume2Icon,
-  VolumeXIcon,
   RotateCcwIcon,
   SearchIcon,
   SkipBackIcon,
@@ -146,6 +134,7 @@ import { flagsFor, useTable } from "./table-builder";
 import { backToPractice, startWhatIf, useAttempt, type AttemptHandle } from "./use-attempt";
 import { ExamBar } from "./exam/bar";
 import { useAudio } from "./use-audio";
+import { AssistMenu, HelpLevelSelect, SoundMenu } from "./lab-controls";
 
 import { canUse, useAiStatus, notNow } from "./tutor/use-ai-status";
 import { Clocked, useBenchClock, useClockTime, type BenchClock } from "./use-bench-clock";
@@ -670,6 +659,16 @@ export function LabScreen() {
     void (a.building ? a.resetBench() : a.tryAgain());
   }, []);
   const onSnapshot = useCallback(() => void actions.current.takeSnapshot(), []);
+  // The header's sound settings, the same object until one of them changes.
+  const headerAudio = useMemo(
+    () => ({
+      settings: audio.settings,
+      update: audio.update,
+      canSpeak: audio.canSpeak,
+      voices: audio.voices,
+    }),
+    [audio.settings, audio.update, audio.canSpeak, audio.voices],
+  );
 
   if (!handle || !state) {
     return (
@@ -1108,10 +1107,7 @@ export function LabScreen() {
             setPlaying={clock.setPlaying}
             speed={clock.speed}
             nextSpeed={clock.nextSpeed}
-            audioSettings={audio.settings}
-            updateAudio={audio.update}
-            canSpeak={audio.canSpeak}
-            voices={audio.voices}
+            audio={headerAudio}
             onReset={onReset}
             onSnapshot={onSnapshot}
             uncertain={uncertain}
@@ -1893,10 +1889,7 @@ const LabHeader = memo(function LabHeader({
   setPlaying,
   speed,
   nextSpeed,
-  audioSettings,
-  updateAudio,
-  canSpeak,
-  voices,
+  audio,
   onReset,
   onSnapshot,
   uncertain,
@@ -1915,10 +1908,7 @@ const LabHeader = memo(function LabHeader({
   setPlaying: BenchClock["setPlaying"];
   speed: BenchClock["speed"];
   nextSpeed: BenchClock["nextSpeed"];
-  audioSettings: Audio["settings"];
-  updateAudio: Audio["update"];
-  canSpeak: Audio["canSpeak"];
-  voices: Audio["voices"];
+  audio: Pick<Audio, "settings" | "update" | "canSpeak" | "voices">;
   onReset: () => void;
   onSnapshot: () => void;
   uncertain: boolean;
@@ -1995,183 +1985,10 @@ const LabHeader = memo(function LabHeader({
         </Button>
       </div>
       <span className="hidden flex-1 md:block" />
-      {/* In an exam the coach is off: no help level to choose. */}
-      {state.mode !== "exam" && (
-        <label className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-          {/* On narrower screens the words give way so the header stays on one row; the select
-            keeps its name. */}
-          <span className="sr-only min-[1320px]:not-sr-only">{t("lab.helpLevel.label")}</span>
-          <select
-            className="h-9 border border-input bg-surface px-2.5 text-sm font-medium text-foreground"
-            value={state.helpLevel}
-            onChange={(e) =>
-              void handle.dispatch({
-                type: "set-help-level",
-                level: e.target.value as HelpLevel,
-              })
-            }
-          >
-            {HELP_LEVELS.map((level) => (
-              <option key={level} value={level}>
-                {t(`lab.helpLevel.${level}` as MessageKey)}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
+      <HelpLevelSelect handle={handle} />
       {state.mode !== "exam" && <UncertaintySwitch on={uncertain} onChange={setUncertain} />}
-      <Popover>
-        <PopoverTrigger
-          aria-label={t("lab.audio.label")}
-          className="ml-auto flex h-9 items-center gap-1.5 border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:ml-0"
-        >
-          {audioSettings.on ? (
-            <Volume2Icon className="size-4" aria-hidden />
-          ) : (
-            <VolumeXIcon className="size-4" aria-hidden />
-          )}
-          {/* The word gives way below 1320 px, as the help level's does, so the Uncertainties
-            switch fits on the header's one row; the button keeps its name. */}
-          <span className="hidden min-[1320px]:inline">{t("lab.audio.label")}</span>
-        </PopoverTrigger>
-        <PopoverContent align="end" className="w-80">
-          <PopoverTitle>{t("lab.audio.title")}</PopoverTitle>
-          <PopoverDescription>
-            {canSpeak ? t("lab.audio.hint") : t("lab.audio.noSpeech")}
-          </PopoverDescription>
-          <div className="flex flex-col gap-3 text-sm">
-            <label className="flex items-center gap-2 font-medium">
-              <input
-                type="checkbox"
-                className="size-4 accent-primary"
-                checked={audioSettings.on}
-                onChange={(e) => updateAudio({ on: e.target.checked })}
-              />
-              {t("lab.audio.on")}
-            </label>
-            <label className="flex items-center justify-between gap-3">
-              {t("lab.audio.verbosity")}
-              <select
-                className="h-9 border border-input bg-background px-2 text-sm text-foreground"
-                value={audioSettings.verbosity}
-                onChange={(e) =>
-                  updateAudio({
-                    verbosity: e.target.value as (typeof VERBOSITY)[number],
-                  })
-                }
-              >
-                {VERBOSITY.map((v) => (
-                  <option key={v} value={v}>
-                    {t(`lab.audio.verbosity.${v}` as MessageKey)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex items-center justify-between gap-3">
-              {t("lab.audio.rate")}
-              <select
-                className="h-9 border border-input bg-background px-2 font-mono text-sm text-foreground"
-                value={audioSettings.rate}
-                onChange={(e) =>
-                  updateAudio({ rate: Number(e.target.value) as (typeof RATES)[number] })
-                }
-              >
-                {RATES.map((r) => (
-                  <option key={r} value={r}>
-                    {r}×
-                  </option>
-                ))}
-              </select>
-            </label>
-            {voices.length > 0 && (
-              <label className="flex items-center justify-between gap-3">
-                {t("lab.audio.voice")}
-                <select
-                  className="h-9 max-w-40 border border-input bg-background px-2 text-sm text-foreground"
-                  value={audioSettings.voice ?? ""}
-                  onChange={(e) => updateAudio({ voice: e.target.value || undefined })}
-                >
-                  <option value="">{t("lab.audio.voiceAuto")}</option>
-                  {voices.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-            {(
-              [
-                ["voiceVolume", "lab.audio.voiceVolume"],
-                ["countVolume", "lab.audio.countVolume"],
-                ["soundsVolume", "lab.audio.soundsVolume"],
-              ] as const
-            ).map(([key, label]) => (
-              <label key={key} className="flex items-center justify-between gap-3">
-                {t(label)}
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  className="w-32 accent-primary"
-                  value={audioSettings[key]}
-                  onChange={(e) => updateAudio({ [key]: Number(e.target.value) })}
-                />
-              </label>
-            ))}
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="size-4 accent-primary"
-                checked={audioSettings.countAlong}
-                onChange={(e) => updateAudio({ countAlong: e.target.checked })}
-              />
-              {t("lab.audio.countAlong")}
-            </label>
-          </div>
-        </PopoverContent>
-      </Popover>
-      {coachIsOn(state) && (
-        <Popover>
-          <PopoverTrigger className="hidden h-9 items-center border border-input bg-surface px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring md:flex">
-            {t("lab.assist.perSkill")}
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-80">
-            <PopoverTitle>{t("lab.assist.title")}</PopoverTitle>
-            <PopoverDescription>{t("lab.assist.hint")}</PopoverDescription>
-            <div className="flex flex-col gap-2">
-              {(["apparatus", "measurement", "tabulation", "graph", "analysis"] as const).map(
-                (skill) => (
-                  <label key={skill} className="flex items-center justify-between gap-3 text-sm">
-                    {t(`lab.assist.skill.${skill}` as MessageKey)}
-                    <select
-                      className="h-9 border border-input bg-background px-2 text-sm text-foreground"
-                      value={state.skillLevels[skill] ?? ""}
-                      onChange={(e) => {
-                        const level = (e.target.value || undefined) as HelpLevel | undefined;
-                        const ev = setSkillLevel(handle.state, skill, level);
-                        if (ev) void handle.record([ev]);
-                      }}
-                    >
-                      <option value="">
-                        {t("lab.assist.same", {
-                          level: t(`lab.helpLevel.${state.helpLevel}` as MessageKey),
-                        })}
-                      </option>
-                      {HELP_LEVELS.map((level) => (
-                        <option key={level} value={level}>
-                          {t(`lab.helpLevel.${level}` as MessageKey)}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                ),
-              )}
-            </div>
-          </PopoverContent>
-        </Popover>
-      )}
+      <SoundMenu audio={audio} countAlong />
+      <AssistMenu handle={handle} />
       <HelpMenu
         status={aiStatus}
         onHint={onHint}

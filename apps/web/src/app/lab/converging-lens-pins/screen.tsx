@@ -64,13 +64,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
-import {
-  AnswerLine,
-  Calculator,
-  GraphPanel,
-  QuoteLine,
-  TableBuilder,
-} from "../lazy-panels";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
 import { showUncertainty } from "../uncertainty-format";
 import { useUncertainties } from "../use-uncertainties";
 import { LabFrame, spokenStepFor } from "../lab-frame";
@@ -509,272 +503,259 @@ export function ConvergingLensPinsScreen() {
   };
 
   const main = panel ? (
-            <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
-              {state.step === "tabulate" && (
-                <TableBuilder
-                  table={table}
-                  shown={shownTable}
-                  assist={tableAssist}
-                  marks={tableMarks}
-                  flags={tableFlags}
-                  spec={{
-                    standard: PINS_STANDARD_TABLE,
-                    templates: PINS_TEMPLATES,
-                    defaultTemplate: "single",
-                    instruments: PINS_INSTRUMENTS,
-                    defaultKind: "length",
-                    rowsNeeded: Math.max(PINS_ROWS, new Set(readings.map((r) => r.x)).size),
-                    readingsSummary: readings.length
-                      ? readings.map(readingText).join(" · ")
-                      : undefined,
-                  }}
-                  onRun={results.run}
-                  onFillReadings={tableAssist ? fillReadings : undefined}
-                  onCommit={() => undefined}
-                  uncertainties={uncertainties}
-                  below={
-                    advice.length > 0 ? (
-                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
-                    ) : null
-                  }
-                />
-              )}
-              {state.step === "plot" && (
-                <GraphPanel
-                  state={plot.graph}
-                  view={graphShown}
-                  data={graphData}
-                  headings={{
-                    x: headingFor(table.columns, graphColumns.x),
-                    y: headingFor(table.columns, graphColumns.y),
-                  }}
-                  numericColumns={numericColumns}
-                  flaggedRows={graphFlagged}
-                  partFindings={partFindings}
-                  showChecks={graphMarks && !graphAssist}
-                  onRun={plot.run}
-                  latest={plot.now}
-                  bars={bars}
-                  below={
-                    advice.length > 0 || (graphMarks && pinsGraphFindings.length > 0) ? (
-                      <div className="flex flex-col gap-3">
-                        {advice.length > 0
-                          ? adviceCards
-                          : pinsGraphFindings.map((f) => findingCard(f))}
-                      </div>
-                    ) : null
-                  }
-                />
-              )}
-              {state.step === "analyse" && (
-                <section
-                  aria-label={t("lab.analyse.label")}
-                  className="flex w-full min-w-0 flex-col gap-4"
+    <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+      {state.step === "tabulate" && (
+        <TableBuilder
+          table={table}
+          shown={shownTable}
+          assist={tableAssist}
+          marks={tableMarks}
+          flags={tableFlags}
+          spec={{
+            standard: PINS_STANDARD_TABLE,
+            templates: PINS_TEMPLATES,
+            defaultTemplate: "single",
+            instruments: PINS_INSTRUMENTS,
+            defaultKind: "length",
+            rowsNeeded: Math.max(PINS_ROWS, new Set(readings.map((r) => r.x)).size),
+            readingsSummary: readings.length ? readings.map(readingText).join(" · ") : undefined,
+          }}
+          onRun={results.run}
+          onFillReadings={tableAssist ? fillReadings : undefined}
+          onCommit={() => undefined}
+          uncertainties={uncertainties}
+          below={
+            advice.length > 0 ? (
+              <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+            ) : null
+          }
+        />
+      )}
+      {state.step === "plot" && (
+        <GraphPanel
+          state={plot.graph}
+          view={graphShown}
+          data={graphData}
+          headings={{
+            x: headingFor(table.columns, graphColumns.x),
+            y: headingFor(table.columns, graphColumns.y),
+          }}
+          numericColumns={numericColumns}
+          flaggedRows={graphFlagged}
+          partFindings={partFindings}
+          showChecks={graphMarks && !graphAssist}
+          onRun={plot.run}
+          latest={plot.now}
+          bars={bars}
+          below={
+            advice.length > 0 || (graphMarks && pinsGraphFindings.length > 0) ? (
+              <div className="flex flex-col gap-3">
+                {advice.length > 0 ? adviceCards : pinsGraphFindings.map((f) => findingCard(f))}
+              </div>
+            ) : null
+          }
+        />
+      )}
+      {state.step === "analyse" && (
+        <section aria-label={t("lab.analyse.label")} className="flex w-full min-w-0 flex-col gap-4">
+          <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+            <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+            {!graphShown.triangle || !slope ? (
+              <div className="flex flex-col items-start gap-3">
+                <p className="text-soft">{t("lab.analyse.needTriangle")}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
                 >
-                  <div className="flex flex-col gap-3 border border-border bg-surface p-4">
-                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
-                    {!graphShown.triangle || !slope ? (
-                      <div className="flex flex-col items-start gap-3">
-                        <p className="text-soft">{t("lab.analyse.needTriangle")}</p>
-                        <Button
-                          variant="outline"
-                          onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
-                        >
-                          {t("lab.analyse.backToPlot")}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-2.5 font-mono text-[15px]">
-                        <AnswerLine
-                          id="slope"
-                          unit={slopeUnit}
-                          lead={t(`${P}.analyse.slopeLead`, {
-                            rise: slope.rise.toFixed(1),
-                            run: slope.run.toFixed(1),
-                            yu: graphUnits.y,
-                            xu: graphUnits.x,
+                  {t("lab.analyse.backToPlot")}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+                <AnswerLine
+                  id="slope"
+                  unit={slopeUnit}
+                  lead={t(`${P}.analyse.slopeLead`, {
+                    rise: slope.rise.toFixed(1),
+                    run: slope.run.toFixed(1),
+                    yu: graphUnits.y,
+                    xu: graphUnits.x,
+                  })}
+                  written={answers.slope}
+                  expected={expected.slope}
+                  assist={analysisAssist}
+                  marks={analysisMarks && !analysisAssist}
+                  flagged={analysisFlags("slope")}
+                  onWrite={write("slope")}
+                />
+                {rightGraph ? (
+                  <>
+                    <AnswerLine
+                      id="f"
+                      unit={slopeUnit}
+                      lead={t(`${P}.analyse.fLead`)}
+                      written={answers.f}
+                      expected={expected.f}
+                      assist={analysisAssist}
+                      marks={analysisMarks && !analysisAssist}
+                      flagged={analysisFlags("f")}
+                      onWrite={write("f")}
+                    />
+                    {lineUncertainty && (
+                      <div className="flex flex-col gap-2">
+                        <span className="font-mono text-sm text-soft">
+                          {t("lab.analyse.uncertainty.slope", {
+                            u: showUncertainty(lineUncertainty.slope),
                           })}
-                          written={answers.slope}
-                          expected={expected.slope}
-                          assist={analysisAssist}
-                          marks={analysisMarks && !analysisAssist}
-                          flagged={analysisFlags("slope")}
-                          onWrite={write("slope")}
-                        />
-                        {rightGraph ? (
-                          <>
-                            <AnswerLine
-                              id="f"
-                              unit={slopeUnit}
-                              lead={t(`${P}.analyse.fLead`)}
-                              written={answers.f}
-                              expected={expected.f}
-                              assist={analysisAssist}
-                              marks={analysisMarks && !analysisAssist}
-                              flagged={analysisFlags("f")}
-                              onWrite={write("f")}
-                            />
-                            {lineUncertainty && (
-                              <div className="flex flex-col gap-2">
-                                <span className="font-mono text-sm text-soft">
-                                  {t("lab.analyse.uncertainty.slope", {
-                                    u: showUncertainty(lineUncertainty.slope),
-                                  })}
-                                </span>
-                                <QuoteLine
-                                  symbol="f"
-                                  unit={slopeUnit}
-                                  worked={lineUncertainty.f.worked}
-                                  percent={lineUncertainty.f.percent}
-                                />
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <p className="font-sans text-sm text-soft">
-                            {t(`${P}.analyse.otherGraph`, symbols)}
-                          </p>
-                        )}
-                        {analysisAssist && (
-                          <span className="font-sans text-xs text-muted-foreground">
-                            {t("lab.analyse.workedOut")}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-2 border border-border bg-surface p-4">
-                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
-                    <Calculator />
-                  </div>
-                  {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
-                </section>
-              )}
-            </section>
-          ) : (
-            <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
-              <div className="w-full max-w-[760px]">
-                <PinsBench
-                  className="block h-auto w-full"
-                  label={description}
-                  object={shown.object}
-                  lens={shown.lens}
-                  pin={shown.pin}
-                  objectTip={shown.objectTip}
-                  pinTip={shown.pinTip}
-                  eye={shown.eye}
-                  image={
-                    view.kind === "image"
-                      ? { at: view.at, magnification: view.magnification }
-                      : undefined
-                  }
-                />
-              </div>
-              <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
-                <div className="flex flex-col gap-2 border border-border bg-surface p-3">
-                  <span className="text-xs text-muted-foreground">{t(`${P}.measure.through`)}</span>
-                  <div className="flex gap-2">
-                    {sides.map((side, i) => (
-                      <div
-                        key={side}
-                        className={
-                          looking === i - 1
-                            ? "flex flex-col items-center gap-1 outline-2 outline-primary"
-                            : "flex flex-col items-center gap-1"
-                        }
-                      >
-                        <EyeView
-                          apart={
-                            eyeViews?.[i]
-                              ? { across: eyeViews[i]!.across, up: eyeViews[i]!.up }
-                              : undefined
-                          }
-                          label={viewLabel(i)}
-                        />
-                        <span className="text-xs text-muted-foreground">
-                          {t(`${P}.eye.${side}`)}
                         </span>
+                        <QuoteLine
+                          symbol="f"
+                          unit={slopeUnit}
+                          worked={lineUncertainty.f.worked}
+                          percent={lineUncertainty.f.percent}
+                        />
                       </div>
-                    ))}
-                  </div>
-                  <span
-                    className={
-                      clear
-                        ? "self-start border border-ok px-2 py-0.5 text-xs text-ok"
-                        : "self-start border border-warn px-2 py-0.5 text-xs text-warn"
-                    }
-                  >
-                    {t(
-                      view.kind !== "image"
-                        ? `${P}.measure.noImage`
-                        : clear
-                          ? `${P}.measure.clear`
-                          : `${P}.measure.parallax`,
                     )}
+                  </>
+                ) : (
+                  <p className="font-sans text-sm text-soft">
+                    {t(`${P}.analyse.otherGraph`, symbols)}
+                  </p>
+                )}
+                {analysisAssist && (
+                  <span className="font-sans text-xs text-muted-foreground">
+                    {t("lab.analyse.workedOut")}
                   </span>
-                </div>
-                <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 border border-border bg-surface p-3.5">
-                  {slider("lens")}
-                  {slider("pin")}
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() =>
-                        void act({
-                          type: "move",
-                          part: "pin",
-                          to: Number((bench.pin - PIN_STEP).toFixed(4)),
-                        })
-                      }
-                    >
-                      {t(`${P}.measure.towards`)}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() =>
-                        void act({
-                          type: "move",
-                          part: "pin",
-                          to: Number((bench.pin + PIN_STEP).toFixed(4)),
-                        })
-                      }
-                    >
-                      {t(`${P}.measure.away`)}
-                    </Button>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      aria-pressed={looking === -1}
-                      onClick={() => setLooking(looking === -1 ? 0 : -1)}
-                    >
-                      {t(`${P}.measure.left`)}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      aria-pressed={looking === 1}
-                      onClick={() => setLooking(looking === 1 ? 0 : 1)}
-                    >
-                      {t(`${P}.measure.right`)}
-                    </Button>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t(`${P}.measure.step`)}</span>
-                </div>
+                )}
               </div>
-              {refusal && (
-                <p
-                  role="alert"
-                  className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
-                >
-                  {refusal}
-                </p>
-              )}
-            </section>
-          );
+            )}
+          </div>
+          <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+            <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+            <Calculator />
+          </div>
+          {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
+        </section>
+      )}
+    </section>
+  ) : (
+    <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
+      <div className="w-full max-w-[760px]">
+        <PinsBench
+          className="block h-auto w-full"
+          label={description}
+          object={shown.object}
+          lens={shown.lens}
+          pin={shown.pin}
+          objectTip={shown.objectTip}
+          pinTip={shown.pinTip}
+          eye={shown.eye}
+          image={
+            view.kind === "image" ? { at: view.at, magnification: view.magnification } : undefined
+          }
+        />
+      </div>
+      <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
+        <div className="flex flex-col gap-2 border border-border bg-surface p-3">
+          <span className="text-xs text-muted-foreground">{t(`${P}.measure.through`)}</span>
+          <div className="flex gap-2">
+            {sides.map((side, i) => (
+              <div
+                key={side}
+                className={
+                  looking === i - 1
+                    ? "flex flex-col items-center gap-1 outline-2 outline-primary"
+                    : "flex flex-col items-center gap-1"
+                }
+              >
+                <EyeView
+                  apart={
+                    eyeViews?.[i] ? { across: eyeViews[i]!.across, up: eyeViews[i]!.up } : undefined
+                  }
+                  label={viewLabel(i)}
+                />
+                <span className="text-xs text-muted-foreground">{t(`${P}.eye.${side}`)}</span>
+              </div>
+            ))}
+          </div>
+          <span
+            className={
+              clear
+                ? "self-start border border-ok px-2 py-0.5 text-xs text-ok"
+                : "self-start border border-warn px-2 py-0.5 text-xs text-warn"
+            }
+          >
+            {t(
+              view.kind !== "image"
+                ? `${P}.measure.noImage`
+                : clear
+                  ? `${P}.measure.clear`
+                  : `${P}.measure.parallax`,
+            )}
+          </span>
+        </div>
+        <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 border border-border bg-surface p-3.5">
+          {slider("lens")}
+          {slider("pin")}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() =>
+                void act({
+                  type: "move",
+                  part: "pin",
+                  to: Number((bench.pin - PIN_STEP).toFixed(4)),
+                })
+              }
+            >
+              {t(`${P}.measure.towards`)}
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() =>
+                void act({
+                  type: "move",
+                  part: "pin",
+                  to: Number((bench.pin + PIN_STEP).toFixed(4)),
+                })
+              }
+            >
+              {t(`${P}.measure.away`)}
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              aria-pressed={looking === -1}
+              onClick={() => setLooking(looking === -1 ? 0 : -1)}
+            >
+              {t(`${P}.measure.left`)}
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
+              aria-pressed={looking === 1}
+              onClick={() => setLooking(looking === 1 ? 0 : 1)}
+            >
+              {t(`${P}.measure.right`)}
+            </Button>
+          </div>
+          <span className="text-xs text-muted-foreground">{t(`${P}.measure.step`)}</span>
+        </div>
+      </div>
+      {refusal && (
+        <p
+          role="alert"
+          className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
+        >
+          {refusal}
+        </p>
+      )}
+    </section>
+  );
 
   return (
     <LabFrame
@@ -789,251 +770,245 @@ export function ConvergingLensPinsScreen() {
       main={main}
       instructions={
         <>
-                {state.step === "question" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.question.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.question.text`)}</p>
-                  </>
+          {state.step === "question" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.question.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.question.text`)}</p>
+            </>
+          )}
+          {state.step === "predict" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.predict.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.predict.text`)}</p>
+              <div
+                className="flex flex-col gap-2"
+                role="group"
+                aria-label={t(`${P}.predict.title`)}
+              >
+                {(["rise", "fall", "same"] as const).map((c) => (
+                  <Button
+                    key={c}
+                    variant={prediction === c ? "default" : "outline"}
+                    aria-pressed={prediction === c}
+                    onClick={() =>
+                      void handle.record([
+                        { kind: "converging-lens-pins.predict", data: { choice: c } },
+                      ])
+                    }
+                  >
+                    {t(`${P}.predict.${c}`)}
+                  </Button>
+                ))}
+              </div>
+              {prediction && (
+                <p className="text-muted-foreground">
+                  {t(`${P}.predict.saved`, { choice: t(`${P}.predict.${prediction}`) })}
+                </p>
+              )}
+            </>
+          )}
+          {building && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.build.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.build.why`)}</p>
+              <div className="flex flex-col gap-1.5">
+                <CheckItem n={1} state={atFirstX ? "done" : "current"}>
+                  {t(`${P}.build.x`)}
+                </CheckItem>
+                <CheckItem n={2} state={tipsLevel ? "done" : atFirstX ? "current" : "todo"}>
+                  {t(`${P}.build.level`)}
+                </CheckItem>
+              </div>
+              {tipControl("object")}
+              {tipControl("search")}
+              {adviceCards}
+              <Button
+                onClick={() =>
+                  void finishChecked(
+                    tipFinding,
+                    `build:${bench.objectTip}:${bench.pinTip}:${bench.lens - bench.object}`,
+                  )
+                }
+              >
+                {t("lab.steps.finishBuilding")}
+              </Button>
+            </>
+          )}
+          {state.step === "check" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.check.title`)}
+              </h2>
+              {tipFinding.map((f) => findingCard(f))}
+              {!atFirstX && (
+                <p className="text-soft">
+                  {t(`${P}.check.x`, { x: cm(bench.lens - bench.object) })}
+                </p>
+              )}
+              {tipFinding.length === 0 && atFirstX && (
+                <p className="text-soft">{t(`${P}.check.right`)}</p>
+              )}
+              {(tipFinding.length > 0 || !atFirstX) && (
+                <Button
+                  variant="outline"
+                  onClick={() => void handle.dispatch({ type: "go-to-step", step: "build" })}
+                >
+                  {t(`${P}.check.fix`)}
+                </Button>
+              )}
+            </>
+          )}
+          {measuring && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.measure.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.measure.why`)}</p>
+              <div className="flex gap-6 border border-border bg-background px-3.5 py-3 font-mono">
+                <span className="flex flex-col">
+                  <span className="font-sans text-xs text-muted-foreground">x</span>
+                  {cm(x)} cm
+                </span>
+                <span className="flex flex-col">
+                  <span className="font-sans text-xs text-muted-foreground">y</span>
+                  {view.kind === "image" ? `${cm(view.y)} cm` : t(`${P}.measure.noImage`)}
+                </span>
+              </div>
+              <Button className="self-start" onClick={() => void takeReading()}>
+                {t(`${P}.measure.take`)}
+              </Button>
+              {measureMarks && procedure.map((f) => findingCard(f))}
+              {adviceCards}
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-muted-foreground">{t(`${P}.measure.readings`)}</span>
+                {readings.length ? (
+                  <ol className="flex flex-col gap-0.5 font-mono text-sm">
+                    {readings.map((r) => (
+                      <li key={r.id}>
+                        {t(`${P}.measure.reading`, { x: r.x.toFixed(1), y: r.y.toFixed(1) })}
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <span className="text-sm text-soft">{t(`${P}.measure.none`)}</span>
                 )}
-                {state.step === "predict" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.predict.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.predict.text`)}</p>
-                    <div
-                      className="flex flex-col gap-2"
-                      role="group"
-                      aria-label={t(`${P}.predict.title`)}
-                    >
-                      {(["rise", "fall", "same"] as const).map((c) => (
-                        <Button
-                          key={c}
-                          variant={prediction === c ? "default" : "outline"}
-                          aria-pressed={prediction === c}
-                          onClick={() =>
-                            void handle.record([
-                              { kind: "converging-lens-pins.predict", data: { choice: c } },
-                            ])
-                          }
-                        >
-                          {t(`${P}.predict.${c}`)}
-                        </Button>
-                      ))}
-                    </div>
-                    {prediction && (
-                      <p className="text-muted-foreground">
-                        {t(`${P}.predict.saved`, { choice: t(`${P}.predict.${prediction}`) })}
-                      </p>
-                    )}
-                  </>
-                )}
-                {building && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.build.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.build.why`)}</p>
-                    <div className="flex flex-col gap-1.5">
-                      <CheckItem n={1} state={atFirstX ? "done" : "current"}>
-                        {t(`${P}.build.x`)}
-                      </CheckItem>
-                      <CheckItem n={2} state={tipsLevel ? "done" : atFirstX ? "current" : "todo"}>
-                        {t(`${P}.build.level`)}
-                      </CheckItem>
-                    </div>
-                    {tipControl("object")}
-                    {tipControl("search")}
-                    {adviceCards}
-                    <Button
-                      onClick={() =>
-                        void finishChecked(
-                          tipFinding,
-                          `build:${bench.objectTip}:${bench.pinTip}:${bench.lens - bench.object}`,
-                        )
-                      }
-                    >
-                      {t("lab.steps.finishBuilding")}
-                    </Button>
-                  </>
-                )}
-                {state.step === "check" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.check.title`)}
-                    </h2>
-                    {tipFinding.map((f) => findingCard(f))}
-                    {!atFirstX && (
-                      <p className="text-soft">
-                        {t(`${P}.check.x`, { x: cm(bench.lens - bench.object) })}
-                      </p>
-                    )}
-                    {tipFinding.length === 0 && atFirstX && (
-                      <p className="text-soft">{t(`${P}.check.right`)}</p>
-                    )}
-                    {(tipFinding.length > 0 || !atFirstX) && (
-                      <Button
-                        variant="outline"
-                        onClick={() => void handle.dispatch({ type: "go-to-step", step: "build" })}
-                      >
-                        {t(`${P}.check.fix`)}
-                      </Button>
-                    )}
-                  </>
-                )}
-                {measuring && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.measure.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.measure.why`)}</p>
-                    <div className="flex gap-6 border border-border bg-background px-3.5 py-3 font-mono">
-                      <span className="flex flex-col">
-                        <span className="font-sans text-xs text-muted-foreground">x</span>
-                        {cm(x)} cm
-                      </span>
-                      <span className="flex flex-col">
-                        <span className="font-sans text-xs text-muted-foreground">y</span>
-                        {view.kind === "image" ? `${cm(view.y)} cm` : t(`${P}.measure.noImage`)}
-                      </span>
-                    </div>
-                    <Button className="self-start" onClick={() => void takeReading()}>
-                      {t(`${P}.measure.take`)}
-                    </Button>
-                    {measureMarks && procedure.map((f) => findingCard(f))}
-                    {adviceCards}
-                    <div className="flex flex-col gap-1">
-                      <span className="text-sm text-muted-foreground">
-                        {t(`${P}.measure.readings`)}
-                      </span>
-                      {readings.length ? (
-                        <ol className="flex flex-col gap-0.5 font-mono text-sm">
-                          {readings.map((r) => (
-                            <li key={r.id}>
-                              {t(`${P}.measure.reading`, { x: r.x.toFixed(1), y: r.y.toFixed(1) })}
-                            </li>
-                          ))}
-                        </ol>
-                      ) : (
-                        <span className="text-sm text-soft">{t(`${P}.measure.none`)}</span>
-                      )}
-                    </div>
-                    <Button
-                      disabled={!readings.length}
-                      onClick={() => void finishChecked(procedure, `measure:${readings.length}`)}
-                    >
-                      {t("lab.steps.finishMeasuring")}
-                    </Button>
-                  </>
-                )}
-                {panel && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.${state.step}.title` as MessageKey)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
-                    <Button onClick={() => void finishPanelStep()}>
-                      {state.step === "tabulate"
-                        ? t("lab.steps.finishTabulating")
-                        : state.step === "plot"
-                          ? t("lab.steps.finishPlotting")
-                          : t("lab.steps.finishAnalysing")}
-                    </Button>
-                  </>
-                )}
-                {(state.step === "conclude" || state.step === "report") && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {stepName(state.step)}
-                    </h2>
-                    <p className="text-soft">
-                      {state.step === "conclude"
-                        ? t(`${P}.conclude.text`, { f: fText() })
-                        : t("report.openHint")}
-                    </p>
-                    {state.step === "report" && (
-                      <Link
-                        href={`/lab/${E.id}/report`}
-                        className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
-                      >
-                        {t("report.open")}
-                      </Link>
-                    )}
-                    {state.step === "conclude" && next && (
-                      <Button className="self-start" onClick={() => void finishStep()}>
-                        {t("lab.steps.continue", { step: stepName(next) })}
-                      </Button>
-                    )}
-                  </>
-                )}
-                {(state.step === "question" ||
-                  state.step === "predict" ||
-                  state.step === "check") &&
-                  next && (
-                    <Button
-                      disabled={
-                        (state.step === "predict" && !prediction) ||
-                        (state.step === "check" && (tipFinding.length > 0 || !atFirstX))
-                      }
-                      onClick={() => void finishStep()}
-                    >
-                      {t("lab.steps.continue", { step: stepName(next) })}
-                    </Button>
-                  )}
+              </div>
+              <Button
+                disabled={!readings.length}
+                onClick={() => void finishChecked(procedure, `measure:${readings.length}`)}
+              >
+                {t("lab.steps.finishMeasuring")}
+              </Button>
+            </>
+          )}
+          {panel && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.${state.step}.title` as MessageKey)}
+              </h2>
+              <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
+              <Button onClick={() => void finishPanelStep()}>
+                {state.step === "tabulate"
+                  ? t("lab.steps.finishTabulating")
+                  : state.step === "plot"
+                    ? t("lab.steps.finishPlotting")
+                    : t("lab.steps.finishAnalysing")}
+              </Button>
+            </>
+          )}
+          {(state.step === "conclude" || state.step === "report") && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {stepName(state.step)}
+              </h2>
+              <p className="text-soft">
+                {state.step === "conclude"
+                  ? t(`${P}.conclude.text`, { f: fText() })
+                  : t("report.openHint")}
+              </p>
+              {state.step === "report" && (
+                <Link
+                  href={`/lab/${E.id}/report`}
+                  className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("report.open")}
+                </Link>
+              )}
+              {state.step === "conclude" && next && (
+                <Button className="self-start" onClick={() => void finishStep()}>
+                  {t("lab.steps.continue", { step: stepName(next) })}
+                </Button>
+              )}
+            </>
+          )}
+          {(state.step === "question" || state.step === "predict" || state.step === "check") &&
+            next && (
+              <Button
+                disabled={
+                  (state.step === "predict" && !prediction) ||
+                  (state.step === "check" && (tipFinding.length > 0 || !atFirstX))
+                }
+                onClick={() => void finishStep()}
+              >
+                {t("lab.steps.continue", { step: stepName(next) })}
+              </Button>
+            )}
         </>
       }
       explanation={
         <>
-                <h2 className="font-display text-2xl leading-tight font-bold">
-                  {t(`${P}.explain.title`)}
-                </h2>
-                <p className="text-soft">{t(`${P}.explain.text`)}</p>
-                <div className="flex flex-col gap-2.5 border border-border bg-background p-4">
-                  <span className="text-center font-mono text-[22px]">xy = f (x + y)</span>
-                  <div className="grid grid-cols-[32px_minmax(0,1fr)] gap-x-2.5 gap-y-1 text-sm text-soft">
-                    {(["x", "y", "f"] as const).map((s) => (
-                      <span key={s} className="contents">
-                        <span className="font-mono text-foreground">{s}</span>
-                        <span>{t(`${P}.explain.${s}`)}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-soft">{t(`${P}.explain.graph`)}</p>
-                <Link
-                  href={`/lab/${E.id}/sheets`}
-                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                >
-                  {t("sheets.link")}
-                </Link>
-                <Link
-                  href={`/lab/${E.id}/check`}
-                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                >
-                  {t("labData.check.link")}
-                </Link>
-                {handle.attempt.mode !== "exam" && (
-                  <Link
-                    href={`/lab/${E.id}/exam`}
-                    className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                  >
-                    {t("exam.try")}
-                  </Link>
-                )}
+          <h2 className="font-display text-2xl leading-tight font-bold">
+            {t(`${P}.explain.title`)}
+          </h2>
+          <p className="text-soft">{t(`${P}.explain.text`)}</p>
+          <div className="flex flex-col gap-2.5 border border-border bg-background p-4">
+            <span className="text-center font-mono text-[22px]">xy = f (x + y)</span>
+            <div className="grid grid-cols-[32px_minmax(0,1fr)] gap-x-2.5 gap-y-1 text-sm text-soft">
+              {(["x", "y", "f"] as const).map((s) => (
+                <span key={s} className="contents">
+                  <span className="font-mono text-foreground">{s}</span>
+                  <span>{t(`${P}.explain.${s}`)}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+          <p className="text-soft">{t(`${P}.explain.graph`)}</p>
+          <Link
+            href={`/lab/${E.id}/sheets`}
+            className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("sheets.link")}
+          </Link>
+          <Link
+            href={`/lab/${E.id}/check`}
+            className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("labData.check.link")}
+          </Link>
+          {handle.attempt.mode !== "exam" && (
+            <Link
+              href={`/lab/${E.id}/exam`}
+              className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {t("exam.try")}
+            </Link>
+          )}
         </>
       }
       tips={
         <>
-                <h2 className="font-display text-2xl leading-tight font-bold">
-                  {t(`${P}.tips.title`)}
-                </h2>
-                <ul className="flex list-disc flex-col gap-2 pl-4.5">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <li key={n}>{t(`${P}.tips.${n}` as MessageKey)}</li>
-                  ))}
-                </ul>
+          <h2 className="font-display text-2xl leading-tight font-bold">{t(`${P}.tips.title`)}</h2>
+          <ul className="flex list-disc flex-col gap-2 pl-4.5">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <li key={n}>{t(`${P}.tips.${n}` as MessageKey)}</li>
+            ))}
+          </ul>
         </>
       }
     />

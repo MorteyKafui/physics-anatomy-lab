@@ -64,13 +64,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { graphColumnsFor, graphView, headingFor, useGraph } from "../graph-sheet";
-import {
-  AnswerLine,
-  Calculator,
-  GraphPanel,
-  QuoteLine,
-  TableBuilder,
-} from "../lazy-panels";
+import { AnswerLine, Calculator, GraphPanel, QuoteLine, TableBuilder } from "../lazy-panels";
 import { useUncertainties } from "../use-uncertainties";
 import { LabFrame, spokenStepFor } from "../lab-frame";
 import { CheckItem } from "../parts";
@@ -657,186 +651,179 @@ export function MethodOfMixturesSolidScreen() {
   );
 
   const main = panel ? (
-            <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
-              {state.step === "tabulate" && (
-                <TableBuilder
-                  table={table}
-                  shown={shownTable}
-                  assist={tableAssist}
-                  marks={tableMarks}
-                  flags={tableFlags}
-                  spec={{
-                    standard: SOLID_STANDARD_TABLE,
-                    templates: SOLID_TEMPLATES,
-                    defaultTemplate: "single",
-                    instruments: SOLID_INSTRUMENTS,
-                    defaultKind: "temperature",
-                    rowsNeeded: Math.max(4, tabulated?.series.length ?? 0),
-                    readingsSummary: tabulated
-                      ? tabulated.series
-                          .map((p) => `${(p.t / 60).toFixed(1)} min: ${deg(p.reading)} °C`)
-                          .join(" · ")
-                      : undefined,
-                  }}
-                  onRun={results.run}
-                  onFillReadings={tableAssist ? fillReadings : undefined}
-                  onCommit={() => undefined}
-                  uncertainties={uncertainties}
-                  below={
-                    advice.length > 0 ? (
-                      <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
-                    ) : null
-                  }
-                />
-              )}
-              {state.step === "plot" && (
-                <GraphPanel
-                  state={plot.graph}
-                  view={graphShown}
-                  data={graphData}
-                  headings={{
-                    x: headingFor(table.columns, graphColumns.x),
-                    y: headingFor(table.columns, graphColumns.y),
-                  }}
-                  numericColumns={numericColumns}
-                  flaggedRows={graphFlagged}
-                  partFindings={partFindings}
-                  showChecks={graphMarks && !graphAssist}
-                  onRun={plot.run}
-                  latest={plot.now}
-                  bars={bars}
-                  worstLinesOffered={false}
-                  below={
-                    advice.length > 0 || (graphMarks && solidGraphFindings.length > 0) ? (
-                      <div className="flex flex-col gap-3">
-                        {advice.length > 0
-                          ? adviceCards
-                          : solidGraphFindings.map((f) => findingCard(f))}
-                      </div>
-                    ) : null
-                  }
-                />
-              )}
-              {state.step === "analyse" && (
-                <section
-                  aria-label={t("lab.analyse.label")}
-                  className="flex w-full min-w-0 flex-col gap-4"
+    <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto bg-background p-4 md:p-6">
+      {state.step === "tabulate" && (
+        <TableBuilder
+          table={table}
+          shown={shownTable}
+          assist={tableAssist}
+          marks={tableMarks}
+          flags={tableFlags}
+          spec={{
+            standard: SOLID_STANDARD_TABLE,
+            templates: SOLID_TEMPLATES,
+            defaultTemplate: "single",
+            instruments: SOLID_INSTRUMENTS,
+            defaultKind: "temperature",
+            rowsNeeded: Math.max(4, tabulated?.series.length ?? 0),
+            readingsSummary: tabulated
+              ? tabulated.series
+                  .map((p) => `${(p.t / 60).toFixed(1)} min: ${deg(p.reading)} °C`)
+                  .join(" · ")
+              : undefined,
+          }}
+          onRun={results.run}
+          onFillReadings={tableAssist ? fillReadings : undefined}
+          onCommit={() => undefined}
+          uncertainties={uncertainties}
+          below={
+            advice.length > 0 ? (
+              <div className="flex flex-col gap-3 px-3 pb-3">{adviceCards}</div>
+            ) : null
+          }
+        />
+      )}
+      {state.step === "plot" && (
+        <GraphPanel
+          state={plot.graph}
+          view={graphShown}
+          data={graphData}
+          headings={{
+            x: headingFor(table.columns, graphColumns.x),
+            y: headingFor(table.columns, graphColumns.y),
+          }}
+          numericColumns={numericColumns}
+          flaggedRows={graphFlagged}
+          partFindings={partFindings}
+          showChecks={graphMarks && !graphAssist}
+          onRun={plot.run}
+          latest={plot.now}
+          bars={bars}
+          worstLinesOffered={false}
+          below={
+            advice.length > 0 || (graphMarks && solidGraphFindings.length > 0) ? (
+              <div className="flex flex-col gap-3">
+                {advice.length > 0 ? adviceCards : solidGraphFindings.map((f) => findingCard(f))}
+              </div>
+            ) : null
+          }
+        />
+      )}
+      {state.step === "analyse" && (
+        <section aria-label={t("lab.analyse.label")} className="flex w-full min-w-0 flex-col gap-4">
+          <div className="flex flex-col gap-3 border border-border bg-surface p-4">
+            <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
+            {!rightGraph ? (
+              <div className="flex flex-col items-start gap-3">
+                <p className="text-soft">{t(`${P}.analyse.otherGraph`, symbols)}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
                 >
-                  <div className="flex flex-col gap-3 border border-border bg-surface p-4">
-                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.label")}</h2>
-                    {!rightGraph ? (
-                      <div className="flex flex-col items-start gap-3">
-                        <p className="text-soft">{t(`${P}.analyse.otherGraph`, symbols)}</p>
-                        <Button
-                          variant="outline"
-                          onClick={() => void handle.dispatch({ type: "go-to-step", step: "plot" })}
-                        >
-                          {t("lab.analyse.backToPlot")}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-2.5 font-mono text-[15px]">
-                        <AnswerLine
-                          id="T"
-                          unit="°C"
-                          lead={t(`${P}.analyse.tLead`)}
-                          written={answers.T}
-                          expected={expected.T}
-                          assist={analysisAssist}
-                          marks={analysisMarks && !analysisAssist}
-                          flagged={analysisFlags("T")}
-                          onWrite={write("T")}
-                        />
-                        {tabulated && (
-                          <AnswerLine
-                            id="c"
-                            unit="J kg⁻¹ K⁻¹"
-                            lead={t(`${P}.analyse.cLead`, {
-                              cc: H.given.calorimeter,
-                              cw: H.given.water,
-                              ms: (tabulated.solid / 1000).toFixed(4),
-                              mc: (tabulated.empty / 1000).toFixed(4),
-                              mw: ((tabulated.filled - tabulated.empty) / 1000).toFixed(4),
-                              t0: deg(tabulated.start),
-                              t: answerText("T", "°C").replace(" °C", ""),
-                            })}
-                            written={answers.c}
-                            expected={expected.c}
-                            assist={analysisAssist}
-                            marks={analysisMarks && !analysisAssist}
-                            flagged={analysisFlags("c")}
-                            onWrite={write("c")}
-                          />
-                        )}
-                        {uncertain &&
-                          tabulated &&
-                          expected.T &&
-                          (() => {
-                            const T = expected.T.value;
-                            if (!(T > tabulated.start && T < H.boiling)) return null;
-                            const c = cWithUncertainty(tabulated, T);
-                            return (
-                              <QuoteLine
-                                symbol="c"
-                                unit="J kg⁻¹ K⁻¹"
-                                worked={c.uncertainty}
-                                percent={(100 * c.uncertainty) / c.value}
-                              />
-                            );
-                          })()}
-                        {analysisAssist && (
-                          <span className="font-sans text-xs text-muted-foreground">
-                            {t("lab.analyse.workedOut")}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-2 border border-border bg-surface p-4">
-                    <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
-                    <Calculator />
-                  </div>
-                  {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
-                </section>
-              )}
-            </section>
-          ) : (
-            <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
-              <div className="flex w-full max-w-[760px] flex-col">
-                <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
-                <span className="font-semibold">{t(`${P}.fig.${where}`)}</span>
+                  {t("lab.analyse.backToPlot")}
+                </Button>
               </div>
-              <div className="w-full max-w-[760px]">
-                <HotSolidBench
-                  className="block h-auto w-full"
-                  label={description}
-                  balance={balance}
-                  solid={where}
-                  wet={
-                    bench.transfer ? !bench.transfer.shaken : !shaken && run.lifted !== undefined
-                  }
-                  water={bench.water ?? 0}
-                  covered={bench.covered}
-                  stirring={bench.stirring}
-                  thermometer={solidThermometer(bench, t0)}
+            ) : (
+              <div className="flex flex-col gap-2.5 font-mono text-[15px]">
+                <AnswerLine
+                  id="T"
+                  unit="°C"
+                  lead={t(`${P}.analyse.tLead`)}
+                  written={answers.T}
+                  expected={expected.T}
+                  assist={analysisAssist}
+                  marks={analysisMarks && !analysisAssist}
+                  flagged={analysisFlags("T")}
+                  onWrite={write("T")}
                 />
+                {tabulated && (
+                  <AnswerLine
+                    id="c"
+                    unit="J kg⁻¹ K⁻¹"
+                    lead={t(`${P}.analyse.cLead`, {
+                      cc: H.given.calorimeter,
+                      cw: H.given.water,
+                      ms: (tabulated.solid / 1000).toFixed(4),
+                      mc: (tabulated.empty / 1000).toFixed(4),
+                      mw: ((tabulated.filled - tabulated.empty) / 1000).toFixed(4),
+                      t0: deg(tabulated.start),
+                      t: answerText("T", "°C").replace(" °C", ""),
+                    })}
+                    written={answers.c}
+                    expected={expected.c}
+                    assist={analysisAssist}
+                    marks={analysisMarks && !analysisAssist}
+                    flagged={analysisFlags("c")}
+                    onWrite={write("c")}
+                  />
+                )}
+                {uncertain &&
+                  tabulated &&
+                  expected.T &&
+                  (() => {
+                    const T = expected.T.value;
+                    if (!(T > tabulated.start && T < H.boiling)) return null;
+                    const c = cWithUncertainty(tabulated, T);
+                    return (
+                      <QuoteLine
+                        symbol="c"
+                        unit="J kg⁻¹ K⁻¹"
+                        worked={c.uncertainty}
+                        percent={(100 * c.uncertainty) / c.value}
+                      />
+                    );
+                  })()}
+                {analysisAssist && (
+                  <span className="font-sans text-xs text-muted-foreground">
+                    {t("lab.analyse.workedOut")}
+                  </span>
+                )}
               </div>
-              <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
-                {building && balanceCard}
-                {measuring && !inside && transferCard}
-                {measuring && inside && minutesCard}
-                {(building || measuring) && thermometerCard}
-              </div>
-              {refusal && (
-                <p
-                  role="alert"
-                  className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
-                >
-                  {refusal}
-                </p>
-              )}
-            </section>
-          );
+            )}
+          </div>
+          <div className="flex flex-col gap-2 border border-border bg-surface p-4">
+            <h2 className="text-sm text-muted-foreground">{t("lab.analyse.calculator")}</h2>
+            <Calculator />
+          </div>
+          {advice.length > 0 && <div className="flex flex-col gap-3">{adviceCards}</div>}
+        </section>
+      )}
+    </section>
+  ) : (
+    <section className="flex min-w-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-6 pb-10 md:px-6">
+      <div className="flex w-full max-w-[760px] flex-col">
+        <span className="text-xs text-muted-foreground">{t(`${P}.fig.label`)}</span>
+        <span className="font-semibold">{t(`${P}.fig.${where}`)}</span>
+      </div>
+      <div className="w-full max-w-[760px]">
+        <HotSolidBench
+          className="block h-auto w-full"
+          label={description}
+          balance={balance}
+          solid={where}
+          wet={bench.transfer ? !bench.transfer.shaken : !shaken && run.lifted !== undefined}
+          water={bench.water ?? 0}
+          covered={bench.covered}
+          stirring={bench.stirring}
+          thermometer={solidThermometer(bench, t0)}
+        />
+      </div>
+      <div className="flex w-full max-w-[760px] flex-wrap items-stretch gap-4">
+        {building && balanceCard}
+        {measuring && !inside && transferCard}
+        {measuring && inside && minutesCard}
+        {(building || measuring) && thermometerCard}
+      </div>
+      {refusal && (
+        <p
+          role="alert"
+          className="w-full max-w-[760px] border border-warn bg-warn-wash p-3 text-sm"
+        >
+          {refusal}
+        </p>
+      )}
+    </section>
+  );
 
   return (
     <LabFrame
@@ -851,303 +838,280 @@ export function MethodOfMixturesSolidScreen() {
       main={main}
       instructions={
         <>
-                {state.step === "question" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.question.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.question.text`)}</p>
-                  </>
+          {state.step === "question" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.question.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.question.text`)}</p>
+            </>
+          )}
+          {state.step === "predict" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.predict.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.predict.text`)}</p>
+              <div
+                className="flex flex-col gap-2"
+                role="group"
+                aria-label={t(`${P}.predict.title`)}
+              >
+                {(["solid", "water", "same"] as const).map((c) => (
+                  <Button
+                    key={c}
+                    variant={prediction === c ? "default" : "outline"}
+                    aria-pressed={prediction === c}
+                    onClick={() => void handle.record([{ kind: PREDICT, data: { choice: c } }])}
+                  >
+                    {t(`${P}.predict.${c}`)}
+                  </Button>
+                ))}
+              </div>
+              {prediction && (
+                <p className="text-muted-foreground">
+                  {t(`${P}.predict.saved`, { choice: t(`${P}.predict.${prediction}`) })}
+                </p>
+              )}
+            </>
+          )}
+          {building && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.build.title`)}
+              </h2>
+              <p className="text-soft">{t(`${P}.build.why`)}</p>
+              <div className="flex flex-col gap-1.5">
+                <CheckItem n={1} state={w.solid !== undefined ? "done" : "current"}>
+                  {t(`${P}.build.solid`)}
+                </CheckItem>
+                <CheckItem
+                  n={2}
+                  state={
+                    w.empty !== undefined ? "done" : w.solid !== undefined ? "current" : "todo"
+                  }
+                >
+                  {t(`${P}.build.empty`)}
+                </CheckItem>
+                <CheckItem
+                  n={3}
+                  state={
+                    w.filled !== undefined ? "done" : w.empty !== undefined ? "current" : "todo"
+                  }
+                >
+                  {t(`${P}.build.filled`)}
+                </CheckItem>
+                <CheckItem n={4} state={bench.covered ? "done" : allWeighed ? "current" : "todo"}>
+                  {t(`${P}.build.lid`)}
+                </CheckItem>
+              </div>
+              {masses}
+              {adviceCards}
+              <Button onClick={() => void finishStep()}>{t("lab.steps.finishBuilding")}</Button>
+            </>
+          )}
+          {state.step === "check" && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.check.title`)}
+              </h2>
+              {masses}
+              {!allWeighed && <p className="text-soft">{t(`${P}.check.weigh`)}</p>}
+              {allWeighed && !bench.covered && <p className="text-soft">{t(`${P}.build.lid`)}</p>}
+              {setUpRight && (
+                <p className="text-soft">
+                  {t(`${P}.check.right`, { water: deg((w.filled ?? 0) - (w.empty ?? 0)) })}
+                </p>
+              )}
+              {!setUpRight && (
+                <Button
+                  variant="outline"
+                  onClick={() => void handle.dispatch({ type: "go-to-step", step: "build" })}
+                >
+                  {t(`${P}.check.fix`)}
+                </Button>
+              )}
+            </>
+          )}
+          {measuring && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(
+                  inside
+                    ? wet && measureMarks
+                      ? `${P}.measure.wetTitle`
+                      : `${P}.measure.readTitle`
+                    : `${P}.measure.moveTitle`,
                 )}
-                {state.step === "predict" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.predict.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.predict.text`)}</p>
-                    <div
-                      className="flex flex-col gap-2"
-                      role="group"
-                      aria-label={t(`${P}.predict.title`)}
-                    >
-                      {(["solid", "water", "same"] as const).map((c) => (
-                        <Button
-                          key={c}
-                          variant={prediction === c ? "default" : "outline"}
-                          aria-pressed={prediction === c}
-                          onClick={() =>
-                            void handle.record([{ kind: PREDICT, data: { choice: c } }])
-                          }
-                        >
-                          {t(`${P}.predict.${c}`)}
-                        </Button>
-                      ))}
-                    </div>
-                    {prediction && (
-                      <p className="text-muted-foreground">
-                        {t(`${P}.predict.saved`, { choice: t(`${P}.predict.${prediction}`) })}
-                      </p>
-                    )}
-                  </>
+              </h2>
+              <p className="text-soft">
+                {t(inside ? `${P}.measure.readText` : `${P}.measure.moveText`)}
+              </p>
+              <div className="flex flex-col gap-1.5">
+                <CheckItem n={1} state="done">
+                  {t(`${P}.measure.step1`)}
+                </CheckItem>
+                <CheckItem n={2} state={inside ? "done" : "current"}>
+                  {t(`${P}.measure.step2`)}
+                </CheckItem>
+                <CheckItem n={3} state={inside ? "current" : "todo"}>
+                  {t(`${P}.measure.step3`)}
+                </CheckItem>
+              </div>
+              {masses}
+              {inside && measureMarks && fallen && highestRead && (
+                <div
+                  role="status"
+                  className="flex flex-col gap-2.5 border border-border bg-background p-3.5"
+                >
+                  <span className="font-semibold">{t(`${P}.measure.fallen.title`)}</span>
+                  <span className="text-soft">
+                    {t(`${P}.measure.fallen.detail`, { highest: deg(highestRead.reading) })}
+                  </span>
+                </div>
+              )}
+              {inside &&
+                measureMarks &&
+                wet &&
+                findingCard({ key: `${P}.measure.wet`, params: wet.params ?? {} })}
+              {inside && (
+                <Button className="self-start" onClick={() => void takeReading()}>
+                  {t(`${P}.measure.take`)}
+                </Button>
+              )}
+              {measureMarks && procedure.map((f) => findingCard(f))}
+              {adviceCards}
+              {inside && (
+                <Button variant="outline" onClick={() => void act({ type: "empty" })}>
+                  {t(`${P}.measure.again`)}
+                </Button>
+              )}
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-muted-foreground">{t(`${P}.measure.runs`)}</span>
+                {readings.length ? (
+                  <ol className="flex flex-col gap-0.5 font-mono text-sm">
+                    {readings.map((r, i) => (
+                      <li key={r.id}>
+                        {t(`${P}.measure.run`, {
+                          n: i + 1,
+                          start: deg(r.start),
+                          highest: deg(r.highest),
+                        })}
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <span className="text-sm text-soft">{t(`${P}.measure.none`)}</span>
                 )}
-                {building && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.build.title`)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.build.why`)}</p>
-                    <div className="flex flex-col gap-1.5">
-                      <CheckItem n={1} state={w.solid !== undefined ? "done" : "current"}>
-                        {t(`${P}.build.solid`)}
-                      </CheckItem>
-                      <CheckItem
-                        n={2}
-                        state={
-                          w.empty !== undefined
-                            ? "done"
-                            : w.solid !== undefined
-                              ? "current"
-                              : "todo"
-                        }
-                      >
-                        {t(`${P}.build.empty`)}
-                      </CheckItem>
-                      <CheckItem
-                        n={3}
-                        state={
-                          w.filled !== undefined
-                            ? "done"
-                            : w.empty !== undefined
-                              ? "current"
-                              : "todo"
-                        }
-                      >
-                        {t(`${P}.build.filled`)}
-                      </CheckItem>
-                      <CheckItem
-                        n={4}
-                        state={bench.covered ? "done" : allWeighed ? "current" : "todo"}
-                      >
-                        {t(`${P}.build.lid`)}
-                      </CheckItem>
-                    </div>
-                    {masses}
-                    {adviceCards}
-                    <Button onClick={() => void finishStep()}>
-                      {t("lab.steps.finishBuilding")}
-                    </Button>
-                  </>
-                )}
-                {state.step === "check" && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.check.title`)}
-                    </h2>
-                    {masses}
-                    {!allWeighed && <p className="text-soft">{t(`${P}.check.weigh`)}</p>}
-                    {allWeighed && !bench.covered && (
-                      <p className="text-soft">{t(`${P}.build.lid`)}</p>
-                    )}
-                    {setUpRight && (
-                      <p className="text-soft">
-                        {t(`${P}.check.right`, { water: deg((w.filled ?? 0) - (w.empty ?? 0)) })}
-                      </p>
-                    )}
-                    {!setUpRight && (
-                      <Button
-                        variant="outline"
-                        onClick={() => void handle.dispatch({ type: "go-to-step", step: "build" })}
-                      >
-                        {t(`${P}.check.fix`)}
-                      </Button>
-                    )}
-                  </>
-                )}
-                {measuring && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(
-                        inside
-                          ? wet && measureMarks
-                            ? `${P}.measure.wetTitle`
-                            : `${P}.measure.readTitle`
-                          : `${P}.measure.moveTitle`,
-                      )}
-                    </h2>
-                    <p className="text-soft">
-                      {t(inside ? `${P}.measure.readText` : `${P}.measure.moveText`)}
-                    </p>
-                    <div className="flex flex-col gap-1.5">
-                      <CheckItem n={1} state="done">
-                        {t(`${P}.measure.step1`)}
-                      </CheckItem>
-                      <CheckItem n={2} state={inside ? "done" : "current"}>
-                        {t(`${P}.measure.step2`)}
-                      </CheckItem>
-                      <CheckItem n={3} state={inside ? "current" : "todo"}>
-                        {t(`${P}.measure.step3`)}
-                      </CheckItem>
-                    </div>
-                    {masses}
-                    {inside && measureMarks && fallen && highestRead && (
-                      <div
-                        role="status"
-                        className="flex flex-col gap-2.5 border border-border bg-background p-3.5"
-                      >
-                        <span className="font-semibold">{t(`${P}.measure.fallen.title`)}</span>
-                        <span className="text-soft">
-                          {t(`${P}.measure.fallen.detail`, { highest: deg(highestRead.reading) })}
-                        </span>
-                      </div>
-                    )}
-                    {inside &&
-                      measureMarks &&
-                      wet &&
-                      findingCard({ key: `${P}.measure.wet`, params: wet.params ?? {} })}
-                    {inside && (
-                      <Button className="self-start" onClick={() => void takeReading()}>
-                        {t(`${P}.measure.take`)}
-                      </Button>
-                    )}
-                    {measureMarks && procedure.map((f) => findingCard(f))}
-                    {adviceCards}
-                    {inside && (
-                      <Button variant="outline" onClick={() => void act({ type: "empty" })}>
-                        {t(`${P}.measure.again`)}
-                      </Button>
-                    )}
-                    <div className="flex flex-col gap-1">
-                      <span className="text-sm text-muted-foreground">
-                        {t(`${P}.measure.runs`)}
-                      </span>
-                      {readings.length ? (
-                        <ol className="flex flex-col gap-0.5 font-mono text-sm">
-                          {readings.map((r, i) => (
-                            <li key={r.id}>
-                              {t(`${P}.measure.run`, {
-                                n: i + 1,
-                                start: deg(r.start),
-                                highest: deg(r.highest),
-                              })}
-                            </li>
-                          ))}
-                        </ol>
-                      ) : (
-                        <span className="text-sm text-soft">{t(`${P}.measure.none`)}</span>
-                      )}
-                    </div>
-                    <Button
-                      disabled={!readings.length}
-                      onClick={() => void finishChecked(procedure, `measure:${readings.length}`)}
-                    >
-                      {t("lab.steps.finishMeasuring")}
-                    </Button>
-                  </>
-                )}
-                {panel && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {t(`${P}.${state.step}.title` as MessageKey)}
-                    </h2>
-                    <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
-                    <Button onClick={() => void finishPanelStep()}>
-                      {state.step === "tabulate"
-                        ? t("lab.steps.finishTabulating")
-                        : state.step === "plot"
-                          ? t("lab.steps.finishPlotting")
-                          : t("lab.steps.finishAnalysing")}
-                    </Button>
-                  </>
-                )}
-                {(state.step === "conclude" || state.step === "report") && (
-                  <>
-                    <h2 className="font-display text-2xl leading-tight font-bold">
-                      {stepName(state.step)}
-                    </h2>
-                    <p className="text-soft">
-                      {state.step === "conclude"
-                        ? t(`${P}.conclude.text`, {
-                            c: answerText("c", "J kg⁻¹ K⁻¹"),
-                            metal: t(`${P}.metal.${metal?.id ?? "copper"}` as MessageKey),
-                            true: metal?.c ?? 0,
-                          })
-                        : t("report.openHint")}
-                    </p>
-                    {state.step === "report" && (
-                      <Link
-                        href={`/lab/${H.id}/report`}
-                        className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
-                      >
-                        {t("report.open")}
-                      </Link>
-                    )}
-                    {state.step === "conclude" && next && (
-                      <Button className="self-start" onClick={() => void finishStep()}>
-                        {t("lab.steps.continue", { step: stepName(next) })}
-                      </Button>
-                    )}
-                  </>
-                )}
-                {(state.step === "question" ||
-                  state.step === "predict" ||
-                  state.step === "check") &&
-                  next && (
-                    <Button
-                      disabled={
-                        (state.step === "predict" && !prediction) ||
-                        (state.step === "check" && !setUpRight)
-                      }
-                      onClick={() => void finishStep()}
-                    >
-                      {t("lab.steps.continue", { step: stepName(next) })}
-                    </Button>
-                  )}
+              </div>
+              <Button
+                disabled={!readings.length}
+                onClick={() => void finishChecked(procedure, `measure:${readings.length}`)}
+              >
+                {t("lab.steps.finishMeasuring")}
+              </Button>
+            </>
+          )}
+          {panel && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {t(`${P}.${state.step}.title` as MessageKey)}
+              </h2>
+              <p className="text-soft">{t(`${P}.${state.step}.why` as MessageKey)}</p>
+              <Button onClick={() => void finishPanelStep()}>
+                {state.step === "tabulate"
+                  ? t("lab.steps.finishTabulating")
+                  : state.step === "plot"
+                    ? t("lab.steps.finishPlotting")
+                    : t("lab.steps.finishAnalysing")}
+              </Button>
+            </>
+          )}
+          {(state.step === "conclude" || state.step === "report") && (
+            <>
+              <h2 className="font-display text-2xl leading-tight font-bold">
+                {stepName(state.step)}
+              </h2>
+              <p className="text-soft">
+                {state.step === "conclude"
+                  ? t(`${P}.conclude.text`, {
+                      c: answerText("c", "J kg⁻¹ K⁻¹"),
+                      metal: t(`${P}.metal.${metal?.id ?? "copper"}` as MessageKey),
+                      true: metal?.c ?? 0,
+                    })
+                  : t("report.openHint")}
+              </p>
+              {state.step === "report" && (
+                <Link
+                  href={`/lab/${H.id}/report`}
+                  className="flex h-9 items-center self-start bg-primary px-3 text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  {t("report.open")}
+                </Link>
+              )}
+              {state.step === "conclude" && next && (
+                <Button className="self-start" onClick={() => void finishStep()}>
+                  {t("lab.steps.continue", { step: stepName(next) })}
+                </Button>
+              )}
+            </>
+          )}
+          {(state.step === "question" || state.step === "predict" || state.step === "check") &&
+            next && (
+              <Button
+                disabled={
+                  (state.step === "predict" && !prediction) ||
+                  (state.step === "check" && !setUpRight)
+                }
+                onClick={() => void finishStep()}
+              >
+                {t("lab.steps.continue", { step: stepName(next) })}
+              </Button>
+            )}
         </>
       }
       explanation={
         <>
-                <h2 className="font-display text-2xl leading-tight font-bold">
-                  {t(`${P}.explain.title`)}
-                </h2>
-                <p className="text-soft">{t(`${P}.explain.text`)}</p>
-                <div className="flex flex-col gap-2.5 border border-border bg-background p-4">
-                  <span className="text-center font-mono text-[18px]">
-                    m_s c_s (T_s − T) = (m_c c_c + m_w c_w)(T − T₀)
-                  </span>
-                </div>
-                <p className="text-soft">{t(`${P}.explain.given`)}</p>
-                <Link
-                  href={`/lab/${H.id}/sheets`}
-                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                >
-                  {t("sheets.link")}
-                </Link>
-                <Link
-                  href={`/lab/${H.id}/check`}
-                  className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                >
-                  {t("labData.check.link")}
-                </Link>
-                {handle.attempt.mode !== "exam" && (
-                  <Link
-                    href={`/lab/${H.id}/exam`}
-                    className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
-                  >
-                    {t("exam.try")}
-                  </Link>
-                )}
+          <h2 className="font-display text-2xl leading-tight font-bold">
+            {t(`${P}.explain.title`)}
+          </h2>
+          <p className="text-soft">{t(`${P}.explain.text`)}</p>
+          <div className="flex flex-col gap-2.5 border border-border bg-background p-4">
+            <span className="text-center font-mono text-[18px]">
+              m_s c_s (T_s − T) = (m_c c_c + m_w c_w)(T − T₀)
+            </span>
+          </div>
+          <p className="text-soft">{t(`${P}.explain.given`)}</p>
+          <Link
+            href={`/lab/${H.id}/sheets`}
+            className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("sheets.link")}
+          </Link>
+          <Link
+            href={`/lab/${H.id}/check`}
+            className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("labData.check.link")}
+          </Link>
+          {handle.attempt.mode !== "exam" && (
+            <Link
+              href={`/lab/${H.id}/exam`}
+              className="self-start text-sm text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {t("exam.try")}
+            </Link>
+          )}
         </>
       }
       tips={
         <>
-                <h2 className="font-display text-2xl leading-tight font-bold">
-                  {t(`${P}.tips.title`)}
-                </h2>
-                <ul className="flex list-disc flex-col gap-2 pl-4.5">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <li key={n}>{t(`${P}.tips.${n}` as MessageKey)}</li>
-                  ))}
-                </ul>
+          <h2 className="font-display text-2xl leading-tight font-bold">{t(`${P}.tips.title`)}</h2>
+          <ul className="flex list-disc flex-col gap-2 pl-4.5">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <li key={n}>{t(`${P}.tips.${n}` as MessageKey)}</li>
+            ))}
+          </ul>
         </>
       }
     />
