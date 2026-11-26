@@ -21,7 +21,14 @@ const nextConfig: NextConfig = {
     },
   },
   async rewrites() {
-    return [{ source: "/api/:path*", destination: `${API_URL}/:path*` }];
+    // Not the staff routes (/admin/…): only the admin portal's server calls those (ADR 0040),
+    // so the public site does not offer them to the internet at all.
+    return [
+      {
+        source: "/api/:path((?!admin(?:/|$)).*)",
+        destination: `${API_URL}/:path`,
+      },
+    ];
   },
   // The headers that are the same everywhere; the CSP, new on every page, is set in src/proxy.ts.
   async headers() {

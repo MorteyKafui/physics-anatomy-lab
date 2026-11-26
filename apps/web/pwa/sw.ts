@@ -1,5 +1,7 @@
 /// <reference lib="webworker" />
-import { CacheFirst, NetworkFirst, Serwist, type PrecacheEntry } from "serwist";
+import { CacheFirst, NetworkFirst, NetworkOnly, Serwist, type PrecacheEntry } from "serwist";
+
+import { API_PREFIX, isApi } from "./rules";
 
 declare const self: ServiceWorkerGlobalScope & { __SW_MANIFEST: (PrecacheEntry | string)[] };
 
@@ -16,6 +18,12 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: false,
   runtimeCaching: [
+    {
+      // The API, always from the network and never kept (pwa/rules.ts). First, so no rule
+      // below can catch it.
+      matcher: ({ url }) => isApi(url, self.location.origin),
+      handler: new NetworkOnly(),
+    },
     {
       // The client router's page payloads (?_rsc=…) always come from the network. Offline the
       // fetch fails, the router loads the page itself, and that comes from the precache below.
@@ -36,3 +44,17 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+// Workers before this one kept API answers in "assets". Clear them out when this one takes over.
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      for (const name of await caches.keys()) {
+        const cache = await caches.open(name);
+        for (const request of await cache.keys()) {
+          if (new URL(request.url).pathname.startsWith(API_PREFIX)) await cache.delete(request);
+        }
+      }
+    })(),
+  );
+});
