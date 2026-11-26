@@ -22,6 +22,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc -p .",
-    "test": "bun test"
+    "test": "bun test",
+    "export:finding-keys": "bun scripts/export-finding-keys.ts"
   }
 }

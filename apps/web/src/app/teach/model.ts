@@ -77,12 +77,13 @@ function mistakeParams(): Record<string, number> {
   return { swings, timed: swings - 1, percent: countFromOneErrorPercent(DEFAULT_ENVIRONMENT.g) };
 }
 
-/** How the teacher reads a mistake: their own wording, else the coach's title, else its rule. */
+/** How the teacher reads a mistake: their own wording, else the coach's title, else a plain
+ * line. Never the rule itself: it came from a student's device (ASVS review, finding H). */
 export function mistakeName(m: Pick<Mistake, "rule" | "key">): string {
   const own = `teach.mistake.${m.rule}`;
   if (hasMessage(own)) return t(key(own), mistakeParams());
   if (hasMessage(`${m.key}.title`)) return t(key(`${m.key}.title`), mistakeParams());
-  return m.rule;
+  return t(key("teach.mistake.other"));
 }
 
 export function mistakeChip(m: Pick<Mistake, "rule" | "key">): string {

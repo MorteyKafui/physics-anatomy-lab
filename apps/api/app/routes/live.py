@@ -63,6 +63,7 @@ from app.live.schemas import (
     NoteSend,
     PingFrame,
     StudentFrame,
+    is_known_mistake,
 )
 from app.models import ClassMember, LiveBench, LiveMessage, LiveSession, SchoolClass
 from app.routes.classes import NOT_FOUND, Responses, owned_class
@@ -108,7 +109,8 @@ def bench_out(row: LiveBench, display_name: str, now: datetime) -> BenchOut:
         attempt_id=row.attempt_id,
         step=row.step,  # pyright: ignore[reportArgumentType] (checked by the table)
         completed=row.completed,  # pyright: ignore[reportArgumentType]
-        mistakes=[Mistake.model_validate(m) for m in row.mistakes],
+        # Stored before the API checked mistakes (finding H): left out, never a failed board.
+        mistakes=[Mistake.model_validate(m) for m in row.mistakes if is_known_mistake(m)],
         readings=row.readings,
         joined_at=row.joined_at,
         updated_at=row.updated_at,

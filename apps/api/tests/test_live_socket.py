@@ -28,7 +28,7 @@ from app.models import User
 from tests.conftest import ORIGIN
 from tests.helpers import create_class, join, sign_in_teacher
 
-ONE = {"rule": "counts-from-one", "key": "pendulum.counts-from-one", "skill": "measurement"}
+ONE = {"rule": "counts-from-one", "key": "findings.pendulum.countFromOne", "skill": "measurement"}
 START = {"experiment_id": "simple-pendulum", "lesson_minutes": 40}
 WAIT = 5.0
 
