@@ -71,6 +71,8 @@ test("no account links: the lab is open to anyone (ADR 0047)", async ({ page }) 
 });
 
 test("every link goes somewhere real (brief, decision 7)", async ({ page, request }) => {
+  // Every practical's lab is linked now (hero, band, footer), and each is a large page to render.
+  test.setTimeout(120_000);
   await page.goto(WEB);
   const hrefs = await page
     .locator("a[href]")
