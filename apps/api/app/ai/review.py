@@ -14,7 +14,7 @@ from typing import Annotated, Any, Literal, cast
 
 from pydantic import Field
 
-from app.ai.context import STUDENT_TAG, Slug, _safe  # pyright: ignore[reportPrivateUsage]
+from app.ai.context import STUDENT_TAG, Slug, as_data
 from app.ai.numbers import numbers_in, unexplained
 from app.schemas import Body
 
@@ -94,7 +94,7 @@ def user_message(request: ReviewRequest) -> str:
         f"Report format: {request.format}"
     )
     blocks = [
-        f'<{STUDENT_TAG} section="{s.id}">\n{_safe(s.text)}\n</{STUDENT_TAG}>'
+        f'<{STUDENT_TAG} section="{s.id}">\n{as_data(s.text)}\n</{STUDENT_TAG}>'
         for s in request.sections
     ]
     return "\n\n".join([head, *blocks])

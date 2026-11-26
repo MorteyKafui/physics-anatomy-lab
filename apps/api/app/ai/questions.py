@@ -13,7 +13,7 @@ from typing import Annotated, Any, Literal, cast
 
 from pydantic import Field
 
-from app.ai.context import STUDENT_TAG
+from app.ai.context import STUDENT_TAG, as_data
 from app.ai.numbers import unexplained
 from app.schemas import Body
 
@@ -110,7 +110,7 @@ def output_schema() -> dict[str, Any]:
 def user_message(request: DraftRequest, facts: ExperimentFacts) -> str:
     settings = "\n".join(f"- {name}: {value}" for name, value in facts.settings.items())
     built_in = "\n".join(f"- {q}" for q in facts.built_in)
-    note = request.note.replace(f"<{STUDENT_TAG}>", "").replace(f"</{STUDENT_TAG}>", "")
+    note = as_data(request.note)
     return (
         f"Experiment: {facts.title}\nTopic: {request.topic}\n\n"
         f"Stated settings:\n{settings}\n\nBuilt-in follow-up questions:\n{built_in}\n\n"

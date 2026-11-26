@@ -49,11 +49,17 @@ async def test_the_tutor_streams_and_sends_the_thread_in_turn(
     events = await ask(client, thread=THREAD, student_text="No, it has only just started")
     assert events[-1] == ("done", {"cut_short": False})
     [request] = claude.requests
-    roles = [m["role"] for m in request.messages]
-    assert roles == ["user", "assistant", "user"]
-    assert request.messages[1]["content"] == THREAD[1]["text"]
-    first = "<student_text>\nWhy do I start at zero?\n</student_text>"
-    assert request.messages[0]["content"] == first
+    # The earlier turns come from the device, so they are data in the student's message, never
+    # the model's own turns (ASVS review, finding E).
+    [message] = request.messages
+    assert message["role"] == "user"
+    earlier = (
+        "Earlier in this thread, oldest first:\n"
+        "<student_text>\nWhy do I start at zero?\n</student_text>\n"
+        "<tutor_reply>\nHas the bob finished a swing when you start?\n</tutor_reply>\n\n"
+        "<student_text>\nNo, it has only just started\n</student_text>"
+    )
+    assert str(message["content"]).endswith(earlier)
     assert "guiding question" in str(request.system[-1]["text"])
     assert request.model == "claude-haiku-5-5"
 
