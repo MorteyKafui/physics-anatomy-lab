@@ -56,6 +56,40 @@ test("the topic chips show only that topic's practicals", async ({ page }) => {
   await expect(shown).toHaveCount(1);
   await filter.getByRole("button", { name: "All 6" }).click();
   await expect(shown).toHaveCount(IDS.length);
+  // Every topic in the plan has a chip; one with no practicals yet says so.
+  await expect(filter.getByRole("button")).toHaveCount(8);
+  await filter.getByRole("button", { name: "Waves and sound 0" }).click();
+  await expect(shown).toHaveCount(0);
+  await expect(page.getByRole("status")).toHaveText(
+    "Practicals for waves and sound are coming soon.",
+  );
+});
+
+test("a topic in the address opens the practicals on that topic", async ({ page }) => {
+  await page.goto(`${WEB}/experiments?topic=heat`);
+  const filter = page.getByRole("group", { name: "Filter by topic" });
+  await expect(filter.getByRole("button", { name: "Heat 2" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(
+    page.getByRole("list", { name: "Every practical" }).locator("li:visible"),
+  ).toHaveCount(2);
+});
+
+test("the header's topic menus list each topic's practicals", async ({ page, isMobile }) => {
+  test.skip(isMobile, "below 1024px the topics are in the menu");
+  await page.goto(`${WEB}/experiments`);
+  const topics = page.getByRole("navigation", { name: "Practicals by topic" });
+  await expect(topics.getByRole("button")).toHaveCount(7);
+  await topics.getByRole("button", { name: "Heat" }).click();
+  await expect(
+    topics.getByRole("link", { name: "The method of mixtures", exact: true }),
+  ).toHaveAttribute("href", "/lab/method-of-mixtures");
+  await topics.getByRole("link", { name: "All heat practicals" }).click();
+  await expect(page).toHaveURL(`${WEB}/experiments?topic=heat`);
+  await topics.getByRole("button", { name: "Modern physics" }).click();
+  await expect(topics.getByText("Coming soon").filter({ visible: true })).toHaveCount(1);
 });
 
 test("the header has no account links, and Practicals is the current page", async ({ page }) => {

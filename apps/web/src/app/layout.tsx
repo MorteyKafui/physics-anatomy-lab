@@ -40,7 +40,11 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   await connection();
   return (
-    <html lang="en-GB" className={`${geist.variable} ${geistMono.variable} ${bricolage.variable}`}>
+    <html
+      lang="en-GB"
+      data-scroll-behavior="smooth"
+      className={`${geist.variable} ${geistMono.variable} ${bricolage.variable}`}
+    >
       <body className="font-sans antialiased">
         <AccountsSwitch on={accountsEnabled()}>{children}</AccountsSwitch>
         <Offline />

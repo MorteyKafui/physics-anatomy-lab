@@ -17,6 +17,7 @@ import { PlayWhenSeen } from "./_landing/play-when-seen";
 import { OpenBand } from "./_landing/open-band";
 import { PracticalProvider } from "./_landing/practicals";
 import { TimeIt } from "./_landing/time-it";
+import { topicMenu } from "./experiments/catalogue";
 
 // Links here never prefetch: the lab is the biggest download on the site, and a visitor on a
 // low-cost phone pays for it only if they choose to go (Lite mode; brief, decision 9).
@@ -45,10 +46,9 @@ export default function Home() {
         <LandingHeader
           links={[
             { href: "/experiments", label: t("landing.nav.practicals") },
-            { href: "#anatomy", label: t("landing.nav.howItWorks") },
-            { href: "#coach", label: t("landing.nav.coach") },
             { href: "/about", label: t("landing.nav.about") },
           ]}
+          topics={topicMenu()}
           action={{ href: START, label: t("landing.nav.open") }}
         />
         <main id="content">

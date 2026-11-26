@@ -24,11 +24,12 @@ import {
 } from "@pa/experiments";
 import { t, type MessageKey } from "@pa/i18n";
 import "@pa/i18n/catalogue";
+import "@pa/i18n/landing";
 import "@pa/i18n/converging-lens";
 import "@pa/i18n/method-of-mixtures";
 import "@pa/i18n/ohms-law";
 import { imageDistance, periodExact, periodSmallAngle } from "@pa/physics";
-import type { Topic } from "@pa/ui";
+import { topicHue, type Topic } from "@pa/ui";
 import {
   CircuitStage,
   LensStage,
@@ -40,6 +41,7 @@ import { HotSolidStage, PinsStage } from "@pa/ui/illustrations/practicals-figure
 import type { ReactNode } from "react";
 
 import { CARD_SEED, cardsData } from "../_landing/cards-data";
+import type { MenuTopic } from "../_landing/topic-menu";
 import { barShape } from "../_landing/pendulum-bars";
 import { lensApparatus } from "../lab/converging-lens/apparatus";
 import { pinsApparatus } from "../lab/converging-lens-pins/apparatus";
@@ -271,6 +273,35 @@ function entries(): Entry[] {
 export const CATALOGUE: readonly Entry[] = entries();
 
 export const entry = (id: string) => CATALOGUE.find((e) => e.id === id);
+
+/**
+ * The header's topic menus: every topic in the master plan, in its order (the topic colours in
+ * packages/ui). A topic with practicals lists them (each opening its lab) and links to the
+ * practicals page filtered to it; one without says so, and links nowhere (AGENTS.md rule 2).
+ */
+export function topicMenu(): MenuTopic[] {
+  return (Object.keys(topicHue) as Topic[]).map((topic) => {
+    const name = t(`catalogue.topic.${topic}` as MessageKey);
+    const practicals = CATALOGUE.filter((e) => e.topic === topic).map((e) => ({
+      id: e.id,
+      title: e.title,
+      href: labLinks(e.id).open,
+    }));
+    return {
+      topic,
+      name,
+      all:
+        practicals.length > 0
+          ? {
+              href: `/experiments?topic=${topic}`,
+              label: t("landing.nav.allTopic", { topic: name.toLowerCase() }),
+            }
+          : undefined,
+      soon: t("landing.nav.comingSoon"),
+      practicals,
+    };
+  });
+}
 
 /** The lab's own address for an experiment, and its model check, sheets and exam. */
 export const labLinks = (id: string) => ({

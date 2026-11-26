@@ -2,8 +2,9 @@
 
 import { t, type MessageKey } from "@pa/i18n";
 import "@pa/i18n/catalogue";
-import type { Topic } from "@pa/ui";
-import { useState, type ReactNode } from "react";
+import { topicHue, type Topic } from "@pa/ui";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
 
 /** One practical's card, drawn on the server, and the topic it is filtered by. */
 export interface Card {
@@ -12,27 +13,42 @@ export interface Card {
   node: ReactNode;
 }
 
+/** Every topic in the master plan, in its order: a chip each, even before it has a practical. */
+const TOPICS = Object.keys(topicHue) as Topic[];
+
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[var(--pa-accent)]";
 
 /**
- * The topic chips and the cards on the four-colour frame (Practicals.dc.html). A chip shows only
- * its topic's practicals; All shows every one. Without JavaScript every card shows.
+ * The topic chips and the cards on the four-colour frame (Practicals.dc.html). There is a chip for
+ * every topic, with how many practicals it has; a chip shows only its topic's practicals, or says
+ * they are coming soon. All shows every one. Without JavaScript every card shows.
+ * /experiments?topic=heat (the header's "All heat practicals") opens on that topic's chip.
  */
 export function PracticalsGrid({ cards, intro }: { cards: Card[]; intro: ReactNode }) {
   const [topic, setTopic] = useState<Topic | "all">("all");
-  const topics = [...new Set(cards.map((c) => c.topic))];
   const chips = [
     { id: "all" as const, name: t("practicals.all"), count: cards.length },
-    ...topics.map((tp) => ({
+    ...TOPICS.map((tp) => ({
       id: tp,
       name: t(`catalogue.topic.${tp}` as MessageKey),
       count: cards.filter((c) => c.topic === tp).length,
     })),
   ];
 
+  const pick = (id: Topic | "all") => {
+    setTopic(id);
+    const url = new URL(window.location.href);
+    if (id === "all") url.searchParams.delete("topic");
+    else url.searchParams.set("topic", id);
+    window.history.replaceState(null, "", url);
+  };
+
   return (
     <>
+      <Suspense fallback={null}>
+        <TopicFromUrl topics={TOPICS} onTopic={setTopic} />
+      </Suspense>
       <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-5">
         {intro}
         <div role="group" aria-label={t("practicals.filter")} className="flex flex-wrap gap-1.5">
@@ -43,7 +59,7 @@ export function PracticalsGrid({ cards, intro }: { cards: Card[]; intro: ReactNo
                 key={c.id}
                 type="button"
                 aria-pressed={on}
-                onClick={() => setTopic(c.id)}
+                onClick={() => pick(c.id)}
                 className={`inline-flex cursor-pointer items-center gap-0.5 border px-3 py-2 text-sm font-medium ${
                   on
                     ? "border-[var(--pa-on-paper)] bg-[var(--pa-on-paper)] text-[var(--pa-paper)]"
@@ -80,7 +96,32 @@ export function PracticalsGrid({ cards, intro }: { cards: Card[]; intro: ReactNo
             </li>
           ))}
         </ul>
+        {topic !== "all" && !cards.some((c) => c.topic === topic) && (
+          <p
+            role="status"
+            className="m-0 bg-white px-6 py-16 text-center text-[17px] text-[var(--pa-on-paper-muted)]"
+          >
+            {t("practicals.soon", {
+              topic: t(`catalogue.topic.${topic}` as MessageKey).toLowerCase(),
+            })}
+          </p>
+        )}
       </div>
     </>
   );
+}
+
+/** Follows ?topic= in the address, so a header link to a topic shows only its practicals. */
+function TopicFromUrl({
+  topics,
+  onTopic,
+}: {
+  topics: Topic[];
+  onTopic: (t: Topic | "all") => void;
+}) {
+  const wanted = useSearchParams().get("topic");
+  useEffect(() => {
+    onTopic(topics.includes(wanted as Topic) ? (wanted as Topic) : "all");
+  }, [wanted, topics, onTopic]);
+  return null;
 }
