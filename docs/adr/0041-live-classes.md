@@ -104,7 +104,10 @@ leads nowhere.
   - 4403: the wrong kind of account;
   - 4404: not your class.
 - **Signing out.** Every 5 minutes an open socket checks that its session is still good, and
-  closes with 4401 if it is not.
+  closes with 4401 if it is not. Added 2026-11-26 (ASVS review, finding F): when a sign-in
+  ends, the sockets it concerns check at once, on every container. This covers signing out, a
+  student being removed, and a class or account being deleted. A teacher's board for a class
+  that no longer exists closes with 4404.
 - **Bad frames.** Only text frames are accepted, each at most 8 KB. A socket that sends more than
   30 frames in 10 seconds is closed (4429). A malformed frame closes the socket (1007).
 - **Slow sockets.** A socket that falls 256 messages behind is closed (4408). Its client

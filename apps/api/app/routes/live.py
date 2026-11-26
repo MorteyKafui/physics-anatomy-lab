@@ -412,13 +412,28 @@ async def _receive_text(websocket: WebSocket, frames: _Frames) -> str | None:
     return raw
 
 
-async def _still_signed_in(websocket: WebSocket, expect: Teacher | Student) -> bool:
+async def _why_closed(
+    websocket: WebSocket, expect: Teacher | Student, class_id: uuid.UUID
+) -> int | None:
+    """None while the socket's sign-in is still good and its class still theirs; otherwise the
+    code to close it with."""
     async with get_sessionmaker()() as db:
         principal = await load_principal(db, websocket)
+        owns = None
+        if isinstance(expect, Teacher) and isinstance(principal, Teacher):
+            owns = await db.scalar(
+                select(SchoolClass.id).where(
+                    SchoolClass.id == class_id, SchoolClass.teacher_id == principal.user.id
+                )
+            )
         await db.commit()
     if isinstance(expect, Teacher):
-        return isinstance(principal, Teacher) and principal.user.id == expect.user.id
-    return isinstance(principal, Student) and principal.member.id == expect.member.id
+        if not (isinstance(principal, Teacher) and principal.user.id == expect.user.id):
+            return CLOSE_SIGNED_OUT
+        return None if owns is not None else CLOSE_NOT_FOUND
+    if isinstance(principal, Student) and principal.member.id == expect.member.id:
+        return None
+    return CLOSE_SIGNED_OUT
 
 
 def _for_student(message: Message) -> Message:
@@ -442,8 +457,11 @@ async def _writer(websocket: WebSocket, sub: Subscriber, expect: Teacher | Stude
                 sub.queue.get(), timeout=max(0.0, next_check - time.monotonic())
             )
         except TimeoutError:
-            if not await _still_signed_in(websocket, expect):
-                await websocket.close(CLOSE_SIGNED_OUT)
+            message = {"type": "recheck"}
+        if message.get("type") == "recheck":  # the regular check, or a kick (app/live/hub.py)
+            code = await _why_closed(websocket, expect, sub.class_id)
+            if code is not None:
+                await websocket.close(code)
                 return
             next_check = time.monotonic() + RECHECK_EVERY.total_seconds()
             continue
@@ -498,7 +516,9 @@ async def teacher_socket(websocket: WebSocket, class_id: uuid.UUID) -> None:
         await websocket.close(CLOSE_NOT_FOUND)
         return
 
-    sub = Subscriber(class_id, "teacher")
+    sub = Subscriber(
+        class_id, "teacher", session_id=principal.session_id, user_id=principal.user.id
+    )
     hub = _hub(websocket)
     hub.subscribe(sub)
     log.info("live.connected", role="teacher", user_id=str(principal.user.id))
@@ -732,7 +752,12 @@ async def student_socket(websocket: WebSocket) -> None:
         await websocket.close(CLOSE_SIGNED_OUT if principal is None else CLOSE_FORBIDDEN)
         return
 
-    sub = Subscriber(principal.school_class.id, "student", principal.member.id)
+    sub = Subscriber(
+        principal.school_class.id,
+        "student",
+        principal.member.id,
+        session_id=principal.session_id,
+    )
     hub = _hub(websocket)
     hub.subscribe(sub)  # before reading the catch-up, so nothing falls between the two
     bench = _Bench(websocket, sub, principal)

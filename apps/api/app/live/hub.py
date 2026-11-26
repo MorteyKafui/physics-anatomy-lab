@@ -4,12 +4,17 @@ Every change is written to the database and announced with NOTIFY in the same tr
 message reaches sockets only once it is stored, whichever container each socket is on. If the
 LISTEN connection drops, messages sent meanwhile are missed, so every socket is told to `resync`
 from the database once it is back (ADR 0041).
+
+When a sign-in ends (signing out, a student removed, a class or account deleted), `kick` tells the
+sockets it may concern, on every container, to check their sign-in at once rather than at the next
+regular check (ASVS review, finding F).
 """
 
 import asyncio
 import contextlib
 import json
 import uuid
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any, Literal, cast
 
@@ -47,6 +52,29 @@ async def publish(
     await db.execute(select(func.pg_notify(CHANNEL, payload)))
 
 
+async def kick(
+    db: AsyncSession,
+    *,
+    sessions: Iterable[uuid.UUID] = (),
+    users: Iterable[uuid.UUID] = (),
+    members: Iterable[uuid.UUID] = (),
+    classes: Iterable[uuid.UUID] = (),
+) -> None:
+    """Once the transaction commits, sockets for any of these check their sign-in now."""
+    who = {
+        "s": [str(s) for s in sessions],
+        "u": [str(u) for u in users],
+        "m": [str(m) for m in members],
+        "c": [str(c) for c in classes],
+    }
+    if not any(who.values()):
+        return
+    payload = json.dumps({"k": who}, separators=(",", ":"))
+    if len(payload.encode("utf-8")) >= MAX_NOTIFY_BYTES:
+        payload = json.dumps({"k": {"all": True}})  # every socket checks: rare, and still right
+    await db.execute(select(func.pg_notify(CHANNEL, payload)))
+
+
 def _new_queue() -> asyncio.Queue[Message]:
     return asyncio.Queue(QUEUE_LIMIT)
 
@@ -58,8 +86,25 @@ class Subscriber:
     class_id: uuid.UUID
     role: Literal["teacher", "student"]
     member_id: uuid.UUID | None = None
+    # The sign-in it was opened with, so a kick can find it.
+    session_id: uuid.UUID | None = None
+    user_id: uuid.UUID | None = None
     queue: asyncio.Queue[Message] = field(default_factory=_new_queue)
     overflowed: bool = False
+
+    def kicked(self, who: dict[str, Any]) -> bool:
+        if who.get("all") is True:
+            return True
+        ids = {
+            "s": self.session_id,
+            "u": self.user_id,
+            "m": self.member_id,
+            "c": self.class_id,
+        }
+        return any(
+            mine is not None and str(mine) in cast(list[str], who.get(key) or [])
+            for key, mine in ids.items()
+        )
 
     def wants(self, audience: str, members: list[str] | None) -> bool:
         if audience == "all":
@@ -108,7 +153,10 @@ class Hub:
 
     def deliver(self, payload: str) -> None:
         try:
-            envelope = json.loads(payload)
+            envelope = cast(dict[str, Any], json.loads(payload))
+            if "k" in envelope:
+                self._kick(cast(dict[str, Any], envelope["k"]))
+                return
             class_id = uuid.UUID(envelope["c"])
             audience = str(envelope["a"])
             message = envelope["msg"]
@@ -128,6 +176,12 @@ class Hub:
                 sub.offer({"type": "message", "message": inner})
             else:
                 sub.offer(message)
+
+    def _kick(self, who: dict[str, Any]) -> None:
+        for subs in tuple(self._subscribers.values()):
+            for sub in tuple(subs):
+                if sub.kicked(who):
+                    sub.offer({"type": "recheck"})
 
     def _resync_all(self) -> None:
         for subs in self._subscribers.values():

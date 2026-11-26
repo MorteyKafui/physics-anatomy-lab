@@ -302,6 +302,74 @@ async def test_a_signed_out_student_is_closed_at_the_next_check(
         assert await closed_with(ws) == CLOSE_SIGNED_OUT
 
 
+# Ending a sign-in closes its sockets at once (ASVS review, finding F), long before the regular
+# check, which is minutes away in these tests.
+
+
+async def test_signing_out_closes_the_students_socket_at_once(
+    server: Server, outbox: LogSender
+) -> None:
+    _, made = await _classroom(server, outbox)
+    kofi, _ = await _student(server, made["code"], "Kofi_A")
+    async with server.socket("/live/student", kofi) as ws:
+        await ws.send(json.dumps({"type": "hello", "after": 0}))
+        await receive(ws, "state")
+        await kofi.post("/auth/sign-out")
+        assert await closed_with(ws) == CLOSE_SIGNED_OUT
+
+
+async def test_a_removed_student_is_closed_at_once_and_the_others_stay(
+    server: Server, outbox: LogSender
+) -> None:
+    teacher, made = await _classroom(server, outbox)
+    kofi, kofi_id = await _student(server, made["code"], "Kofi_A")
+    ama, _ = await _student(server, made["code"], "Ama_B")
+    async with (
+        server.socket("/live/student", kofi) as gone,
+        server.socket("/live/student", ama) as stays,
+    ):
+        for ws in (gone, stays):
+            await ws.send(json.dumps({"type": "hello", "after": 0}))
+            await receive(ws, "state")
+        removed = await teacher.delete(f"/classes/{made['id']}/members/{kofi_id}")
+        assert removed.status_code == 204, removed.text
+        assert await closed_with(gone) == CLOSE_SIGNED_OUT
+        await stays.send(json.dumps({"type": "ping"}))
+        await receive(stays, "pong")
+
+
+async def test_signing_out_closes_the_teachers_board_at_once(
+    server: Server, outbox: LogSender
+) -> None:
+    teacher, made = await _classroom(server, outbox)
+    async with server.socket(f"/live/classes/{made['id']}/teacher", teacher) as ws:
+        await ws.send(json.dumps({"type": "ping"}))
+        await receive(ws, "pong")
+        await teacher.post("/auth/sign-out")
+        assert await closed_with(ws) == CLOSE_SIGNED_OUT
+
+
+async def test_deleting_the_class_closes_every_socket_in_it(
+    server: Server, outbox: LogSender
+) -> None:
+    teacher, made = await _classroom(server, outbox)
+    kofi, _ = await _student(server, made["code"], "Kofi_A")
+    async with (
+        server.socket(f"/live/classes/{made['id']}/teacher", teacher) as board,
+        server.socket("/live/student", kofi) as bench_ws,
+    ):
+        await board.send(json.dumps({"type": "ping"}))
+        await receive(board, "pong")
+        await bench_ws.send(json.dumps({"type": "hello", "after": 0}))
+        await receive(bench_ws, "state")
+        deleted = await teacher.post(
+            f"/classes/{made['id']}/delete", json={"confirm_name": made["name"]}
+        )
+        assert deleted.status_code == 204, deleted.text
+        assert await closed_with(board) == CLOSE_NOT_FOUND
+        assert await closed_with(bench_ws) == CLOSE_SIGNED_OUT
+
+
 async def test_bad_frames_close_the_socket(server: Server, outbox: LogSender) -> None:
     _, made = await _classroom(server, outbox)
     kofi, _ = await _student(server, made["code"], "Kofi_A")
@@ -333,3 +401,33 @@ async def test_two_containers_both_hear_a_message(server: Server) -> None:
     finally:
         for hub in hubs:
             await hub.stop()
+
+
+def test_a_kick_reaches_only_the_sockets_it_names() -> None:
+    from app.live.hub import Subscriber
+
+    hub = Hub("unused")
+    room, other = uuid.uuid4(), uuid.uuid4()
+    teacher = Subscriber(room, "teacher", session_id=uuid.uuid4(), user_id=uuid.uuid4())
+    kofi = Subscriber(room, "student", uuid.uuid4(), session_id=uuid.uuid4())
+    elsewhere = Subscriber(other, "student", uuid.uuid4(), session_id=uuid.uuid4())
+    for sub in (teacher, kofi, elsewhere):
+        hub.subscribe(sub)
+
+    def kicked() -> list[bool]:
+        got = [not s.queue.empty() for s in (teacher, kofi, elsewhere)]
+        for s in (teacher, kofi, elsewhere):
+            while not s.queue.empty():
+                assert s.queue.get_nowait() == {"type": "recheck"}
+        return got
+
+    hub.deliver(json.dumps({"k": {"u": [str(teacher.user_id)]}}))
+    assert kicked() == [True, False, False]
+    hub.deliver(json.dumps({"k": {"s": [str(kofi.session_id)]}}))
+    assert kicked() == [False, True, False]
+    hub.deliver(json.dumps({"k": {"m": [str(elsewhere.member_id)]}}))
+    assert kicked() == [False, False, True]
+    hub.deliver(json.dumps({"k": {"c": [str(room)]}}))
+    assert kicked() == [True, True, False]
+    hub.deliver(json.dumps({"k": {"all": True}}))
+    assert kicked() == [True, True, True]

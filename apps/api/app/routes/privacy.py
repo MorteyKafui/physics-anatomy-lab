@@ -29,6 +29,7 @@ from app.auth.policy import (
 )
 from app.auth.sessions import CurrentPrincipal, CurrentTeacher, Teacher, clear_cookie
 from app.db import Db
+from app.live.hub import kick
 from app.models import (
     Attempt,
     AttemptEvent,
@@ -347,6 +348,7 @@ async def _delete_member(db: AsyncSession, member: ClassMember) -> None:
     )
     await db.delete(member)
     await db.flush()
+    await kick(db, members=[member.id])
 
 
 async def _require_recent_sign_in(db: AsyncSession, teacher: Teacher, what: str) -> None:
@@ -398,6 +400,7 @@ async def delete_class(
     # Cascades to students, their attempts, events, consents, sessions and live sessions.
     await db.delete(school_class)
     await db.flush()
+    await kick(db, classes=[school_class.id])
     log.info(
         "privacy.class_deleted",
         class_id=str(school_class.id),
@@ -486,9 +489,13 @@ async def delete_account(
     await db.execute(
         delete(Question).where(Question.submitted_by == user.id, Question.state == "submitted")
     )
+    class_ids = (
+        await db.scalars(select(SchoolClass.id).where(SchoolClass.teacher_id == user.id))
+    ).all()
     # Cascades to classes, students, attempts, events, sessions, consents and live sessions.
     await db.delete(user)
     await db.flush()
+    await kick(db, users=[user.id], classes=class_ids)
     clear_cookie(response)
     # Every session of the account went with it, so every device is signed out.
     log.info("privacy.account_deleted", user_id=str(user.id), classes=classes, students=students)

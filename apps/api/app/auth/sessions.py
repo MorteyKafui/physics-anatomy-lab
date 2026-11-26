@@ -22,6 +22,7 @@ from app.auth.policy import (
 )
 from app.config import get_settings
 from app.db import Db
+from app.live.hub import kick
 from app.models import ClassMember, SchoolClass, Session, User
 
 log = structlog.get_logger()
@@ -71,7 +72,10 @@ def clear_cookie(response: Response) -> None:
 async def _end_current(db: AsyncSession, request: Request) -> None:
     token = request.cookies.get(cookie_name())
     if token:
-        await db.execute(delete(Session).where(Session.token_hash == hash_secret(token)))
+        ended = await db.scalars(
+            delete(Session).where(Session.token_hash == hash_secret(token)).returning(Session.id)
+        )
+        await kick(db, sessions=ended.all())
 
 
 async def _start(
@@ -130,6 +134,7 @@ async def end_session(db: AsyncSession, request: Request, response: Response) ->
 
 async def end_member_sessions(db: AsyncSession, member_id: uuid.UUID) -> None:
     await db.execute(delete(Session).where(Session.member_id == member_id))
+    await kick(db, members=[member_id])
 
 
 async def load_principal(db: AsyncSession, request: HTTPConnection) -> Principal | None:
