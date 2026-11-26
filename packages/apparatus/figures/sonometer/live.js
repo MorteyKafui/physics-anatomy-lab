@@ -11,7 +11,9 @@ const riderG = svgEl.querySelector('[data-part="rider"]');
 const forkLabel = svgEl.querySelector('[data-part="fork-label"] text');
 const readoutEl = document.querySelector("[data-readout]");
 const statusEl = stage.querySelector("[data-status]");
-const reads = Object.fromEntries([...document.querySelectorAll("[data-read]")].map((el) => [el.dataset.read, el]));
+const reads = Object.fromEntries(
+  [...document.querySelectorAll("[data-read]")].map((el) => [el.dataset.read, el]),
+);
 const picks = [...document.querySelectorAll("[data-pick]")];
 const still = matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -32,7 +34,16 @@ let clock = 0; // display seconds
 let struck = -1e9; // wall-clock seconds of the last strike
 let wall = 0;
 let shown = 0; // eased drive strength actually drawn
-let rider = { mode: "seated", x: D.fixedX + l * D.perM * 0.5, z: D.wc, y: 0, vz: 0, vy: 0, turn: 0, spin: 0 };
+let rider = {
+  mode: "seated",
+  x: D.fixedX + l * D.perM * 0.5,
+  z: D.wc,
+  y: 0,
+  vz: 0,
+  vy: 0,
+  turn: 0,
+  spin: 0,
+};
 let touring = !still.matches;
 let tourStep = -1;
 let tourWait = 0;
@@ -65,7 +76,12 @@ function riderLegs(cx, cz, turn, cy = 0) {
   };
   const draw = (pts) => `<path class="sn-paper" d="${pathOf(pts.map(at3), true)}"/>`;
   const near = rot([1, 0])[0] >= 0 ? 1 : -1;
-  return { back: draw(leg(-near)), front: draw(leg(near)) + `<path class="iso-line" data-tone="hi" d="${pathOf(leg(near).map(at3), true)}${pathOf(leg(-near).map(at3), true)}"/>` };
+  return {
+    back: draw(leg(-near)),
+    front:
+      draw(leg(near)) +
+      `<path class="iso-line" data-tone="hi" d="${pathOf(leg(near).map(at3), true)}${pathOf(leg(-near).map(at3), true)}"/>`,
+  };
 }
 
 function drawWire(bx, length, drive) {
@@ -91,7 +107,10 @@ function drawWire(bx, length, drive) {
     const xm = (x - D.fixedX) / D.perM;
     return D.wc + (drivenDisplacement(d, xm, tReal, STATIC) ?? 0) * drive * toUnits;
   };
-  const env = peak > 0.35 ? `<path class="iso-line" data-tone="lo" d="${pathOf(up.map(at3))}${pathOf(down.map(at3))}"/>` : "";
+  const env =
+    peak > 0.35
+      ? `<path class="iso-line" data-tone="lo" d="${pathOf(up.map(at3))}${pathOf(down.map(at3))}"/>`
+      : "";
   const wire = `<path class="iso-line sn-wire" data-tone="lit" d="${pathOf(pts.map(at3))}"/>`;
   return { env, wire, wireZ, peak };
 }
@@ -117,7 +136,9 @@ function render() {
   for (const el of movers) el.setAttribute("transform", shift);
   const f = D.forks[fork];
   const wobble = 0.55 * drive * Math.cos(2 * Math.PI * f * (clock / D.slow));
-  tines.forEach((el, i) => el.setAttribute("transform", translateAlong(P, [(i ? 1 : -1) * wobble, 0, 0])));
+  tines.forEach((el, i) =>
+    el.setAttribute("transform", translateAlong(P, [(i ? 1 : -1) * wobble, 0, 0])),
+  );
   writeReadings();
 }
 
@@ -128,8 +149,15 @@ function writeReadings() {
   const n = Math.max(1, Math.round(f / f1));
   const fn = harmonicFrequency(n, l, SPEED);
   const lam = harmonicWavelength(n, l);
-  const values = { length: `${fixed1(l * 100)} cm`, fork: `${f} Hz`, harmonic: `${n}`, fn: `${fixed1(fn)} Hz`, lambda: `${fixed1(lam * 100)} cm` };
-  for (const [key, text] of Object.entries(values)) if (reads[key] && reads[key].textContent !== text) reads[key].textContent = text;
+  const values = {
+    length: `${fixed1(l * 100)} cm`,
+    fork: `${f} Hz`,
+    harmonic: `${n}`,
+    fn: `${fixed1(fn)} Hz`,
+    lambda: `${fixed1(lam * 100)} cm`,
+  };
+  for (const [key, text] of Object.entries(values))
+    if (reads[key] && reads[key].textContent !== text) reads[key].textContent = text;
   const band = resonanceBand(f, SPEED, D.q, 1, n);
   const inside = band && l >= band[0] && l <= band[1];
   const text = `l ${fixed1(l * 100)} cm · ${inside ? `resonance, n = ${n}` : `fork ${f} Hz`}`;
@@ -142,11 +170,22 @@ function writeReadings() {
 
 // ---------- the rider ----------
 function reseat() {
-  rider = { mode: "seated", x: D.fixedX + l * D.perM * 0.5, z: D.wc, y: 0, vz: 0, vy: 0, turn: 0, spin: 0 };
+  rider = {
+    mode: "seated",
+    x: D.fixedX + l * D.perM * 0.5,
+    z: D.wc,
+    y: 0,
+    vz: 0,
+    vy: 0,
+    turn: 0,
+    spin: 0,
+  };
 }
 function throwRider(z) {
   rider = { mode: "flying", x: rider.x, z, y: 0, vz: 34, vy: 9, turn: 0, spin: 6.5 };
-  say(`The rider is thrown off: resonance at l = ${fixed1(l * 100)} cm with the ${D.forks[fork]} Hz fork.`);
+  say(
+    `The rider is thrown off: resonance at l = ${fixed1(l * 100)} cm with the ${D.forks[fork]} Hz fork.`,
+  );
 }
 const LAND_TURN = Math.atan2(RIDER.drop, RIDER.leg);
 function stepRider(dt, wireZ) {
@@ -249,10 +288,13 @@ function run() {
   }
 }
 
-new IntersectionObserver((entries) => {
-  visible = entries[entries.length - 1].isIntersecting;
-  if (visible) run();
-}, { rootMargin: "120px 0px" }).observe(stage);
+new IntersectionObserver(
+  (entries) => {
+    visible = entries[entries.length - 1].isIntersecting;
+    if (visible) run();
+  },
+  { rootMargin: "120px 0px" },
+).observe(stage);
 
 // The bridge follows the pointer across the screen.
 const sx = (len) => at3([bridgeAt(len), 0, D.wc])[0];
@@ -296,7 +338,8 @@ for (const button of picks) {
     for (const b of picks) b.setAttribute("aria-pressed", String(b.dataset.pick === pick));
     if (pick) svgEl.dataset.pick = pick;
     else delete svgEl.dataset.pick;
-    for (const el of svgEl.querySelectorAll(".sn-rig .it")) el.toggleAttribute("data-on", el.dataset.g === pick);
+    for (const el of svgEl.querySelectorAll(".sn-rig .it"))
+      el.toggleAttribute("data-on", el.dataset.g === pick);
   });
 }
 
@@ -305,6 +348,15 @@ if (still.matches) {
   target = l = resonantLength(D.forks[fork], SPEED, 1);
   struck = 0;
   shown = 1;
-  rider = { mode: "landed", x: D.fixedX + l * D.perM * 0.5, z: D.lid + 0.3 + (RIDER.drop - D.wireR) * 0.55, y: 6, vz: 0, vy: 0, turn: LAND_TURN, spin: 0 };
+  rider = {
+    mode: "landed",
+    x: D.fixedX + l * D.perM * 0.5,
+    z: D.lid + 0.3 + (RIDER.drop - D.wireR) * 0.55,
+    y: 6,
+    vz: 0,
+    vy: 0,
+    turn: LAND_TURN,
+    spin: 0,
+  };
 }
 render();
