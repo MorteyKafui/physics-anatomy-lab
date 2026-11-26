@@ -1931,7 +1931,7 @@ const LabHeader = memo(function LabHeader({
   const state = handle.state;
   const back = shownNeighbour(E.id, state.step, -1);
   return (
-    <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border px-5 py-3">
+    <header className="flex flex-wrap items-center gap-x-4 gap-y-3 min-[1440px]:gap-x-5 border-b border-border px-5 py-3">
       <Link
         prefetch={false}
         href="/"

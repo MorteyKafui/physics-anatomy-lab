@@ -55,7 +55,7 @@ async function download(page: Page, kind: RegExp) {
   return { name: file.suggestedFilename(), bytes: await readFile((await file.path())!) };
 }
 
-test("the report is written from the run, in the WASSCE format, and opens from step 10", async ({
+test("the report is written from the run, in the WASSCE format, and opens from the Report step", async ({
   page,
 }) => {
   await aRun(page);

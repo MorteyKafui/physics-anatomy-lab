@@ -56,7 +56,7 @@ test("a student asks the tutor from the help menu and reads the reply", async ({
   const sent = asked[0]?.postDataJSON() as Record<string, unknown>;
   expect(sent).toMatchObject({
     experiment_id: "simple-pendulum",
-    step: "question",
+    step: "build",
     student_text: "Why do I count from zero?",
     thread: [],
   });
@@ -85,7 +85,7 @@ test("a student reports a reply, and only the reply and the reason are sent", as
   expect(flags[0]?.postDataJSON()).toEqual({
     feature: "tutor",
     experiment_id: "simple-pendulum",
-    step: "question",
+    step: "build",
     reason: "confusing",
     reply: "Start counting at zero. Then T = t / 20 gives 1.806 s.",
   });

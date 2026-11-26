@@ -45,7 +45,7 @@ test("the review lists the mistake with what it did to g, and Compare opens once
     .locator("div")
     .filter({ hasText: 'You said "one" on the first pass' })
     .last();
-  await expect(card).toContainText("Step 5 · Measure");
+  await expect(card).toContainText("Step 2 · Measure");
   await expect(card).toContainText("Still in your result");
   // Rule 1: the size comes from packages/experiments and packages/physics.
   const percent = Math.round(readingErrorPercent({ count: 20, countedFromOne: true }, 9.81)!);
@@ -104,7 +104,7 @@ test("redoing from Measure starts run 2 with the work before it, and keeps run 1
     .locator("div")
     .filter({ hasText: /^Run 2/ })
     .last();
-  await expect(run2.getByText("from run 1")).toHaveCount(4);
+  await expect(run2.getByText("from run 1")).toHaveCount(1);
   await page.getByRole("button", { name: "Run 1", exact: true }).click();
   await expect(review(page).getByText('You said "one" on the first pass')).toBeVisible();
 });

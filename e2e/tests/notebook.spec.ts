@@ -67,7 +67,7 @@ test("finishing building puts a labelled figure of the bench in the notebook", a
   await expect(figure.getByText("G: Stopwatch")).toBeVisible();
   await expect(figure.getByText("l = 0.800 m")).toBeVisible();
   await expect(figure.getByText(/Simple pendulum, version 1 · .* · seed \d+/)).toBeVisible();
-  await expect(details(page).getByText("Step 3: Build")).toBeVisible();
+  await expect(details(page).getByText("Step 1: Build")).toBeVisible();
 });
 
 test("C takes a snapshot anywhere in the lab", async ({ page }, info) => {

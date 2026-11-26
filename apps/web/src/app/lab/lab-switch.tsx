@@ -5,7 +5,7 @@ import { t, type MessageKey } from "@pa/i18n";
 import { cn } from "@pa/ui";
 import { Button } from "@pa/ui/components/button";
 import { Menu, MenuContent, MenuLinkItem, MenuTrigger } from "@pa/ui/components/menu";
-import { ChevronDownIcon, LinkIcon } from "@pa/ui/icons";
+import { CheckIcon, ChevronDownIcon, LinkIcon } from "@pa/ui/icons";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -135,14 +135,30 @@ export function ShareLink({ experimentId }: { experimentId: string }) {
     }
   };
 
+  const copied = state === "copied";
+  // The label shows where the top bar has room for it (1600 px and wider); narrower, the button is
+  // the link icon, and "Link copied" and the fallback field open just below it, so the top bar
+  // keeps to one row.
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="outline" className="h-9 gap-2 px-3" onClick={() => void share()}>
-        <LinkIcon aria-hidden />
-        <span className={cn(state !== "copied" && "sr-only md:not-sr-only")}>
-          {state === "copied" ? t("lab.share.copied") : t("lab.share.label")}
+    <div className="relative">
+      <Button
+        variant="outline"
+        className="h-9 gap-2 px-2.5 min-[1600px]:px-3"
+        onClick={() => void share()}
+      >
+        {copied ? <CheckIcon aria-hidden /> : <LinkIcon aria-hidden />}
+        <span className="sr-only min-[1600px]:not-sr-only">
+          {copied ? t("lab.share.copied") : t("lab.share.label")}
         </span>
       </Button>
+      {copied && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-full right-0 z-20 mt-1.5 bg-foreground px-2.5 py-1.5 text-xs whitespace-nowrap text-background min-[1600px]:hidden"
+        >
+          {t("lab.share.copied")}
+        </span>
+      )}
       {state === "manual" && (
         <input
           ref={field}
@@ -150,7 +166,9 @@ export function ShareLink({ experimentId }: { experimentId: string }) {
           value={url}
           aria-label={t("lab.share.field")}
           onFocus={(e) => e.currentTarget.select()}
-          className="h-9 w-56 border border-input bg-surface px-2.5 font-mono text-xs text-foreground"
+          onBlur={() => setState("idle")}
+          onKeyDown={(e) => e.key === "Escape" && setState("idle")}
+          className="absolute top-full right-0 z-20 mt-1.5 h-9 w-72 max-w-[calc(100vw-2rem)] border border-input bg-surface px-2.5 font-mono text-xs text-foreground"
         />
       )}
       <span role="status" className="sr-only">
