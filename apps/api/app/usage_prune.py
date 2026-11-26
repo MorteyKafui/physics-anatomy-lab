@@ -7,8 +7,9 @@ time and any number of times.
 import asyncio
 import calendar
 from datetime import UTC, datetime
+from typing import Any, cast
 
-from sqlalchemy import delete
+from sqlalchemy import CursorResult, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.policy import USAGE_EVENTS_PER_ADDRESS, USAGE_KEEP_MONTHS
@@ -36,7 +37,7 @@ async def prune(db: AsyncSession, now: datetime | None = None) -> int:
             RateLimit.window_start < at - USAGE_EVENTS_PER_ADDRESS.window,
         )
     )
-    return gone.rowcount  # pyright: ignore[reportAttributeAccessIssue]
+    return cast(CursorResult[Any], gone).rowcount
 
 
 async def main() -> None:

@@ -467,10 +467,6 @@ async def ai_switches(db: AsyncSession) -> dict[str, dict[str, Any]]:
 # Anonymous usage counts (ADR 0048). `received_at` is the server's clock. A visitor is a distinct
 # day id: devices make a new one every local day, so a visitor who returns is counted again.
 
-_USAGE_RANGE = """
-    received_at >= to_timestamp(:since / 1000.0) AND received_at < to_timestamp(:until / 1000.0)
-"""
-
 
 def _usage_params(w: Window) -> dict[str, int]:
     return {"since": w.since_ms, "until": w.until_ms, "bucket": w.bucket_ms}
@@ -482,12 +478,13 @@ async def usage_totals(db: AsyncSession, w: Window) -> dict[str, Any]:
     rows = (
         await db.execute(
             text(
-                f"""
+                """
                 SELECT floor((extract(epoch FROM received_at) * 1000 - :since) / :bucket) AS bucket,
                        count(DISTINCT day_id) AS visitors,
                        count(*) FILTER (WHERE name = 'experiment_viewed') AS opens
                 FROM usage_events
-                WHERE {_USAGE_RANGE}
+                WHERE received_at >= to_timestamp(:since / 1000.0)
+                  AND received_at < to_timestamp(:until / 1000.0)
                 GROUP BY 1
                 """
             ),
@@ -497,11 +494,12 @@ async def usage_totals(db: AsyncSession, w: Window) -> dict[str, Any]:
     total = (
         await db.execute(
             text(
-                f"""
+                """
                 SELECT count(DISTINCT day_id) AS visitors,
                        count(*) FILTER (WHERE name = 'experiment_viewed') AS opens
                 FROM usage_events
-                WHERE {_USAGE_RANGE}
+                WHERE received_at >= to_timestamp(:since / 1000.0)
+                  AND received_at < to_timestamp(:until / 1000.0)
                 """
             ),
             params,
@@ -528,7 +526,7 @@ async def usage_experiments(db: AsyncSession, w: Window) -> list[dict[str, Any]]
     rows = (
         await db.execute(
             text(
-                f"""
+                """
                 SELECT experiment_id,
                   count(*) FILTER (WHERE name = 'experiment_viewed') AS opens,
                   count(DISTINCT day_id) FILTER (WHERE name = 'experiment_viewed') AS visitors,
@@ -537,7 +535,8 @@ async def usage_experiments(db: AsyncSession, w: Window) -> list[dict[str, Any]]
                     WHERE name = 'stage_completed' AND step = 'conclude') AS reached_report,
                   count(DISTINCT day_id) FILTER (WHERE name = 'attempt_completed') AS completed
                 FROM usage_events
-                WHERE {_USAGE_RANGE}
+                WHERE received_at >= to_timestamp(:since / 1000.0)
+                  AND received_at < to_timestamp(:until / 1000.0)
                 GROUP BY experiment_id
                 ORDER BY opens DESC, experiment_id
                 """
@@ -553,10 +552,12 @@ async def usage_steps(db: AsyncSession, w: Window) -> list[dict[str, Any]]:
     rows = (
         await db.execute(
             text(
-                f"""
+                """
                 SELECT experiment_id, step, count(DISTINCT day_id) AS visitors
                 FROM usage_events
-                WHERE name = 'stage_completed' AND {_USAGE_RANGE}
+                WHERE name = 'stage_completed'
+                  AND received_at >= to_timestamp(:since / 1000.0)
+                  AND received_at < to_timestamp(:until / 1000.0)
                 GROUP BY experiment_id, step
                 """
             ),
@@ -568,22 +569,28 @@ async def usage_steps(db: AsyncSession, w: Window) -> list[dict[str, Any]]:
     return sorted(out, key=lambda r: (r["experiment_id"], order.get(r["step"], len(STEPS))))
 
 
+_USAGE_BY = {
+    "format": """
+        SELECT format AS key, count(*) AS n
+        FROM usage_events
+        WHERE name = 'report_exported'
+          AND received_at >= to_timestamp(:since / 1000.0)
+          AND received_at < to_timestamp(:until / 1000.0)
+        GROUP BY 1
+        ORDER BY 2 DESC, 1
+    """,
+    "device": """
+        SELECT device AS key, count(DISTINCT day_id) AS n
+        FROM usage_events
+        WHERE received_at >= to_timestamp(:since / 1000.0)
+          AND received_at < to_timestamp(:until / 1000.0)
+        GROUP BY 1
+        ORDER BY 2 DESC, 1
+    """,
+}
+
+
 async def usage_by(db: AsyncSession, w: Window, column: Literal["format", "device"]) -> list[Any]:
     """Exports by format (events), or visitors by device class (distinct day ids)."""
-    measure = "count(*)" if column == "format" else "count(DISTINCT day_id)"
-    only = "name = 'report_exported' AND" if column == "format" else ""
-    rows = (
-        await db.execute(
-            text(
-                f"""
-                SELECT {column} AS key, {measure} AS n
-                FROM usage_events
-                WHERE {only} {_USAGE_RANGE}
-                GROUP BY 1
-                ORDER BY 2 DESC, 1
-                """
-            ),
-            _usage_params(w),
-        )
-    ).all()
+    rows = (await db.execute(text(_USAGE_BY[column]), _usage_params(w))).all()
     return [{"key": r.key, "n": int(r.n)} for r in rows]

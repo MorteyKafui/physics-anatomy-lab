@@ -14,7 +14,19 @@ from app.body_limit import BodyLimit
 from app.config import get_settings
 from app.db import get_engine
 from app.live.hub import Hub, listen_dsn
-from app.routes import admin, ai, auth, classes, live, load_test, privacy, questions, sync, teacher, usage
+from app.routes import (
+    admin,
+    ai,
+    auth,
+    classes,
+    live,
+    load_test,
+    privacy,
+    questions,
+    sync,
+    teacher,
+    usage,
+)
 from app.security_headers import SecurityHeaders
 
 settings = get_settings()

@@ -15,14 +15,18 @@ from app.auth.policy import USAGE_MAX_BATCH
 from app.config import get_settings
 from app.models import RateLimit, UsageEvent
 from app.usage_prune import months_before, prune
+from tests import test_admin
 from tests.conftest import browser
-from tests.test_admin import staff  # noqa: F401  (the admin portal's server, as staff)
 
 DAY_A = "0" * 31 + "a"
 DAY_B = "0" * 31 + "b"
 DAY_C = "0" * 31 + "c"
-STEPS = ["question", "predict", "build", "check", "measure"]
-STEPS += ["tabulate", "plot", "analyse", "conclude", "report"]
+STEPS = [
+    *("question", "predict", "build", "check", "measure"),
+    *("tabulate", "plot", "analyse", "conclude", "report"),
+]
+# The admin portal's server, as a staff member.
+staff = test_admin.staff
 
 
 def event(name: str = "experiment_viewed", **fields: Any) -> dict[str, Any]:
@@ -163,7 +167,7 @@ async def test_rows_older_than_13_months_are_deleted(client: AsyncClient, db: As
 
 async def test_the_admin_usage_area_counts_right(
     client: AsyncClient,
-    staff: AsyncClient,  # noqa: F811
+    staff: AsyncClient,
 ) -> None:
     # Visitor A opens the pendulum twice, finishes every step and downloads a PDF; visitor B
     # opens it on a phone and stops after Question; visitor C opens Ohm's law on a tablet.

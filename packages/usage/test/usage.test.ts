@@ -60,7 +60,11 @@ function device(overrides: Partial<UsageEnvironment> = {}) {
   return { usage, clock, storage, state, delivered };
 }
 
-const view = { name: "experiment_viewed", experimentId: "simple-pendulum", mode: "guided" } as const;
+const view = {
+  name: "experiment_viewed",
+  experimentId: "simple-pendulum",
+  mode: "guided",
+} as const;
 
 describe("the day's id", () => {
   test("is 128 random bits, kept for the day and replaced the next local day", () => {

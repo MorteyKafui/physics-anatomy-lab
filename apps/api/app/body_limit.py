@@ -11,9 +11,7 @@ class BodyLimit:
     """413 for a body over `max_bytes`, by its Content-Length or by the bytes that arrive.
     `smaller` gives some paths a lower limit, such as the open usage route (ADR 0048)."""
 
-    def __init__(
-        self, app: ASGIApp, max_bytes: int, smaller: dict[str, int] | None = None
-    ) -> None:
+    def __init__(self, app: ASGIApp, max_bytes: int, smaller: dict[str, int] | None = None) -> None:
         self.app = app
         self.max_bytes = max_bytes
         self.smaller = smaller or {}
