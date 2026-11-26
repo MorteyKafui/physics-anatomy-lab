@@ -49,13 +49,15 @@ from app.admin.schemas import (
     SkillSeries,
     StaffMe,
     StageCount,
-    StepTime,
     StudentCounts,
     Summary,
     SystemInfo,
     TableSize,
     TeacherRow,
     Usage,
+    UsageCount,
+    UsageExperiment,
+    UsageStep,
 )
 from app.ai.features import FEATURES, FeatureName
 from app.ai.quotas import midnight
@@ -126,8 +128,11 @@ async def admin_usage(db: ReadDb, range: RangeQuery = "7d") -> Usage:
     w = q.window(range)
     return Usage(
         window=_info(range, w),
-        experiments=[ExperimentUse(**r) for r in await q.per_experiment(db, w)],
-        step_minutes=[StepTime(**r) for r in await q.step_minutes(db, w)],
+        **await q.usage_totals(db, w),
+        experiments=[UsageExperiment(**r) for r in await q.usage_experiments(db, w)],
+        steps=[UsageStep(**r) for r in await q.usage_steps(db, w)],
+        exports=[UsageCount(**r) for r in await q.usage_by(db, w, "format")],
+        devices=[UsageCount(**r) for r in await q.usage_by(db, w, "device")],
     )
 
 

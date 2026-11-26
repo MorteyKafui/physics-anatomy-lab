@@ -102,17 +102,40 @@ class Summary(BaseModel):
     flagged_names: int
 
 
-class StepTime(BaseModel):
+class UsageExperiment(BaseModel):
+    """Anonymous counts for one experiment (ADR 0048). Visitors are distinct day ids."""
+
+    experiment_id: str
+    opens: int
+    visitors: int
+    started: int
+    reached_report: int
+    completed: int
+
+
+class UsageStep(BaseModel):
     experiment_id: str
     step: str
+    visitors: int
+
+
+class UsageCount(BaseModel):
+    key: str
     n: int
-    minutes: float
 
 
 class Usage(BaseModel):
+    """The Usage area, from anonymous usage counts (ADR 0048), not from synced attempts."""
+
     window: RangeInfo
-    experiments: list[ExperimentUse]
-    step_minutes: list[StepTime]
+    visitors: int
+    opens: int
+    visitors_series: list[int]
+    opens_series: list[int]
+    experiments: list[UsageExperiment]
+    steps: list[UsageStep]
+    exports: list[UsageCount]
+    devices: list[UsageCount]
 
 
 class SkillSeries(BaseModel):

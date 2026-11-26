@@ -23,6 +23,7 @@ import { newSeed } from "@pa/instruments";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { pastHidden } from "./lab-steps";
+import { countLabEvents, countUsage, countView } from "./usage";
 
 /** Per-device conveniences only (AGENTS.md): which attempt to reopen, and this device's id. */
 function remembered(key: string, make?: () => string): string | undefined {
@@ -88,6 +89,13 @@ async function carryPastHidden(attempt: Attempt, events: readonly LabEvent[]) {
   return all;
 }
 
+/** A new attempt, counted as started (ADR 0048). */
+async function newAttempt(spec: Parameters<EventStore["createAttempt"]>[0]) {
+  const attempt = await store().createAttempt(spec);
+  countUsage({ name: "attempt_started", experimentId: attempt.experimentId, mode: attempt.mode });
+  return attempt;
+}
+
 async function openAttempt(experimentId: string) {
   let opening = openings.get(experimentId);
   if (!opening) {
@@ -96,7 +104,7 @@ async function openAttempt(experimentId: string) {
       const previous = remembered(key);
       let attempt = previous ? await store().getAttempt(previous) : undefined;
       if (!attempt) {
-        attempt = await store().createAttempt({ experimentId, mode: "guided", seed: newSeed() });
+        attempt = await newAttempt({ experimentId, mode: "guided", seed: newSeed() });
         remember(key, attempt.id);
       }
       // A new attempt starts on Question: where a lab leaves steps out, it opens on its first
@@ -135,7 +143,7 @@ export const appendTo = (attemptId: string, events: readonly NewEvent[]) =>
 export async function startRun(source: Attempt, events: readonly LabEvent[], from: Step) {
   const news = redoEvents(events, from, source.id);
   if (!news) return undefined;
-  const attempt = await store().createAttempt({
+  const attempt = await newAttempt({
     experimentId: source.experimentId,
     mode: source.mode,
     seed: source.seed,
@@ -151,7 +159,7 @@ export async function startRun(source: Attempt, events: readonly LabEvent[], fro
  * the clock started. The lab opens it from now on; earlier runs are kept.
  */
 export async function startExam(experimentId: string) {
-  const attempt = await store().createAttempt({ experimentId, mode: "exam", seed: newSeed() });
+  const attempt = await newAttempt({ experimentId, mode: "exam", seed: newSeed() });
   const d = decideExam(attempt.mode, EMPTY_EXAM, { type: "start" });
   if (d.ok) await store().append(attempt.id, d.events);
   remember(`pa:attempt:${experimentId}`, attempt.id);
@@ -165,7 +173,7 @@ export async function startExam(experimentId: string) {
  * opens it from now on; earlier runs are kept. It is not marked and has no report.
  */
 export async function startWhatIf(experimentId: string, first: readonly NewEvent[]) {
-  const attempt = await store().createAttempt({ experimentId, mode: "what-if", seed: newSeed() });
+  const attempt = await newAttempt({ experimentId, mode: "what-if", seed: newSeed() });
   await store().append(attempt.id, first);
   remember(`pa:attempt:${experimentId}`, attempt.id);
   openings.delete(experimentId);
@@ -216,16 +224,20 @@ export function useAttempt(experimentId: string): AttemptHandle | undefined {
       if (cancelled) return;
       latest.current = opened.events;
       setLoaded(opened);
+      countView(opened.attempt);
     });
     return () => {
       cancelled = true;
     };
   }, [experimentId]);
 
+  // `count: false` for the events that carry an attempt past a step its lab leaves out: the
+  // student did not do that step, so the usage counts (ADR 0048) do not count it.
   const save = useCallback(
-    async (news: readonly NewEvent[]) => {
+    async (news: readonly NewEvent[], count = true) => {
       if (!loaded || news.length === 0) return;
       const stored = await store().append(loaded.attempt.id, news);
+      if (count) countLabEvents(loaded.attempt, stored);
       latest.current = [...latest.current, ...stored];
       setLoaded((l) => l && { ...l, events: latest.current });
     },
@@ -248,11 +260,11 @@ export function useAttempt(experimentId: string): AttemptHandle | undefined {
         for (let guard = 0; guard < 2 * STEPS.length; guard++) {
           const news = pastHiddenEvents(loaded.attempt, latest.current);
           if (!news) break;
-          await save(news);
+          await save(news, false);
         }
         return undefined;
       },
-      record: save,
+      record: (news: readonly NewEvent[]) => save(news),
     } satisfies AttemptHandle;
   }, [loaded, save]);
 }
