@@ -9,7 +9,7 @@ Mortey asked for two things:
    approved design; it does not rebuild it. Its colours, live demos, Anatomy figures and large
    footer wordmark stay, and so do Lyra's square corners.
 
-- **Status:** decisions taken in chat on 2026-11-26. A first "anatomy plate" draft was set
+- **Status:** approved by Mortey on 2026-11-26, in chat ("Approved, start building"). Decisions taken in chat the same day. A first "anatomy plate" draft was set
   aside the same day: Mortey found it a step down from the approved design, because it dropped
   the colours. The three boards below replace it, as **drafts for approval**. They are also on
   the design canvas (canvas.json `Landing`, `Practicals`, `LabOpen`).
