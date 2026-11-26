@@ -44,11 +44,8 @@ input[type=range]{flex:1;accent-color:#2EC4B6}
 <div class="sim">
   <!-- The bench: the Anatomy figure fills it. -->
   <section aria-label="The apparatus" style="display: flex; flex-direction: column; gap: 14px; padding: 20px; min-width: 0">
-    <div style="border: 1px solid #262624; background: #131313">
-      <div style="display: flex; justify-content: space-between; padding: 10px 14px; font-size: 13px; color: #8C8A84"><span>Fig. 1</span><span style="color: #F2F0EA">Sonometer: the wire at 256 Hz</span></div>
-      <div class="slot">Anatomy figure (Hero) from the sonometer pull request: sounding box, scale, fixed and movable bridges, wire, pulley, hanger with slotted masses, paper rider, tuning fork on its rubber pad.<br><br>Drag the movable bridge along the scale or the masses on and off the hanger; strike the fork by clicking it. The wire is the one lit part.</div>
-      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; font-size: 13px; border-top: 1px solid #262624"><span style="color: #8C8A84">Drag the bridge · click the fork to strike it</span><span style="font-family: 'Geist Mono', monospace">l = 39.0 cm · f₁ = 256.1 Hz · resonance</span></div>
-    </div>
+    <img src="./screens/simulations/sonometer-dark.png" alt="The Anatomy figure of a sonometer: a hollow sounding box with two sound holes and a metre scale, a hitch pin, fixed and wedge bridges, the steel wire with a paper rider, a pulley with a hanger of slotted masses, and a tuning fork" style="width:100%;height:auto;display:block">
+    <p style="margin: 0; font-size: 13px; color: #8C8A84">Built in the app as the live figure from packages/apparatus/figures/sonometer: the wire moves from the model, the movable bridge follows the pointer, and a click strikes the fork.</p>
 
     <!-- Legend key: names every part; choosing one picks it out in the drawing. -->
     <ol aria-label="Parts" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: #C9C6BF">
