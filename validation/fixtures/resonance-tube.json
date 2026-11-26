@@ -1,0 +1,2615 @@
+{
+  "model": "adiabatic ideal gas; p'' = -k^2 p shot with DOP853 and brentq; 2x2 driven modes",
+  "speed": [
+    {
+      "temperatureC": -10.0,
+      "speed": 325.1983101716887
+    },
+    {
+      "temperatureC": 0.0,
+      "speed": 331.3196511763318
+    },
+    {
+      "temperatureC": 20.0,
+      "speed": 343.2349805815865
+    },
+    {
+      "temperatureC": 28.0,
+      "speed": 347.88686113338633
+    },
+    {
+      "temperatureC": 35.0,
+      "speed": 351.90681631984194
+    },
+    {
+      "temperatureC": 50.0,
+      "speed": 360.37003600627264
+    }
+  ],
+  "resonances": [
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 256,
+      "lengths": [
+        0.3246904107242083,
+        0.9950712321726245
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 288,
+      "lengths": [
+        0.2874470317548517,
+        0.8833410952645554
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 320,
+      "lengths": [
+        0.2576523285793667,
+        0.7939569857381001
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 341.3,
+      "lengths": [
+        0.24091736051976959,
+        0.7437520815593085
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 384,
+      "lengths": [
+        0.21296027381613902,
+        0.6598808214484169
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 426.7,
+      "lengths": [
+        0.19059853561143064,
+        0.592795606834291,
+        0.994992678057151
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 480,
+      "lengths": [
+        0.16826821905290998,
+        0.5258046571587319,
+        0.8833410952645551
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 20.0,
+      "frequency": 512,
+      "lengths": [
+        0.15709520536210295,
+        0.49228561608631166,
+        0.8274760268105203
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 256,
+      "lengths": [
+        0.3216904107242083,
+        0.9920712321726245
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 288,
+      "lengths": [
+        0.2844470317548517,
+        0.8803410952645554
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 320,
+      "lengths": [
+        0.2546523285793667,
+        0.7909569857381001
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 341.3,
+      "lengths": [
+        0.23791736051976958,
+        0.7407520815593085
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 384,
+      "lengths": [
+        0.20996027381613905,
+        0.6568808214484169
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 426.7,
+      "lengths": [
+        0.18759853561143067,
+        0.589795606834291,
+        0.991992678057151
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 480,
+      "lengths": [
+        0.16526821905290998,
+        0.5228046571587319,
+        0.8803410952645551
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 20.0,
+      "frequency": 512,
+      "lengths": [
+        0.15409520536210294,
+        0.48928561608631166,
+        0.8244760268105203
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 256,
+      "lengths": [
+        0.3303595157483881
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 288,
+      "lengths": [
+        0.2924862362207895,
+        0.8984587086623683
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 320,
+      "lengths": [
+        0.26218761259871065,
+        0.8075628377961317
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 341.3,
+      "lengths": [
+        0.2451696045461101,
+        0.7565088136383301
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 384,
+      "lengths": [
+        0.21673967716559234,
+        0.6712190314967766
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 426.7,
+      "lengths": [
+        0.19399973290739916,
+        0.6029991987221973
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 480,
+      "lengths": [
+        0.17129174173247388,
+        0.5348752251974207,
+        0.8984587086623674
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0175,
+      "temperatureC": 30.0,
+      "frequency": 512,
+      "lengths": [
+        0.1599297578741932,
+        0.500789273622581,
+        0.8416487893709698
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 256,
+      "lengths": [
+        0.3273595157483881
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 288,
+      "lengths": [
+        0.2894862362207895,
+        0.8954587086623683
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 320,
+      "lengths": [
+        0.2591876125987106,
+        0.8045628377961317
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 341.3,
+      "lengths": [
+        0.24216960454611008,
+        0.7535088136383302
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 384,
+      "lengths": [
+        0.2137396771655923,
+        0.6682190314967766
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 426.7,
+      "lengths": [
+        0.19099973290739916,
+        0.5999991987221973
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 480,
+      "lengths": [
+        0.1682917417324739,
+        0.5318752251974208,
+        0.8954587086623674
+      ]
+    },
+    {
+      "length": 1.0,
+      "radius": 0.0225,
+      "temperatureC": 30.0,
+      "frequency": 512,
+      "lengths": [
+        0.1569297578741932,
+        0.4977892736225809,
+        0.8386487893709698
+      ]
+    }
+  ],
+  "loudness": [
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.05,
+      "loudness": 0.04137691062369038
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.0875,
+      "loudness": 0.04374940153923598
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.125,
+      "loudness": 0.04775898721997903
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.1625,
+      "loudness": 0.05431370401231237
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.2,
+      "loudness": 0.06545463224031682
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.2375,
+      "loudness": 0.08665646295998157
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.275,
+      "loudness": 0.13872847805066132
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.3125,
+      "loudness": 0.4182745904708422
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.35,
+      "loudness": 0.281828669482489
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.3875,
+      "loudness": 0.10371483684744526
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.425,
+      "loudness": 0.06092034484786399
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.4625,
+      "loudness": 0.05105466123057871
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.5,
+      "loudness": 0.053482403214259414
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.5375,
+      "loudness": 0.05636607616866785
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.575,
+      "loudness": 0.059818653314757164
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.6125,
+      "loudness": 0.06399633387904302
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.65,
+      "loudness": 0.06912099553522363
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.6875,
+      "loudness": 0.07551829082760897
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.725,
+      "loudness": 0.08368572491700906
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.7625,
+      "loudness": 0.09442227052994655
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.8,
+      "loudness": 0.10909552369202301
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.8375,
+      "loudness": 0.13025165669782535
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.875,
+      "loudness": 0.16321252925776647
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.9125,
+      "loudness": 0.22114735663369667
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 256,
+      "airColumn": 0.95,
+      "loudness": 0.3464908582503753
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.05,
+      "loudness": 0.04323721657747723
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.0875,
+      "loudness": 0.04955441780927121
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.125,
+      "loudness": 0.06303441474823729
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.1625,
+      "loudness": 0.09814451064070416
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.2,
+      "loudness": 0.30915147035506535
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.2375,
+      "loudness": 0.18346873470177197
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.275,
+      "loudness": 0.06580696982115171
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.3125,
+      "loudness": 0.05180319413776261
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.35,
+      "loudness": 0.05582910558140558
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.3875,
+      "loudness": 0.06109443762646337
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.425,
+      "loudness": 0.06815238003113012
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.4625,
+      "loudness": 0.07796063702193934
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.5,
+      "loudness": 0.09232783783952608
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.5375,
+      "loudness": 0.11511564342296195
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.575,
+      "loudness": 0.15625163813965065
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.6125,
+      "loudness": 0.2507167916377088
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.65,
+      "loudness": 0.6251123248416429
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.6875,
+      "loudness": 0.5506762427496764
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.725,
+      "loudness": 0.2200551258908205
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.7625,
+      "loudness": 0.13212443810162708
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.8,
+      "loudness": 0.09284682004089645
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.8375,
+      "loudness": 0.09126017918829955
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.875,
+      "loudness": 0.10315416425639821
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.9125,
+      "loudness": 0.11935830970853242
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 384,
+      "airColumn": 0.95,
+      "loudness": 0.14263655307255438
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.05,
+      "loudness": 0.046141230710981064
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.0875,
+      "loudness": 0.06085405199745846
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.125,
+      "loudness": 0.1139539350199624
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.1625,
+      "loudness": 0.5806110797569485
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.2,
+      "loudness": 0.07145039542888075
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.2375,
+      "loudness": 0.052593916626700515
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.275,
+      "loudness": 0.058548695656517144
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.3125,
+      "loudness": 0.06721964272054931
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.35,
+      "loudness": 0.08061246539161827
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.3875,
+      "loudness": 0.10343975993537884
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.425,
+      "loudness": 0.14989882041878821
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.4625,
+      "loudness": 0.2895890127517111
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.5,
+      "loudness": 0.96893110427501
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.5375,
+      "loudness": 0.23760936733621882
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.575,
+      "loudness": 0.12118691576705962
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.6125,
+      "loudness": 0.08689986600797182
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.65,
+      "loudness": 0.10159570567580375
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.6875,
+      "loudness": 0.12369106949704813
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.725,
+      "loudness": 0.1603498217619599
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.7625,
+      "loudness": 0.23207634256538992
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.8,
+      "loudness": 0.4250770633661768
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.8375,
+      "loudness": 0.9997553852932647
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.875,
+      "loudness": 0.40070041754211916
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.9125,
+      "loudness": 0.21064448125936114
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 25.0,
+      "frequency": 512,
+      "airColumn": 0.95,
+      "loudness": 0.13961199079239323
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.05,
+      "loudness": 0.03448105922963588
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.0875,
+      "loudness": 0.03645874911170076
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.125,
+      "loudness": 0.039801411534039724
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.1625,
+      "loudness": 0.04526680270059527
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.2,
+      "loudness": 0.0545594347734879
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.2375,
+      "loudness": 0.07225844410737685
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.275,
+      "loudness": 0.11585041599669177
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.3125,
+      "loudness": 0.3573862317620427
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.35,
+      "loudness": 0.2381614228150692
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.3875,
+      "loudness": 0.08662611068820154
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.425,
+      "loudness": 0.05081464811274818
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.4625,
+      "loudness": 0.0425492238075249
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.5,
+      "loudness": 0.04457358526520786
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.5375,
+      "loudness": 0.04697835903377549
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.575,
+      "loudness": 0.049857919763109576
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.6125,
+      "loudness": 0.05334281090048908
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.65,
+      "loudness": 0.057618575874825634
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.6875,
+      "loudness": 0.0629577530179944
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.725,
+      "loudness": 0.06977715347072692
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.7625,
+      "loudness": 0.07874718941021559
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.8,
+      "loudness": 0.09101804684000259
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.8375,
+      "loudness": 0.10873902726976208
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.875,
+      "loudness": 0.13643163463412292
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.9125,
+      "loudness": 0.18543299252540113
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 256,
+      "airColumn": 0.95,
+      "loudness": 0.2935795786817525
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.05,
+      "loudness": 0.036031784994686865
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.0875,
+      "loudness": 0.04129833855032242
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.125,
+      "loudness": 0.052540349856897275
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.1625,
+      "loudness": 0.08185863134637941
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.2,
+      "loudness": 0.26098672920795557
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.2375,
+      "loudness": 0.15385377904096467
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.275,
+      "loudness": 0.05489749375853411
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.3125,
+      "loudness": 0.043173365857187535
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.35,
+      "loudness": 0.046530544352534425
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.3875,
+      "loudness": 0.050922070803445754
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.425,
+      "loudness": 0.05681032787478982
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.4625,
+      "loudness": 0.06499663743011376
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.5,
+      "loudness": 0.07699682392278792
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.5375,
+      "loudness": 0.0960569783717872
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.575,
+      "loudness": 0.13057370644805227
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.6125,
+      "loudness": 0.21064652229154968
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.65,
+      "loudness": 0.5532207303123278
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.6875,
+      "loudness": 0.48323742420263016
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.725,
+      "loudness": 0.18499656266173645
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.7625,
+      "loudness": 0.11048722875233742
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.8,
+      "loudness": 0.07751829307748052
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.8375,
+      "loudness": 0.07610466015067298
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.875,
+      "loudness": 0.0860476659731146
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.9125,
+      "loudness": 0.09960985644751867
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 384,
+      "airColumn": 0.95,
+      "loudness": 0.11913131172207558
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.05,
+      "loudness": 0.03845269184924423
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.0875,
+      "loudness": 0.05072155699790686
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.125,
+      "loudness": 0.09508439419403805
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.1625,
+      "loudness": 0.5124983662482252
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.2,
+      "loudness": 0.059614463263127374
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.2375,
+      "loudness": 0.04383270437652756
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.275,
+      "loudness": 0.04879868641147952
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.3125,
+      "loudness": 0.05603205523969005
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.35,
+      "loudness": 0.06721073437391885
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.3875,
+      "loudness": 0.086286530362415
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.425,
+      "loudness": 0.12523222188458044
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.4625,
+      "loudness": 0.2440503285736461
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.5,
+      "loudness": 0.9579696602468837
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.5375,
+      "loudness": 0.2000240385594013
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.575,
+      "loudness": 0.10129109747598156
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.6125,
+      "loudness": 0.07246176678157436
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.65,
+      "loudness": 0.08474431301361526
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.6875,
+      "loudness": 0.10323970395854133
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.725,
+      "loudness": 0.13402185586424636
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.7625,
+      "loudness": 0.19473399051833248
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.8,
+      "loudness": 0.3635220021523425
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.8375,
+      "loudness": 0.9997341736202825
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.875,
+      "loudness": 0.3432259656752288
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.9125,
+      "loudness": 0.1769641798726935
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 30.0,
+      "frequency": 512,
+      "airColumn": 0.95,
+      "loudness": 0.11679035760847063
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.05,
+      "loudness": 0.02955534887230444
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.0875,
+      "loudness": 0.03125082904886167
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.125,
+      "loudness": 0.034116661478763854
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.1625,
+      "loudness": 0.038802899332557476
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.2,
+      "loudness": 0.046772422239059995
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.2375,
+      "loudness": 0.061958958899320446
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.275,
+      "loudness": 0.09942676603664798
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.3125,
+      "loudness": 0.31117894381048267
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.35,
+      "loudness": 0.2059049490616561
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.3875,
+      "loudness": 0.0743533690530509
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.425,
+      "loudness": 0.043580118152632616
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.4625,
+      "loudness": 0.0364726618619841
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.5,
+      "loudness": 0.03820847159670414
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.5375,
+      "loudness": 0.04027059206045993
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.575,
+      "loudness": 0.04274003501386565
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.6125,
+      "loudness": 0.04572889026453567
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.65,
+      "loudness": 0.04939652934961134
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.6875,
+      "loudness": 0.053977158452145235
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.725,
+      "loudness": 0.05982919777340318
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.7625,
+      "loudness": 0.06752967647025658
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.8,
+      "loudness": 0.07806994420742734
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.8375,
+      "loudness": 0.09330660968745991
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.875,
+      "loudness": 0.11716071428419461
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.9125,
+      "loudness": 0.159542466657742
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 256,
+      "airColumn": 0.95,
+      "loudness": 0.2542426607475263
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.05,
+      "loudness": 0.030884785727921703
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.0875,
+      "loudness": 0.035400121685719675
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.125,
+      "loudness": 0.04504062068749325
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.1625,
+      "loudness": 0.07020159259155323
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.2,
+      "loudness": 0.2254951615907923
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.2375,
+      "loudness": 0.13238006572219183
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.275,
+      "loudness": 0.04708523011455049
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.3125,
+      "loudness": 0.0370078292871606
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.35,
+      "loudness": 0.039886575494656865
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.3875,
+      "loudness": 0.04365268040993701
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.425,
+      "loudness": 0.04870319245281861
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.4625,
+      "loudness": 0.05572663553282851
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.5,
+      "loudness": 0.06602676825627414
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.5375,
+      "loudness": 0.08240054292985392
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.575,
+      "loudness": 0.11210971942409485
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.6125,
+      "loudness": 0.18145867769134608
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.65,
+      "loudness": 0.4935928822291905
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.6875,
+      "loudness": 0.4285105708208906
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.725,
+      "loudness": 0.1594222839095029
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.7625,
+      "loudness": 0.09490322693549877
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.8,
+      "loudness": 0.06652002192769803
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.8375,
+      "loudness": 0.06526078728124662
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.875,
+      "loudness": 0.07379962526967808
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.9125,
+      "loudness": 0.08545487147661926
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 384,
+      "airColumn": 0.95,
+      "loudness": 0.10225156446301732
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.05,
+      "loudness": 0.03296031141789306
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.0875,
+      "loudness": 0.043480711886724914
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.125,
+      "loudness": 0.08156456419882405
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.1625,
+      "loudness": 0.45638535244090667
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.2,
+      "loudness": 0.05113567431501971
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.2375,
+      "loudness": 0.03757318501967751
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.275,
+      "loudness": 0.04183163695523526
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.3125,
+      "loudness": 0.048035588535678506
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.35,
+      "loudness": 0.05762662866632862
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.3875,
+      "loudness": 0.07400481664724838
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.425,
+      "loudness": 0.10750650111797203
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.4625,
+      "loudness": 0.21063381097164435
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.5,
+      "loudness": 0.9454826880457615
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.5375,
+      "loudness": 0.17251709116473452
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.575,
+      "loudness": 0.08697815070805384
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.6125,
+      "loudness": 0.06213348772621531
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.65,
+      "loudness": 0.07268005904623734
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.6875,
+      "loudness": 0.08857616237315076
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.725,
+      "loudness": 0.11508253190721354
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.7625,
+      "loudness": 0.16761746487328333
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.8,
+      "loudness": 0.3167060789547689
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.8375,
+      "loudness": 0.9997091070200707
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.875,
+      "loudness": 0.29933983441936957
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.9125,
+      "loudness": 0.15243573411315253
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 28.0,
+      "q": 35.0,
+      "frequency": 512,
+      "airColumn": 0.95,
+      "loudness": 0.10033920592844464
+    }
+  ],
+  "standingWave": [
+    {
+      "radius": 0.02,
+      "temperatureC": 20.0,
+      "frequency": 512,
+      "airColumn": 0.15559520536210286,
+      "points": [
+        {
+          "depth": -0.012,
+          "displacement": 0.9999999999999921,
+          "pressure": 1.146721606559708e-13
+        },
+        {
+          "depth": -0.0036202397318948563,
+          "displacement": 0.9969173337331116,
+          "pressure": 0.07845909572795588
+        },
+        {
+          "depth": 0.004759520536210288,
+          "displacement": 0.9876883405951145,
+          "pressure": 0.1564344650403322
+        },
+        {
+          "depth": 0.013139280804315433,
+          "displacement": 0.9723699203976456,
+          "pressure": 0.23344536385600456
+        },
+        {
+          "depth": 0.021519041072420576,
+          "displacement": 0.951056516295119,
+          "pressure": 0.3090169943750333
+        },
+        {
+          "depth": 0.029898801340525718,
+          "displacement": 0.9238795325112455,
+          "pressure": 0.3826834323651725
+        },
+        {
+          "depth": 0.03827856160863087,
+          "displacement": 0.8910065241883259,
+          "pressure": 0.4539904997396165
+        },
+        {
+          "depth": 0.046658321876736006,
+          "displacement": 0.8526401643540457,
+          "pressure": 0.5224985647160143
+        },
+        {
+          "depth": 0.055038082144841155,
+          "displacement": 0.8090169943749016,
+          "pressure": 0.587785252292528
+        },
+        {
+          "depth": 0.06341784241294629,
+          "displacement": 0.7604059655999837,
+          "pressure": 0.6494480483302317
+        },
+        {
+          "depth": 0.07179760268105144,
+          "displacement": 0.7071067811864964,
+          "pressure": 0.7071067811865919
+        },
+        {
+          "depth": 0.08017736294915659,
+          "displacement": 0.6494480483301402,
+          "pressure": 0.7604059656000627
+        },
+        {
+          "depth": 0.08855712321726174,
+          "displacement": 0.5877852522924274,
+          "pressure": 0.8090169943749758
+        },
+        {
+          "depth": 0.09693688348536687,
+          "displacement": 0.5224985647159146,
+          "pressure": 0.8526401643541098
+        },
+        {
+          "depth": 0.10531664375347202,
+          "displacement": 0.4539904997395118,
+          "pressure": 0.8910065241883823
+        },
+        {
+          "depth": 0.11369640402157717,
+          "displacement": 0.3826834323650667,
+          "pressure": 0.9238795325112943
+        },
+        {
+          "depth": 0.1220761642896823,
+          "displacement": 0.3090169943749288,
+          "pressure": 0.9510565162951579
+        },
+        {
+          "depth": 0.13045592455778743,
+          "displacement": 0.23344536385588668,
+          "pressure": 0.9723699203976793
+        },
+        {
+          "depth": 0.13883568482589256,
+          "displacement": 0.15643446504023073,
+          "pressure": 0.9876883405951372
+        },
+        {
+          "depth": 0.1472154450939977,
+          "displacement": 0.07845909572784511,
+          "pressure": 0.9969173337331275
+        },
+        {
+          "depth": 0.15559520536210286,
+          "displacement": -0.0,
+          "pressure": 0.9999999999999996
+        }
+      ]
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 20.0,
+      "frequency": 512,
+      "airColumn": 0.49078561608631177,
+      "points": [
+        {
+          "depth": -0.012,
+          "displacement": -0.9999999999999715,
+          "pressure": -3.065880882502349e-13
+        },
+        {
+          "depth": 0.01313928080431559,
+          "displacement": -0.9723699203975809,
+          "pressure": -0.2334453638561854
+        },
+        {
+          "depth": 0.038278561608631176,
+          "displacement": -0.8910065241882148,
+          "pressure": -0.4539904997397879
+        },
+        {
+          "depth": 0.06341784241294678,
+          "displacement": -0.7604059655998393,
+          "pressure": -0.6494480483303684
+        },
+        {
+          "depth": 0.08855712321726236,
+          "displacement": -0.5877852522922586,
+          "pressure": -0.8090169943750732
+        },
+        {
+          "depth": 0.11369640402157795,
+          "displacement": -0.3826834323648671,
+          "pressure": -0.9238795325113541
+        },
+        {
+          "depth": 0.13883568482589353,
+          "displacement": -0.15643446504001426,
+          "pressure": -0.98768834059515
+        },
+        {
+          "depth": 0.1639749656302091,
+          "displacement": 0.0784590957280404,
+          "pressure": -0.9969173337330919
+        },
+        {
+          "depth": 0.1891142464345247,
+          "displacement": 0.30901699437511965,
+          "pressure": -0.9510565162950766
+        },
+        {
+          "depth": 0.2142535272388403,
+          "displacement": 0.5224985647160901,
+          "pressure": -0.8526401643539829
+        },
+        {
+          "depth": 0.23939280804315588,
+          "displacement": 0.707106781186644,
+          "pressure": -0.707106781186426
+        },
+        {
+          "depth": 0.2645320888474715,
+          "displacement": 0.8526401643541511,
+          "pressure": -0.5224985647158208
+        },
+        {
+          "depth": 0.2896713696517871,
+          "displacement": 0.9510565162951773,
+          "pressure": -0.30901699437482455
+        },
+        {
+          "depth": 0.3148106504561027,
+          "displacement": 0.9969173337331222,
+          "pressure": -0.07845909572773702
+        },
+        {
+          "depth": 0.3399499312604182,
+          "displacement": 0.9876883405951097,
+          "pressure": 0.15643446504032232
+        },
+        {
+          "depth": 0.3650892120647338,
+          "displacement": 0.9238795325112428,
+          "pressure": 0.382683432365163
+        },
+        {
+          "depth": 0.3902284928690494,
+          "displacement": 0.8090169943749,
+          "pressure": 0.5877852522925193
+        },
+        {
+          "depth": 0.415367773673365,
+          "displacement": 0.6494480483301395,
+          "pressure": 0.7604059656000551
+        },
+        {
+          "depth": 0.4405070544776806,
+          "displacement": 0.45399049973951155,
+          "pressure": 0.8910065241883754
+        },
+        {
+          "depth": 0.4656463352819962,
+          "displacement": 0.2334453638558862,
+          "pressure": 0.972369920397673
+        },
+        {
+          "depth": 0.49078561608631177,
+          "displacement": -0.0,
+          "pressure": 0.9999999999999932
+        }
+      ]
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 20.0,
+      "frequency": 320,
+      "airColumn": 0.2561523285793667,
+      "points": [
+        {
+          "depth": -0.012,
+          "displacement": 0.9999999999999845,
+          "pressure": 1.0038497810782503e-13
+        },
+        {
+          "depth": 0.0014076164289683352,
+          "displacement": 0.9969173337331058,
+          "pressure": 0.07845909572793511
+        },
+        {
+          "depth": 0.01481523285793667,
+          "displacement": 0.9876883405951088,
+          "pressure": 0.15643446504031858
+        },
+        {
+          "depth": 0.028222849286905004,
+          "displacement": 0.9723699203976429,
+          "pressure": 0.2334453638559838
+        },
+        {
+          "depth": 0.04163046571587334,
+          "displacement": 0.9510565162951151,
+          "pressure": 0.30901699437502006
+        },
+        {
+          "depth": 0.05503808214484168,
+          "displacement": 0.9238795325112423,
+          "pressure": 0.3826834323651598
+        },
+        {
+          "depth": 0.06844569857381001,
+          "displacement": 0.8910065241883239,
+          "pressure": 0.4539904997396033
+        },
+        {
+          "depth": 0.08185331500277836,
+          "displacement": 0.8526401643540436,
+          "pressure": 0.5224985647160024
+        },
+        {
+          "depth": 0.09526093143174669,
+          "displacement": 0.8090169943749023,
+          "pressure": 0.5877852522925134
+        },
+        {
+          "depth": 0.10866854786071502,
+          "displacement": 0.7604059655999826,
+          "pressure": 0.6494480483302205
+        },
+        {
+          "depth": 0.12207616428968336,
+          "displacement": 0.7071067811865045,
+          "pressure": 0.7071067811865733
+        },
+        {
+          "depth": 0.1354837807186517,
+          "displacement": 0.6494480483301402,
+          "pressure": 0.7604059656000525
+        },
+        {
+          "depth": 0.14889139714762,
+          "displacement": 0.5877852522924322,
+          "pressure": 0.8090169943749628
+        },
+        {
+          "depth": 0.16229901357658835,
+          "displacement": 0.5224985647159149,
+          "pressure": 0.8526401643541
+        },
+        {
+          "depth": 0.1757066300055567,
+          "displacement": 0.4539904997395119,
+          "pressure": 0.8910065241883732
+        },
+        {
+          "depth": 0.189114246434525,
+          "displacement": 0.3826834323650711,
+          "pressure": 0.9238795325112841
+        },
+        {
+          "depth": 0.20252186286349336,
+          "displacement": 0.30901699437492874,
+          "pressure": 0.9510565162951494
+        },
+        {
+          "depth": 0.2159294792924617,
+          "displacement": 0.23344536385590153,
+          "pressure": 0.9723699203976687
+        },
+        {
+          "depth": 0.22933709572143002,
+          "displacement": 0.15643446504023079,
+          "pressure": 0.9876883405951292
+        },
+        {
+          "depth": 0.2427447121503984,
+          "displacement": 0.07845909572784476,
+          "pressure": 0.9969173337331195
+        },
+        {
+          "depth": 0.2561523285793667,
+          "displacement": -0.0,
+          "pressure": 0.9999999999999916
+        }
+      ]
+    },
+    {
+      "radius": 0.02,
+      "temperatureC": 20.0,
+      "frequency": 320,
+      "airColumn": 0.7924569857381001,
+      "points": [
+        {
+          "depth": -0.012,
+          "displacement": -0.9999999999999697,
+          "pressure": -2.9826141556554583e-13
+        },
+        {
+          "depth": 0.028222849286905004,
+          "displacement": -0.9723699203975802,
+          "pressure": -0.23344536385617942
+        },
+        {
+          "depth": 0.06844569857381001,
+          "displacement": -0.891006524188216,
+          "pressure": -0.4539904997397819
+        },
+        {
+          "depth": 0.10866854786071502,
+          "displacement": -0.760405965599844,
+          "pressure": -0.6494480483303607
+        },
+        {
+          "depth": 0.14889139714762,
+          "displacement": -0.5877852522922609,
+          "pressure": -0.8090169943750694
+        },
+        {
+          "depth": 0.189114246434525,
+          "displacement": -0.3826834323648686,
+          "pressure": -0.9238795325113514
+        },
+        {
+          "depth": 0.22933709572143002,
+          "displacement": -0.15643446504002476,
+          "pressure": -0.9876883405951469
+        },
+        {
+          "depth": 0.269559945008335,
+          "displacement": 0.07845909572803743,
+          "pressure": -0.9969173337330903
+        },
+        {
+          "depth": 0.30978279429524,
+          "displacement": 0.30901699437511704,
+          "pressure": -0.9510565162950756
+        },
+        {
+          "depth": 0.35000564358214503,
+          "displacement": 0.5224985647160793,
+          "pressure": -0.8526401643539884
+        },
+        {
+          "depth": 0.39022849286905004,
+          "displacement": 0.707106781186641,
+          "pressure": -0.7071067811864266
+        },
+        {
+          "depth": 0.4304513421559551,
+          "displacement": 0.8526401643541495,
+          "pressure": -0.5224985647158205
+        },
+        {
+          "depth": 0.47067419144286005,
+          "displacement": 0.9510565162951743,
+          "pressure": -0.3090169943748293
+        },
+        {
+          "depth": 0.510897040729765,
+          "displacement": 0.9969173337331204,
+          "pressure": -0.07845909572774404
+        },
+        {
+          "depth": 0.55111989001667,
+          "displacement": 0.987688340595109,
+          "pressure": 0.15643446504031863
+        },
+        {
+          "depth": 0.5913427393035751,
+          "displacement": 0.9238795325112426,
+          "pressure": 0.38268343236515984
+        },
+        {
+          "depth": 0.6315655885904801,
+          "displacement": 0.8090169943749024,
+          "pressure": 0.5877852522925137
+        },
+        {
+          "depth": 0.6717884378773851,
+          "displacement": 0.6494480483301404,
+          "pressure": 0.7604059656000527
+        },
+        {
+          "depth": 0.7120112871642901,
+          "displacement": 0.453990499739512,
+          "pressure": 0.8910065241883734
+        },
+        {
+          "depth": 0.7522341364511951,
+          "displacement": 0.2334453638559016,
+          "pressure": 0.9723699203976689
+        },
+        {
+          "depth": 0.7924569857381001,
+          "displacement": -0.0,
+          "pressure": 0.9999999999999918
+        }
+      ]
+    }
+  ]
+}

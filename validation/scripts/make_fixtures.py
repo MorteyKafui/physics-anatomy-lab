@@ -11,6 +11,7 @@ student_t.json Student's t CDF and quantiles (SciPy)      read by packages/analy
 outliers.json  Bonferroni outlier test (hat matrix)       read by packages/analysis
 review.json    the review's effects and the right way     read by packages/experiments
 diffraction.json  N-slit far field (SciPy quad over openings)  read by packages/physics
+resonance-tube.json  resonance tube (shooting the wave equation)  read by packages/physics
 """
 
 import itertools
@@ -42,6 +43,8 @@ from pa_validation.mixtures import final_temperature, solid_specific_heat
 from pa_validation.model_check import model_check, x_intercept
 from pa_validation.outliers import critical_value, deleted_residuals, find_outlier
 from pa_validation.pendulum import period_exact, period_small_angle
+from pa_validation.resonance_tube import air_at, resonance_lengths, speed_of_sound
+from pa_validation.resonance_tube import loudness as tube_loudness
 from pa_validation.review import reading_error_percent, right_way
 from pa_validation.sigfigs import format_sig_figs, parse_figure
 from pa_validation.uncertainty import intercept_sum, quoted, worst_case, worst_lines
@@ -798,6 +801,65 @@ def build_diffraction() -> dict[str, object]:
     }
 
 
+def build_resonance_tube() -> dict[str, object]:
+    """The school forks in a 1 m tube at four room temperatures and two bores; the loudness near
+    and between resonances; and the air along the column at the first two resonances."""
+    forks = [256, 288, 320, 341.3, 384, 426.7, 480, 512]
+    temperatures = [0.0, 20.0, 28.0, 35.0]
+    speed = [{"temperatureC": t, "speed": speed_of_sound(t)} for t in [-10.0, *temperatures, 50.0]]
+    resonances = [
+        {
+            "length": 1.0,
+            "radius": r,
+            "temperatureC": t,
+            "frequency": f,
+            "lengths": resonance_lengths(1.0, r, t, f),
+        }
+        for t in (20.0, 30.0)
+        for r in (0.0175, 0.0225)
+        for f in forks
+    ]
+    loud = []
+    for q in (25.0, 30.0, 35.0):
+        for f in (256, 384, 512):
+            for i in range(25):
+                air = round(0.05 + 0.0375 * i, 4)
+                loud.append(
+                    {
+                        "radius": 0.02,
+                        "temperatureC": 28.0,
+                        "q": q,
+                        "frequency": f,
+                        "airColumn": air,
+                        "loudness": tube_loudness(0.02, 28.0, q, air, f),
+                    }
+                )
+    standing = []
+    for f, n in ((512, 1), (512, 2), (320, 1), (320, 2)):
+        air = resonance_lengths(1.0, 0.02, 20.0, f)[n - 1]
+        depths = [-0.012 + (air + 0.012) * j / 20 for j in range(21)]
+        points = []
+        for d in depths:
+            disp, pres = air_at(0.02, 20.0, air, f, d)
+            points.append({"depth": d, "displacement": disp, "pressure": pres})
+        standing.append(
+            {
+                "radius": 0.02,
+                "temperatureC": 20.0,
+                "frequency": f,
+                "airColumn": air,
+                "points": points,
+            }
+        )
+    return {
+        "model": "adiabatic ideal gas; p'' = -k^2 p shot with DOP853 and brentq; 2x2 driven modes",
+        "speed": speed,
+        "resonances": resonances,
+        "loudness": loud,
+        "standingWave": standing,
+    }
+
+
 def write(name: str, data: dict[str, object]) -> None:
     out = FIXTURES / name
     out.parent.mkdir(exist_ok=True)
@@ -824,3 +886,4 @@ if __name__ == "__main__":
     write("model-check.json", build_model_check())
     write("uncertainty.json", build_uncertainty())
     write("diffraction.json", build_diffraction())
+    write("resonance-tube.json", build_resonance_tube())
