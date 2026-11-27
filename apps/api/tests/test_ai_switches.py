@@ -127,13 +127,17 @@ async def test_the_ai_page_counts_requests_spend_the_cache_and_held_replies(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(get_settings(), "ai_daily_budget_usd", 0.01)
+    # Today's rows sit between midnight UTC and now, in order, so they count as today at any
+    # time of day (even a few seconds after midnight), and none is in the future.
     now = datetime.now(UTC)
+    start = midnight(now)
+    since = now - start
     rows = [
-        ("tutor", "done", 4000, now - timedelta(minutes=30)),
-        ("tutor", "held", 3000, now - timedelta(minutes=20)),
-        ("tutor", "cached", 0, now - timedelta(minutes=10)),
-        ("report-review", "done", 5000, now - timedelta(minutes=5)),
-        ("what-if", "done", 2000, midnight() - timedelta(hours=1)),  # yesterday
+        ("tutor", "done", 4000, start + since * 1 / 5),
+        ("tutor", "held", 3000, start + since * 2 / 5),
+        ("tutor", "cached", 0, start + since * 3 / 5),
+        ("report-review", "done", 5000, start + since * 4 / 5),
+        ("what-if", "done", 2000, start - timedelta(hours=1)),  # yesterday
     ]
     for feature, outcome, cost, at in rows:
         db.add(
@@ -166,6 +170,6 @@ async def test_the_ai_page_counts_requests_spend_the_cache_and_held_replies(
     week = {f["feature"]: f["requests"] for f in page["by_feature"]}
     assert week == {"tutor": 3, "what-if": 1, "report-review": 1, "question-drafting": 0}
     assert page["budget_microdollars"] == 10_000
-    # 4000 + 3000 + 0 + 5000 passes 10,000 with the report review, five minutes ago.
+    # 4000 + 3000 + 0 + 5000 passes 10,000 with the report review, the last of today's rows.
     reached = datetime.fromisoformat(page["budget_reached_at"])
     assert abs((reached - rows[3][3]).total_seconds()) < 1
