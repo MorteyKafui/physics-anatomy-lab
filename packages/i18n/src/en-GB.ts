@@ -783,6 +783,7 @@ export const enGB = {
   "lab.audio.voice": "Voice",
   "lab.audio.voiceAuto": "Chosen for you",
   "lab.audio.countAlong": "Count along while timing",
+  "lab.audio.readAloud": "Read aloud",
   "lab.audio.countVolume": "Count-along volume",
   "lab.audio.soundsVolume": "Lab sounds",
   "lab.audio.caption": "What the coach says",

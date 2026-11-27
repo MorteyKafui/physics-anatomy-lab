@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing page: simulations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+.pa-focus:focus-visible{outline:2px solid #F0482A;outline-offset:3px}
+.ls-row{display:flex;flex-wrap:wrap;gap:56px;align-items:center}
+.ls-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.ls-cards{grid-template-columns:minmax(0,1fr)}}
+.ls-slot{width:100%;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;border:1px dashed #2E6E68;color:#8ED8D0;font:500 13px 'Geist Mono',monospace;text-align:center;padding:24px;box-sizing:border-box;background:#111111}
+.ls-mini{aspect-ratio:4/3}
+.ls-note{border-left:3px solid #2EC4B6;padding:10px 14px;background:#121212;color:#C9C6BF;font-size:14px}
+</style>
+</helmet>
+<div style="background: #0D0D0D; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 16px; line-height: 1.5">
+
+<!-- 1. What changes above the fold: one word in the header, one line and one button in the hero. -->
+<section aria-label="Header and hero changes" style="max-width: 1280px; margin: 0 auto; padding: 40px 32px; display: flex; flex-direction: column; gap: 16px">
+  <p class="ls-note">Changes to the approved landing page (Landing.dc.html). Everything else on it stays as it is.</p>
+  <div style="display: flex; align-items: center; gap: 4px; font-size: 15px; border-bottom: 1px solid #262624; padding-bottom: 12px">
+    <span style="padding: 8px 12px; color: #C9C6BF">Practicals</span>
+    <span style="padding: 8px 12px; color: #F2F0EA; box-shadow: inset 0 -2px 0 #2EC4B6">Simulations</span>
+    <span style="padding: 8px 12px; color: #C9C6BF">About</span>
+    <span style="margin-left: 12px; font-size: 13px; color: #8C8A84">Header: Simulations joins the main navigation, here and on every page</span>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 14px; max-width: 620px">
+    <p style="margin: 0; font-size: 19px; color: #C9C6BF">Build real experiments piece by piece, take your own readings, and get coached the moment something goes wrong. Or open a simulation and play with the physics. A full physics lab in your browser, open to anyone.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px">
+      <span style="background: #F0482A; color: #0D0D0D; padding: 12px 16px; font-weight: 600">Open the pendulum lab</span>
+      <span style="border: 1px solid #3A3936; padding: 12px 16px; font-weight: 600">Explore the simulations</span>
+    </div>
+    <span style="font-size: 13px; color: #8C8A84">Hero: the lead gains one sentence, and "Explore the simulations" replaces "See how it works", which the next section already answers as the page scrolls.</span>
+  </div>
+</section>
+
+<!-- 2. The new section, after "the coach in action" and before the features grid. -->
+<section id="simulations" aria-labelledby="sims-h" style="border-top: 1px solid #262624; background: linear-gradient(180deg, rgba(46,196,182,.10), rgba(46,196,182,0) 60%)">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 104px 32px; display: flex; flex-direction: column; gap: 48px">
+    <div class="ls-row">
+      <div style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+        <span style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #8ED8D0"><span style="width: 9px; height: 9px; background: #2EC4B6"></span>Simulations</span>
+        <h2 id="sims-h" style="margin: 0; font: 800 clamp(36px, 4.6vw, 60px)/0.98 'Bricolage Grotesque', sans-serif; letter-spacing: -0.03em">Or just play with<br>the physics.</h2>
+        <p style="margin: 0; font-size: 18px; color: #C9C6BF; max-width: 520px">Not every question needs a practical. Open a simulation, move anything, and watch the physics answer: on apparatus that looks like the real thing, with the sound it really makes.</p>
+        <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+          <li style="display: flex; gap: 12px"><b style="flex: none; width: 150px; font-weight: 600">Real apparatus</b><span style="color: #C9C6BF">A sonometer, a resonance tube, a flask, drawn part by part as you'd find them in a school lab.</span></li>
+          <li style="display: flex; gap: 12px"><b style="flex: none; width: 150px; font-weight: 600">See the invisible</b><span style="color: #C9C6BF">Slow time down a thousand times and watch the standing wave on a wire, or the air moving in a tube.</span></li>
+          <li style="display: flex; gap: 12px"><b style="flex: none; width: 150px; font-weight: 600">Hear it</b><span style="color: #C9C6BF">Every change sounds as it would in the lab: the note climbs as the wire tightens.</span></li>
+          <li style="display: flex; gap: 12px"><b style="flex: none; width: 150px; font-weight: 600">Nothing marked</b><span style="color: #C9C6BF">No steps and no score. When you want the marked version, the practicals are a click away.</span></li>
+        </ul>
+        <div><span style="display: inline-block; background: #2EC4B6; color: #0D0D0D; padding: 12px 16px; font-weight: 600">Open the simulations</span></div>
+      </div>
+
+      <!-- A live simulation, in the page: one slider, real sound. -->
+      <figure style="flex: 1 1 560px; min-width: 0; margin: 0; border: 1px solid #262624; background: #131313">
+        <img src="./screens/simulations/sonometer-dark.png" alt="The Anatomy figure of a sonometer: a hollow sounding box with two sound holes and a metre scale, a hitch pin, fixed and wedge bridges, the steel wire with a paper rider, a pulley with a hanger of slotted masses, and a tuning fork" style="width:100%;display:block;background:#0B0B0B;object-fit:contain;height:auto">
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-top: 1px solid #262624">
+          <div style="display: flex; justify-content: space-between; font-size: 14px; color: #C9C6BF"><span>Length between the bridges</span><span style="font-family: 'Geist Mono', monospace; color: #F2F0EA">39.0 cm</span></div>
+          <input type="range" min="10" max="90" step="0.1" value="39.0" aria-label="Length between the bridges" style="accent-color: #2EC4B6">
+          <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px"><span style="color: #8C8A84">Sound plays only after you touch the slider</span><span style="font-family: 'Geist Mono', monospace">f₁ = 256.1 Hz · v = 199.7 m/s</span></div>
+        </div>
+      </figure>
+    </div>
+
+    <!-- The three simulations, as on the Simulations page, smaller. -->
+    <div class="ls-cards">
+      <a class="pa-focus" href="/simulations/vibrating-string" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; border: 1px solid #262624; background: #121212">
+        <img src="./screens/simulations/sonometer-dark.png" alt="The Anatomy figure of a sonometer: a hollow sounding box with two sound holes and a metre scale, a hitch pin, fixed and wedge bridges, the steel wire with a paper rider, a pulley with a hanger of slotted masses, and a tuning fork" style="width:100%;display:block;background:#0B0B0B;object-fit:contain;aspect-ratio:4/3">
+        <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 4px"><b style="font: 700 19px 'Bricolage Grotesque', sans-serif">Vibrating string</b><span style="color: #C9C6BF; font-size: 14px">Tighten the wire, hear the note climb.</span></div>
+      </a>
+      <a class="pa-focus" href="/simulations/resonance-tube" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; border: 1px solid #262624; background: #121212">
+        <img src="./screens/simulations/resonance-tube-dark.png" alt="The Anatomy figure of a resonance tube: a 1 m glass tube clamped to a retort stand beside a metre rule, a reservoir on a ring joined by rubber tubing, a tuning fork over the mouth and a thermometer" style="width:100%;display:block;background:#0B0B0B;object-fit:contain;aspect-ratio:4/3">
+        <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 4px"><b style="font: 700 19px 'Bricolage Grotesque', sans-serif">Resonance tube</b><span style="color: #C9C6BF; font-size: 14px">Find where the air in the tube booms: at 15.8 cm for a 512 Hz fork.</span></div>
+      </a>
+      <a class="pa-focus" href="/simulations/helmholtz-resonator" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; border: 1px solid #262624; background: #121212">
+        <img src="./screens/simulations/helmholtz-dark.png" alt="The Anatomy figure of a Helmholtz resonator: a round-bottom flask with water on a cork ring, held at the neck by a clamp, a loudspeaker above the mouth, a sound-level meter, a signal generator and a measuring cylinder" style="width:100%;display:block;background:#0B0B0B;object-fit:contain;aspect-ratio:4/3">
+        <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 4px"><b style="font: 700 19px 'Bricolage Grotesque', sans-serif">Singing flask</b><span style="color: #C9C6BF; font-size: 14px">Add water and the flask's note climbs.</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Footer and topic menus. -->
+<section aria-label="Other changes" style="max-width: 1280px; margin: 0 auto; padding: 32px; display: flex; flex-direction: column; gap: 10px">
+  <p class="ls-note">Footer: a Simulations link beside Practicals. Topic menus: Waves and sound lists the three simulations under a "Simulations" heading instead of "Coming soon"; other topics list theirs once they have any.</p>
+  <p class="ls-note">Every number shown comes from the simulation's model in packages/physics (30 SWG steel under a 2.5 kg load; air at 28 °C with a 512 Hz fork; 150 cm³ of water in the flask, leaving 400 cm³ of air).</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1700}}'>
+// Static board. The figure slots take the three Anatomy figures from their pull requests before
+// this board goes for approval.
+</script>
+</body>
+</html>

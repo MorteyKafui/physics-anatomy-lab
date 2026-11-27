@@ -508,6 +508,7 @@ One token set serves two surfaces: a dark, instrument-like lab and a warm, light
 - **Labels in sentence case.** No all-caps labels or monospace eyebrow text; monospace is kept for numbers, units and codes.
 - **Graphs download in colour or black and white.** See Colour graphs below.
 - **Public site layout.** A sticky header that becomes a floating bar on scroll, a centred hero with an outlined second line, live experiment cards in the isometric style, teacher sign-up beside the student class-code join, and a large-type footer with a live status light.
+- **Real apparatus, real look.** Every apparatus, instrument and material in every practical is drawn with the Anatomy kit to look like the real object in a school lab: a retort stand with its base, rod, boss head and clamp; a potentiometer wire on its board with brass strips and a metre scale; a dry cell, plug key, rheostat, and meters with real scales. A Labels switch names every part with a leader line and the lettered key. Every part opens a card with its real look, an exploded view, what it does, how to handle it, its least count and its diagram symbol. No practical ships with flat boxes or letters standing in for apparatus.
 
 **Tokens (starting values, tuned in Phase 0).**
 
@@ -859,6 +860,47 @@ Decided by Mortey on 26 November 2026, ahead of a local presentation. The lab is
 - [x] Lab shell from its board; unbuilt steps hidden
 - [x] Reading pages, 404 and offline
 
+### Phase 8: A real lab for the first six practicals (before going live)
+
+Decided by Mortey on 26 November 2026, after he could not finish any of the six. The bar: someone who knows no physics finishes each practical from Question to Report on the Auto help level, guided all the way, and feels they worked with real apparatus in a real lab. Plan: `docs/planning/lab-overhaul-plan.md`; boards: pull request 155.
+
+- [x] Install the anatomy skill for the project, pinned in `skills-lock.json`
+- [x] One lab frame for all six practicals: the same settings, spoken coach, captions and Read aloud in each (pull request 154)
+- [ ] Snapshots, reset, step back, pause and speed in every practical, not only the pendulum
+- [ ] Boards approved: labelled bench, part card, apparatus shelf, coach on the bench, skill drill, precise controls
+- [ ] Every apparatus redrawn with the Anatomy kit to look like the real object, with a Labels switch and the lettered key, for all six practicals
+- [ ] The same Anatomy figures everywhere a practical appears: the practical cards, the hero bench, the landing page's demos (live and interactive, built from the Anatomy kit's models), the reports and the print sheets. One figure per part, drawn once in packages/apparatus
+- [ ] The landing hero's bench shows the first three practicals: simple pendulum, Ohm's law and the converging lens
+- [ ] Part cards and Meet the apparatus: real look, exploded view, purpose, handling, least count and diagram symbol; the diagram and the bench highlight each other
+- [ ] Pick the apparatus from a shelf that also holds things the practical does not need
+- [ ] A coach that unsticks: the next part lit, a wrong action marked at once with the reason beside the bench, Show me, and Fix it for me after two tries; no dead ends
+- [ ] Guided measuring: the coach names the next reading; the table opens from the first reading and fills one row per value
+- [ ] Precise controls: a typed value, ±0.1 and ±1 buttons, arrow keys, snapping to the least count
+- [ ] Skill drills before first use: reading a meter, a metre rule without parallax, a thermometer, a stopwatch
+- [ ] Moved out of the practicals: exploration in the style of PhET and oPhysics now has its own area, Simulations (Phase 9)
+- [ ] Real-lab feel in all six: lab sounds, needle jitter, a working stopwatch, safe failures the coach explains
+- [ ] Proof: an automated beginner run per practical from Question to Report on Auto, as a CI gate; each procedure checked against the WASSCE guide and lab manual
+- [ ] Five people who know no physics complete each practical unaided
+
+### Phase 9: Simulations, beside the practicals (before going live)
+
+Decided by Mortey on 26 November 2026. Physics Anatomy has two areas: **Practicals**, where a student performs a marked practical step by step, and **Simulations**, where anyone explores the physics freely, as in PhET and oPhysics. Simulations start with three on waves and sound, taken from Physics Bench's models and rebuilt here; more follow after launch. Each one is a real-world simulation: real apparatus drawn with the Anatomy kit, real sounds, and the hidden physics made visible on top of it. Decision record 0049.
+
+| Simulation | What you change | What you see and hear |
+| --- | --- | --- |
+| Vibrating string (sonometer) | Load on the hanger, distance between the bridges, the wire, the harmonic | The wire's standing wave in slow motion, nodes and antinodes, the paper rider thrown at resonance, the note it plays; f, v and ? live |
+| Resonance tube | Water level, tuning fork, room temperature | The air column's standing wave drawn over the glass, the sound swelling at each resonance, the end correction; the first and second resonance lengths |
+| Helmholtz resonator | Water in the flask, the signal generator's frequency | The plug of air bouncing in the neck on the spring of air in the bulb, the loudness peak at resonance; f against the air volume |
+
+- [x] Decision record 0049 and this plan item
+- [x] Boards approved: the Simulations page, a simulation screen, and the landing page's Simulations section
+- [ ] Physics models for the three, tested against the analytic results and the independent Python models, with a physics reviewer's approval
+- [ ] Apparatus drawn with the Anatomy kit: sonometer, slotted masses and hanger, paper rider, tuning forks, resonance tube and reservoir, round-bottom flask, signal generator and loudspeaker
+- [ ] The simulation screen, shared by all simulations: the bench, sliders with typed values, play, pause and slow motion, layers that show the hidden physics, live readouts and graph, sound, a snapshot, and a link to the related practical
+- [ ] The three simulations built on it
+- [ ] The Simulations page, the header's Simulations link, and simulations in the topic menus (Waves and sound)
+- [ ] The landing page tells and shows the Simulations area: a section with a live simulation and the three cards
+- [ ] Offline, keyboard, screen reader and phone checks; end-to-end tests for each simulation
 ## Also needed: gaps found in the final review
 
 A last pass over the plan, reading it as a student, a school, a lawyer and an on-call engineer, found fourteen things a launch needs that no section owned yet. Each now has a home.

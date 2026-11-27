@@ -11,6 +11,12 @@ import { tint } from "./pendulum-bars";
 import { PRACTICALS, practicalShort, useChosenPractical, type PracticalId } from "./practicals";
 import { stillPage } from "./use-lite";
 
+/**
+ * The practicals the hero's bench tours: the first three (Mortey, 26 November 2026), so the tabs fit
+ * one row. The other three are a click away on the practicals page and in the orange band.
+ */
+const HERO_PRACTICALS = PRACTICALS.slice(0, 3);
+
 /** Lite mode and reduced motion are fixed for the page's life: nothing to subscribe to. */
 const noSubscription = () => () => {};
 
@@ -86,7 +92,7 @@ export function HeroBench({ data, stages }: { data: CardsData; stages: BenchStag
   useEffect(() => {
     if (!touring || held || still) return;
     const timer = setTimeout(() => {
-      choose((index + 1) % PRACTICALS.length);
+      choose((index + 1) % HERO_PRACTICALS.length);
       setTip(null);
     }, TOUR_MS);
     return () => clearTimeout(timer);
@@ -147,9 +153,9 @@ export function HeroBench({ data, stages }: { data: CardsData; stages: BenchStag
       <div
         role="tablist"
         aria-label={t("landing.bench.label")}
-        className="grid grid-cols-2 border-b border-[var(--pa-ink-800)] sm:grid-cols-3"
+        className="grid grid-cols-3 border-b border-[var(--pa-ink-800)]"
       >
-        {PRACTICALS.map((p, i) => {
+        {HERO_PRACTICALS.map((p, i) => {
           const on = i === index;
           return (
             <button
@@ -165,9 +171,9 @@ export function HeroBench({ data, stages }: { data: CardsData; stages: BenchStag
                 const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
                 if (!step) return;
                 e.preventDefault();
-                const next = (i + step + PRACTICALS.length) % PRACTICALS.length;
+                const next = (i + step + HERO_PRACTICALS.length) % HERO_PRACTICALS.length;
                 pick(next);
-                document.getElementById(`bench-tab-${PRACTICALS[next]!.id}`)?.focus();
+                document.getElementById(`bench-tab-${HERO_PRACTICALS[next]!.id}`)?.focus();
               }}
               className={`flex items-center gap-2 border-b border-r border-[var(--pa-ink-800)] px-3.5 py-3 text-left text-sm ${focus} ${
                 on

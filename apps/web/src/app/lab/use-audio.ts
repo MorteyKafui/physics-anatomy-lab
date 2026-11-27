@@ -98,10 +98,12 @@ export function useAudio() {
     if (s.on) tools.current?.sounds.play(which, s.soundsVolume);
   }, []);
 
-  const update = useCallback(
-    (change: Partial<AudioSettings>) => setSettings((s) => ({ ...s, ...change })),
-    [],
-  );
+  // The new settings count at once, not after the next render's effects: the lab frame speaks
+  // from its own effect, which runs before this hook's (a child's effects run first).
+  const update = useCallback((change: Partial<AudioSettings>) => {
+    current.current = { ...current.current, ...change };
+    setSettings((s) => ({ ...s, ...change }));
+  }, []);
 
   return { settings, update, say, read, count, sound, caption, voices, canSpeak };
 }
