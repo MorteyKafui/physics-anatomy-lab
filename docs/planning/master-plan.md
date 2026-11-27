@@ -894,8 +894,8 @@ Decided by Mortey on 26 November 2026. Physics Anatomy has two areas: **Practica
 
 - [x] Decision record 0049 and this plan item
 - [x] Boards approved: the Simulations page, a simulation screen, and the landing page's Simulations section
-- [ ] Physics models for the three, tested against the analytic results and the independent Python models, with a physics reviewer's approval
-- [ ] Apparatus drawn with the Anatomy kit: sonometer, slotted masses and hanger, paper rider, tuning forks, resonance tube and reservoir, round-bottom flask, signal generator and loudspeaker
+- [ ] Physics models for the three, tested against the analytic results and the independent Python models, with a physics reviewer's approval (built and merged in pull requests 159, 160 and 161 on 27 November 2026; the physics reviewer's approval is still to come)
+- [x] Apparatus drawn with the Anatomy kit: sonometer, slotted masses and hanger, paper rider, tuning forks, resonance tube and reservoir, round-bottom flask, signal generator and loudspeaker
 - [ ] The simulation screen, shared by all simulations: the bench, sliders with typed values, play, pause and slow motion, layers that show the hidden physics, live readouts and graph, sound, a snapshot, and a link to the related practical
 - [ ] The three simulations built on it
 - [ ] The Simulations page, the header's Simulations link, and simulations in the topic menus (Waves and sound)
