@@ -11,6 +11,8 @@ os.environ["ENVIRONMENT"] = "test"
 os.environ["ACCOUNTS_ENABLED"] = "true"
 
 from collections.abc import AsyncIterator, Iterator
+from datetime import UTC, datetime, time, tzinfo
+from typing import Self
 
 import pytest
 from alembic import command
@@ -20,6 +22,7 @@ from pydantic import SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from app.ai import quotas
 from app.ai.answers import get_answer_store
 from app.ai.claude import get_claude
 from app.ai.log import get_ai_log
@@ -107,6 +110,24 @@ def ai_on(monkeypatch: pytest.MonkeyPatch) -> None:
     settings = get_settings()
     monkeypatch.setattr(settings, "ai_enabled", True)
     monkeypatch.setattr(settings, "anthropic_api_key", SecretStr(TEST_KEY))
+
+
+@pytest.fixture(params=[time(0, 5), time(12, 0)], ids=["at-00:05", "at-12:00"])
+def ai_clock(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> datetime:
+    """Freezes the AI quotas' clock (app/ai/quotas.py) at a time today, UTC, and returns it.
+
+    AI use is counted from midnight UTC, so a test that runs just after midnight must still pass:
+    each test that takes this runs twice, five minutes after midnight and at noon.
+    """
+    at = datetime.combine(datetime.now(UTC).date(), request.param, tzinfo=UTC)
+
+    class Frozen(datetime):
+        @classmethod
+        def now(cls, tz: tzinfo | None = None) -> Self:
+            return cls.fromtimestamp(at.timestamp(), tz)
+
+    monkeypatch.setattr(quotas, "datetime", Frozen)
+    return at
 
 
 @pytest.fixture
