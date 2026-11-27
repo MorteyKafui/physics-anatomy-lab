@@ -39,9 +39,9 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Landing page, revised              | `Landing.dc.html`            | approved 2026-11-26    | `apps/web` `/`                                             |
 | Practicals page                    | `Practicals.dc.html`         | approved 2026-11-26    | `apps/web` `/experiments`                                  |
 | Lab, revised                       | `LabOpen.dc.html`            | draft for approval     | `apps/web` lab                                             |
-| Simulations page                   | `Simulations.dc.html`        | draft for approval     | `apps/web` `/simulations`                                  |
-| Simulation screen                  | `Simulation.dc.html`         | draft for approval     | `apps/web` `/simulations/<id>`                             |
-| Landing page, simulations          | `LandingSimulations.dc.html` | draft for approval     | `apps/web` `/`, header, footer, topic menus                |
+| Simulations page                   | `Simulations.dc.html`        | approved 2026-11-27    | `apps/web` `/simulations`                                  |
+| Simulation screen                  | `Simulation.dc.html`         | approved 2026-11-27    | `apps/web` `/simulations/<id>`                             |
+| Landing page, simulations          | `LandingSimulations.dc.html` | approved 2026-11-27    | `apps/web` `/`, header, footer, topic menus                |
 
 The `.dc.html` files are the source: open them on the canvas to see every state and interaction.
 The screenshots were taken without web fonts, so type looks slightly different; the canvas is
