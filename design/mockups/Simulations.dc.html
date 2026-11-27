@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulations page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+.pa-focus:focus-visible{outline:2px solid #F0482A;outline-offset:3px}
+.sm-navd{display:flex}.sm-menub{display:none}
+@media (max-width:820px){.sm-navd{display:none}.sm-menub{display:inline-flex}}
+.sm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:980px){.sm-grid{grid-template-columns:minmax(0,1fr)}}
+.sm-card{display:flex;flex-direction:column;background:#FFFFFF;min-width:0}
+.sm-two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media (max-width:820px){.sm-two{grid-template-columns:minmax(0,1fr)}}
+.sm-slot{position:relative;width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;border:1px dashed #9FDCD6;color:#2F5D59;font:500 13px 'Geist Mono',monospace;text-align:center;padding:16px;box-sizing:border-box}
+@keyframes smString{0%,100%{d:path("M24 60 Q 112 36 200 60")}50%{d:path("M24 60 Q 112 84 200 60")}}
+.sm-wave{animation:smString .9s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.sm-wave{animation:none}}
+</style>
+</helmet>
+<div style="background: #FBFBF6; color: #141414; font-family: Geist, system-ui, sans-serif; font-size: 16px; line-height: 1.5">
+
+<!-- Header: as on the practicals page, with Simulations added to the main navigation. -->
+<header style="background: #0D0D0D; color: #F2F0EA">
+  <div style="max-width: 1280px; margin: 0 auto; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+    <a class="pa-focus" href="/" aria-label="Physics Anatomy, home" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #F2F0EA"><svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M44 148 V16 H92 A40 40 0 0 1 92 96 H44" fill="none" stroke="#F2F0EA" stroke-width="18"></path><line x1="84" y1="26" x2="98" y2="60" stroke="#F2F0EA" stroke-width="5"></line><circle cx="100" cy="68" r="12" fill="#F0482A"></circle></svg><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px">Physics Anatomy</span></a>
+    <nav class="sm-navd" aria-label="Main" style="gap: 4px; font-size: 15px">
+      <a class="pa-focus" href="/experiments" style="color: #C9C6BF; text-decoration: none; padding: 8px 12px">Practicals</a>
+      <a class="pa-focus" href="/simulations" aria-current="page" style="color: #F2F0EA; text-decoration: none; padding: 8px 12px; box-shadow: inset 0 -2px 0 #F0482A">Simulations</a>
+      <a class="pa-focus" href="/about" style="color: #C9C6BF; text-decoration: none; padding: 8px 12px">About</a>
+    </nav>
+    <a class="pa-focus" href="/lab/simple-pendulum" style="background: #F0482A; color: #0D0D0D; text-decoration: none; padding: 9px 14px; font-size: 15px; font-weight: 600">Open the lab</a>
+  </div>
+  <div style="max-width: 1280px; margin: 0 auto; padding: 8px 32px; border-top: 1px solid #2E2D2B; font-size: 14px; color: #C9C6BF">
+    Topic menus as today. Each topic's menu now lists its practicals, then its simulations under a "Simulations" heading. Waves and sound lists the three below instead of "Coming soon".
+  </div>
+</header>
+
+<main style="max-width: 1280px; margin: 0 auto; padding: 72px 32px 104px; display: flex; flex-direction: column; gap: 32px">
+  <div style="display: flex; flex-wrap: wrap; gap: 20px 48px; align-items: flex-end; justify-content: space-between">
+    <div style="display: flex; flex-direction: column; gap: 14px; max-width: 640px">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(44px, 6vw, 80px); line-height: 0.92; letter-spacing: -0.035em">Simulations</h1>
+      <p style="margin: 0; font-size: 19px; color: #3D3B37">Change one thing and watch the physics answer. Real apparatus, real sound, and the hidden physics drawn on top. No steps and no marks: play for as long as you like.</p>
+    </div>
+    <div role="group" aria-label="Filter by topic" style="display: flex; flex-wrap: wrap; gap: 6px">
+      <button class="pa-focus" type="button" aria-pressed="true" style="background: #141414; color: #FBFBF6; border: 1px solid #141414; padding: 7px 12px; font: 500 14px Geist, sans-serif">All <span style="font-family: 'Geist Mono', monospace; font-size: 12px; opacity: .7">3</span></button>
+      <button class="pa-focus" type="button" aria-pressed="false" style="display: flex; align-items: center; gap: 7px; background: #FFFFFF; color: #141414; border: 1px solid #E6E4DB; padding: 7px 12px; font: 500 14px Geist, sans-serif"><span style="width: 9px; height: 9px; background: #2EC4B6"></span>Waves and sound <span style="font-family: 'Geist Mono', monospace; font-size: 12px; opacity: .7">3</span></button>
+    </div>
+  </div>
+
+  <!-- The frame takes the topic's colour, as the practicals grid does. -->
+  <div style="padding: 10px; background: linear-gradient(100deg, rgba(46,196,182,.5), rgba(46,196,182,.25))">
+    <div class="sm-grid">
+
+      <article class="sm-card" aria-labelledby="t-sono">
+        <div style="position: relative; background: #E3F6F4; padding: 44px 12px 12px">
+          <span style="position: absolute; top: 12px; left: 14px; display: flex; align-items: center; gap: 7px; font-size: 13px; color: #3D3B37"><span style="width: 9px; height: 9px; background: #2EC4B6"></span>Waves and sound</span>
+          <span style="position: absolute; top: 10px; right: 12px; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 3px 8px; font: 500 12px 'Geist Mono', monospace">v = 199.7 m/s</span>
+          <img src="./screens/simulations/sonometer-light.png" alt="The Anatomy figure of a sonometer: a hollow sounding box with two sound holes and a metre scale, a hitch pin, fixed and wedge bridges, the steel wire with a paper rider, a pulley with a hanger of slotted masses, and a tuning fork" style="width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#FBFBFA">
+        </div>
+        <div style="padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1">
+          <h2 id="t-sono" style="margin: 0; font: 700 21px/1.15 'Bricolage Grotesque', sans-serif; letter-spacing: -0.015em">Vibrating string</h2>
+          <p style="margin: 0; color: #4A4843; font-size: 15px">Pull a wire tighter and its note rises. Find out by how much, and see the standing wave that makes the sound.</p>
+          <p style="margin: 0; color: #5F5D57; font-size: 13px"><b style="color: #3D3B37; font-weight: 600">You change:</b> the load, the length, the wire, the tuning fork</p>
+          <div style="margin-top: auto; padding-top: 8px"><a class="pa-focus" href="/simulations/vibrating-string" style="display: inline-block; background: #141414; color: #FBFBF6; text-decoration: none; padding: 11px 16px; font-weight: 600; font-size: 15px">Open the simulation</a></div>
+        </div>
+      </article>
+
+      <article class="sm-card" aria-labelledby="t-tube">
+        <div style="position: relative; background: #E3F6F4; padding: 44px 12px 12px">
+          <span style="position: absolute; top: 12px; left: 14px; display: flex; align-items: center; gap: 7px; font-size: 13px; color: #3D3B37"><span style="width: 9px; height: 9px; background: #2EC4B6"></span>Waves and sound</span>
+          <span style="position: absolute; top: 10px; right: 12px; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 3px 8px; font: 500 12px 'Geist Mono', monospace">L₁ = 15.8 cm</span>
+          <img src="./screens/simulations/resonance-tube-light.png" alt="The Anatomy figure of a resonance tube: a 1 m glass tube clamped to a retort stand beside a metre rule, a reservoir on a ring joined by rubber tubing, a tuning fork over the mouth and a thermometer" style="width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#FBFBFA">
+        </div>
+        <div style="padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1">
+          <h2 id="t-tube" style="margin: 0; font: 700 21px/1.15 'Bricolage Grotesque', sans-serif; letter-spacing: -0.015em">Resonance tube</h2>
+          <p style="margin: 0; color: #4A4843; font-size: 15px">Lower the water under a ringing fork until the tube booms. Watch the air inside move, and measure the speed of sound.</p>
+          <p style="margin: 0; color: #5F5D57; font-size: 13px"><b style="color: #3D3B37; font-weight: 600">You change:</b> the water level, the tuning fork, the room temperature</p>
+          <div style="margin-top: auto; padding-top: 8px"><a class="pa-focus" href="/simulations/resonance-tube" style="display: inline-block; background: #141414; color: #FBFBF6; text-decoration: none; padding: 11px 16px; font-weight: 600; font-size: 15px">Open the simulation</a></div>
+        </div>
+      </article>
+
+      <article class="sm-card" aria-labelledby="t-helm">
+        <div style="position: relative; background: #E3F6F4; padding: 44px 12px 12px">
+          <span style="position: absolute; top: 12px; left: 14px; display: flex; align-items: center; gap: 7px; font-size: 13px; color: #3D3B37"><span style="width: 9px; height: 9px; background: #2EC4B6"></span>Waves and sound</span>
+          <span style="position: absolute; top: 10px; right: 12px; background: #FFFFFF; border: 1px solid #E6E4DB; padding: 3px 8px; font: 500 12px 'Geist Mono', monospace">f0 = 194 Hz</span>
+          <img src="./screens/simulations/helmholtz-light.png" alt="The Anatomy figure of a Helmholtz resonator: a round-bottom flask with water on a cork ring, held at the neck by a clamp, a loudspeaker above the mouth, a sound-level meter, a signal generator and a measuring cylinder" style="width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#FBFBFA">
+        </div>
+        <div style="padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1">
+          <h2 id="t-helm" style="margin: 0; font: 700 21px/1.15 'Bricolage Grotesque', sans-serif; letter-spacing: -0.015em">Singing flask</h2>
+          <p style="margin: 0; color: #4A4843; font-size: 15px">Blow across a bottle and it hums. Add water and the note climbs. See the plug of air bouncing on the spring of air below it.</p>
+          <p style="margin: 0; color: #5F5D57; font-size: 13px"><b style="color: #3D3B37; font-weight: 600">You change:</b> the water in the flask, the signal generator's frequency</p>
+          <div style="margin-top: auto; padding-top: 8px"><a class="pa-focus" href="/simulations/helmholtz-resonator" style="display: inline-block; background: #141414; color: #FBFBF6; text-decoration: none; padding: 11px 16px; font-weight: 600; font-size: 15px">Open the simulation</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- How simulations differ from practicals, once, plainly. -->
+  <section class="sm-two" aria-label="Simulations and practicals" style="border-top: 1px solid #E6E4DB; padding-top: 32px">
+    <div>
+      <h2 style="margin: 0 0 8px; font: 700 26px/1.15 'Bricolage Grotesque', sans-serif">Simulations: explore</h2>
+      <p style="margin: 0; color: #4A4843">Move anything, as far as it goes. Turn on layers to see what your eyes can't: the standing wave on a wire, the air moving in a tube. Hear every change. Nothing is marked.</p>
+    </div>
+    <div>
+      <h2 style="margin: 0 0 8px; font: 700 26px/1.15 'Bricolage Grotesque', sans-serif">Practicals: perform</h2>
+      <p style="margin: 0; color: #4A4843">Build the apparatus, take readings, then tabulate, plot and report the way the WASSCE marks it, with a coach at every step. <a class="pa-focus" href="/experiments" style="color: #141414; text-underline-offset: 4px">See the practicals</a></p>
+    </div>
+  </section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+// Static board: the filter chips and the cards' live figures are described in place.
+</script>
+</body>
+</html>
