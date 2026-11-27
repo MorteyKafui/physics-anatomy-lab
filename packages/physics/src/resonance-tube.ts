@@ -24,8 +24,6 @@ export const GAS_CONSTANT = 8.314462618;
 export const AIR_MOLAR_MASS = 0.0289647;
 /** The end correction of an unflanged tube, as a fraction of its internal radius. */
 export const END_CORRECTION_FACTOR = 0.6;
-/** The school set of tuning forks, in hertz (the scale from middle C at 256 Hz). */
-export const TUNING_FORKS = [256, 288, 320, 341.3, 384, 426.7, 480, 512] as const;
 /** Highest overtone searched for the loudness, so a long column at a high fork still answers. */
 const MAX_MODE = 40;
 
@@ -163,13 +161,10 @@ export function loudnessDb(
 }
 
 /**
- * The struck fork's amplitude, relative to the moment it was struck: exp(−t / τ). Zero before the
- * strike. A school fork on a rubber pad rings for a time constant τ of about 4 s.
+ * How long a school fork struck on a rubber pad rings: the time constant τ, in seconds, of its
+ * decay exp(−t / τ). The decay itself is `forkAmplitude` in `sonometer.ts`, shared by both forks.
  */
-export function forkAmplitude(secondsSinceStrike: number, tau = 4): number | undefined {
-  if (!Number.isFinite(secondsSinceStrike) || !positive(tau)) return undefined;
-  return secondsSinceStrike < 0 ? 0 : Math.exp(-secondsSinceStrike / tau);
-}
+export const FORK_TAU = 4;
 
 export interface StandingWave {
   /** The wavelength in the tube's air, in metres. */

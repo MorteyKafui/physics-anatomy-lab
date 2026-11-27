@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulation screen</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0D0D0D}
+.pa-focus:focus-visible{outline:2px solid #F0482A;outline-offset:3px}
+.sim{display:grid;grid-template-columns:minmax(0,1fr) 360px;min-height:calc(100vh - 57px)}
+@media (max-width:980px){.sim{grid-template-columns:minmax(0,1fr)}}
+.btn{background:#1A1A19;color:#F2F0EA;border:1px solid #33322F;padding:8px 12px;font:500 14px Geist,sans-serif;cursor:pointer}
+.btn[aria-pressed="true"]{background:#F2F0EA;color:#0D0D0D;border-color:#F2F0EA}
+.num{width:74px;background:#0D0D0D;color:#F2F0EA;border:1px solid #33322F;padding:6px 8px;font:500 14px 'Geist Mono',monospace;text-align:right}
+.step{width:34px;height:34px;background:#1A1A19;color:#F2F0EA;border:1px solid #33322F;font:500 13px 'Geist Mono',monospace;cursor:pointer}
+.row{display:flex;align-items:center;gap:6px}
+input[type=range]{flex:1;accent-color:#2EC4B6}
+.ctl{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-bottom:1px solid #262624}
+.lab{display:flex;justify-content:space-between;font-size:14px;color:#C9C6BF}
+.slot{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border:1px dashed #2E6E68;color:#8ED8D0;font:500 13px 'Geist Mono',monospace;text-align:center;padding:24px;box-sizing:border-box;background:#111111}
+</style>
+</helmet>
+<div style="background: #0D0D0D; color: #F2F0EA; font-family: Geist, system-ui, sans-serif; font-size: 15px; line-height: 1.5">
+
+<!-- Top bar: back to the simulations, the name, and the few things every simulation has. -->
+<header style="display: flex; align-items: center; gap: 14px; padding: 10px 20px; border-bottom: 1px solid #262624">
+  <a class="pa-focus" href="/simulations" style="color: #C9C6BF; text-decoration: none; font-size: 14px">← Simulations</a>
+  <span style="width: 1px; height: 22px; background: #33322F"></span>
+  <span style="display: flex; align-items: center; gap: 8px"><span style="width: 9px; height: 9px; background: #2EC4B6"></span><b style="font: 600 17px 'Bricolage Grotesque', sans-serif">Vibrating string</b><span style="color: #8C8A84; font-size: 14px">on a sonometer</span></span>
+  <span style="flex: 1"></span>
+  <button class="btn pa-focus" aria-pressed="true">Sound on</button>
+  <button class="btn pa-focus">Snapshot</button>
+  <button class="btn pa-focus">Reset</button>
+  <button class="btn pa-focus">Share link</button>
+</header>
+
+<div class="sim">
+  <!-- The bench: the Anatomy figure fills it. -->
+  <section aria-label="The apparatus" style="display: flex; flex-direction: column; gap: 14px; padding: 20px; min-width: 0">
+    <img src="./screens/simulations/sonometer-dark.png" alt="The Anatomy figure of a sonometer: a hollow sounding box with two sound holes and a metre scale, a hitch pin, fixed and wedge bridges, the steel wire with a paper rider, a pulley with a hanger of slotted masses, and a tuning fork" style="width:100%;height:auto;display:block">
+    <p style="margin: 0; font-size: 13px; color: #8C8A84">Built in the app as the live figure from packages/apparatus/figures/sonometer: the wire moves from the model, the movable bridge follows the pointer, and a click strikes the fork.</p>
+
+    <!-- Legend key: names every part; choosing one picks it out in the drawing. -->
+    <ol aria-label="Parts" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: #C9C6BF">
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">A</b> Sounding box</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">B</b> Fixed bridge</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">C</b> Movable bridge</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">D</b> Steel wire</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">E</b> Pulley</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">F</b> Hanger and slotted masses</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">G</b> Paper rider</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">H</b> Tuning fork and rubber pad</li>
+      <li><b style="font-family: 'Geist Mono', monospace; color: #F2F0EA">I</b> Metre scale</li>
+    </ol>
+
+    <!-- Time: the wire moves 256 times a second, so slow motion is how it is seen. -->
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+      <button class="btn pa-focus">Pause</button>
+      <span style="font-size: 13px; color: #8C8A84; margin-left: 6px">Speed</span>
+      <button class="btn pa-focus">Real time</button>
+      <button class="btn pa-focus">1/100</button>
+      <button class="btn pa-focus" aria-pressed="true">1/1000</button>
+      <span style="font-size: 13px; color: #8C8A84">At real time the wire blurs, as it does in a lab; slow it down to see the standing wave.</span>
+    </div>
+
+    <!-- Live graph: changes as any control moves. -->
+    <div style="border: 1px solid #262624; background: #131313; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+      <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #8C8A84">Graph</span><span>f₁ against 1/l, for this wire and load</span></div>
+      <svg viewBox="0 0 520 220" role="img" aria-label="A straight line through the origin: f against 1 over l, slope 99.8 metres per second; the current point is at 1 over l = 2.56 per metre, f = 256 hertz" style="width: 100%; height: auto">
+        <g stroke="#262624"><path d="M50 20V190M110 20V190M170 20V190M230 20V190M290 20V190M350 20V190M410 20V190M470 20V190"></path><path d="M50 190H490M50 150H490M50 110H490M50 70H490M50 30H490"></path></g>
+        <path d="M50 190H495M50 190V15" stroke="#8C8A84"></path>
+        <line x1="50" y1="190" x2="362" y2="34.2" stroke="#2EC4B6" stroke-width="2"></line>
+        <circle cx="255.1" cy="87.6" r="5" fill="#F0482A"></circle>
+        <g fill="#8C8A84" font-family="Geist Mono, monospace" font-size="11"><text x="50" y="206" text-anchor="middle">0</text><text x="170" y="206" text-anchor="middle">1.5</text><text x="290" y="206" text-anchor="middle">3.0</text><text x="410" y="206" text-anchor="middle">4.5</text><text x="44" y="194" text-anchor="end">0</text><text x="44" y="114" text-anchor="end">200</text><text x="44" y="34" text-anchor="end">400</text><text x="495" y="206" text-anchor="end">1/l / m⁻¹</text><text x="56" y="16">f / Hz</text></g>
+      </svg>
+      <span style="font-size: 13px; color: #8C8A84">Slope = v/2 = 99.8 m/s. Add load and the line turns steeper.</span>
+    </div>
+  </section>
+
+  <!-- Controls, layers, readouts and the why. On a phone this becomes a bottom sheet with tabs: Controls, Layers, Readings, Why. -->
+  <aside aria-label="Controls" style="border-left: 1px solid #262624; background: #121212; padding: 4px 20px 24px; overflow-y: auto">
+    <h2 style="margin: 16px 0 0; font: 600 15px Geist, sans-serif; color: #8C8A84">Change</h2>
+    <div class="ctl">
+      <div class="lab"><span>Load on the hanger, M</span><span style="font-family: 'Geist Mono', monospace; color: #F2F0EA">2.50 kg</span></div>
+      <div class="row"><button class="step pa-focus" aria-label="Less by 0.1 kg">−</button><input type="range" min="0.5" max="5" step="0.1" value="2.5" aria-label="Load on the hanger"><button class="step pa-focus" aria-label="More by 0.1 kg">+</button><input class="num" value="2.50" aria-label="Load in kilograms"></div>
+    </div>
+    <div class="ctl">
+      <div class="lab"><span>Length between the bridges, l</span><span style="font-family: 'Geist Mono', monospace; color: #F2F0EA">39.0 cm</span></div>
+      <div class="row"><button class="step pa-focus" aria-label="Shorter by 0.1 cm">−</button><input type="range" min="10" max="90" step="0.1" value="39.0" aria-label="Length between the bridges"><button class="step pa-focus" aria-label="Longer by 0.1 cm">+</button><input class="num" value="39.0" aria-label="Length in centimetres"></div>
+    </div>
+    <div class="ctl">
+      <div class="lab"><span>Wire</span></div>
+      <div class="row" role="group" aria-label="Wire"><button class="btn pa-focus">28 SWG</button><button class="btn pa-focus" aria-pressed="true">30 SWG</button><button class="btn pa-focus">32 SWG</button></div>
+      <span style="font-size: 13px; color: #8C8A84">Steel, 30 SWG: μ = 0.612 g/m</span>
+    </div>
+    <div class="ctl">
+      <div class="lab"><span>Tuning fork</span></div>
+      <div class="row" role="group" aria-label="Tuning fork" style="flex-wrap: wrap"><button class="btn pa-focus" aria-pressed="true">256</button><button class="btn pa-focus">288</button><button class="btn pa-focus">320</button><button class="btn pa-focus">384</button><button class="btn pa-focus">426.7</button><button class="btn pa-focus">512</button><span style="font-size: 13px; color: #8C8A84">Hz</span></div>
+      <button class="btn pa-focus" style="align-self: flex-start">Strike the fork</button>
+    </div>
+
+    <h2 style="margin: 18px 0 0; font: 600 15px Geist, sans-serif; color: #8C8A84">See</h2>
+    <div class="ctl" style="gap: 10px">
+      <label class="row"><input type="checkbox" checked> The standing wave, enlarged</label>
+      <label class="row"><input type="checkbox" checked> Nodes and antinodes</label>
+      <label class="row"><input type="checkbox"> Waves running each way</label>
+      <label class="row"><input type="checkbox"> Labels on the parts</label>
+    </div>
+
+    <h2 style="margin: 18px 0 0; font: 600 15px Geist, sans-serif; color: #8C8A84">Readings, from the model</h2>
+    <dl style="margin: 10px 0 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: 14px">
+      <dt style="color: #C9C6BF">Tension, T = Mg, less 0.5% at the pulley</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">24.4 N</dd>
+      <dt style="color: #C9C6BF">Wave speed, v = √(T/μ)</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">199.7 m/s</dd>
+      <dt style="color: #C9C6BF">Lowest note, f₁ = v/2l</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">256.1 Hz</dd>
+      <dt style="color: #C9C6BF">Wavelength, λ = 2l</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace">0.780 m</dd>
+      <dt style="color: #C9C6BF">The fork and the wire</dt><dd style="margin: 0; color: #2EC4B6">In resonance: the rider jumps</dd>
+    </dl>
+
+    <h2 style="margin: 22px 0 6px; font: 600 15px Geist, sans-serif; color: #8C8A84">Try this</h2>
+    <ol style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: #C9C6BF; font-size: 14px">
+      <li>Choose the 512 Hz fork. Where must the bridge go now? Predict, then slide it.</li>
+      <li>Make the load four times as big. What happens to the note?</li>
+      <li>Find the length where the 256 Hz fork makes the wire vibrate in two loops.</li>
+    </ol>
+    <p style="margin: 10px 0 0; font-size: 13px; color: #8C8A84">Each one checks itself when you get there, and says why. Nothing is marked.</p>
+
+    <h2 style="margin: 22px 0 6px; font: 600 15px Geist, sans-serif; color: #8C8A84">Why it happens</h2>
+    <p style="margin: 0; color: #C9C6BF; font-size: 14px">A wave runs along the wire, reflects at each bridge and meets itself. Only waves that fit a whole number of half-wavelengths between the bridges survive: that standing wave is the note you hear. A tighter or lighter wire carries waves faster, so the note goes up.</p>
+    <p style="margin: 14px 0 0; font-size: 13px; color: #8C8A84">A simulation with a matching practical links to it here.</p>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+// Static board. Shared by every simulation: the top bar, the bench with its card and legend,
+// time controls, the live graph, and the side panel's four parts (Change, See, Readings, Try this
+// and Why). A simulation gives its figure, controls, layers, readings, prompts and text.
+</script>
+</body>
+</html>

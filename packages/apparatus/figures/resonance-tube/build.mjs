@@ -19,10 +19,12 @@ import * as G from "../../kit/lathe.mjs";
 import { tubePieces, tubeSvg } from "../../kit/tube.mjs";
 import { kitScript } from "../../kit/scripts/inline-kit.mjs";
 import * as M from "../../../physics/src/resonance-tube.ts";
+import { TUNING_FORKS } from "../../../physics/src/sonometer.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const KIT = join(HERE, "../../kit");
 const MODEL = join(HERE, "../../../physics/src/resonance-tube.ts");
+const SONOMETER = join(HERE, "../../../physics/src/sonometer.ts");
 const theme = process.argv.includes("--light") ? "light" : "dark";
 
 // ---------------------------------------------------------------------------------------------
@@ -713,7 +715,14 @@ const LABEL =
 
 const svg = k.figureSvg({ width: W, height: H, label: LABEL, body: [back, items] });
 
-const stripped = stripTypeScriptTypes(readFileSync(MODEL, "utf8")).replace(/^export /gm, "");
+// The forks and their decay are shared with the sonometer: inline those beside the tube's model.
+const sonometer = stripTypeScriptTypes(readFileSync(SONOMETER, "utf8"));
+const shared = [/^export const TUNING_FORKS.*$/m, /^export function forkAmplitude[\s\S]*?^}$/m].map(
+  (pattern) => sonometer.match(pattern)[0],
+);
+const stripped = [stripTypeScriptTypes(readFileSync(MODEL, "utf8")), ...shared]
+  .join("\n")
+  .replace(/^export /gm, "");
 const moduleAs = (name, file, extra = "") => {
   const source = readFileSync(join(KIT, file), "utf8").replace(/^import .*$/gm, "");
   const names = [...source.matchAll(/^export (?:function|const|let|class) (\w+)/gm)].map(
@@ -726,8 +735,8 @@ const DATA = {
   P,
   V,
   tube: MODEL_TUBE,
-  forks: [...M.TUNING_FORKS],
-  forkStart: M.TUNING_FORKS.indexOf(FORK_START),
+  forks: [...TUNING_FORKS],
+  forkStart: TUNING_FORKS.indexOf(FORK_START),
   L: L_START,
   range: L_RANGE,
   U,
@@ -797,7 +806,7 @@ const script =
   moduleAs("G", "lathe.mjs") +
   moduleAs("TUBE_KIT", "tube.mjs") +
   `const { tubePieces, tubeSvg } = TUBE_KIT;\n` +
-  `const MODEL = (() => {\n${stripped}\nreturn { speedOfSound, endCorrection, wavelength, resonanceLength, resonanceLengths, loudness, loudnessDb, forkAmplitude, standingWave, airAt, TUNING_FORKS };\n})();\n` +
+  `const MODEL = (() => {\n${stripped}\nreturn { speedOfSound, endCorrection, wavelength, resonanceLength, resonanceLengths, loudness, loudnessDb, forkAmplitude, FORK_TAU, standingWave, airAt, TUNING_FORKS };\n})();\n` +
   live;
 const out = theme === "light" ? "resonance-tube-light.html" : "resonance-tube.html";
 writeFileSync(

@@ -6,6 +6,7 @@ import {
   airAt,
   columnFrequency,
   endCorrection,
+  FORK_TAU,
   forkAmplitude,
   fromTwoResonances,
   loudness,
@@ -148,12 +149,12 @@ describe("loudness", () => {
 
 describe("the struck fork", () => {
   test("decays as exp(−t/τ) and is silent before the strike", () => {
-    expect(forkAmplitude(0)).toBe(1);
-    expect(forkAmplitude(4)!).toBeCloseTo(Math.exp(-1), 15);
+    expect(forkAmplitude(0, FORK_TAU)).toBe(1);
+    expect(forkAmplitude(4, FORK_TAU)!).toBeCloseTo(Math.exp(-1), 15);
     expect(forkAmplitude(2, 5)!).toBeCloseTo(Math.exp(-0.4), 15);
-    expect(forkAmplitude(-1)).toBe(0);
+    expect(forkAmplitude(-1, FORK_TAU)).toBe(0);
     expect(forkAmplitude(1, 0)).toBeUndefined();
-    expect(forkAmplitude(Number.NaN)).toBeUndefined();
+    expect(forkAmplitude(Number.NaN, FORK_TAU)).toBeUndefined();
   });
 });
 

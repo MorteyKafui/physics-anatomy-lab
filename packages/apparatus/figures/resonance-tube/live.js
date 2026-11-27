@@ -89,7 +89,8 @@ function drawFork() {
 }
 
 // How loud the column sounds now: the steady loudness times the struck fork's amplitude.
-const level = () => MODEL.loudness(TUBE_M, L, f()) * (MODEL.forkAmplitude(clock - struck) ?? 0);
+const level = () =>
+  MODEL.loudness(TUBE_M, L, f()) * (MODEL.forkAmplitude(clock - struck, MODEL.FORK_TAU) ?? 0);
 
 function drawWave(phase, sound) {
   const wave = MODEL.standingWave(TUBE_M, L, f());
@@ -187,7 +188,7 @@ function draw(phase, time) {
   drawSound(time, still.matches ? 0 : sound);
   const swing = still.matches
     ? 0
-    : 0.7 * (MODEL.forkAmplitude(clock - struck) ?? 0) * Math.sin(phase * 1.0);
+    : 0.7 * (MODEL.forkAmplitude(clock - struck, MODEL.FORK_TAU) ?? 0) * Math.sin(phase * 1.0);
   for (const node of forkG.querySelectorAll("[data-prong]"))
     node.setAttribute("transform", translateAlong(P, [0, 0, Number(node.dataset.prong) * swing]));
   drawText();
@@ -217,7 +218,7 @@ function tick(now) {
   L += (target - L) * (1 - Math.exp(-dt / 0.3));
   if (Math.abs(target - L) < 1e-5) L = target;
   draw(clock * Math.PI * 2 * 0.9, clock);
-  const sounding = (MODEL.forkAmplitude(clock - struck) ?? 0) > 0.004;
+  const sounding = (MODEL.forkAmplitude(clock - struck, MODEL.FORK_TAU) ?? 0) > 0.004;
   frame =
     visible && (touring || sounding || L !== target || dragging) ? requestAnimationFrame(tick) : 0;
 }

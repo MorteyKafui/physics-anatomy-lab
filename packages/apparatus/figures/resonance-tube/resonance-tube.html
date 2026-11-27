@@ -2479,8 +2479,6 @@ const GAS_CONSTANT = 8.314462618;
 const AIR_MOLAR_MASS = 0.0289647;
 /** The end correction of an unflanged tube, as a fraction of its internal radius. */
 const END_CORRECTION_FACTOR = 0.6;
-/** The school set of tuning forks, in hertz (the scale from middle C at 256 Hz). */
-const TUNING_FORKS = [256, 288, 320, 341.3, 384, 426.7, 480, 512]         ;
 /** Highest overtone searched for the loudness, so a long column at a high fork still answers. */
 const MAX_MODE = 40;
 
@@ -2618,13 +2616,10 @@ function loudnessDb(
 }
 
 /**
- * The struck fork's amplitude, relative to the moment it was struck: exp(−t / τ). Zero before the
- * strike. A school fork on a rubber pad rings for a time constant τ of about 4 s.
+ * How long a school fork struck on a rubber pad rings: the time constant τ, in seconds, of its
+ * decay exp(−t / τ). The decay itself is `forkAmplitude` in `sonometer.ts`, shared by both forks.
  */
-function forkAmplitude(secondsSinceStrike        , tau = 4)                     {
-  if (!Number.isFinite(secondsSinceStrike) || !positive(tau)) return undefined;
-  return secondsSinceStrike < 0 ? 0 : Math.exp(-secondsSinceStrike / tau);
-}
+const FORK_TAU = 4;
 
                                
                                                      
@@ -2706,7 +2701,13 @@ function fromTwoResonances(
   return { speed: 2 * frequency * (second - first), endCorrection: (second - 3 * first) / 2 };
 }
 
-return { speedOfSound, endCorrection, wavelength, resonanceLength, resonanceLengths, loudness, loudnessDb, forkAmplitude, standingWave, airAt, TUNING_FORKS };
+const TUNING_FORKS                    = [256, 288, 320, 341.3, 384, 426.7, 480, 512];
+function forkAmplitude(t        , tau        , onPad = true)                     {
+  if (!Number.isFinite(t) || !positive(tau)) return undefined;
+  if (t < 0) return 0;
+  return onPad ? Math.exp(-t / tau) : 0.85 * Math.exp(-t / (0.6 * tau));
+}
+return { speedOfSound, endCorrection, wavelength, resonanceLength, resonanceLengths, loudness, loudnessDb, forkAmplitude, FORK_TAU, standingWave, airAt, TUNING_FORKS };
 })();
 // Live behaviour for the resonance tube. Inlined after the kit, the kit's lathe and tube modules
 // (as G and TUBE_KIT) and the physics model (as MODEL); build.mjs fills in the data.
@@ -2855,7 +2856,8 @@ function drawFork() {
 }
 
 // How loud the column sounds now: the steady loudness times the struck fork's amplitude.
-const level = () => MODEL.loudness(TUBE_M, L, f()) * (MODEL.forkAmplitude(clock - struck) ?? 0);
+const level = () =>
+  MODEL.loudness(TUBE_M, L, f()) * (MODEL.forkAmplitude(clock - struck, MODEL.FORK_TAU) ?? 0);
 
 function drawWave(phase, sound) {
   const wave = MODEL.standingWave(TUBE_M, L, f());
@@ -2953,7 +2955,7 @@ function draw(phase, time) {
   drawSound(time, still.matches ? 0 : sound);
   const swing = still.matches
     ? 0
-    : 0.7 * (MODEL.forkAmplitude(clock - struck) ?? 0) * Math.sin(phase * 1.0);
+    : 0.7 * (MODEL.forkAmplitude(clock - struck, MODEL.FORK_TAU) ?? 0) * Math.sin(phase * 1.0);
   for (const node of forkG.querySelectorAll("[data-prong]"))
     node.setAttribute("transform", translateAlong(P, [0, 0, Number(node.dataset.prong) * swing]));
   drawText();
@@ -2983,7 +2985,7 @@ function tick(now) {
   L += (target - L) * (1 - Math.exp(-dt / 0.3));
   if (Math.abs(target - L) < 1e-5) L = target;
   draw(clock * Math.PI * 2 * 0.9, clock);
-  const sounding = (MODEL.forkAmplitude(clock - struck) ?? 0) > 0.004;
+  const sounding = (MODEL.forkAmplitude(clock - struck, MODEL.FORK_TAU) ?? 0) > 0.004;
   frame =
     visible && (touring || sounding || L !== target || dragging) ? requestAnimationFrame(tick) : 0;
 }

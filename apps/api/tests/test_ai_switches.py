@@ -1,6 +1,6 @@
 """The AI switches and the admin AI page (docs/content/ai-quotas-brief.md, decisions 4 and 5)."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 import pytest
@@ -125,14 +125,20 @@ async def test_the_ai_page_counts_requests_spend_the_cache_and_held_replies(
     staff: AsyncClient,  # noqa: F811
     db: AsyncSession,
     monkeypatch: pytest.MonkeyPatch,
+    ai_clock: datetime,
 ) -> None:
     monkeypatch.setattr(get_settings(), "ai_daily_budget_usd", 0.01)
-    now = datetime.now(UTC)
+    # Today's rows are spread over the last half hour, or since midnight if that is sooner.
+    since = min(timedelta(minutes=31), ai_clock - midnight())
+
+    def ago(minutes: int) -> datetime:
+        return ai_clock - since * minutes / 31
+
     rows = [
-        ("tutor", "done", 4000, now - timedelta(minutes=30)),
-        ("tutor", "held", 3000, now - timedelta(minutes=20)),
-        ("tutor", "cached", 0, now - timedelta(minutes=10)),
-        ("report-review", "done", 5000, now - timedelta(minutes=5)),
+        ("tutor", "done", 4000, ago(30)),
+        ("tutor", "held", 3000, ago(20)),
+        ("tutor", "cached", 0, ago(10)),
+        ("report-review", "done", 5000, ago(5)),
         ("what-if", "done", 2000, midnight() - timedelta(hours=1)),  # yesterday
     ]
     for feature, outcome, cost, at in rows:
@@ -166,6 +172,6 @@ async def test_the_ai_page_counts_requests_spend_the_cache_and_held_replies(
     week = {f["feature"]: f["requests"] for f in page["by_feature"]}
     assert week == {"tutor": 3, "what-if": 1, "report-review": 1, "question-drafting": 0}
     assert page["budget_microdollars"] == 10_000
-    # 4000 + 3000 + 0 + 5000 passes 10,000 with the report review, five minutes ago.
+    # 4000 + 3000 + 0 + 5000 passes 10,000 with the report review, the latest of them.
     reached = datetime.fromisoformat(page["budget_reached_at"])
     assert abs((reached - rows[3][3]).total_seconds()) < 1
