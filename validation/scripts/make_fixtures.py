@@ -12,6 +12,7 @@ outliers.json  Bonferroni outlier test (hat matrix)       read by packages/analy
 review.json    the review's effects and the right way     read by packages/experiments
 diffraction.json  N-slit far field (SciPy quad over openings)  read by packages/physics
 resonance-tube.json  resonance tube (shooting the wave equation)  read by packages/physics
+helmholtz.json the Helmholtz resonator (lumped mass-spring)  read by packages/physics
 sonometer.json  vibrating string (SciPy eigenvalues, brentq)  read by packages/physics
 """
 
@@ -32,6 +33,7 @@ from pa_validation.circuits import (
 )
 from pa_validation.diffraction import intensity, which_slit
 from pa_validation.fit import fit_line, fit_through_origin
+from pa_validation.helmholtz import build_fixture as build_helmholtz
 from pa_validation.lens import image
 from pa_validation.lens_exact import (
     axis_crossing,
@@ -1024,4 +1026,5 @@ if __name__ == "__main__":
     write("uncertainty.json", build_uncertainty())
     write("diffraction.json", build_diffraction())
     write("resonance-tube.json", build_resonance_tube())
+    write("helmholtz.json", build_helmholtz())
     write("sonometer.json", build_sonometer())
