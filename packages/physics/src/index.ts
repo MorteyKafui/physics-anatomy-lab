@@ -59,3 +59,4 @@ export type { Place, PlaceId } from "./gravity";
 export { singleSlitIntensity, slitsIntensity, whichSlitIntensity } from "./diffraction";
 export type { Slits } from "./diffraction";
 export * as helmholtz from "./helmholtz";
+export * from "./sonometer";

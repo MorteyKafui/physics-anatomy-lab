@@ -7,7 +7,7 @@ logged, so a person could pass their quota, and everyone the budget, by sending 
 import asyncio
 import uuid
 from collections.abc import Awaitable
-from datetime import UTC, datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 import pytest
@@ -61,18 +61,20 @@ async def test_replies_under_way_count_and_stop_one_more(
     monkeypatch: pytest.MonkeyPatch,
     claude: FakeClaude,
     ai_log: FakeLog,
+    ai_clock: datetime,
 ) -> None:
     monkeypatch.setattr(get_settings(), "ai_quota_teacher", {"tutor": 3})
     for _ in range(2):
         await stream(client)
-    # As if both replies were still running.
-    await db.execute(update(AiRequest).values(outcome="pending"))
+    # As if both replies had just started and were still running.
+    await db.execute(update(AiRequest).values(outcome="pending", at=ai_clock))
     await db.commit()
     refused = await client.post("/test-only/ai/tutor", json=context())
     assert (refused.status_code, refused.json()["detail"]) == (429, STILL_ANSWERING)
 
-    # A pending row older than any reply can run is no longer under way, but still counts.
-    await db.execute(update(AiRequest).values(at=datetime.now(UTC) - UNDER_WAY))
+    # A pending row older than any reply can run is no longer under way, but still counts: at
+    # five past midnight it is still today's.
+    await db.execute(update(AiRequest).values(at=ai_clock - UNDER_WAY - timedelta(seconds=1)))
     await db.commit()
     assert [name for name, _ in await stream(client)][-1] == "done"
     refused = await client.post("/test-only/ai/tutor", json=context())
