@@ -892,8 +892,8 @@ Decided by Mortey on 26 November 2026. Physics Anatomy has two areas: **Practica
 | Resonance tube | Water level, tuning fork, room temperature | The air column's standing wave drawn over the glass, the sound swelling at each resonance, the end correction; the first and second resonance lengths |
 | Helmholtz resonator | Water in the flask, the signal generator's frequency | The plug of air bouncing in the neck on the spring of air in the bulb, the loudness peak at resonance; f against the air volume |
 
-- [ ] Decision record 0049 and this plan item
-- [ ] Boards approved: the Simulations page, a simulation screen, and the landing page's Simulations section
+- [x] Decision record 0049 and this plan item
+- [x] Boards approved: the Simulations page, a simulation screen, and the landing page's Simulations section
 - [ ] Physics models for the three, tested against the analytic results and the independent Python models, with a physics reviewer's approval
 - [ ] Apparatus drawn with the Anatomy kit: sonometer, slotted masses and hanger, paper rider, tuning forks, resonance tube and reservoir, round-bottom flask, signal generator and loudspeaker
 - [ ] The simulation screen, shared by all simulations: the bench, sliders with typed values, play, pause and slow motion, layers that show the hidden physics, live readouts and graph, sound, a snapshot, and a link to the related practical
