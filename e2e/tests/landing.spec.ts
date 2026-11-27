@@ -179,11 +179,20 @@ test.describe("the hero's bench", () => {
     await expect(
       page.locator("#top").getByRole("link", { name: "Open the lens lab" }),
     ).toHaveAttribute("href", "/lab/converging-lens");
-    await page.getByRole("tab", { name: "Mixtures: hot solid" }).click();
+    await page.getByRole("tab", { name: "Ohm's law" }).click();
     await expect(bench.getByRole("link", { name: /Open this lab/ })).toHaveAttribute(
       "href",
-      "/lab/method-of-mixtures-solid",
+      "/lab/ohms-law",
     );
+  });
+
+  test("tours only the first three practicals", async ({ page }) => {
+    await page.goto(WEB);
+    await expect(page.getByRole("tablist", { name: "Practicals" }).getByRole("tab")).toHaveText([
+      "Simple pendulum",
+      "Ohm's law",
+      "Converging lens",
+    ]);
   });
 
   test("the arrow keys move between practicals", async ({ page }) => {
@@ -207,10 +216,8 @@ test.describe("the hero's bench", () => {
 
   test("the share link follows the chosen practical", async ({ page }) => {
     await page.goto(WEB);
-    await page.getByRole("tab", { name: "Lens: two pins" }).click();
-    await expect(page.getByLabel("Link to the two pins lab")).toHaveValue(
-      /\/lab\/converging-lens-pins$/,
-    );
+    await page.getByRole("tab", { name: "Converging lens" }).click();
+    await expect(page.getByLabel("Link to the lens lab")).toHaveValue(/\/lab\/converging-lens$/);
   });
 });
 
