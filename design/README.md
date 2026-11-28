@@ -42,6 +42,16 @@ apps is rebuilt from its mockup: same layout, copy, colours, spacing, states and
 | Simulations page                   | `Simulations.dc.html`        | approved 2026-11-27    | `apps/web` `/simulations`                                  |
 | Simulation screen                  | `Simulation.dc.html`         | approved 2026-11-27    | `apps/web` `/simulations/<id>`                             |
 | Landing page, simulations          | `LandingSimulations.dc.html` | approved 2026-11-27    | `apps/web` `/`, header, footer, topic menus                |
+| Lab overhaul: bench with labels    | `LabLabels.dc.html`          | draft for approval     | `packages/apparatus`, lab "Labels" switch                  |
+| Lab overhaul: part card            | `PartCard.dc.html`           | draft for approval     | lab part cards, "Meet the apparatus"                       |
+| Lab overhaul: apparatus shelf      | `ApparatusShelf.dc.html`     | draft for approval     | lab Build step, picking apparatus                          |
+| Lab overhaul: coach on the bench   | `LabCoach.dc.html`           | draft for approval     | lab coach (wiring, Show me, Fix it for me)                 |
+| Lab overhaul: skill drills         | `SkillDrill.dc.html`         | draft for approval     | lab, before an instrument is first used                    |
+| Lab overhaul: precise control      | `PreciseControl.dc.html`     | draft for approval     | lab position controls                                      |
+
+The lab overhaul boards have desktop and phone screenshots in `screens/lab-overhaul/`. Their
+apparatus is drawn with the Anatomy kit, and their example readings come from the Ohm's law
+model (`packages/physics` terminal-pd).
 
 The `.dc.html` files are the source: open them on the canvas to see every state and interaction.
 The screenshots were taken without web fonts, so type looks slightly different; the canvas is
